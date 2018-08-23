@@ -1,0 +1,16 @@
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.csprojResolveAssemblyReference.cache
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.csproj.CoreCompileInputs.cache
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.AssemblyInfoInputs.cache
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.AssemblyInfo.cs
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.0\RS.MVC.deps.json
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.0\RS.MVC.runtimeconfig.json
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.0\RS.MVC.runtimeconfig.dev.json
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.0\RS.MVC.dll
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.0\RS.MVC.pdb
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.0\RS.COMMON.dll
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.0\RS.DAL.dll
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.0\RS.DAL.pdb
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.0\RS.COMMON.pdb
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.csproj.CopyComplete
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.dll
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.pdb

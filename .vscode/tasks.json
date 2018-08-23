@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/ResistanceSurvey.csproj"
+                "${workspaceFolder}/RS.MVC/RS.MVC.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
