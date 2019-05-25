@@ -1,4 +1,3 @@
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.csprojResolveAssemblyReference.cache
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.csproj.CoreCompileInputs.cache
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.AssemblyInfoInputs.cache
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.AssemblyInfo.cs
@@ -14,3 +13,4 @@ C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\bin\Debug\netcoreap
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.csproj.CopyComplete
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.dll
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.pdb
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.csprojAssemblyReference.cache

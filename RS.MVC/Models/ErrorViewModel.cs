@@ -8,4 +8,5 @@ namespace RS.MVC.Models
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
     }
+   
 }

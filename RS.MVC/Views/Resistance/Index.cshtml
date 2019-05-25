@@ -1,11 +1,10 @@
 @model IEnumerable<RS.COMMON.DTO.ResistanceIndexDto>
-<table class="table table-hover">
+<table class="ui blue table">
 <thead>
     <tr>
         <th>Şirket İsmi</th>
          <th>Vaka Niteliği</th>
         <th>Başlangıç Tarihi</th>
-       
     </tr>
 </thead>
 <tbody>
@@ -14,7 +13,7 @@
         <tr>
             <td>@item.CompanyName</td>
             <td>@item.CategoryName</td>
-            <td>@item.StartDate</td>
+            <td>@item.StartDate.ToShortDateString()</td>
         </tr>
     }
         

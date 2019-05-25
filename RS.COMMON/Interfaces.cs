@@ -1,21 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using RS.COMMON.DTO;
+using RS.MVC.Models;
 
 namespace RS.COMMON
 {
     public interface IUnitOfWork
     {
-        IResistanceRepository ResistanceRepository {get;}
+        IResistanceRepository ResistanceRepository { get; }
+        ICompanyRepository CompanyRepository { get; }
+        ILookupRepository LookupRepository { get; }
+        void Commit();
     }
+    public interface ILookupRepository
+    {
+        IEnumerable<IdNamePair> GetAll(string tableName);
+    }
+    public interface IStorageUtilities
+    {
+        IEnumerable<IdNamePair> GetLookup(string tableName);
+    }
+    // public interface IBaseRepository
+    // {
+    //     int Execute(string sql, object param = null);
+    //     object ExecuteScalar(string sql, object param = null);
+    //     IList<T> Query<T>(string sql, object param = null) where T : class;
+    //     IList<TReturn> Query<T1, T2, TReturn>(string sql, Func<T1, T2, TReturn> map, object param = null) where T1 : class where T2 : class;
+    //     Task<IEnumerable<T>> QueryAsync<T>(string sql, object param = null) where T : class;
+    // }
     public interface IResistanceRepository
     {
         IEnumerable<ResistanceIndexDto> GetAll();
-        IEnumerable<KeyValuePair<int,string>> GetCategories();
+        ResistanceDto ExistingResistance(int companyId, int categoryId);
+        void AddResistance(ResistanceCreateDto model, ProtestoCreateDto protesto);
+        void AddResistance(ResistanceCreateDto model, ProtestoCreateDto protesto, CompanyDto company);
     }
-    public interface IResistanceApplication
+    public interface ICompanyRepository
     {
-        IEnumerable<KeyValuePair<int,string>> GetCategories();
-        IEnumerable<ResistanceIndexDto> GetAll();
+        int AddCompany(CompanyDto company);
+        int AddOutsourceCompany(CompanyDto company);
     }
+
 }

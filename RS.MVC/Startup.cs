@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RS.COMMON;
 using RS.DAL;
 using RS.MVC.Applications;
+using RS.MVC.Utilities;
 
 namespace RS.MVC
 {
@@ -26,6 +27,7 @@ namespace RS.MVC
         {
             services.AddTransient<IResistanceApplication, ResistanceApplication>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IStorageUtilities, StorageUtilities>();
             services.AddMvc();
         }
 

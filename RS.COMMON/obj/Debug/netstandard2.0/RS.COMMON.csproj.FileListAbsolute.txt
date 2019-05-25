@@ -6,3 +6,4 @@ C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\bin\Debug\netsta
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\bin\Debug\netstandard2.0\RS.COMMON.pdb
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netstandard2.0\RS.COMMON.dll
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netstandard2.0\RS.COMMON.pdb
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netstandard2.0\RS.COMMON.csprojAssemblyReference.cache

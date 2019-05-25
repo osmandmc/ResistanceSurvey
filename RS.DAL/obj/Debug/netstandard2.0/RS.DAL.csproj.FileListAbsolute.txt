@@ -1,4 +1,3 @@
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.DAL\obj\Debug\netstandard2.0\RS.DAL.csprojResolveAssemblyReference.cache
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.DAL\obj\Debug\netstandard2.0\RS.DAL.csproj.CoreCompileInputs.cache
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.DAL\obj\Debug\netstandard2.0\RS.DAL.AssemblyInfoInputs.cache
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.DAL\obj\Debug\netstandard2.0\RS.DAL.AssemblyInfo.cs
@@ -10,3 +9,4 @@ C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.DAL\bin\Debug\netstanda
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.DAL\obj\Debug\netstandard2.0\RS.DAL.csproj.CopyComplete
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.DAL\obj\Debug\netstandard2.0\RS.DAL.dll
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.DAL\obj\Debug\netstandard2.0\RS.DAL.pdb
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.DAL\obj\Debug\netstandard2.0\RS.DAL.csprojAssemblyReference.cache

@@ -1,0 +1,4 @@
+namespace RS.COMMON
+{
+    
+}
