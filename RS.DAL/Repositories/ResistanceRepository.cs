@@ -14,7 +14,7 @@ namespace RS.DAL.Repositories
 
         public IEnumerable<ResistanceIndexDto> GetAll()
         {
-            var allResistanceQuery = "select c.Name as CompanyName, ct.Name as CategoryName, p.ProtestoStartDate from Resistance r " +
+            var allResistanceQuery = "select r.Id, r.Code, c.Name as CompanyName, ct.Name as CategoryName, p.ProtestoStartDate from Resistance r " +
             "inner join Company c on r.CompanyId = c.Id " +
             "inner join Category ct on r.CategoryId = ct.Id " +
             "left outer join Protesto p on r.Id = p.ResistanceId";
@@ -41,28 +41,33 @@ namespace RS.DAL.Repositories
                 resistance.EndDate
             }).Single();
 
-            foreach (var item in resistance.CorporationIds)
+            if (resistance.CorporationIds != null)
             {
-                var corporationsQuery = "insert into resistancetocorporation(resistanceId, corporationId)" +
-                "values(@resistanceId, @corporationId)";
-                _connection.Query<int>(corporationsQuery, new
+                foreach (var item in resistance.CorporationIds)
                 {
-                    resistanceId,
-                    corporationId = item
-                });
+                    var corporationsQuery = "insert into resistancetocorporation(resistanceId, corporationId)" +
+                    "values(@resistanceId, @corporationId)";
+                    _connection.Query<int>(corporationsQuery, new
+                    {
+                        resistanceId,
+                        corporationId = item
+                    });
+                }
             }
-
-            foreach (var item in resistance.EmploymentTypeIds)
+            if (resistance.EmploymentTypeIds != null)
             {
-                var corporationsQuery = "insert into resistancetoemploymenttype(resistanceId, employmenttypeId)" +
-                "values(@resistanceId, @employmenttypeId)";
-                _connection.Query<int>(corporationsQuery, new
-                {
-                    resistanceId,
-                    employmenttypeId = item
-                });
-            }
 
+                foreach (var item in resistance.EmploymentTypeIds)
+                {
+                    var corporationsQuery = "insert into resistancetoemploymenttype(resistanceId, employmenttypeId)" +
+                    "values(@resistanceId, @employmenttypeId)";
+                    _connection.Query<int>(corporationsQuery, new
+                    {
+                        resistanceId,
+                        employmenttypeId = item
+                    });
+                }
+            }
             var protestoQuery = "insert into Protesto(ResistanceId, EmployeeCountInProtestoId, EmployeeCountInProtesto, CustodyCount, GenderId, IsAgainstProduction, ProtestoStartDate, ProtestoEndDate)" +
            "values(@ResistanceId, @EmployeeCountInProtestoId, @EmployeeCountInProtesto, @CustodyCount, @GenderId, @IsAgainstProduction, @ProtestoStartDate, @ProtestoEndDate);" +
            "SELECT LAST_INSERT_ID()";
@@ -108,7 +113,9 @@ namespace RS.DAL.Repositories
                     protestoplaceId = item
                 });
             }
-            foreach (var item in protesto.InterventionTypeIds)
+            if(protesto.InterventionTypeIds!=null)
+            {
+foreach (var item in protesto.InterventionTypeIds)
             {
                 var protestoplaceQuery = "insert into Protestotointerventiontype(protestoId, interventiontypeId)" +
          "values(@ProtestoId, @interventiontypeId)";
@@ -118,6 +125,8 @@ namespace RS.DAL.Repositories
                     interventiontypeId = item
                 });
             }
+            }
+            
 
         }
         public void AddResistance(ResistanceCreateDto resistance, ProtestoCreateDto protesto, CompanyDto company)
@@ -127,14 +136,64 @@ namespace RS.DAL.Repositories
 
             });
         }
+        public ResistanceDetailDto GetResistanceDetail(int id)
+        {
+            var resistanceDictionary = new Dictionary<int, ResistanceDetailDto>();
+            var protestoDictionary = new Dictionary<int, ProtestoListModel>();
+            var query = "select distinct r.Id as Id, r.CompanyId, r.CategoryId, p.Id as ProtestoId, p.ProtestoStartDate as ProtestoStartDate, pt.Name as ProtestoType, " +
+                "r.HasTradeUnion as HasTradeUnion, r.TradeUnionAuthorityId as TradeUnionAuthorityId, r.EmployeeCount as EmployeeCount, " + 
+                "r.EmployeeCountId as EmployeeCountId, emp.Id as EmploymentTypeId, corp.Id as CorporationId " +
+                "from Resistance r " +  
+                "left join resistancetocorporation rto on rto.resistanceId = r.Id " +
+                "left join corporation corp on corp.Id = rto.corporationId " +
+                "left join resistancetoemploymenttype remp on remp.resistanceId " +
+                "left join employmenttype emp on remp.employmenttypeId = emp.Id " +
+                "left join Protesto p on r.Id = p.ResistanceId " +
+                "left join ProtestotoType ptt on p.Id = ptt.ProtestoId " +
+                "left join ProtestoType pt on pt.Id = ptt.protestoTypeId " + 
+                "where r.Id = @id";
+                var result3 = _connection.Query<ResistanceQueryModel, ProtestoListModel, string, int, int, ResistanceDetailDto>(query,
+                (resistance, protesto, protestoType, employmentTypeId, corporationId) =>{
+                    ResistanceDetailDto resistanceEntry;
+                    ProtestoListModel protestoEntry;
+                    
+                    if (!resistanceDictionary.TryGetValue(resistance.Id, out resistanceEntry))
+                    {
+                        resistanceEntry = new ResistanceDetailDto(resistance.Id, resistance.CompanyId, resistance.CategoryId, resistance.HasTradeUnion, resistance.TradeUnionAuthorityId, resistance.TradeUnionId, resistance.EmployeeCount, resistance.EmployeeCountId);
+                        resistanceDictionary.Add(resistanceEntry.Id, resistanceEntry);
+                    }
+                    if (!protestoDictionary.TryGetValue(protesto.ProtestoId, out protestoEntry))
+                    {
+                        protestoEntry = protesto;
+                        protestoEntry.ProtestoTypes = new List<string>();
+                        
+                        protestoDictionary.Add(protesto.ProtestoId, protestoEntry);
+                    }
+                    if(!protestoEntry.ProtestoTypes.Contains(protestoType))
+                        protestoEntry.ProtestoTypes.Add(protestoType); 
+                    
+                    if(!resistanceEntry.Protestos.Any(p=>p.ProtestoId == protestoEntry.ProtestoId))
+                        resistanceEntry.Protestos.Add(protestoEntry);
+                    if(!resistanceEntry.EmploymentTypeIds.Contains(employmentTypeId))
+                        resistanceEntry.EmploymentTypeIds.Add(employmentTypeId);
+                    if(!resistanceEntry.CorporationIds.Contains(corporationId))
+                        resistanceEntry.CorporationIds.Add(corporationId);
+                    return resistanceEntry;
+                  
+                }, new { id = @id }, splitOn:"ProtestoId, ProtestoType, EmploymentTypeId, CorporationId")
+                .FirstOrDefault();
+    
+            
 
+            return result3;
+        }
         public ResistanceDto ExistingResistance(int companyId, int categoryId)
         {
             var query = $"select * from resistance where categoryId = " + categoryId +
             " and companyId = " + companyId;
-
             var resistance = _connection.Query<ResistanceDto>(query).FirstOrDefault();
             return resistance;
+            
         }
     }
 }

@@ -14,3 +14,5 @@ C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreap
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.dll
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.pdb
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.0\RS.MVC.csprojAssemblyReference.cache
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.0\RS.EF.dll
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.0\RS.EF.pdb

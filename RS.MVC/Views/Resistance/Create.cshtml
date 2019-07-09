@@ -5,6 +5,8 @@
     <div class="row">
         <div class="column">
             <form id="resistanceForm" class="ui form">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
                 <h3 class="ui dividing header">Vaka</h3>
                 <div class="two fields">
                     <div class="field">
@@ -47,17 +49,13 @@
                             </div>
                         </div>
                     </div>
-
-
-
                 </div>
 
                 <div class="two fields">
                     <div class="field">
                         <label asp-for="EmployeeCountId">İş Yerindeki İşçi Sayısı</label>
-                        <select asp-for="EmployeeCountId" asp-items="@ViewBag.EmployeeCount">
-                            <option value="">--Seçiniz--</option>
-                        </select>
+                        <select asp-for="EmployeeCountId" asp-items="@ViewBag.EmployeeCount"><option value="">--Seçiniz--</option></select>
+                        <span asp-validation-for="EmployeeCountId" class="text-danger"></span>
                     </div>
                     <div class="field">
                         <label for="EmployeeCount">İş Yerindeki İşçi Sayısı (Tam)</label>
@@ -76,12 +74,15 @@
                     <select asp-for="TradeUnionAuthorityId" asp-items="@ViewBag.TradeUnionAuthorities">
                         <option value="">--Seçiniz--</option>
                     </select>
+                    <span asp-validation-for="TradeUnionAuthorityId" class="text-danger"></span>
+
                 </div>
                 <div class="field">
                     <label for="CorporationIds">Kurumsallık</label>
                     <select asp-for="CorporationIds" asp-items="ViewBag.Corporations" class="ui fluid search dropdown" multiple="">
                         <option value="">Seçiniz</option>
                     </select>
+                    
                 </div>
 
 
@@ -104,6 +105,7 @@
                             <option value="">--Seçiniz--</option>
 
                         </select>
+                        <span asp-validation-for="GenderId" class="text-danger"></span>
                     </div>
                 </div>
 
@@ -115,51 +117,62 @@
 
                 <h3 class="ui dividing header">Eylem</h3>
                 <div class="field">
-                    <label for="ProtestoTypeId">Eylemin Türü</label>
-                    <select asp-for="ProtestoTypeIds" asp-items="@ViewBag.ProtestoTypes" class="ui fluid search dropdown" multiple="">
+                     @Html.DropDownListFor(k => k.ProtestoTypeIds, ViewBag.ProtestoTypes as MultiSelectList, null, new { @class = "ui fluid search dropdown form-control", @multiple = "", @style = "width: 100%;", @tabindex = "-1", data_placeholder = "-Seçiniz-" })
+                    
+                     <span asp-validation-for="ProtestoTypeIds" class="text-danger"></span>
+                    <!-- <label for="ProtestoTypeIds">Eylemin Türü</label>
+                    <select asp-for="ProtestoTypeIds" asp-items="@ViewBag.ProtestoTypes" class="ui fluid search dropdown" multiple="multiple">
                         <option value="">--Seçiniz--</option>
                     </select>
+                    <span asp-validation-for="ProtestoTypeIds" class="text-danger"></span> -->
                 </div>
                 <div class="field">
-                    <label for="IsAgainstProduction">Eylem Üretime Yönelik mi?</label>
+                    <label for="IsAgainsttProduction">Eylem Üretime Yönelik mi?</label>
                     <select asp-for="IsAgainstProduction">
                         <option value="">--Seçiniz--</option>
                         <option value="true">Evet</option>
                         <option value="false">Hayır</option>
                     </select>
+                    <span asp-validation-for="IsAgainstProduction" class="text-danger"></span>
+
                 </div>
                 <div class="two fields">
                     <div class="field">
                         <label for="ProtestoStartDate">Eylemin Başlangıç Tarihi</label>
-                        <input type="date" name="ProtestoStartDate" id="ProtestoStartDate" class="datepicker" />
+                        <input type="date" name="ProtestoStartDate" id="ProtestoStartDate"/>
+                         <span asp-validation-for="ProtestoStartDate" class="text-danger"></span>
                     </div>
                     <div class="field">
                         <label for="ProtestoEndDate">Eylemin Bitiş Tarihi</label>
                         <input type="date" name="ProtestoEndDate" id="ProtestoEndDate" class="datepicker" />
+                        <span asp-validation-for="ProtestoEndDate" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="two fields">
                     <div class="field">
                         <label for="ProtestoPlaceIds">Eylemin Mekanı</label>
-                        <select asp-for="ProtestoPlaceIds" asp-items="@ViewBag.ProtestoPlaces" class="ui fluid search dropdown" multiple="">
+                        <select asp-for="ProtestoPlaceIds" asp-items="@ViewBag.ProtestoPlaces" class="ui fluid search dropdown" multiple="multiple">
                             <option value="">--Seçiniz--</option>
                         </select>
+                         <span asp-validation-for="ProtestoPlaceIds" class="text-danger"></span>
                     </div>
                     <div class="field">
-                        <label for="ProtestoReasonId">Eylemin Nedeni</label>
+                        <label for="ProtestoReasonIds">Eylemin Nedeni</label>
                         <select asp-for="ProtestoReasonIds" asp-items="@ViewBag.ProtestoReasons" class="ui fluid search dropdown" multiple="">
                             <option value="">--Seçiniz--</option>
                         </select>
+                         <span asp-validation-for="ProtestoReasonIds" class="text-danger"></span>
                     </div>
 
                 </div>
                 <div class="field">
-                    <label for="IsAgainstProduction">Eylemin Hak Geliştirme/Hak Savunma Özelliği</label>
-                    <select asp-for="IsAgainstProduction">
+                    <label for="DevelopRight">Eylemin Hak Geliştirme/Hak Savunma Özelliği</label>
+                    <select asp-for="DevelopRight">
                         <option value="">--Seçiniz--</option>
                         <option value="true">Hak Geliştirme</option>
                         <option value="false">Hak Savunma</option>
                     </select>
+                    <span asp-validation-for="DevelopRight" class="text-danger"></span>
                 </div>
 
                 <div class="two fields">
@@ -188,6 +201,7 @@
                         <option value="true">Evet</option>
                         <option value="false">Hayır</option>
                     </select>
+                     <span asp-validation-for="AnyLegalIntervention" class="text-danger"></span>
                 </div>
                 <div class="field">
                     <label for="LegalInterventionDesc">Hukuki Girişim Açıklama</label>
@@ -296,6 +310,7 @@
                     .done(function (response, status, jqxhr) {
                         console.log("from submitted");
                         console.log(response);
+                        location.href = '/Resistance';
                     })
                     .fail(function (jqxhr, status, error) {
                         // this is the ""error"" callback

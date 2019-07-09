@@ -35,6 +35,7 @@ namespace RS.COMMON
         ResistanceDto ExistingResistance(int companyId, int categoryId);
         void AddResistance(ResistanceCreateDto model, ProtestoCreateDto protesto);
         void AddResistance(ResistanceCreateDto model, ProtestoCreateDto protesto, CompanyDto company);
+        ResistanceDetailDto GetResistanceDetail(int id);
     }
     public interface ICompanyRepository
     {

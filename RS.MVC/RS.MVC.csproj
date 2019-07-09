@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RS.DAL\RS.DAL.csproj" />
     <ProjectReference Include="..\RS.COMMON\RS.COMMON.csproj" />
+    <ProjectReference Include="..\RS.EF\RS.EF.csproj" />
   </ItemGroup>
 
 </Project>

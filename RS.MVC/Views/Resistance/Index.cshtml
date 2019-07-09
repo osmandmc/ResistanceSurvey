@@ -5,6 +5,7 @@
         <th>Şirket İsmi</th>
          <th>Vaka Niteliği</th>
         <th>Başlangıç Tarihi</th>
+        <th></th>
     </tr>
 </thead>
 <tbody>
@@ -14,6 +15,7 @@
             <td>@item.CompanyName</td>
             <td>@item.CategoryName</td>
             <td>@item.StartDate.ToShortDateString()</td>
+            <td class="right aligned"><a class="ui right labeled small blue icon button" href="/Resistance/View/@item.Id">Görüntüle<i class="right chevron icon"></i></a></td>
         </tr>
     }
         

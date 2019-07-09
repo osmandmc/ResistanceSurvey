@@ -35,7 +35,7 @@ namespace ResistanceSurvey.Controllers
             if (ModelState.IsValid)
             {
                 _rsApplication.Create(model);
-                return Json("");
+                return Ok();
             }
             SetLookups();
             return View(model);
@@ -74,6 +74,12 @@ namespace ResistanceSurvey.Controllers
             ViewBag.CompanyScales = new SelectList(_utilities.GetLookup("companyscale"), "Id", "Name");
             return PartialView("_AddCompany");
         }
+        public IActionResult View(int id)
+        {
+            var resistance = _rsApplication.GetResistanceDetail(id);
+            SetLookups();
+            return View(resistance);
+        }
 
         public IActionResult ExistingResistance(int companyId, int categoryId)
         {
@@ -93,9 +99,9 @@ namespace ResistanceSurvey.Controllers
            
             ViewBag.EmployeeCountInProtesto = new SelectList(_utilities.GetLookup("employeecountinprotesto"), "Id", "Name");
 
-            ViewBag.ProtestoTypes = new SelectList(_utilities.GetLookup("protestotype"), "Id", "Name");
-            ViewBag.ProtestoPlaces = new SelectList(_utilities.GetLookup("protestoplace"), "Id", "Name");
-            ViewBag.ProtestoReasons = new SelectList(_utilities.GetLookup("protestoreason"), "Id", "Name");
+            ViewBag.ProtestoTypes = new MultiSelectList(_utilities.GetLookup("protestotype"), "Id", "Name");
+            ViewBag.ProtestoPlaces = new MultiSelectList(_utilities.GetLookup("protestoplace"), "Id", "Name");
+            ViewBag.ProtestoReasons = new MultiSelectList(_utilities.GetLookup("protestoreason"), "Id", "Name");
 
             ViewBag.Genders = new SelectList(_utilities.GetLookup("gender"), "Id", "Name");
             ViewBag.ProtestoCities = new SelectList(_utilities.GetLookup("city"), "Id", "Name");

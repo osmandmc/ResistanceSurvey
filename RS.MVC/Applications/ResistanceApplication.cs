@@ -14,6 +14,7 @@ namespace RS.MVC.Applications
         CompanyReturnDto CreateCompany(CompanyCreateViewModel model);
         CompanyReturnDto CreateOutsourceCompany(CompanyCreateViewModel model);
         ResistanceDto ExistingResistance(int companyId, int categoryId);
+        ResistanceEditModel GetResistanceDetail(int id);
     }
     public class ResistanceApplication : IResistanceApplication
     {
@@ -30,34 +31,8 @@ namespace RS.MVC.Applications
 
         public void Create(ResistanceCreateModel model)
         {
-            ResistanceCreateDto resistance = new ResistanceCreateDto
-            {
-                CompanyId = model.CompanyId,
-                CategoryId = model.CategoryId,
-                CorporationIds = model.CorporationIds,
-                HasTradeUnion = model.HasTradeUnion,
-                TradeUnionAuthorityId = model.TradeUnionAuthorityId,
-                TradeUnionId = model.TradeUnionId,
-                EmployeeCountId = model.EmployeeCountId,
-                StartDate = model.ProtestoStartDate,
-                EndDate = model.ProtestoEndDate,
-                EmploymentTypeIds = model.EmploymentTypeIds
-
-            };
-            ProtestoCreateDto protesto = new ProtestoCreateDto
-            {
-                EmployeeCountInProtestoId = model.EmployeeCountInProtestoId,
-                EmployeeCountInProtesto = model.EmployeeCountInProtesto,
-                IsAgainstProduction = model.IsAgainstProduction,
-                ProtestoStartDate = model.ProtestoStartDate,
-                ProtestoEndDate = model.ProtestoEndDate,
-                ProtestoPlaceIds = model.ProtestoPlaceIds,
-                ProtestoReasonIds = model.ProtestoReasonIds,
-                ProtestoTypeIds = model.ProtestoTypeIds,
-                GenderId = model.GenderId,
-                InterventionTypeIds = model.InterventionTypeIds,
-                CustodyCount = model.CustodyCount
-            };
+            ResistanceCreateDto resistance = model.MapToResistanceDto();
+            ProtestoCreateDto protesto = model.MapToProtestoDto();
 
             _uow.ResistanceRepository.AddResistance(resistance, protesto);
             _uow.Commit();
@@ -77,7 +52,6 @@ namespace RS.MVC.Applications
                 var foo = _uow.CompanyRepository.AddCompany(company);
                 returnModel.CompanyId = foo;
                 returnModel.CompanyName = model.Name;
-            
             
             _uow.Commit();
             return returnModel;
@@ -103,6 +77,12 @@ namespace RS.MVC.Applications
             return returnModel;
         }
 
+        public ResistanceEditModel GetResistanceDetail(int id)
+        {
+            var dto = _uow.ResistanceRepository.GetResistanceDetail(id);
+            var editModel = new ResistanceEditModel(dto); 
+            return editModel; 
+        }
         public ResistanceDto ExistingResistance(int companyId, int categoryId)
         {
             return _uow.ResistanceRepository.ExistingResistance(companyId, categoryId);
