@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using RS.COMMON;
 using RS.COMMON.DTO;
+using RS.COMMON.Entities;
+using RS.EF;
 using RS.MVC.Models;
 
 namespace RS.MVC.Applications
@@ -19,23 +22,30 @@ namespace RS.MVC.Applications
     public class ResistanceApplication : IResistanceApplication
     {
         public readonly IUnitOfWork _uow;
-        public ResistanceApplication(IUnitOfWork uow)
+        public readonly RSDBContext _db;
+        public ResistanceApplication(IUnitOfWork uow, RSDBContext db)
         {
             _uow = uow;
+            _db = db;
         }
 
         public IEnumerable<ResistanceIndexDto> GetAll()
         {
+            var foo = _db.City.ToList();
             return _uow.ResistanceRepository.GetAll();
         }
 
         public void Create(ResistanceCreateModel model)
         {
-            ResistanceCreateDto resistance = model.MapToResistanceDto();
-            ProtestoCreateDto protesto = model.MapToProtestoDto();
+            Resistance resistance = model.MapToResistanceDto();
+            Protesto protesto = model.MapToProtestoDto();
+            protesto.Resistance = resistance;
+            _db.Resistance.Add(resistance);
+            _db.Protesto.Add(protesto);
+            _db.SaveChanges();
 
-            _uow.ResistanceRepository.AddResistance(resistance, protesto);
-            _uow.Commit();
+            // _uow.ResistanceRepository.AddResistance(resistance, protesto);
+            // _uow.Commit();
         }
 
         public CompanyReturnDto CreateCompany(CompanyCreateViewModel model)

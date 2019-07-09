@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using RS.COMMON.DTO;
+using RS.COMMON.Entities;
 
 namespace RS.MVC.Models
 {
@@ -42,40 +43,46 @@ namespace RS.MVC.Models
         public bool AnyLegalIntervention { get; set; }
         public int? CustodyCount { get; set; }
 
-        public ResistanceCreateDto MapToResistanceDto()
+        public Resistance MapToResistanceDto()
         {
-            return new ResistanceCreateDto
+            var resistance = new Resistance
             {
                 CompanyId = CompanyId,
                 CategoryId = CategoryId,
-                CorporationIds = CorporationIds,
                 HasTradeUnion = HasTradeUnion,
                 TradeUnionAuthorityId = TradeUnionAuthorityId,
                 TradeUnionId = TradeUnionId,
                 EmployeeCountId = EmployeeCountId,
                 StartDate = ProtestoStartDate,
                 EndDate = ProtestoEndDate,
-                EmploymentTypeIds = EmploymentTypeIds
+                ResistanceCorporations = new List<ResistanceCorporation>(),
+                ResistanceEmploymentTypes = new List<ResistanceEmploymentType>()
             };
-           
+            CorporationIds.ForEach(c=> resistance.ResistanceCorporations.Add(new ResistanceCorporation{CorporationId = c}));
+            EmploymentTypeIds.ForEach(c=> resistance.ResistanceEmploymentTypes.Add(new ResistanceEmploymentType{EmploymentTypeId = c}));;
+            return resistance;
         }
-         public ProtestoCreateDto MapToProtestoDto()
+         public Protesto MapToProtestoDto()
         {
-            return new ProtestoCreateDto
+            var protesto = new Protesto
             {
-                EmployeeCountInProtestoId = EmployeeCountInProtestoId,
-                EmployeeCountInProtesto = EmployeeCountInProtesto,
+                ProtestoEmployeeCountId = EmployeeCountInProtestoId,
+                EmployeeCountNumber = EmployeeCountInProtesto,
                 IsAgainstProduction = IsAgainstProduction,
-                ProtestoStartDate = ProtestoStartDate,
-                ProtestoEndDate = ProtestoEndDate,
-                ProtestoPlaceIds = ProtestoPlaceIds,
-                ProtestoReasonIds = ProtestoReasonIds,
-                ProtestoTypeIds = ProtestoTypeIds,
+                StartDate = ProtestoStartDate,
+                EndDate = ProtestoEndDate,
+                ProtestoProtestoResaons = new List<ProtestoProtestoReason>(),
+                ProtestoProtestoTypes = new List<ProtestoProtestoType>(),
+                ProtestoToProtestoPlaces = new List<ProtestoProtestoPlace>(),
+                ProtestoInterventionTypes = new List<ProtestoInterventionType>(),
                 GenderId = GenderId,
-                InterventionTypeIds = InterventionTypeIds,
                 CustodyCount = CustodyCount
             };
-           
+             ProtestoPlaceIds.ForEach(c=> protesto.ProtestoToProtestoPlaces.Add(new ProtestoProtestoPlace{ProtestoPlaceId = c}));
+             ProtestoReasonIds.ForEach(c=> protesto.ProtestoProtestoResaons.Add(new ProtestoProtestoReason{ProtestoReasonId = c}));
+             ProtestoTypeIds.ForEach(c=> protesto.ProtestoProtestoTypes.Add(new ProtestoProtestoType{ProtestoTypeId = c}));
+             //InterventionTypeIds.ForEach(c=> protesto.ProtestoInterventionTypes.Add(new ProtestoInterventionType{InterventionTypeId = c}));
+            return protesto;
         }
         
 

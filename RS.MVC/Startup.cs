@@ -4,12 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using MySql.Data.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RS.COMMON;
 using RS.DAL;
+using RS.EF;
 using RS.MVC.Applications;
 using RS.MVC.Utilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace RS.MVC
 {
@@ -28,6 +31,7 @@ namespace RS.MVC
             services.AddTransient<IResistanceApplication, ResistanceApplication>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IStorageUtilities, StorageUtilities>();
+            services.AddDbContext<RSDBContext>(options => options.UseMySQL(Configuration.GetConnectionString("RSConnectionString")));
             services.AddMvc();
         }
 
