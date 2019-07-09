@@ -1,0 +1,12 @@
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\obj\Debug\netstandard2.0\RS.EF.csprojAssemblyReference.cache
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\obj\Debug\netstandard2.0\RS.EF.csproj.CoreCompileInputs.cache
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\obj\Debug\netstandard2.0\RS.EF.AssemblyInfoInputs.cache
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\obj\Debug\netstandard2.0\RS.EF.AssemblyInfo.cs
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\bin\Debug\netstandard2.0\RS.EF.deps.json
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\bin\Debug\netstandard2.0\RS.EF.dll
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\bin\Debug\netstandard2.0\RS.EF.pdb
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\bin\Debug\netstandard2.0\RS.COMMON.dll
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\bin\Debug\netstandard2.0\RS.COMMON.pdb
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\obj\Debug\netstandard2.0\RS.EF.csproj.CopyComplete
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\obj\Debug\netstandard2.0\RS.EF.dll
+C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\obj\Debug\netstandard2.0\RS.EF.pdb
