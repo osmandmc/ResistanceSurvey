@@ -1,56 +1,57 @@
-
 @model RS.MVC.Models.ResistanceCreateModel
-
+@using RS.COMMON.Constants
+<div class="ui grid container">
 <div class="ui two column divided grid">
     <div class="row">
         <div class="column">
-            <form id="resistanceForm" class="ui form">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                
+            <form id="resistanceForm" class="ui form" method="post" action="Create">
                 <h3 class="ui dividing header">Vaka</h3>
                 <div class="two fields">
                     <div class="field">
                         <label asp-for="CategoryId">Vaka Niteliği</label>
                         <select asp-for="CategoryId" asp-items="@ViewBag.Categories"> <option value="">--Seçiniz--</option></select>
                         <span asp-validation-for="CategoryId" class="text-danger"></span>
-
-
                     </div>
                     <div class="field">
+                        <label for="Code">Vaka Kodu</label>
+                        <input asp-for="Code" type="text" / >
+                    </div>
+                </div>
+                <div class="fields">
+                    <div class="six wide field">
                         <label for="IsOutsource">Şirket Taşeron mu?</label>
                         <select id="isOutsource">
                             <option value="0">Hayır</option>
                             <option value="1">Evet</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="sixty wide field">
-                    <label asp-for="CompanyId">Ana Şirket</label>
-                    <div class="two fields">
-                        <div class="field">
-                            <select asp-for="CompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" onchange="checkExisiting()"> <option value="">--Seçiniz--</option></select>
-                        </div>
-                        <div class="field">
-                            <button type="button" onclick="openModal()" class="ui button"><i class="chevron circle up icon"></i>Yeni Şirket Ekle</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="outsource" style="display:none">
-                    <div class="sixty wide field">
-                        <label asp-for="OutsourceCompanyId">Taşeron Şirket</label>
+                    <div class="ten wide field">
+                        <label asp-for="CompanyId">Ana Şirket</label>
                         <div class="two fields">
                             <div class="field">
-                                <select asp-for="OutsourceCompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown"> <option value="">--Seçiniz--</option></select>
+                            <select asp-for="CompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" onchange="checkExisiting()"> 
+                                <option value="">--Seçiniz--</option>
+                            </select>
                             </div>
                             <div class="field">
-                                <button type="button" onclick="openOutsourceModal()" class="ui button"><i class="chevron circle up icon"></i>Yeni Taşeron Şirket Ekle</button>
+                                <button type="button" onclick="openModal()" class="ui button">Şirket Ekle</button>
                             </div>
                         </div>
                     </div>
                 </div>
-
+                <div id="outsource" style="display:none">
+                    <label asp-for="OutsourceCompanyId">Taşeron Şirket</label>
+                    <div class="two fields">
+                        <div class="field">
+                            <select asp-for="OutsourceCompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown"> 
+                                <option value="">--Seçiniz--</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <button type="button" onclick="openOutsourceModal()" class="ui button"><i class="chevron circle up icon"></i>Taşeron Şirket Ekle</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="two fields">
                     <div class="field">
                         <label asp-for="EmployeeCountId">İş Yerindeki İşçi Sayısı</label>
@@ -75,17 +76,13 @@
                         <option value="">--Seçiniz--</option>
                     </select>
                     <span asp-validation-for="TradeUnionAuthorityId" class="text-danger"></span>
-
                 </div>
                 <div class="field">
                     <label for="CorporationIds">Kurumsallık</label>
                     <select asp-for="CorporationIds" asp-items="ViewBag.Corporations" class="ui fluid search dropdown" multiple="">
                         <option value="">Seçiniz</option>
                     </select>
-                    
                 </div>
-
-
                 <div class="field tradeUnionAuthorityGroup" style="display:none">
                     <label for="TradeUnionId">Tepki Gösterilen Sendika</label>
                     <select asp-for="TradeUnionId" asp-items="@ViewBag.TradeUnions">
@@ -108,43 +105,31 @@
                         <span asp-validation-for="GenderId" class="text-danger"></span>
                     </div>
                 </div>
-
-                <!-- <div class="field">
-                  <label for="Result">Sonuç</label>
-                  <textarea type="text" name="Result" id="Result"></textarea>
-                </div>
-                 -->
-
                 <h3 class="ui dividing header">Eylem</h3>
                 <div class="field">
-                     @Html.DropDownListFor(k => k.ProtestoTypeIds, ViewBag.ProtestoTypes as MultiSelectList, null, new { @class = "ui fluid search dropdown form-control", @multiple = "", @style = "width: 100%;", @tabindex = "-1", data_placeholder = "-Seçiniz-" })
-                    
-                     <span asp-validation-for="ProtestoTypeIds" class="text-danger"></span>
-                    <!-- <label for="ProtestoTypeIds">Eylemin Türü</label>
+                    <label for="ProtestoTypeIds">Eylemin Türü</label>
                     <select asp-for="ProtestoTypeIds" asp-items="@ViewBag.ProtestoTypes" class="ui fluid search dropdown" multiple="multiple">
                         <option value="">--Seçiniz--</option>
                     </select>
-                    <span asp-validation-for="ProtestoTypeIds" class="text-danger"></span> -->
+                    <span asp-validation-for="ProtestoTypeIds" class="text-danger"></span>
                 </div>
                 <div class="field">
-                    <label for="IsAgainsttProduction">Eylem Üretime Yönelik mi?</label>
+                    <label for="IsAgainstProduction">Eylem Üretime Yönelik mi?</label>
                     <select asp-for="IsAgainstProduction">
                         <option value="">--Seçiniz--</option>
                         <option value="true">Evet</option>
                         <option value="false">Hayır</option>
                     </select>
                     <span asp-validation-for="IsAgainstProduction" class="text-danger"></span>
-
                 </div>
                 <div class="two fields">
                     <div class="field">
                         <label for="ProtestoStartDate">Eylemin Başlangıç Tarihi</label>
-                        <input type="date" name="ProtestoStartDate" id="ProtestoStartDate"/>
-                         <span asp-validation-for="ProtestoStartDate" class="text-danger"></span>
+                        <input asp-for="ProtestoStartDate" type="text" class="ddmmyyyy"/>
                     </div>
                     <div class="field">
                         <label for="ProtestoEndDate">Eylemin Bitiş Tarihi</label>
-                        <input type="date" name="ProtestoEndDate" id="ProtestoEndDate" class="datepicker" />
+                        <input asp-for="ProtestoStartDate" type="text" class="ddmmyyyy"/>
                         <span asp-validation-for="ProtestoEndDate" class="text-danger"></span>
                     </div>
                 </div>
@@ -158,12 +143,11 @@
                     </div>
                     <div class="field">
                         <label for="ProtestoReasonIds">Eylemin Nedeni</label>
-                        <select asp-for="ProtestoReasonIds" asp-items="@ViewBag.ProtestoReasons" class="ui fluid search dropdown" multiple="">
+                        <select asp-for="ProtestoReasonIds" asp-items="@ViewBag.ProtestoReasons" class="ui fluid search dropdown" multiple="multiple">
                             <option value="">--Seçiniz--</option>
                         </select>
                          <span asp-validation-for="ProtestoReasonIds" class="text-danger"></span>
                     </div>
-
                 </div>
                 <div class="field">
                     <label for="DevelopRight">Eylemin Hak Geliştirme/Hak Savunma Özelliği</label>
@@ -180,20 +164,17 @@
                         <label for="EmployeeCountInProtesto">Eylemdeki İşçi Sayısı (Tam)</label>
                         <input type="text" name="EmployeeCountInProtesto" id="EmployeeCountInProtesto">
                     </div>
-
                     <div class="field">
                         <label for="EmployeeCountInProtestoId">Eylemdeki İşçi Sayısı</label>
                         <select asp-for="EmployeeCountInProtestoId" asp-items="@ViewBag.EmployeeCountInProtesto">
                             <option value="">--Seçiniz--</option>
                         </select>
                     </div>
-
                 </div>
                 <div class="field">
                     <label for="FiredEmployeeCountByProtesto">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>
                     <input type="text" name="FiredEmployeeCountByProtesto" id="FiredEmployeeCountByProtesto">
                 </div>
-
                 <div class="field">
                     <label for="AnyLegalIntervention">Hukuki Girişim</label>
                     <select asp-for="AnyLegalIntervention">
@@ -205,9 +186,8 @@
                 </div>
                 <div class="field">
                     <label for="LegalInterventionDesc">Hukuki Girişim Açıklama</label>
-                    <textarea type="text" name="LegalInterventionDesc" id="LegalInterventionDesc"></textarea>
+                    <textarea type="text" name="LegalInterventionDesc" id="LegalInterventionDesc" rows="2"></textarea>
                 </div>
-
                 <div class="field">
                     <label for="InterventionTypeId">Müdahale Tipi</label>
                     <select asp-for="InterventionTypeIds" asp-items="@ViewBag.InterventionTypes" class="ui fluid search dropdown" multiple="">
@@ -218,17 +198,42 @@
                     <label for="CustodyCount">Gözaltı Sayısı</label>
                     <input type="text" name="CustodyCount" id="CustodyCount" />
                 </div>
-
                 <div class="field">
                     <label for="Note">Kontrol Kişisine Notlar</label>
-                    <textarea type="text" name="Note" id="Note"></textarea>
+                    <textarea type="text" name="Note" id="Note" rows="2"></textarea>
                 </div>
-                <button type="submit" class="ui primary button">KAYDET</button>
+                <button class="ui ok green button">KAYDET</button>
+                <div class="ui error message"></div>
             </form>
         </div>
         <div class="column">
             <h4 class="ui dividing header">Haberler</h4>
-        </div>
+            <div class="ui divided items">
+                @foreach(var item in @ViewBag.News)
+                {
+                    <div class="item">
+                        <div class="content">
+                            <a href="#" data-id="@item.Id" data-open="0">@item.Header</a>
+                            <div class="meta">
+                                <span class="date">@item.Date.ToShortDateString()</span>
+                                @if(item.Status == RS.COMMON.Constants.Enums.Status.Pending)
+                                {
+                                    <div class="ui icon button green basic mini"><i class="thumbs up icon"></i></div>
+                                    <div class="ui icon button red basic mini"><i class="trash icon"></i></div>
+                                }
+                                else
+                                {
+                                    <div class="ui green label"><i class="check icon"></i></div>
+                                }
+                                 
+                            </div>
+                              <div class="description" data-id="@item.Id" style="display:none">
+                                
+                            </div>
+                        </div>
+                    </div>
+                } 
+            </div>
     </div>
     <div class="ui modal" id="addCompanyModal">
         <i class="close icon"></i>
@@ -248,8 +253,44 @@
     </div>
 
 </div>
+
+</div>
 @section Scripts {
+    <script src="../app/addResistance.js"></script>
     <script>
+        $("a").on("click", function(){
+            var newsId = $(this).data("id");
+            let a = $(this);
+            let opened = $(this).data("open");
+            let desc = $(".description[data-id='" +newsId + "']");
+            console.log(desc.is(":visible"));
+            console.log(opened);
+            if(opened == "0")
+            { 
+                $.ajax({
+                url: "/Resistance/GetNewsContent",
+                data: {newsId: newsId},
+                success: function (response) {
+                    
+                    console.log(response);
+                    console.log(desc);
+                    a.data("open","1");
+                    console.log(a);
+                    desc.append(response);
+                    desc.show();
+                    }
+                });
+            }
+            if(desc.is(":visible"))
+            {
+                desc.hide();
+            }
+            else{
+                desc.show();
+            }
+            
+        });
+     $('.ui.accordion').accordion();
         $("#isOutsource").change(function () {
             console.log("outsource");
             if ($(this).val() == "1") {
@@ -302,22 +343,7 @@
                 }
             });
         }
-        $("#resistanceForm").on('submit', function (e) {
-            e.preventDefault() // prevent the form's normal submission
-            var dataToPost = $(this).serialize()
-            if ($(this).valid()) {
-                $.post("Create", dataToPost)
-                    .done(function (response, status, jqxhr) {
-                        console.log("from submitted");
-                        console.log(response);
-                        location.href = '/Resistance';
-                    })
-                    .fail(function (jqxhr, status, error) {
-                        // this is the ""error"" callback
-                    })
-            }
-
-        })
+       
 
         $(function () {
             $("#HasTradeUnion").change(function () {

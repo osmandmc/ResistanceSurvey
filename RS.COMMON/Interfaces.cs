@@ -6,7 +6,7 @@ using RS.MVC.Models;
 
 namespace RS.COMMON
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork: IDisposable
     {
         IResistanceRepository ResistanceRepository { get; }
         ICompanyRepository CompanyRepository { get; }

@@ -1,23 +1,113 @@
-@model IEnumerable<RS.COMMON.DTO.ResistanceIndexDto>
-<table class="ui blue table">
-<thead>
-    <tr>
-        <th>Şirket İsmi</th>
-         <th>Vaka Niteliği</th>
-        <th>Başlangıç Tarihi</th>
-        <th></th>
-    </tr>
-</thead>
-<tbody>
-    @foreach(var item in Model)
-    {
+@model PagedResult<RS.COMMON.DTO.ResistanceIndexDto>
+<div class="ui masthead vertical segment">
+  <div class="ui container">
+    <div class="introduction">
+        <h1 class="ui header">
+            Direnişler
+            <div class="sub header">
+            Vaka bazında direniş kayıtları listelenir.
+            </div>
+        </h1>
+        <div class="ui hidden divider"></div>
+        <a class="ui primary button" href="/Resistance/Create">Vaka Ekle</a>
+        <div class="ui right floated main menu">
+        <a class="bug popup icon item" data-content="Test">
+          <i class="bug icon"></i>
+        </a>
+        <a class="github popup icon item" data-content="View project on GitHub" href="#">
+          <i class="alternate github icon"></i>
+        </a>
+        </div>
+        <div class="ui right floated main menu">
+        <a class="music popup icon item" data-content="Play Music">
+          <i class="music icon"></i>
+        </a>
+        <div class="ui language dropdown right floating icon item" id="languages" data-content="Select Language">
+          <i class="world icon"></i>
+            <div class="menu">
+                <div class="header">Select Language</div>
+                <div class="ui icon search input">
+                <i class="search icon"></i>
+                <input type="text" placeholder="Search languages...">
+                </div>
+            <div class="scrolling menu"></div>
+        </div>
+    </div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="main ui container">
+    <h2 class="ui dividing header">Vakalar<a class="anchor" id="types"></a></h2>
+    <table class="ui celled striped table">
+    <thead>
         <tr>
-            <td>@item.CompanyName</td>
-            <td>@item.CategoryName</td>
-            <td>@item.StartDate.ToShortDateString()</td>
-            <td class="right aligned"><a class="ui right labeled small blue icon button" href="/Resistance/View/@item.Id">Görüntüle<i class="right chevron icon"></i></a></td>
+            <th>Vaka Kodu</th>
+            <th>Şirket İsmi</th>
+            <th>Vaka Niteliği</th>
+            <th>Başlangıç Tarihi</th>
+            <th></th>
         </tr>
-    }
-        
-</tbody>
-</table>
+    </thead>
+    <tbody>
+        @foreach(var item in Model.Results)
+        {
+            <tr>
+                <td>@item.Code</td>
+                <td>@item.CompanyName</td>
+                <td>@item.CategoryName</td>
+                <td>@item.StartDate.ToShortDateString()</td>
+                <td class="right aligned"><a href="/Resistance/Edit/@item.Id">Görüntüle</a></td>
+            </tr>
+        }
+            
+    </tbody>
+    <tfoot>
+        <tr><th colspan="5">
+          <p>@Model.RowCount kayıttan @Model.From - @Model.To arasındakiler görüntüleniyor.</p>
+        <div class="ui right floated pagination menu">
+           
+            <a class="item" onclick="goToFirstPage();"><i class="angle double left icon"></i></a>
+            <a class="item" onclick="goToPrevPage();"><i class="left chevron icon"></i></a>
+             @if (Model.CurrentPage > 3)
+            {
+                <a class="item">..</a>
+            }
+            @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= System.Math.Min(Model.PageCount, Model.CurrentPage + 2); i++)
+            {
+                <a class="ui @(i==Model.CurrentPage?"blue":"") button" onclick="@(i!=Model.CurrentPage?"goToPage("+i+")":"")"> @i </a>
+            }
+            @if (Model.CurrentPage < Model.PageCount - 3)
+            {
+                <a class="item">..</a>
+            }
+            <a class="item" onclick="goToNextPage();"><i class="right chevron icon"></i></a>
+            <a class="item" onclick="goToLastPage();"><i class="angle double right icon"></i></a>
+           
+        </div>
+        </th>
+    </tr></tfoot>
+    </table>
+</div>
+
+    @section Scripts {
+    <script src="/app/indexResistance.js"></script>
+    <script>
+         $(".ddmmyyyy").mask("99.99.9999", { placeholder: "gg.aa.yyyy" });
+       
+
+        $(function () {
+            $("#HasTradeUnion").change(function () {
+                if ($(this).val() == "true") {
+                    $(".tradeUnionAuthorityGroup").show();
+                }
+                else {
+                    $(".tradeUnionAuthorityGroup").hide();
+                }
+            });
+            $('.ui.dropdown').dropdown({
+                allowAdditions: true,
+            });
+        });
+    </script>
+}

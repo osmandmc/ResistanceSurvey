@@ -4,70 +4,76 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Direniş İzleme</title>
-
-    <environment include="Development">
-        <link rel="stylesheet" href="~/dist/semantic.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
-        <link rel="stylesheet" href="~/metis/main.css" />
-        <link rel="stylesheet" href="~/metis/main.min.css" />
-        <link rel="stylesheet" href="~/metis/theme.css" />
-        <link rel="stylesheet" href="~/metis/theme.min.css" />
-
-    </environment>
-    <!-- <environment exclude="Development">
-        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-    </environment> -->
+    <link rel="stylesheet" href="~/dist/semantic.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
-    <div class="ui container">
-        <div class="ui pointing menu">
-            <div class="header item">
-                Emek Çalışmaları Topluluğu
-            </div>
-            <a href="/Resistance" class="active item">
-                Direnişler
-            </a>
-            <a href="/Resistance/Create" class="item">
-                Direniş Ekle
-            </a>
-            <a class="item">
-                Haberler
-            </a>
-        </div>
-         <div class="ui segment">
-            @RenderBody()
-        </div>
-        <div class="ui menu basic segment container stackable">
-        <div class="ui container">
-            <a href="http://emekcalisma.org/" class="logo item">
-                EÇT
-            </a>
-            <div class="item">
-                <div>Emek Çalışmaları Topluluğu</div>
-            </div>
-           
-            <div class="item">
-                <i class="mail icon"></i> <a href="mailto:emekcalisma@gmail.com">emekcalisma@gmail.com</a>
-            </div>
-        </div>
+<body id="example">
+     <div class="ui page dimmer">
+        <div class="content">
+            <div class="ui text loader">İşlem Yapılıyor</div>
         </div>
     </div>
-    
-    
-   
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/dist/semantic.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-         @Html.Partial("_ValidationScriptsPartial");
-        <script>
-            $('.ui.dropdown')
-                .dropdown();
-        </script>
-    
-   
+    <div class="ui attached stackable menu">  
+    </div>
+    <div class="pusher">
+        <div class="full height">
+            <div class="toc">
+                <div class="ui vertical inverted visible sidebar menu"> 
+                <a class="item">
+                    <i class="home icon"></i>
+                    EÇT
+                </a>
+                <div class="item">
+                    <div class="header">Direnişler</div>
+                    <div class="menu">
+                        <a class="item" href="/Resistance/Index">
+                            Vakalar
+                        </a>
+                        <a class="item" href="/Resistance/Create">
+                            Vaka Ekle
+                        </a>
+                        <a class="item" href="#">
+                            Haberler
+                        </a>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="header">Ayarlar</div>
+                    <div class="menu">
+                        <a class="item" href="#">
+                            Kullanıcılar
+                        </a>
+                        <a class="item" href="#">
+                        </a>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="header">Sistem Parametreleri</div>
+                    <div class="menu">
+                        <a class="item" href="#">
+                            Eylem Tipleri
+                        </a>
+                        <a class="item" href="#">
+                            Eylem Mekanları
+                        </a>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="article">
+                <div class="page content">
+                    @RenderBody()
+                </div>
+            </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/dist/semantic.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.13/jquery.mask.min.js"></script>
+        @Html.Partial("_ValidationScriptsPartial");
+    <script>
+        $('.ui.dropdown').dropdown();
+    </script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

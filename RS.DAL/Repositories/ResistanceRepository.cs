@@ -136,6 +136,7 @@ foreach (var item in protesto.InterventionTypeIds)
 
             });
         }
+       
         public ResistanceDetailDto GetResistanceDetail(int id)
         {
             var resistanceDictionary = new Dictionary<int, ResistanceDetailDto>();

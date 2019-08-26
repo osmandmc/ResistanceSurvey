@@ -2,23 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using RS.COMMON.DTO;
+using RS.COMMON.Entities;
 
 namespace RS.MVC.Models
 {
     public class ResistanceEditModel
     {
         public ResistanceEditModel (){}
+        public int Id { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
+        public string Code { get; set; }
         public int CategoryId { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public int CompanyId { get; set; }
         public int? OutsourceCompanyId { get; set; }
         public bool HasTradeUnion { get; set; }
         public int? TradeUnionAuthorityId { get; set; }
-        public string DirectlyCommunicated { get; set; }
 
-        public int EmployeeCountId { get; set; }
-        public int EmployeeCount { get; set; }
+        public int? EmployeeCountId { get; set; }
+        public int? EmployeeCount { get; set; }
        
 
         public List<int> CorporationIds { get; set; }
@@ -42,6 +44,7 @@ namespace RS.MVC.Models
             EmployeeCountId = dto.EmployeeCountId;
             
         } 
+        
 
     }
 }

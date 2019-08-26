@@ -25,8 +25,7 @@
                     </select>
                 </div>
             </div>
-      
-   <button class="ui button" type="submit">Submit</button>
+   <button class="ui button" type="submit">Ekle</button>
 </form>
 
     <script>
@@ -49,8 +48,7 @@
         $("#companyForm").on('submit', function (e) {
             e.preventDefault() // prevent the form's normal submission
             var dataToPost = $(this).serialize()
-            if($(this).valid())
-            {
+          
                 $.post("AddCompany", dataToPost)
                         .done(function(response, status, jqxhr){ 
                             console.log(response);
@@ -64,7 +62,6 @@
                         .fail(function(jqxhr, status, error){ 
                             // this is the ""error"" callback
                         })
-            }
         
     })
   

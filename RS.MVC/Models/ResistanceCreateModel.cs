@@ -12,16 +12,17 @@ namespace RS.MVC.Models
         public int CategoryId { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public int CompanyId { get; set; }
+        public string Code { get; set; }
         public int? OutsourceCompanyId { get; set; }
         public bool HasTradeUnion { get; set; }
         public int? TradeUnionAuthorityId { get; set; }
         public string DirectlyCommunicated { get; set; }
 
-        public int EmployeeCountId { get; set; }
-        public int EmployeeCount { get; set; }
-        public int EmployeeCountInProtestoId { get; set; }
+        public int? EmployeeCountId { get; set; }
+        public int? EmployeeCount { get; set; }
+        public int? EmployeeCountInProtestoId { get; set; }
 
-        public int EmployeeCountInProtesto { get; set; }
+        public int? EmployeeCountInProtesto { get; set; }
 
         public List<int> CorporationIds { get; set; }
         public int? TradeUnionId { get; set; }
@@ -49,17 +50,21 @@ namespace RS.MVC.Models
             {
                 CompanyId = CompanyId,
                 CategoryId = CategoryId,
+                Code = Code,
                 HasTradeUnion = HasTradeUnion,
                 TradeUnionAuthorityId = TradeUnionAuthorityId,
                 TradeUnionId = TradeUnionId,
                 EmployeeCountId = EmployeeCountId,
+                EmployeeCountNumber = EmployeeCount,
                 StartDate = ProtestoStartDate,
                 EndDate = ProtestoEndDate,
                 ResistanceCorporations = new List<ResistanceCorporation>(),
                 ResistanceEmploymentTypes = new List<ResistanceEmploymentType>()
             };
-            CorporationIds.ForEach(c=> resistance.ResistanceCorporations.Add(new ResistanceCorporation{CorporationId = c}));
-            EmploymentTypeIds.ForEach(c=> resistance.ResistanceEmploymentTypes.Add(new ResistanceEmploymentType{EmploymentTypeId = c}));;
+            if(CorporationIds!= null)
+                CorporationIds.ForEach(c=> resistance.ResistanceCorporations.Add(new ResistanceCorporation{CorporationId = c, ResistanceId = resistance.Id}));
+            if(EmploymentTypeIds != null)
+                EmploymentTypeIds.ForEach(c=> resistance.ResistanceEmploymentTypes.Add(new ResistanceEmploymentType{EmploymentTypeId = c, ResistanceId = resistance.Id}));
             return resistance;
         }
          public Protesto MapToProtestoDto()
@@ -73,15 +78,19 @@ namespace RS.MVC.Models
                 EndDate = ProtestoEndDate,
                 ProtestoProtestoResaons = new List<ProtestoProtestoReason>(),
                 ProtestoProtestoTypes = new List<ProtestoProtestoType>(),
-                ProtestoToProtestoPlaces = new List<ProtestoProtestoPlace>(),
+                ProtestoProtestoPlaces = new List<ProtestoProtestoPlace>(),
                 ProtestoInterventionTypes = new List<ProtestoInterventionType>(),
                 GenderId = GenderId,
                 CustodyCount = CustodyCount
             };
-             ProtestoPlaceIds.ForEach(c=> protesto.ProtestoToProtestoPlaces.Add(new ProtestoProtestoPlace{ProtestoPlaceId = c}));
-             ProtestoReasonIds.ForEach(c=> protesto.ProtestoProtestoResaons.Add(new ProtestoProtestoReason{ProtestoReasonId = c}));
-             ProtestoTypeIds.ForEach(c=> protesto.ProtestoProtestoTypes.Add(new ProtestoProtestoType{ProtestoTypeId = c}));
-             //InterventionTypeIds.ForEach(c=> protesto.ProtestoInterventionTypes.Add(new ProtestoInterventionType{InterventionTypeId = c}));
+            if(ProtestoPlaceIds!=null)
+                ProtestoPlaceIds.ForEach(c=> protesto.ProtestoProtestoPlaces.Add(new ProtestoProtestoPlace{ ProtestoPlaceId = c }));
+            if(ProtestoReasonIds!=null)
+                ProtestoReasonIds.ForEach(c=> protesto.ProtestoProtestoResaons.Add(new ProtestoProtestoReason{ ProtestoReasonId = c }));
+            if(ProtestoTypeIds!=null)
+                ProtestoTypeIds.ForEach(c=> protesto.ProtestoProtestoTypes.Add(new ProtestoProtestoType{ ProtestoTypeId = c }));
+            if(InterventionTypeIds!=null)
+                InterventionTypeIds.ForEach(c=> protesto.ProtestoInterventionTypes.Add(new ProtestoInterventionType{ InterventionTypeId = c}));
             return protesto;
         }
         

@@ -5,8 +5,7 @@ using System.Data.Common;
 using Dapper;
 using RS.COMMON;
 using RS.DAL.Repositories;
-using MySql.Data;
-using MySql.Data.MySqlClient;
+
 
 namespace RS.DAL
 {
@@ -14,12 +13,43 @@ namespace RS.DAL
     {
         private readonly IDbConnection _connection;
         private readonly IDbTransaction _transaction;
-        public UnitOfWork()
+        private bool _disposed;
+        public UnitOfWork(string connectionString)
         {
-            _connection = new MySqlConnection();
-            _connection.ConnectionString = "Server=127.0.0.1; Uid=root; Pwd=root; Database=resistance_survey;";
+            
+            _connection = new SqlConnection(connectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction();
+        }
+        public void Dispose()
+        {
+            dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    if (_transaction != null)
+                    {
+                        _transaction.Dispose();
+                    }
+                    if (_connection != null)
+                    {
+                        _connection.Close();
+                        _connection.Dispose();
+                    }
+                }
+                _disposed = true;
+            }
+        }
+
+        ~UnitOfWork()
+        {
+            dispose(false);
         }
 
         private IResistanceRepository _resistanceRepository;

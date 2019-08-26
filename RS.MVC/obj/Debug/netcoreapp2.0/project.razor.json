@@ -2726,5 +2726,6 @@
     "CSharpLanguageVersion": 703
   },
   "RootNamespace": null,
-  "Documents": []
+  "Documents": [],
+  "SerializationFormat": "0.1"
 }

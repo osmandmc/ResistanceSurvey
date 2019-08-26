@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.EntityFrameworkCore;
 using RS.COMMON.Entities;
 using RS.COMMON.Entities.LookupEntity;
 
@@ -18,6 +17,7 @@ namespace RS.EF
         public DbSet<ResistanceEmploymentType> ResistanceEmploymentType { get; set; }
         public DbSet<CompanyOutsourceCompany> CompanyOutsourceCompany { get; set; }
         public DbSet<Protesto> Protesto { get; set; }
+        public DbSet<News> News { get; set; }
         public DbSet<Company> Company { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<City> City { get; set; }
@@ -50,9 +50,27 @@ namespace RS.EF
         // }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Resistance>()
-                .HasKey(b => b.Id)
-                .HasName("PrimaryKey_ResistanceId");
+            // modelBuilder.Entity<Resistance>()
+            //     .HasKey(b => b.Id)
+            //     .HasName("PrimaryKey_ResistanceId");
+            //     modelBuilder.Entity<Resistance>()
+            //       .Property(p => p.HasTradeUnion)
+            //       .HasColumnType("bit");
+            //     modelBuilder.Entity<Protesto>()
+            //       .Property(p => p.IsAgainstProduction)
+            //       .HasColumnType("bit");
+            //         modelBuilder.Entity<Protesto>()
+            //       .Property(p => p.AnyLegalIntervention)
+            //       .HasColumnType("bit");
+            //        modelBuilder.Entity<Protesto>()
+            //       .Property(p => p.DevelopRight)
+            //       .HasColumnType("bit");
+            //     modelBuilder.Entity<Company>().Property(o => o.IsOutsource).HasColumnType("bit");
+
+                 modelBuilder.Entity<Company>()
+                .HasMany(u => u.OutsourceCompanies).WithOne(u => u.Company)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

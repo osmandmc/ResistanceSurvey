@@ -12,7 +12,7 @@ namespace RS.DAL.Repositories
 
         public IEnumerable<IdNamePair> GetAll(string tableName)
         {
-            var foo = _connection.Query<IdNamePair>($"select * from {tableName}").AsList();
+            var foo = _connection.Query<IdNamePair>($"select * from {tableName}", transaction:_transaction).AsList();
             return foo;
         }
     }
