@@ -15,5 +15,10 @@ namespace RS.DAL.Repositories
             var foo = _connection.Query<IdNamePair>($"select * from {tableName}", transaction:_transaction).AsList();
             return foo;
         }
+        public IEnumerable<IdNamePair> GetDistricts(int cityId)
+        {
+            var districts = _connection.Query<IdNamePair>($"select * from District where CityId = @cityId", new { cityId },  transaction:_transaction).AsList();
+            return districts;
+        }
     }
 }

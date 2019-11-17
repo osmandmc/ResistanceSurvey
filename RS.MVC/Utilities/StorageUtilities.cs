@@ -29,5 +29,12 @@ namespace RS.MVC.Utilities
                 return _uow.LookupRepository.GetAll(tableName);
             }
         }
+        public IEnumerable<IdNamePair> GetDistricts(int cityId)
+        {
+            using (var _uow = new UnitOfWork(_connectionString))
+            {
+                return _uow.LookupRepository.GetDistricts(cityId);
+            }
+        }
     }
 }

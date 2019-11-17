@@ -17,6 +17,9 @@ namespace RS.COMMON.DTO
         public List<int> EmploymentTypeIds { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public bool AnyLegalIntervention { get; set; }
+        public string LegalInterventionDesc { get; set; }
+        public int? FiredEmployeeCountByProtesto { get; set; }
     }
 
      public class ResistanceDto

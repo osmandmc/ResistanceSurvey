@@ -16,8 +16,14 @@ namespace RS.COMMON.Entities
         public DateTime? EndDate { get; set; }
         public DateTime StartDate { get; set; }
         public bool HasTradeUnion { get; set; }
+        public bool DevelopRight { get; set; }
         public int? TradeUnionId { get; set; }
         public int? TradeUnionAuthorityId { get; set; }
+        public string Note { get; set; }
+        public string Description { get; set; }
+        public bool AnyLegalIntervention { get; set; }
+        public string LegalInterventionDesc { get; set; }
+        public int? FiredEmployeeCountByProtesto { get; set; }
 
         public Category Category { get; set; }
         public Company Company { get; set; }
@@ -27,19 +33,10 @@ namespace RS.COMMON.Entities
         public List<Protesto> Protestos { get; set; }
         public List<ResistanceCorporation> ResistanceCorporations { get; set; }
         public List<ResistanceEmploymentType> ResistanceEmploymentTypes { get; set; }
+        public List<ResistanceResistanceReason> ResistanceResistanceReasons { get; set; }
+        public List<ResistanceNews> ResistanceNews { get; set; }
+
         public Resistance(){}
-        public Resistance(ResistanceDetailDto dto)
-        {
-            Id = dto.Id;
-            CompanyId = dto.CompanyId;
-            CategoryId = dto.CategoryId;
-            TradeUnionAuthorityId = dto.TradeUnionAuthorityId;
-            TradeUnionId = dto.TradeUnionId;
-            HasTradeUnion = dto.HasTradeUnion;
-            EmployeeCountId = dto.EmployeeCountId;
-            dto.EmploymentTypeIds.ForEach(emp => ResistanceEmploymentTypes.Add(new ResistanceEmploymentType{EmploymentTypeId = emp}));
-            dto.CorporationIds.ForEach(corp => ResistanceCorporations.Add(new ResistanceCorporation{CorporationId = corp}));
-        }
     }
 
 }

@@ -10,7 +10,7 @@ namespace RS.COMMON.DTO
         public DateTime ProtestoStartDate { get; set; }
         public DateTime? ProtestoEndDate { get; set; }
         public List<int> ProtestoPlaceIds { get; set; }
-        public List<int> ProtestoReasonIds { get; set; }
+       
         public int GenderId { get; set; }
         public List<int> InterventionTypeIds { get; set; }
         public int? CustodyCount { get; set; }

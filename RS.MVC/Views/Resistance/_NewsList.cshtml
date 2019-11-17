@@ -1,0 +1,17 @@
+
+
+@foreach(var item in @ViewBag.News)
+{
+    <div class="item" data-id="@item.Id">
+        <div class="content">
+            <a href="#" data-id="@item.Id" data-open="0" class="a">@item.Header</a> 
+            <a href="@item.Link" target="_blank"><i class="arrow alternate circle right outline icon"></i></a>
+            <div class="meta">
+                <span class="date">@item.Date.ToShortDateString()</span>
+                <button class="ui icon button green basic mini copyLink" data-id="@item.Id"><i class="paperclip icon"></i></button>
+                <button class="ui icon button red basic mini"><i class="trash icon"></i></button>
+            </div>
+            <div class="description" data-id="@item.Id" style="display:none"></div>
+        </div>
+    </div>
+} 

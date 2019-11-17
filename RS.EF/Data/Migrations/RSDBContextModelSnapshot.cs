@@ -242,19 +242,6 @@ namespace RS.EF.Data.Migrations
                     b.ToTable("ProtestoPlace");
                 });
 
-            modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.ProtestoReason", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProtestoReason");
-                });
-
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.ProtestoType", b =>
                 {
                     b.Property<int>("Id")
@@ -266,6 +253,19 @@ namespace RS.EF.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ProtestoType");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.ResistanceReason", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ResistanceReason");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.TradeUnion", b =>
@@ -338,23 +338,13 @@ namespace RS.EF.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool>("AnyLegalIntervention");
-
                     b.Property<int?>("CustodyCount");
-
-                    b.Property<bool>("DevelopRight");
 
                     b.Property<int?>("EmployeeCountNumber");
 
                     b.Property<DateTime?>("EndDate");
 
-                    b.Property<int?>("FiredEmployeeCountByProtesto");
-
                     b.Property<int>("GenderId");
-
-                    b.Property<bool>("IsAgainstProduction");
-
-                    b.Property<string>("LegalInterventionDesc");
 
                     b.Property<string>("Note");
 
@@ -371,6 +361,44 @@ namespace RS.EF.Data.Migrations
                     b.HasIndex("ResistanceId");
 
                     b.ToTable("Protesto");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.ProtestoCity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CityId");
+
+                    b.Property<int>("ProtestoId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("ProtestoId");
+
+                    b.ToTable("ProtestoCity");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.ProtestoDistrict", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("DistrictId");
+
+                    b.Property<int>("ProtestoId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistrictId");
+
+                    b.HasIndex("ProtestoId");
+
+                    b.ToTable("ProtestoDistrict");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.ProtestoInterventionType", b =>
@@ -411,25 +439,6 @@ namespace RS.EF.Data.Migrations
                     b.ToTable("ProtestoProtestoPlace");
                 });
 
-            modelBuilder.Entity("RS.COMMON.Entities.ProtestoProtestoReason", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ProtestoId");
-
-                    b.Property<int>("ProtestoReasonId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProtestoId");
-
-                    b.HasIndex("ProtestoReasonId");
-
-                    b.ToTable("ProtestoProtestoReason");
-                });
-
             modelBuilder.Entity("RS.COMMON.Entities.ProtestoProtestoType", b =>
                 {
                     b.Property<int>("Id")
@@ -455,11 +464,17 @@ namespace RS.EF.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("AnyLegalIntervention");
+
                     b.Property<int>("CategoryId");
 
                     b.Property<string>("Code");
 
                     b.Property<int>("CompanyId");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("DevelopRight");
 
                     b.Property<int?>("EmployeeCountId");
 
@@ -467,7 +482,13 @@ namespace RS.EF.Data.Migrations
 
                     b.Property<DateTime?>("EndDate");
 
+                    b.Property<int?>("FiredEmployeeCountByProtesto");
+
                     b.Property<bool>("HasTradeUnion");
+
+                    b.Property<string>("LegalInterventionDesc");
+
+                    b.Property<string>("Note");
 
                     b.Property<DateTime>("StartDate");
 
@@ -528,6 +549,44 @@ namespace RS.EF.Data.Migrations
                     b.ToTable("ResistanceEmploymentType");
                 });
 
+            modelBuilder.Entity("RS.COMMON.Entities.ResistanceNews", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("NewsId");
+
+                    b.Property<int>("ResistanceId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NewsId");
+
+                    b.HasIndex("ResistanceId");
+
+                    b.ToTable("ResistanceNews");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.ResistanceResistanceReason", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ResistanceId");
+
+                    b.Property<int>("ResistanceReasonId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResistanceId");
+
+                    b.HasIndex("ResistanceReasonId");
+
+                    b.ToTable("ResistanceResistanceReason");
+                });
+
             modelBuilder.Entity("RS.COMMON.Entities.Company", b =>
                 {
                     b.HasOne("RS.COMMON.Entities.LookupEntity.CompanyScale", "CompanyScale")
@@ -586,6 +645,32 @@ namespace RS.EF.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("RS.COMMON.Entities.ProtestoCity", b =>
+                {
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
+                        .WithMany("Cities")
+                        .HasForeignKey("ProtestoId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.ProtestoDistrict", b =>
+                {
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.District", "District")
+                        .WithMany()
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
+                        .WithMany("Districts")
+                        .HasForeignKey("ProtestoId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("RS.COMMON.Entities.ProtestoInterventionType", b =>
                 {
                     b.HasOne("RS.COMMON.Entities.LookupEntity.InterventionType", "InterventionType")
@@ -609,19 +694,6 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.ProtestoPlace", "ProtestoPlace")
                         .WithMany()
                         .HasForeignKey("ProtestoPlaceId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("RS.COMMON.Entities.ProtestoProtestoReason", b =>
-                {
-                    b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
-                        .WithMany("ProtestoProtestoResaons")
-                        .HasForeignKey("ProtestoId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("RS.COMMON.Entities.LookupEntity.ProtestoReason", "ProtestoReason")
-                        .WithMany()
-                        .HasForeignKey("ProtestoReasonId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -686,6 +758,32 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.Resistance", "Resistance")
                         .WithMany("ResistanceEmploymentTypes")
                         .HasForeignKey("ResistanceId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.ResistanceNews", b =>
+                {
+                    b.HasOne("RS.COMMON.Entities.News", "News")
+                        .WithMany()
+                        .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("RS.COMMON.Entities.Resistance", "Resistance")
+                        .WithMany("ResistanceNews")
+                        .HasForeignKey("ResistanceId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.ResistanceResistanceReason", b =>
+                {
+                    b.HasOne("RS.COMMON.Entities.Resistance", "Resistance")
+                        .WithMany("ResistanceResistanceReasons")
+                        .HasForeignKey("ResistanceId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.ResistanceReason", "ResistanceReason")
+                        .WithMany()
+                        .HasForeignKey("ResistanceReasonId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

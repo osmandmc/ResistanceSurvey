@@ -49,7 +49,7 @@
             e.preventDefault() // prevent the form's normal submission
             var dataToPost = $(this).serialize()
           
-                $.post("AddCompany", dataToPost)
+                $.post("/Resistance/AddCompany", dataToPost)
                         .done(function(response, status, jqxhr){ 
                             console.log(response);
                             $('#CompanyId').append($('<option>', {

@@ -93,16 +93,7 @@ namespace RS.DAL.Repositories
                     protestotypeId = item
                 });
             }
-            foreach (var item in protesto.ProtestoReasonIds)
-            {
-                var protestoreasonQuery = "insert into Protestotoreason(protestoId, protestoreasonId)" +
-         "values(@ProtestoId, @protestoreasonId)";
-                _connection.Query<int>(protestoreasonQuery, new
-                {
-                    protestoId,
-                    protestoreasonId = item
-                });
-            }
+           
             foreach (var item in protesto.ProtestoPlaceIds)
             {
                 var protestoplaceQuery = "insert into Protestotoplace(protestoId, protestoplaceId)" +

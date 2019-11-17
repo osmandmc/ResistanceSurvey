@@ -17,33 +17,23 @@ namespace RS.MVC.Models
         public int CompanyId { get; set; }
         public int? OutsourceCompanyId { get; set; }
         public bool HasTradeUnion { get; set; }
+        public bool DevelopRight { get; set; }
         public int? TradeUnionAuthorityId { get; set; }
 
         public int? EmployeeCountId { get; set; }
         public int? EmployeeCount { get; set; }
-       
-
+        public string ResistanceNote { get; set; }
+        public List<int> ResistanceReasonIds { get; set; }
         public List<int> CorporationIds { get; set; }
         public int? TradeUnionId { get; set; }
+        public bool AnyLegalIntervention { get; set; }
+        public string LegalInterventionDesc { get; set; }
+        public int? FiredEmployeeCountByProtesto { get; set; }
         public List<int> EmploymentTypeIds { get; set; }
+        public List<int> ResistanceNewsIds { get; set; }
         public List<ProtestoListModel> Protestos { get; set; }
-        public ResistanceEditModel(ResistanceDetailDto dto)
-        {
-            
-            CategoryId = dto.CategoryId;
-            CompanyId = dto.CompanyId;
-            CorporationIds = dto.CorporationIds;
-            EmployeeCount = dto.EmployeeCount;
-            EmployeeCountId = dto.EmployeeCountId;
-            EmploymentTypeIds = dto.EmploymentTypeIds;
-            TradeUnionId = dto.TradeUnionId;
-            TradeUnionAuthorityId = dto.TradeUnionAuthorityId;
-            HasTradeUnion = dto.HasTradeUnion;
-            Protestos = dto.Protestos;
-            EmployeeCount = dto.EmployeeCount;
-            EmployeeCountId = dto.EmployeeCountId;
-            
-        } 
+        public List<News> ResistanceNews { get; set; }
+        
         
 
     }

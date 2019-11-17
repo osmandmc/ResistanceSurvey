@@ -12,7 +12,7 @@ namespace RS.MVC.Applications
 {
     public interface IResistanceApplication
     {
-        PagedResult<ResistanceIndexDto> GetPaged(FilterModel filter);
+        PagedResult<ResistanceIndexDto> GetPaged(ResistanceFilterModel filter);
         IEnumerable<ResistanceIndexDto> GetAll();
         void Create(ResistanceCreateModel model);
         CompanyReturnDto CreateCompany(CompanyCreateViewModel model);
@@ -23,7 +23,7 @@ namespace RS.MVC.Applications
         ProtestoEditModel GetProtestoDetail(int id);
         void UpdateResistance(ResistanceEditModel viewModel);
         void UpdateProtesto(ProtestoEditModel model);
-        IEnumerable<News> GetNewsList(string period);
+        IEnumerable<News> GetNewsList(int year, int month);
         string GetNewsContent(int newsId);
     }
     public class ResistanceApplication : IResistanceApplication
@@ -33,9 +33,11 @@ namespace RS.MVC.Applications
         {
             _db = db;
         }
-        public PagedResult<ResistanceIndexDto> GetPaged(FilterModel filter)
+        public PagedResult<ResistanceIndexDto> GetPaged(ResistanceFilterModel filter)
         {
             var query = _db.Resistance
+                    .Where(rs=> (filter.CompanyId == null || rs.CompanyId == filter.CompanyId)
+                    && filter.CategoryId == null || rs.CategoryId == filter.CategoryId)
                     .Select(r => new ResistanceIndexDto{
                         Id = r.Id,
                         CategoryName = r.Category.Name,
@@ -121,11 +123,15 @@ namespace RS.MVC.Applications
                 CategoryId = s.CategoryId,
                 CorporationIds = s.ResistanceCorporations.Select(rc=>rc.CorporationId).ToList(),
                 EmploymentTypeIds = s.ResistanceEmploymentTypes.Select(emp=>emp.EmploymentTypeId).ToList(),
+                ResistanceReasonIds = s.ResistanceResistanceReasons.Select(emp=>emp.ResistanceReasonId).ToList(),
+                ResistanceNewsIds = s.ResistanceNews.Select(news=>news.NewsId).ToList(),
                 EmployeeCount = s.EmployeeCountNumber,
                 EmployeeCountId = s.EmployeeCountId,
                 HasTradeUnion = s.HasTradeUnion,
+                DevelopRight = s.DevelopRight,
                 TradeUnionAuthorityId = s.TradeUnionAuthorityId,
                 TradeUnionId = s.TradeUnionId,
+                ResistanceNews = s.ResistanceNews.Select(r=>r.News).ToList(),
                 Protestos = s.Protestos.Select(p=> new ProtestoListModel {
                     ProtestoId = p.Id,
                     ProtestoStartDate = p.StartDate,
@@ -152,18 +158,32 @@ namespace RS.MVC.Applications
                 HasTradeUnion = viewModel.HasTradeUnion,
                 TradeUnionAuthorityId = viewModel.TradeUnionAuthorityId,
                 TradeUnionId = viewModel.TradeUnionId,
+                Note = viewModel.ResistanceNote,
+                AnyLegalIntervention = viewModel.AnyLegalIntervention,
+                LegalInterventionDesc = viewModel.LegalInterventionDesc,
+                FiredEmployeeCountByProtesto = viewModel.FiredEmployeeCountByProtesto,
                 ResistanceCorporations = new List<ResistanceCorporation>(),
-                ResistanceEmploymentTypes = new List<ResistanceEmploymentType>()
+                ResistanceEmploymentTypes = new List<ResistanceEmploymentType>(),
+                ResistanceResistanceReasons = new List<ResistanceResistanceReason>(),
+                ResistanceNews = new List<ResistanceNews>()
+                
             };
             viewModel.CorporationIds.ForEach(corp => resistance.ResistanceCorporations.Add(new ResistanceCorporation{CorporationId = corp}));
             viewModel.EmploymentTypeIds.ForEach(emp => resistance.ResistanceEmploymentTypes.Add(new ResistanceEmploymentType{EmploymentTypeId = emp}));
-
+            viewModel.ResistanceReasonIds.ForEach(res => resistance.ResistanceResistanceReasons.Add(new ResistanceResistanceReason{ResistanceReasonId = res}));
+            if(viewModel.ResistanceNewsIds != null)
+                viewModel.ResistanceNewsIds.ForEach(news => resistance.ResistanceNews.Add(new ResistanceNews{NewsId = news}));
             _db.Resistance.Update(resistance);
             _db.SaveChanges();
         }
         public void UpdateProtesto(ProtestoEditModel model)
         {
             var protesto = model.ToEntity();
+            _db.ProtestoInterventionType.RemoveRange(_db.ProtestoInterventionType.Where(i=>i.ProtestoId == model.Id).ToList());
+            _db.ProtestoProtestoPlace.RemoveRange(_db.ProtestoProtestoPlace.Where(i=>i.ProtestoId == model.Id).ToList());
+            _db.ProtestoProtestoType.RemoveRange(_db.ProtestoProtestoType.Where(i=>i.ProtestoId == model.Id).ToList());
+            _db.ProtestoCity.RemoveRange(_db.ProtestoCity.Where(i=>i.ProtestoId == model.Id).ToList());
+            _db.ProtestoDistrict.RemoveRange(_db.ProtestoDistrict.Where(i=>i.ProtestoId == model.Id).ToList());
             _db.Protesto.Update(protesto);
             _db.SaveChanges();
         }
@@ -179,15 +199,12 @@ namespace RS.MVC.Applications
                 EmployeeCountInProtestoId = s.ProtestoEmployeeCountId,
                 InterventionTypeIds = s.ProtestoInterventionTypes.Select(i=> i.InterventionTypeId).ToList(),
                 ProtestoPlaceIds = s.ProtestoProtestoPlaces.Select(pp=>pp.ProtestoPlaceId).ToList(),
-                ProtestoReasonIds = s.ProtestoProtestoResaons.Select(pr=>pr.ProtestoReasonId).ToList(),
                 ProtestoTypeIds = s.ProtestoProtestoTypes.Select(pt=>pt.ProtestoTypeId).ToList(),
-                IsAgainstProduction = s.IsAgainstProduction,
+                ProtestoCityIds = s.Cities.Select(c=>c.CityId).ToList(),
+                ProtestoDistrictIds = s.Districts!=null ? s.Districts.Select(c=>(int?)c.DistrictId).ToList(): null,
                 ProtestoStartDate = s.StartDate,
                 ProtestoEndDate = s.EndDate,
-                DevelopRight = s.DevelopRight,
-                AnyLegalIntervention = s.AnyLegalIntervention,
-                LegalInterventionDesc = s.LegalInterventionDesc,
-                FiredEmployeeCountByProtesto = s.FiredEmployeeCountByProtesto,
+              
                 Note = s.Note
             })
             .FirstOrDefault();
@@ -201,9 +218,9 @@ namespace RS.MVC.Applications
             _db.SaveChanges();
         }
 
-        public IEnumerable<News> GetNewsList(string period)
+        public IEnumerable<News> GetNewsList(int year, int month)
         {
-           return _db.News.ToList();
+           return _db.News.Where(n=>n.Date.Year == year && n.Date.Month == month).ToList();
         }
         public string GetNewsContent(int newsId)
         {

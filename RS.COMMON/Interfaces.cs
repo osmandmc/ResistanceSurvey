@@ -16,10 +16,12 @@ namespace RS.COMMON
     public interface ILookupRepository
     {
         IEnumerable<IdNamePair> GetAll(string tableName);
+        IEnumerable<IdNamePair> GetDistricts(int cityId);
     }
     public interface IStorageUtilities
     {
         IEnumerable<IdNamePair> GetLookup(string tableName);
+        IEnumerable<IdNamePair> GetDistricts(int cityId);
     }
     // public interface IBaseRepository
     // {

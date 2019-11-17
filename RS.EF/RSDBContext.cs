@@ -31,16 +31,21 @@ namespace RS.EF
         public DbSet<Gender> Gender { get; set; }
         public DbSet<InterventionType> InterventionType { get; set; }
         public DbSet<ProtestoPlace> ProtestoPlace { get; set; }
-        public DbSet<ProtestoReason> ProtestoReason { get; set; }
+        public DbSet<ResistanceReason> ResistanceReason { get; set; }
         public DbSet<ProtestoType> ProtestoType { get; set; }
+        public DbSet<ResistanceNews> ResistanceNews { get; set; }
+
+
         
         public DbSet<ProtestoProtestoPlace> ProtestoProtestoPlace { get; set; }
-        public DbSet<ProtestoProtestoReason> ProtestoProtestoReason { get; set; }
+        public DbSet<ResistanceResistanceReason> ResistanceResistanceReason  { get; set; }
         public DbSet<ProtestoProtestoType> ProtestoProtestoType { get; set; }
         public DbSet<ProtestoInterventionType> ProtestoInterventionType { get; set; }
         public DbSet<TradeUnion> TradeUnion { get; set; }
         public DbSet<TradeUnionAuthority> TradeUnionAuthority { get; set; }
         public DbSet<TradeUnionConfederation> TradeUnionConfederation { get; set; }
+        public DbSet<ProtestoCity> ProtestoCity { get; set; }
+        public DbSet<ProtestoDistrict> ProtestoDistrict { get; set; }
 
        
         // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -50,22 +55,6 @@ namespace RS.EF
         // }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // modelBuilder.Entity<Resistance>()
-            //     .HasKey(b => b.Id)
-            //     .HasName("PrimaryKey_ResistanceId");
-            //     modelBuilder.Entity<Resistance>()
-            //       .Property(p => p.HasTradeUnion)
-            //       .HasColumnType("bit");
-            //     modelBuilder.Entity<Protesto>()
-            //       .Property(p => p.IsAgainstProduction)
-            //       .HasColumnType("bit");
-            //         modelBuilder.Entity<Protesto>()
-            //       .Property(p => p.AnyLegalIntervention)
-            //       .HasColumnType("bit");
-            //        modelBuilder.Entity<Protesto>()
-            //       .Property(p => p.DevelopRight)
-            //       .HasColumnType("bit");
-            //     modelBuilder.Entity<Company>().Property(o => o.IsOutsource).HasColumnType("bit");
 
                  modelBuilder.Entity<Company>()
                 .HasMany(u => u.OutsourceCompanies).WithOne(u => u.Company)
