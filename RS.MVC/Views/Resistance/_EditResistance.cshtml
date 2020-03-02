@@ -5,20 +5,16 @@
     
     <h3 class="ui dividing header">Vaka</h3>
     <input type="hidden" name="Id" id="Id"  value="@Model.Id"/>
-    <div class="two fields">
+     <div class="field">
+        <label for="ResistanceDescription">Kısa Açıklama</label>
+        <textarea type="text" name="ResistanceDescription" id="ResistanceDescription" rows="3">@Model.ResistanceDescription</textarea>
+    </div>
         <div class="field">
             <label asp-for="CategoryId">Vaka Niteliği</label>
             <select asp-for="CategoryId" asp-items="@ViewBag.Categories"> <option value="">--Seçiniz--</option></select>
             <span asp-validation-for="CategoryId" class="text-danger"></span>
-
-
-        </div> 
-            <div class="field">
-                <label for="Code">Vaka Kodu</label>
-                <input type="text" name="Code" id="Code" value="@Model.Code">
-        </div>
-        
     </div>
+        
     <div class="two fields">
         <div class="field">
             <label for="ResistanceReasonIds">Vaka Nedeni</label>
@@ -39,9 +35,9 @@
     <div class="sixty wide field">
             <div class="field">
             <label for="IsOutsource">Şirket Taşeron mu?</label>
-            <select id="isOutsource">
-                <option value="0">Hayır</option>
-                <option value="1">Evet</option>
+            <select id="isOutsource" asp-for="IsOutsource">
+                <option value="False">Hayır</option>
+                <option value="True">Evet</option>
             </select>
         </div>
         <label asp-for="CompanyId">Ana Şirket</label>
@@ -54,13 +50,19 @@
             </div>
         </div>
     </div>
+    @if(Model.IsOutsource == true){
+        ViewBag.OutsourceVisible = "block";
+    }
+    else{
+        ViewBag.OutsourceVisible = "none";
+    }
 
-    <div id="outsource" style="display:none">
+    <div id="outsource" style="display:@ViewBag.OutsourceVisible">
         <div class="sixty wide field">
             <label asp-for="OutsourceCompanyId">Taşeron Şirket</label>
             <div class="two fields">
                 <div class="field">
-                    <select asp-for="OutsourceCompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown"> <option value="">--Seçiniz--</option></select>
+                    <select asp-for="OutsourceCompanyId" asp-items="@ViewBag.OutsourceCompanies" class="ui fluid search selection dropdown"> <option value="">--Seçiniz--</option></select>
                 </div>
                 <div class="field">
                     <button type="button" onclick="openOutsourceModal()" class="ui button"><i class="chevron circle up icon"></i>Yeni Taşeron Şirket Ekle</button>
@@ -101,6 +103,10 @@
             <option value="">Seçiniz</option>
         </select>
     </div>
+    <div class="field">
+        <label for="NewCorporation">Kurumsallık Diğer</label>
+        <input type="text" name="NewCorporation" id="NewCorporation">
+    </div>
 
     <div class="field tradeUnionAuthorityGroup">
         <label for="TradeUnionId">Tepki Gösterilen Sendika</label>
@@ -118,26 +124,25 @@
         
     </div>
     <div class="field">
-                        <label for="FiredEmployeeCountByProtesto">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>
-                        <input type="text" name="FiredEmployeeCountByProtesto" id="FiredEmployeeCountByProtesto" value="@Model.FiredEmployeeCountByProtesto">
-                    </div>
-
-                    <div class="field">
-                        <label for="AnyLegalIntervention">Hukuki Girişim</label>
-                        <select asp-for="AnyLegalIntervention">
-                            <option value="">--Seçiniz--</option>
-                            <option value="true">Evet</option>
-                            <option value="false">Hayır</option>
-                        </select>
-                        <span asp-validation-for="AnyLegalIntervention" class="text-danger"></span>
-                    </div>
-                    <div class="field">
-                        <label for="LegalInterventionDesc">Hukuki Girişim Açıklama</label>
-                        <textarea type="text" name="LegalInterventionDesc" id="LegalInterventionDesc" value="@Model.LegalInterventionDesc" rows="2"></textarea>
-                    </div>
+        <label for="FiredEmployeeCountByProtesto">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>
+        <input type="number" name="FiredEmployeeCountByProtesto" id="FiredEmployeeCountByProtesto" value="@Model.FiredEmployeeCountByProtesto">
+    </div>
     <div class="field">
-        <label for="ResistanceNote">Süreçteki Notlar</label>
-        <textarea type="text" name="ResistanceNote" id="ResistanceNote" rows="3"></textarea>
+        <label for="AnyLegalIntervention">Hukuki Girişim</label>
+        <select asp-for="AnyLegalIntervention">
+            <option value="">--Seçiniz--</option>
+            <option value="true">Evet</option>
+            <option value="false">Hayır</option>
+        </select>
+        <span asp-validation-for="AnyLegalIntervention" class="text-danger"></span>
+    </div>
+    <div class="field">
+        <label for="LegalInterventionDesc">Hukuki Girişim Açıklama</label>
+        <textarea type="text" name="LegalInterventionDesc" id="LegalInterventionDesc" value="" rows="2">@Model.LegalInterventionDesc</textarea>
+    </div>
+    <div class="field">
+        <label for="ResistanceNote">Kontrol Kişisine Notlar</label>
+        <textarea type="text" name="ResistanceNote" id="ResistanceNote" rows="3">@Model.ResistanceNote</textarea>
     </div>
     <h3 class="ui dividing header">Eylemler </h3>
     <a class="ui right labeled small green icon button" onclick="addProtesto(@Model.Id)">Eylem Ekle<i class="plus icon"></i></a>
@@ -162,22 +167,26 @@
     </table>
     <h4 class="ui dividing header">Haberler</h4>
     <div class="ui divided items" id="resistanceNews">
-         @foreach(var item in Model.ResistanceNews)
+         @for(int i= 0; i< Model.ResistanceNews.Count; i++)
          {
-             <div class="item">
+             <div class="item" data-id="@Model.ResistanceNews[i].Id">
                 <div class="content">
-                    <a href="#" data-id="@item.Id" data-open="0">@item.Header</a>
+                    <a href="#" data-id="@Model.ResistanceNews[i].Id" data-open="0">@Model.ResistanceNews[i].Header</a>
                     <div class="meta">
-                        <span class="date">@item.Date.ToShortDateString()</span>
-                        <button type="button" class="ui icon button red basic mini"><i class="trash icon"></i></button>
+                        <span class="date">@Model.ResistanceNews[i].Date.ToShortDateString()</span>
+                        <button type="button" class="ui icon button red basic mini btnRemove" data-id="@Model.ResistanceNews[i].Id"><i class="trash icon"></i></button>
                     </div>
-                    <div class="description" data-id="@item.Id" style="display:none"></div>
+                    <div class="description" data-id="@Model.ResistanceNews[i].Id" style="display:none"></div>
+                     @Html.HiddenFor(model => Model.ResistanceNewsIds[i].Id)
+                      @Html.HiddenFor(model => Model.ResistanceNewsIds[i].IsDeleted)
+                    @* <input name='ResistanceNewsIds[@i].Id' type='hidden' value="@Model.ResistanceNews[i].Id">
+                    <input name='ResistanceNewsIds[@i].IsDeleted' type='hidden' value="0"> *@
                 </div>
              </div>
          }      
     </div>
     <button type="submit" class="ui primary button">KAYDET</button>
-    <button type="button" class="ui button">VAKAYI KAPAT</button>
+    @* <button type="button" class="ui button">VAKAYI KAPAT</button> *@
 </form>
 
 <div class="ui modal" id="addCompanyModal">

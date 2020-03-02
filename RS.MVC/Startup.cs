@@ -17,6 +17,8 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Http;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 namespace RS.MVC
 {
@@ -37,7 +39,23 @@ namespace RS.MVC
              services.AddScoped<IUserApplication, UserApplication>();
             services.AddDbContext<RSDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RSConnectionString")));
             services.AddScoped<IStorageUtilities>(s => new StorageUtilities(Configuration.GetConnectionString("RSConnectionString")));
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.SerializerSettings.DateFormatString = "dd.MM.yyyy";
+            });
+            services.Configure<RequestLocalizationOptions>(opts =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("tr-TR"),
+                };
+
+                opts.DefaultRequestCulture = new RequestCulture("tr-TR");
+                // Formatting numbers, dates, etc.
+                opts.SupportedCultures = supportedCultures;
+                // UI strings that we have localized.
+                opts.SupportedUICultures = supportedCultures;
+            });
             services.AddSession();
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);

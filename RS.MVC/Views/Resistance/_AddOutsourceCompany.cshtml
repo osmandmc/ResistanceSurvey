@@ -47,22 +47,23 @@
         $("#companyForm").on('submit', function (e) {
             e.preventDefault() // prevent the form's normal submission
             var dataToPost = $(this).serialize()
-            if($(this).valid())
-            {
-                $.post("AddCompany", dataToPost)
+            
+                $.post("Resistance/AddCompany", dataToPost)
                         .done(function(response, status, jqxhr){ 
                             console.log(response);
-                            $('#CompanyId').append($('<option>', {
+                            $('#OutsourceCompanyId').append($('<option>', {
                                 value: response.companyId,
                                 text: response.companyName
                             }));
-                           
+                            alert("Kurum eklendi");
+                            $('#OutsourceCompanyId').dropdown('set selected', response.companyId)
+                            $('#CompanyId').dropdown('set selected', response.mainCompanyId)
                             $(".ui.modal").modal("hide");
                         })
                         .fail(function(jqxhr, status, error){ 
-                            // this is the ""error"" callback
+                            alert(error);
                         })
-            }
+           
         
     })
   

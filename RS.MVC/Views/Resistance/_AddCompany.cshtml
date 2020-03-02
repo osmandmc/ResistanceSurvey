@@ -56,8 +56,11 @@
                                 value: response.companyId,
                                 text: response.companyName
                             }));
-                           
+                            
+                           $('#CompanyId').dropdown('set selected', response.companyId);
+                           alert("Kurum eklendi");
                             $(".ui.modal").modal("hide");
+                            
                         })
                         .fail(function(jqxhr, status, error){ 
                             // this is the ""error"" callback

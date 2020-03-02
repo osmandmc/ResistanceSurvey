@@ -73,7 +73,7 @@ function submitForm() {
         $.post("/Resistance/Edit", dataToPost)
             .done(function (response, status, jqxhr) {
                 alert("İşlem başarılı");
-                location.href = '/Resistance';
+                counter = 0;
             })
             .fail(function (jqxhr, status, error) {
                 // this is the ""error"" callback
@@ -81,20 +81,20 @@ function submitForm() {
 
 }
 
-$(".ddmmyyyy").mask("99.99.9999", { placeholder: "gg.aa.yyyy" });
+// $(".ddmmyyyy").mask("99.99.9999", { placeholder: "gg.aa.yyyy" });
 
 function addProtesto(id)
 {
     var resistanceName = $("#CompanyId option:selected").text();
-    $(".column.dimmer").dimmer("show");
-    $('#leftColumn').load('/Resistance/AddProtesto?id='+id+'&resistanceName='+resistanceName);
-    $(".column.dimmer").dimmer("hide");
+    $("#leftDimmer").dimmer("show");
+    $('#leftColumn').load('/Resistance/AddProtesto?id='+id);
+    $("#leftDimmer").dimmer("hide");
 }
 function editProtesto(id)
 {
-    var resistanceName = $("#CompanyId option:selected").text();
+   
     $("#leftDimmer").dimmer("show");
-    $('#leftColumn').load('/Resistance/EditProtesto?id='+id+'&resistanceName='+resistanceName);
+    $("#leftColumn").load('/Resistance/EditProtesto?id='+id);
     $("#leftDimmer").dimmer("hide");
 }
 function back(id)
@@ -102,6 +102,8 @@ function back(id)
     $('#leftColumn').load('/Resistance/EditResistance/'+id);
 }
 $(function () {
+    newsCounter = $("#resistanceNews .item").length;
+    console.log(newsCounter);
     $("#HasTradeUnion").change(function () {
         if ($(this).val() == "true") {
             $(".tradeUnionAuthorityGroup").show();
@@ -115,12 +117,15 @@ $(function () {
     });
     $("#isOutsource").change(function () {
         console.log("outsource");
-        if ($(this).val() == "1") {
+        if ($(this).val() == "True") {
             $("#outsource").show();
         }
         else {
             $("#outsource").hide();
         }
     });
+    
+    
+    
    
 });

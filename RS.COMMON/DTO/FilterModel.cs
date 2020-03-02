@@ -11,7 +11,7 @@ namespace RS.COMMON.DTO
 
         public FilterModel()
         {
-            PageSize = 10;
+            PageSize = 20;
             PageNumber = 1;
             TotalCount = 0;
         }

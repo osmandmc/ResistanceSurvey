@@ -1,32 +1,9 @@
     <div class="ui two column divided grid">
+        <a id="listCase" class="ui button"><i class="list icon"></i>Vakalar</a>
         <div class="row">
-            <div id="leftColumn" class="column" >
-                <div class="ui column dimmer" id="leftDimmer">
-                    <div class="content">
-                        <div class="ui text loader">İşlem Yapılıyor</div>
-                    </div>
-                </div>
-                <h4 class="ui dividing header">Vakalar </h4>
-                <div class="ui attached secondary segment">
-                    <div class="ui top attached filter label"><i class="filter icon"></i>  <i id="direction" class="up chevron icon" style="float: right;"></i></div>
-                    <div class="ui small filter form">
-                        <div class="fields">
-                            <div class="six wide field">
-                                <a id="createResistance" class="ui button"><i class="plus icon"></i>Ekle</a>
-                            </div>
-                            <div class="nine wide field">
-                                <select asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" id="companyId"> 
-                                    <option value="">--Seçiniz--</option>
-                                </select>
-                            </div>
-                            <div class="six wide field">
-                                <button id="btnFilter" class="ui left labeled icon button"><i class="filter icon"></i>Filtrele</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="results" style="overflow-y: scroll; height:700px;">
-                </div>
+            
+            <div id="leftColumn" class="column">
+               
             </div>
             <div class="column" id ="rightColumn" >
                 <div class="ui column dimmer" id="rightDimmer">
@@ -36,12 +13,12 @@
                 </div>
                 <h4 class="ui dividing header">Haberler</h4>
                 <div class="ui attached secondary segment">
-                    <div class="ui top attached filter label"><i class="filter icon"></i> Arama <i id="direction" class="up chevron icon" style="float: right;"></i></div>
                     <div class="ui small filter form">
                         <div class="fields">
                             <div class="four wide field">
                                 <select class="ui fluid search selection dropdown" id="yearId">
                                     <option value="2019">2019</option>
+                                    <option value="2020">2020</option>
                                 </select>
                                 </div>
                                 <div class="five wide field">
@@ -109,27 +86,39 @@
             }
             
         });
-        let counter = 0;
-        $(".copyLink").on('click', function(){
+        let newsCounter = 0;
+        $(document).on('click', ".copyLink", function(){
             let id = $(this).data("id");
+            console.log(id);
             let newsHtml = $(this).closest(".item").clone().find('.copyLink').remove().end()
             .find('.red').remove().end().html();
+             let newsInput = "<input name='ResistanceNewsIds["+newsCounter+"].Id' type='hidden' value='"+id+"'>" +
+            "<input name='ResistanceNewsIds["+newsCounter+"].IsDeleted' type='hidden' value='False'>"
+
             $("#resistanceNews").append("<div class='item' data-id='"+id+"'>");
             $("#resistanceNews").find(".item[data-id='"+id+"']").append(newsHtml);
             $("#resistanceNews").find(".item[data-id='"+id+"']").find(".meta")
-                                .append("<button class='ui icon button red mini btnRemove' data-id='"+id+"'><i class='trash icon'></i></button>");
-            let newsInput = "<input name='ResistanceNewsIds["+counter+"]' type='hidden' value='"+id+"'>";
-            $("#resistanceNews").append(newsInput);
-            counter++;
+                                .append("<button type='button' class='ui icon button red mini btnRemove' data-id='"+id+"'><i class='trash icon'></i></button>" + newsInput);
+           
+            $(this).parent().parent().find("a").css("color","red");
+
+            newsCounter++;
         });
         $(document).on("click", ".btnRemove", function(){
-            let id = $(this).data("id")
+            console.log("removed");
+            let id = $(this).data("id");
             let item = $(this).closest(".item[data-id='"+id+"']");
-            item.remove();
+            console.log($(this).parent().parent());
+            let isDeleted = $(this).parent().parent().find("input[name$='.IsDeleted']");
+            console.log(isDeleted);
+            isDeleted.val("True");
+            item.hide();
 
+            var newsItem = $("#news").find(".item[data-id='"+id+"']").find("a").css("color","");
+            console.log(newsItem);
         });
-
-         $(".ddmmyyyy").mask("99.99.9999", { placeholder: "gg.aa.yyyy" });
-       });
+       
+           
+      //$(".ddmmyyyy").mask("99.99.9999", { placeholder: "gg.aa.yyyy" });
     </script>
 }

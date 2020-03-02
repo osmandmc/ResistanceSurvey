@@ -8,6 +8,7 @@ namespace RS.COMMON.Constants
             Linked,
             Passive
         }
+        
        
     }
     public static class Role

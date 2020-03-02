@@ -1,35 +1,67 @@
  @model PagedResult<RS.COMMON.DTO.ResistanceIndexDto>
  
-    
-<table class="ui celled striped table">
-    <tbody>
-        @foreach(var item in Model.Results)
-        {
-            <tr>
-                <td>@item.CategoryName</td>
-                <td>@item.CompanyName</td>
-                <td>@item.StartDate.ToShortDateString()</td>
-                <td><a href="#" onclick="editResistance(@item.Id)"><i class="edit icon"></i></a></td>
-            </tr>
-        }
-            
-    </tbody>
-    <tfoot>
-        <tr>
-            <th colspan="3">
-                <p>@Model.RowCount kayıttan @Model.From - @Model.To arasındakiler görüntüleniyor.</p>
-            </th>
-            <th>
-                <div class="field">
-                    <select class="ui compact small dropdown" id="pagingDD">
-                        <option value="@Model.CurrentPage">@Model.CurrentPage</option>
-                        @for (int i=1; i <@Model.PageCount+1; i++)
-                        {
-                            <option value="@i">@i</option>
-                        }
-                    </select>
+ <div class="ui column dimmer" id="leftDimmer">
+                    <div class="content">
+                        <div class="ui text loader">İşlem Yapılıyor</div>
+                    </div>
                 </div>
-            </th>
-        </tr>
-    </tfoot>
-</table>
+                <h4 class="ui dividing header">Vakalar</h4>
+                 
+                <div class="ui attached secondary segment">
+                    <div class="ui small filter form">
+                        <div class="fields">
+                            <div class="six wide field">
+                                <a id="createResistance" class="ui button"><i class="plus icon"></i>Ekle</a>
+                            </div>
+                            <div class="nine wide field">
+                                <select asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" id="companyId"> 
+                                    <option value="">--Seçiniz--</option>
+                                </select>
+                            </div>
+                            <div class="six wide field">
+                                <button id="btnFilter" class="ui left labeled icon button"><i class="filter icon"></i>Filtrele</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="results" style="overflow-y: scroll; height:700px;">
+    <table class="ui celled striped table">
+        <tbody>
+            @foreach(var item in Model.Results)
+            {
+                <tr>
+                    <td>@item.CategoryName</td>
+                    <td>@item.CompanyName</td>
+                    <td>@item.StartDate.ToShortDateString()</td>
+                    <td><a href="#" onclick="editResistance(@item.Id)"><i class="edit icon"></i></a></td>
+                </tr>
+            }
+                
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3">
+                    <p>@Model.RowCount kayıttan @Model.From - @Model.To arasındakiler görüntüleniyor.</p>
+                </th>
+                <th>
+                    <div class="field">
+                        <select class="ui compact small dropdown" id="pagingDD">
+                            <option value="@Model.CurrentPage">@Model.CurrentPage</option>
+                            @for (int i=1; i <@Model.PageCount+1; i++)
+                            {
+                                <option value="@i">@i</option>
+                            }
+                        </select>
+                    </div>
+                </th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+@section Scripts {
+    <script>
+             $('.ui.dropdown').dropdown({
+                allowAdditions: true,
+            });
+    </script>
+}

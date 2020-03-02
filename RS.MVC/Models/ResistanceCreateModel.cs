@@ -26,6 +26,7 @@ namespace RS.MVC.Models
         public int? EmployeeCountInProtesto { get; set; }
 
         public List<int> CorporationIds { get; set; }
+        public string NewCorporation { get; set; }
         public int? TradeUnionId { get; set; }
         public List<int> EmploymentTypeIds { get; set; }
         public List<int> ResistanceReasonIds { get; set; }
@@ -53,7 +54,7 @@ namespace RS.MVC.Models
         {
             var resistance = new Resistance
             {
-                CompanyId = CompanyId,
+                CompanyId = OutsourceCompanyId ?? CompanyId,
                 CategoryId = CategoryId,
                 Code = Code,
                 HasTradeUnion = HasTradeUnion,
@@ -75,6 +76,7 @@ namespace RS.MVC.Models
                 ResistanceNews = new List<ResistanceNews>()
                 
             };
+            
             if(CorporationIds!= null)
                 CorporationIds.ForEach(c=> resistance.ResistanceCorporations.Add(new ResistanceCorporation{CorporationId = c, ResistanceId = resistance.Id}));
             if(EmploymentTypeIds != null)

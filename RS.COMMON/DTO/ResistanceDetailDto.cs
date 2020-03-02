@@ -55,6 +55,10 @@ namespace RS.COMMON.DTO
         public List<string> ProtestoTypes { get; set; }
         public DateTime ProtestoStartDate { get; set; }
     }
+    public class ResistanceNewsModel{
+        public int Id { get; set; }
+        public bool IsDeleted { get; set; }
+    }
 
     public class ResistanceQueryModel
     {

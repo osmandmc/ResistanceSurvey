@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace RS.COMMON.DTO
 {
@@ -7,7 +8,9 @@ namespace RS.COMMON.DTO
     {
         public List<int> ProtestoTypeIds { get; set; }
         public bool IsAgainstProduction { get; set; }
+        [DataType(DataType.Date)] 
         public DateTime ProtestoStartDate { get; set; }
+        [DataType(DataType.Date)] 
         public DateTime? ProtestoEndDate { get; set; }
         public List<int> ProtestoPlaceIds { get; set; }
        

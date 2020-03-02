@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using ResistanceSurvey.Models;
 using RS.COMMON;
 using RS.COMMON.DTO;
+using RS.EF;
 using RS.MVC.Applications;
 using RS.MVC.Models;
 
@@ -19,22 +21,22 @@ namespace ResistanceSurvey.Controllers
         private readonly IResistanceApplication _rsApplication;
         private readonly IStorageUtilities _utilities;
         private ResistanceFilterModel filter;
-        public ResistanceController(IResistanceApplication rsApplication, IStorageUtilities utilities)
+        private readonly RSDBContext _db;
+        public ResistanceController(IResistanceApplication rsApplication, IStorageUtilities utilities, RSDBContext db)
         {
             _rsApplication = rsApplication;
             _utilities = utilities;
+            _db = db;
             filter = new ResistanceFilterModel();
         }
         public IActionResult Index()
         {
-            // var resistances = _rsApplication.GetPaged(filter);
-            // ViewBag.News = _rsApplication.GetNewsList(DateTime.Now.Year, 8);
-            // ViewBag.Companies = new SelectList(_utilities.GetLookup("company"), "Id", "Name");
             return View();
         }
         [Authorize]
         public IActionResult ResistanceList(ResistanceFilterModel filter)
         {
+             ViewBag.Companies = new SelectList(_utilities.GetLookup("company"), "Id", "Name");
              var resistances = _rsApplication.GetPaged(filter);
              return PartialView("_ResistanceList", resistances);
         }
@@ -100,10 +102,10 @@ namespace ResistanceSurvey.Controllers
               return Json(ModelState.Values.Where(m=>m.Errors.Count > 0).Select(s=>s.Errors));
         }
         [Authorize]
-        public IActionResult AddProtesto(int id, string resistanceName)
+        public IActionResult AddProtesto(int id)
         {
             ViewBag.ResistanceId = id;
-            ViewBag.ResistanceName = resistanceName;
+            ViewBag.ResistanceName = _rsApplication.GetResistanceName(id);
             SetLookups();
             return PartialView("_AddProtesto");
         }
@@ -120,10 +122,9 @@ namespace ResistanceSurvey.Controllers
             return Json(ModelState.Values.Where(m=>m.Errors.Count > 1).Select(s=>s.Errors));
         }
         [Authorize]
-        public IActionResult EditProtesto(int id, string resistanceName)
+        public IActionResult EditProtesto(int id)
         {
             var protesto = _rsApplication.GetProtestoDetail(id);
-            ViewBag.ResistanceName = resistanceName;
             SetLookups();
             return PartialView("_EditProtesto", protesto);
         }
@@ -137,7 +138,8 @@ namespace ResistanceSurvey.Controllers
                 _rsApplication.UpdateProtesto(viewModel);
                 return Ok();
             }
-            return Json(ModelState.Values.Where(m=>m.Errors.Count > 1).Select(s=>s.Errors));
+            var errors = ModelState.Values.Where(m=>m.Errors.Count > 1).Select(s=>s.Errors).ToList();
+            return Json(errors);
         }
         [Authorize]
         public IActionResult EditResistance(int id)
@@ -156,7 +158,8 @@ namespace ResistanceSurvey.Controllers
                 _rsApplication.UpdateResistance(viewModel);
                 return Ok();
             }
-            return Json(ModelState.Values.Where(m=>m.Errors.Count > 1).Select(s=>s.Errors));
+            var errors = ModelState.Values.Where(m=>m.Errors.Count > 0).Select(s=>s.Errors).ToList();
+            return Json(errors);
         }
 
         [Authorize]
@@ -171,9 +174,10 @@ namespace ResistanceSurvey.Controllers
         }
         public void SetLookups()
         {
-            
+            var companies = _db.Company.Select(x=> new {Id = x.Id, Name = x.Name, IsOutsource = x.IsOutsource}).ToList();
             ViewBag.Categories = new SelectList(_utilities.GetLookup("category"), "Id", "Name");
-            ViewBag.Companies = new SelectList(_utilities.GetLookup("company"), "Id", "Name");
+            ViewBag.Companies = new SelectList(companies.Where(s=>!s.IsOutsource), "Id", "Name");
+             ViewBag.OutsourceCompanies = new SelectList(companies.Where(s=>s.IsOutsource), "Id", "Name");
             ViewBag.Worklines = new SelectList(_utilities.GetLookup("companyworkline"), "Id", "Name");
             ViewBag.EmployeeCount = new SelectList(_utilities.GetLookup("employeecount"), "Id", "Name");
             ViewBag.EmployeeCountInProtesto = new SelectList(_utilities.GetLookup("ProtestoEmployeeCount"), "Id", "Name");

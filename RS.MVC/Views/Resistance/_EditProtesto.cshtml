@@ -4,7 +4,7 @@
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                      <a href="#" onclick="back(@Model.ResistanceId)" class="ui labeled icon button">
                         <i class="left arrow icon"></i>
-                        Vaka:@ViewBag.ResistanceName 
+                        Vaka:@Model.ResistanceName 
                     </a>
                     <h3 class="ui dividing header">Eylem</h3>
                       <input type="hidden" name="Id" id="Id"  value="@Model.Id"/>
@@ -28,16 +28,17 @@
                     <div class="two fields">
                         <div class="field">
                             <label for="ProtestoStartDate">Eylemin Başlangıç Tarihi</label>
-                            <input type="text" name="ProtestoStartDate" id="ProtestoStartDate" value="@Model.ProtestoStartDate" class="ddmmyyyy"/>
-                            <span asp-validation-for="ProtestoStartDate" class="text-danger"></span>
+                            @Html.EditorFor(m=>m.ProtestoStartDate)
+                            @* <input type="text" name="ProtestoStartDate" id="ProtestoStartDate" value="@Model.ProtestoStartDate" class="ddmmyyyy"/>
+                            <span asp-validation-for="ProtestoStartDate" class="text-danger"></span> *@
                         </div>
                         <div class="field">
                             <label for="ProtestoEndDate">Eylemin Bitiş Tarihi</label>
-                            <input type="text" name="ProtestoEndDate" id="ProtestoEndDate" class="ddmmyyyy" value="@Model.ProtestoEndDate"/>
-                            <span asp-validation-for="ProtestoEndDate" class="text-danger"></span>
+                             @Html.EditorFor(m=>m.ProtestoEndDate)
+                            @* <input type="text" name="ProtestoEndDate" id="ProtestoEndDate" class="ddmmyyyy" value="@Model.ProtestoEndDate"/>
+                            <span asp-validation-for="ProtestoEndDate" class="text-danger"></span> *@
                         </div>
                     </div>
-                    
                         <div class="field">
                             <label for="ProtestoPlaceIds">Eylemin Mekanı</label>
                             <select asp-for="ProtestoPlaceIds" asp-items="@ViewBag.ProtestoPlaces" class="ui fluid search dropdown" multiple="multiple">
@@ -45,10 +46,9 @@
                             </select>
                             <span asp-validation-for="ProtestoPlaceIds" class="text-danger"></span>
                         </div>
-                   
                     <div class="field">
-           <button id="addLocation" type="button" class="ui button">Lokasyon Ekle</button>
-        </div>
+                        <button id="addLocation" type="button" class="ui button">Lokasyon Ekle</button>
+                    </div>
         <div class="field" id="location">
             @for(int i=0;i< Model.ProtestoCityIds.Count(); i++)
             {
@@ -108,7 +108,14 @@
                         </div>
 
                     </div>
-                    
+                      <div class="field">
+                        <label for="GenderId">Cinsiyet</label>
+                        <select asp-for="GenderId" asp-items="@ViewBag.Genders">
+                            <option value="">--Seçiniz--</option>
+
+                        </select>
+                        <span asp-validation-for="GenderId" class="text-danger"></span>
+                    </div>
 
                     <div class="field">
                         <label for="InterventionTypeId">Müdahale Tipi</label>
@@ -116,7 +123,7 @@
                             <option value="">--Seçiniz--</option>
                         </select>
                     </div>
-                    <div class="field">
+                    <div class="field" id="InterventionTypeArea">
                         <label for="CustodyCount">Gözaltı Sayısı</label>
                         <input type="text" name="CustodyCount" id="CustodyCount" value="@Model.CustodyCount" />
                     </div>
@@ -131,7 +138,6 @@
 
     <script src="/app/editProtesto.js"></script>
     <script>
-        $(".ddmmyyyy").mask("99.99.9999", { placeholder: "gg.aa.yyyy" });
         $("#isOutsource").change(function () {
             console.log("outsource");
             if ($(this).val() == "1") {

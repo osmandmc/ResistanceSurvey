@@ -29,6 +29,7 @@ namespace RS.MVC.Applications
         {
             return _db.News
             .Where(n=>n.Date.Year == year && n.Date.Month == month)
+            .OrderBy(o=>o.Date)
             .Select(n=> 
             new NewsListModel{ 
                 Id = n.Id,
@@ -70,10 +71,10 @@ namespace RS.MVC.Applications
                 for (int row = 2; row <= rowCount.Value; row++)
                 {
                     var news = new News();
-                        news.Link = worksheet.Cells[row, 4].Value.ToString();
-                        news.Header = worksheet.Cells[row, 7].Value.ToString();
-                        news.Date = DateTime.Parse(worksheet.Cells[row, 6].Value.ToString());
-                        news.Content = worksheet.Cells[row, 8].Value.ToString();
+                        news.Link = worksheet.Cells[row, 5].Value.ToString();
+                        news.Header = worksheet.Cells[row, 3].Value.ToString();
+                        news.Date = DateTime.Parse(worksheet.Cells[row, 2].Value.ToString());
+                        news.Content = worksheet.Cells[row, 1].Value.ToString();
                     _db.News.Add(news);
                 }
             _db.SaveChanges();

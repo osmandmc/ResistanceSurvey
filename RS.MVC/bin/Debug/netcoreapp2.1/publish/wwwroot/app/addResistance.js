@@ -112,6 +112,7 @@ $('.ui.form').form({
         inline: true,
         on: 'blur',
         onSuccess: function () {
+            $("button[type=submit]").prop("disabled", true);
             submitForm();
             return false;
         }
@@ -135,7 +136,7 @@ function submitForm() {
             $(".page.dimmer").dimmer("hide");
 }
 
-$(".ddmmyyyy").mask("99.99.9999", { placeholder: "gg.aa.yyyy" });
+//$(".ddmmyyyy").mask("99.99.9999", { placeholder: "gg.aa.yyyy" });
 
  $("#cities").dropdown({
         onChange: function (value, text, $selectedItem) {
@@ -165,6 +166,17 @@ $(document).on("change", ".city", function(){
             });
         }
     });
+});
+$("#InterventionTypeIds").change(function () {
+    console.log($("#InterventionTypeIds").dropdown("get value"));
+    
+    if ($("#InterventionTypeIds").dropdown("get value") != null && $("#InterventionTypeIds").dropdown("get value").indexOf("7") < 0) {
+        console.log($("#InterventionTypeIds").dropdown("get value").indexOf("7"));
+        $("#InterventionTypeArea").show();
+    }
+    else{
+        $("#InterventionTypeArea").hide();
+    }
 });
 let id=1;
 $("#addLocation").click(function(){

@@ -4,7 +4,6 @@ C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\bin\Debug\netcoreapp
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\bin\Debug\netcoreapp2.1\RS.COMMON.dll
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\bin\Debug\netcoreapp2.1\RS.COMMON.pdb
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\obj\Debug\netcoreapp2.1\RS.EF.csprojAssemblyReference.cache
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\obj\Debug\netcoreapp2.1\RS.EF.csproj.CoreCompileInputs.cache
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\obj\Debug\netcoreapp2.1\RS.EF.AssemblyInfoInputs.cache
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\obj\Debug\netcoreapp2.1\RS.EF.AssemblyInfo.cs
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.EF\obj\Debug\netcoreapp2.1\RS.EF.csproj.CopyComplete

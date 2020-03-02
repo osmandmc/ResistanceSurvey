@@ -17,8 +17,8 @@ $(document).ready(function () {
 
 
     let now = new Date();
-  getNewsFiltered(now.getDate(), now.getMonth());
-  getFiltered();
+    getNewsFiltered(now.getDate(), now.getMonth());
+    getFiltered();
     $(document).on("change", "#pagingDD", function () {
         $("#leftDimmer").dimmer("show");
         $.ajax({
@@ -26,19 +26,21 @@ $(document).ready(function () {
             type: "POST",
             data: {pageNumber : $(this).val() },
             success: function (result) {
-                $('#results').html(result);
+                $('#leftColumn').html(result);
                 $("#leftDimmer").dimmer("hide");
             }
         })
     });
     $('.ui.dropdown').dropdown();
-    $("#btnFilter").on("click", function () {
-        getFiltered($("#companyId").val());
-    });
+   
     $("#btnFilterPeriod").on("click", function () {
         getNewsFiltered($("#yearId").val(), $("#monthId").val());
     });
     
+});
+$(document).on("click", "#btnFilter", function () {
+    console.log("filter");
+    getFiltered($("#companyId").val());
 });
 
 function getFiltered(companyId)
@@ -49,7 +51,7 @@ function getFiltered(companyId)
         type: "POST",
         data: {companyId : companyId },
         success: function (result) {
-            $('#results').html(result);
+            $('#leftColumn').html(result);
             $("#leftDimmer").dimmer("hide");
         }
     })
@@ -68,7 +70,7 @@ function getNewsFiltered(year, month)
     })
 }
 
-$("#createResistance").on("click", function()
+$(document).on("click","#createResistance", function()
 {
     $("#leftDimmer").dimmer("show");
     $.ajax({
@@ -81,3 +83,18 @@ $("#createResistance").on("click", function()
         }
     })
 })
+
+$(document).on("click", "#listCase", function()
+{
+    $("#leftDimmer").dimmer("show");
+    $.ajax({
+        url: '/Resistance/ResistanceList',
+        type: "GET",
+        success: function (result) {
+            $('#leftColumn').html(result);
+            $("#leftDimmer").dimmer("hide");
+            
+        }
+    })
+})
+

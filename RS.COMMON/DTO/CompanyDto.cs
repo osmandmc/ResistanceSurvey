@@ -13,13 +13,26 @@ namespace RS.COMMON.DTO
    
     public class CompanyReturnDto
     {
-        public int? CompanyId { get; set; }
+        public int CompanyId { get; set; }
         public string CompanyName { get; set; }
+
         public CompanyReturnDto(Company company)
         {
             CompanyId = company.Id;
             CompanyName = company.Name;
         }
        
+    }
+    public class OutsourceCompanyReturnDto{
+        public int CompanyId { get; set; }
+        public string CompanyName { get; set; }
+        public int? MainCompanyId { get; set; }
+
+        public OutsourceCompanyReturnDto(Company company, int? mainCompanyId)
+        {
+            CompanyId = company.Id;
+            CompanyName = company.Name;
+            MainCompanyId = mainCompanyId;
+        }
     }
 }

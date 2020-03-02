@@ -67,13 +67,38 @@ $('.ui.form').form({
 );
 
 
+$(function () {
+    interventionTypeVisibility();
+});
+
+$("#InterventionTypeIds").change(function () {
+    interventionTypeVisibility();
+});
+
+function interventionTypeVisibility(){
+    if ($("#InterventionTypeIds").dropdown("get value") != null && $("#InterventionTypeIds").dropdown("get value").indexOf("7") < 0) {
+        console.log($("#InterventionTypeIds").dropdown("get value").indexOf("7"));
+        $("#InterventionTypeArea").show();
+    }
+    else{
+        $("#InterventionTypeArea").hide();
+    }
+}
 
 function submitForm() {
     
     var dataToPost = $("#protestoForm").serialize()
-        $.post("EditProtesto", dataToPost)
-            .done(function (response, status, jqxhr) {
-               alert("İşleminiz başarılı");
+        $.post("Resistance/EditProtesto", dataToPost)
+            .done(function (response) {
+                console.log("gönder");
+                console.log(response);
+                if(response==''){
+                    alert("İşleminiz başarılı");
+                }
+                else{
+                    alert("Eksik alanlar var");
+                }
+               
             })
             .fail(function (jqxhr, status, error) {
                 // this is the ""error"" callback
@@ -206,4 +231,3 @@ $("#addLocation").click(function(){
                     id++;  
 });
 
-$(".ddmmyyyy").mask("99.99.9999", { placeholder: "gg.aa.yyyy" });

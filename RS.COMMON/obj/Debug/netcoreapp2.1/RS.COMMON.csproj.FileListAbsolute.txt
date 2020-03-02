@@ -1,5 +1,4 @@
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netcoreapp2.1\RS.COMMON.csprojAssemblyReference.cache
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netcoreapp2.1\RS.COMMON.csproj.CoreCompileInputs.cache
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netcoreapp2.1\RS.COMMON.AssemblyInfoInputs.cache
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netcoreapp2.1\RS.COMMON.AssemblyInfo.cs
 C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\bin\Debug\netcoreapp2.1\RS.COMMON.deps.json

@@ -7,17 +7,12 @@
         <label for="ResistanceDescription">Kısa Açıklama</label>
         <textarea type="text" name="ResistanceDescription" id="ResistanceDescription" rows="3"></textarea>
     </div>
-    <div class="two fields">
         <div class="field">
             <label asp-for="CategoryId">Vaka Niteliği</label>
             <select asp-for="CategoryId" asp-items="@ViewBag.Categories"> <option value="">--Seçiniz--</option></select>
             <span asp-validation-for="CategoryId" class="text-danger"></span>
         </div>
-        <div class="field">
-            <label for="Code">Vaka Kodu</label>
-            <input asp-for="Code" type="text" / >
-        </div>
-    </div>
+       
     <div class="fields">
         <div class="six wide field">
             <label for="IsOutsource">Şirket Taşeron mu?</label>
@@ -44,7 +39,7 @@
         <label asp-for="OutsourceCompanyId">Taşeron Şirket</label>
         <div class="two fields">
             <div class="field">
-                <select asp-for="OutsourceCompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown"> 
+                <select asp-for="OutsourceCompanyId" asp-items="@ViewBag.OutsourceCompanies" class="ui fluid search selection dropdown"> 
                     <option value="">--Seçiniz--</option>
                 </select>
             </div>
@@ -103,7 +98,10 @@
             <option value="">Seçiniz</option>
         </select>
     </div>
-   
+   <div class="field">
+        <label for="NewCorporation">Kurumsallık Diğer</label>
+        <input type="text" name="NewCorporation" id="NewCorporation">
+    </div>
    
     <div class="field">
         <label for="TradeUnionId">Tepki Gösterilen Sendika</label>
@@ -130,7 +128,7 @@
     </div>
     <div class="field">
         <label for="FiredEmployeeCountByProtesto">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>
-        <input asp-for="FiredEmployeeCountByProtesto" type="text" />
+        <input asp-for="FiredEmployeeCountByProtesto" type="number" />
     </div>
     <div class="field">
         <label for="AnyLegalIntervention">Hukuki Girişim</label>
@@ -220,7 +218,7 @@
             <option value="">--Seçiniz--</option>
         </select>
     </div>
-    <div class="field">
+    <div class="field" id="InterventionTypeArea" style="display:none">
         <label for="CustodyCount">Gözaltı Sayısı</label>
         <input type="text" name="CustodyCount" id="CustodyCount" />
     </div>
@@ -232,7 +230,7 @@
     <h4 class="ui dividing header">Haberler</h4>
     <div class="ui divided items" id="resistanceNews">
     </div>
-    <button class="ui ok green button">KAYDET</button>
+    <button type="submit" class="ui ok green button">KAYDET</button>
     <div class="ui error message"></div>
 </form>
         
@@ -280,7 +278,7 @@
         function openModal() {
             console.log("open");
             $.ajax({
-                url: "AddCompany",
+                url: "Resistance/AddCompany",
                 datatype: "html",
                 success: function (response) {
                     $("#modal-content").html(response);
@@ -291,7 +289,7 @@
         }
         function openOutsourceModal() {
             $.ajax({
-                url: "/AddOutsourceCompany",
+                url: "/Resistance/AddOutsourceCompany",
                 datatype: "html",
                 success: function (response) {
                     $("#modalOutsource-content").html(response);

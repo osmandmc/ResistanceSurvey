@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using RS.COMMON.Entities;
 
 namespace RS.COMMON.DTO
@@ -10,7 +11,9 @@ namespace RS.COMMON.DTO
         public int ResistanceId { get; set; }
         public List<int> ProtestoTypeIds { get; set; }
         public bool IsAgainstProduction { get; set; }
+        [DataType(DataType.Date)] 
         public DateTime ProtestoStartDate { get; set; }
+        [DataType(DataType.Date)] 
         public DateTime? ProtestoEndDate { get; set; }
         public List<int> ProtestoPlaceIds { get; set; }
         public int GenderId { get; set; }
@@ -21,7 +24,7 @@ namespace RS.COMMON.DTO
        
         public int? EmployeeCountInProtesto { get; set; }
         public int? EmployeeCountInProtestoId { get; set; }
-        
+        public string ResistanceName { get; set; }
         public string Note { get; set; }
         public Protesto ToEntity()
         {
