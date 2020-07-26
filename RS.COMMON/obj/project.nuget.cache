@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "YKgOuEMDfsZ7CqXo05uYp50a0h8wSnzglH9NLkwnQwDJay/zBfaLnir3bhhO9Q0tuj5FKZSSyPzogUgtVTcH7g==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.COMMON\\RS.COMMON.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\odemirci\\.nuget\\packages\\microsoft.netcore.app\\2.1.0\\microsoft.netcore.app.2.1.0.nupkg.sha512",
+    "C:\\Users\\odemirci\\.nuget\\packages\\microsoft.netcore.dotnetapphost\\2.1.0\\microsoft.netcore.dotnetapphost.2.1.0.nupkg.sha512",
+    "C:\\Users\\odemirci\\.nuget\\packages\\microsoft.netcore.dotnethostpolicy\\2.1.0\\microsoft.netcore.dotnethostpolicy.2.1.0.nupkg.sha512",
+    "C:\\Users\\odemirci\\.nuget\\packages\\microsoft.netcore.dotnethostresolver\\2.1.0\\microsoft.netcore.dotnethostresolver.2.1.0.nupkg.sha512",
+    "C:\\Users\\odemirci\\.nuget\\packages\\microsoft.netcore.platforms\\2.1.0\\microsoft.netcore.platforms.2.1.0.nupkg.sha512",
+    "C:\\Users\\odemirci\\.nuget\\packages\\microsoft.netcore.targets\\2.1.0\\microsoft.netcore.targets.2.1.0.nupkg.sha512",
+    "C:\\Users\\odemirci\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

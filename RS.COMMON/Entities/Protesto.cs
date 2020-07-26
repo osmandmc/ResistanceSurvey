@@ -4,7 +4,7 @@ using RS.COMMON.Entities.LookupEntity;
 
 namespace RS.COMMON.Entities
 {
-    public class Protesto
+    public class Protesto: AuditEntity
     {
         public int Id { get; set; }
         public int ResistanceId { get; set; }

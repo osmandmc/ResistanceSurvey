@@ -9,13 +9,13 @@ namespace RS.COMMON.DTO
     {
         public int Id { get; set; }
         public int ResistanceId { get; set; }
-        public List<int> ProtestoTypeIds { get; set; }
+        public List<string> ProtestoTypeIds { get; set; }
         public bool IsAgainstProduction { get; set; }
         [DataType(DataType.Date)] 
         public DateTime ProtestoStartDate { get; set; }
         [DataType(DataType.Date)] 
         public DateTime? ProtestoEndDate { get; set; }
-        public List<int> ProtestoPlaceIds { get; set; }
+        public List<string> ProtestoPlaceIds { get; set; }
         public int GenderId { get; set; }
         public List<int> InterventionTypeIds { get; set; }
         public List<int> ProtestoCityIds { get; set; }
@@ -26,6 +26,7 @@ namespace RS.COMMON.DTO
         public int? EmployeeCountInProtestoId { get; set; }
         public string ResistanceName { get; set; }
         public string Note { get; set; }
+        public string Updater { get; set; }
         public Protesto ToEntity()
         {
             var protesto = new Protesto
@@ -43,14 +44,12 @@ namespace RS.COMMON.DTO
                 Districts = new List<ProtestoDistrict>(),
                 GenderId = GenderId,
                 CustodyCount = CustodyCount,
-                Note = Note
-                
-
+                Note = Note,
+                UpdateDate = DateTime.Now,
+                Updater = Updater
             };
-            if(ProtestoPlaceIds!=null)
-                ProtestoPlaceIds.ForEach(c=> protesto.ProtestoProtestoPlaces.Add(new ProtestoProtestoPlace{ ProtestoId = Id, ProtestoPlaceId = c }));
-            if(ProtestoTypeIds!=null)
-                ProtestoTypeIds.ForEach(c=> protesto.ProtestoProtestoTypes.Add(new ProtestoProtestoType{ ProtestoId = Id, ProtestoTypeId = c }));
+           
+          
             if(InterventionTypeIds!=null)
                 InterventionTypeIds.ForEach(c=> protesto.ProtestoInterventionTypes.Add(new ProtestoInterventionType{ ProtestoId = Id, InterventionTypeId = c}));
             if(ProtestoCityIds!=null)

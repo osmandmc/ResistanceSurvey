@@ -16,7 +16,7 @@ namespace RS.MVC.Applications
         PagedResult<ResistanceIndexDto> GetPaged(ResistanceFilterModel filter);
         IEnumerable<ResistanceIndexDto> GetAll();
         void Create(ResistanceCreateModel model);
-        CompanyReturnDto CreateCompany(CompanyCreateViewModel model);
+        Result<CompanyReturnDto> CreateCompany(CompanyCreateViewModel model);
         OutsourceCompanyReturnDto CreateOutsourceCompany(CompanyCreateViewModel model);
         Resistance ExistingResistance(int companyId, int categoryId);
         ResistanceEditModel GetResistanceDetail(int id);
@@ -38,14 +38,15 @@ namespace RS.MVC.Applications
         public PagedResult<ResistanceIndexDto> GetPaged(ResistanceFilterModel filter)
         {
             var query = _db.Resistance
-                    .Where(rs=> (filter.CompanyId == null || rs.CompanyId == filter.CompanyId)
+                    .Where(rs => (filter.CompanyId == null || rs.CompanyId == filter.CompanyId)
                     && filter.CategoryId == null || rs.CategoryId == filter.CategoryId)
-                    .Select(r => new ResistanceIndexDto{
+                    .Select(r => new ResistanceIndexDto
+                    {
                         Id = r.Id,
                         CategoryName = r.Category.Name,
                         CompanyName = r.Company.Name,
                         Code = r.Code,
-                        StartDate = r.Protestos.OrderByDescending(o=>o.StartDate).Select(p=>p.StartDate).First()
+                        StartDate = r.StartDate
                     })
                     .OrderByDescending(x => x.StartDate);
 
@@ -62,110 +63,125 @@ namespace RS.MVC.Applications
             result.Results = query.AsNoTracking().Skip(skip).Take(filter.PageSize).ToList();
 
             return result;
-            
+
         }
         public IEnumerable<ResistanceIndexDto> GetAll()
         {
-            var resistances = _db.Resistance.Select(r => new ResistanceIndexDto{
+            var resistances = _db.Resistance.Select(r => new ResistanceIndexDto
+            {
                 Id = r.Id,
                 CategoryName = r.Category.Name,
                 CompanyName = r.Company.Name,
                 Code = r.Code,
-                StartDate = r.Protestos.OrderByDescending(o=>o.StartDate).Select(p=>p.StartDate).First()
+                StartDate = r.Protestos.OrderByDescending(o => o.StartDate).Select(p => p.StartDate).First()
             }).ToList();
             return resistances;
         }
         public void Create(ResistanceCreateModel model)
         {
-            
             Resistance resistance = model.MapToResistanceDto();
-            if(!String.IsNullOrEmpty(model.NewCorporation)){
-                var corporation = _db.Corporation.Add(new Corporation{Name = model.NewCorporation});
-                resistance.ResistanceCorporations.Add(new ResistanceCorporation{CorporationId = corporation.Entity.Id});
-            }
+            BindCorporation(resistance, model.CorporationIds);
+            BindResistanceReason(resistance, model.ResistanceReasonIds);
+            BindTradeUnionId(resistance, model.TradeUnionId);
+
+            if (model.ResistanceNewsIds != null)
+                model.ResistanceNewsIds.Where(n => !n.IsDeleted).ToList().ForEach(news => resistance.ResistanceNews.Add(new ResistanceNews { NewsId = news.Id }));
+
             Protesto protesto = model.MapToProtestoDto();
+            BindProtestoType(protesto, model.ProtestoTypeIds);
+            BindProtestoPlace(protesto, model.ProtestoPlaceIds);
             _db.Resistance.Add(resistance);
             protesto.ResistanceId = resistance.Id;
             _db.Protesto.Add(protesto);
             _db.SaveChanges();
         }
-
-        public CompanyReturnDto CreateCompany(CompanyCreateViewModel model)
+        public Result<CompanyReturnDto> CreateCompany(CompanyCreateViewModel model)
         {
-            var comapny = _db.Company.Add(new Company{Name = model.Name, CompanyScaleId = model.ScaleId, CompanyTypeId = model.TypeId, CompanyWorkLineId = model.WorklineId, IsOutsource = false});    
-            _db.SaveChanges();
-            var returnModel = new CompanyReturnDto(comapny.Entity);
-            return returnModel;
-        }
+            var result = new Result<CompanyReturnDto>();
+            if (_db.Company.Any(s => s.Name == model.Name))
+            {
+                result.Success = false;
+            }
+            else
+            {
 
+                var comapny = _db.Company.Add(new Company { Name = model.Name, CompanyScaleId = model.ScaleId, CompanyTypeId = model.TypeId, CompanyWorkLineId = model.WorklineId, IsOutsource = false });
+                _db.SaveChanges();
+                result.Success = true;
+                var returnModel = new CompanyReturnDto(comapny.Entity);
+                result.Response = returnModel;
+            }
+
+            return result;
+        }
         public OutsourceCompanyReturnDto CreateOutsourceCompany(CompanyCreateViewModel model)
         {
             var company = _db.Company.Add(new Company
             {
                 Name = model.Name,
-                IsOutsource =true,
+                IsOutsource = true,
                 CompanyScaleId = model.ScaleId,
                 CompanyTypeId = model.TypeId,
                 CompanyWorkLineId = model.WorklineId
             });
             var companyOutsource = _db.CompanyOutsourceCompany.Add(new CompanyOutsourceCompany
             {
-                CompanyId =  model.CompanyId.Value,
+                CompanyId = model.CompanyId.Value,
                 OutsourceCompanyId = company.Entity.Id
             });
-           
+
             _db.SaveChanges();
             var returnModel = new OutsourceCompanyReturnDto(company.Entity, model.CompanyId.Value);
             return returnModel;
         }
-
         public ResistanceEditModel GetResistanceDetail(int id)
         {
-            var data = (from s in _db.Resistance 
-            join coc in _db.CompanyOutsourceCompany on s.CompanyId equals coc.OutsourceCompanyId into oc 
-            from o in oc.DefaultIfEmpty()
-            where s.Id == id
-            select new ResistanceEditModel
-            {
-                Id = s.Id,
-                Code = s.Code,
-                CompanyId = o != null ? o.CompanyId: s.CompanyId,
-                OutsourceCompanyId = o != null ? o.OutsourceCompanyId: 0,
-                IsOutsource = s.Company.IsOutsource,
-                CategoryId = s.CategoryId,
-                CorporationIds = s.ResistanceCorporations.Select(rc=>rc.CorporationId).ToList(),
-                EmploymentTypeIds = s.ResistanceEmploymentTypes.Select(emp=>emp.EmploymentTypeId).ToList(),
-                ResistanceReasonIds = s.ResistanceResistanceReasons.Select(emp=>emp.ResistanceReasonId).ToList(),
-                ResistanceNewsIds = s.ResistanceNews.Select(news=> new ResistanceNewsModel{Id = news.NewsId, IsDeleted = false}).ToList(),
-                EmployeeCount = s.EmployeeCountNumber,
-                EmployeeCountId = s.EmployeeCountId,
-                HasTradeUnion = s.HasTradeUnion,
-                DevelopRight = s.DevelopRight,
-                TradeUnionAuthorityId = s.TradeUnionAuthorityId,
-                TradeUnionId = s.TradeUnionId,
-                LegalInterventionDesc = s.LegalInterventionDesc,
-                ResistanceDescription = s.Description,
-                ResistanceNote = s.Note,
-                FiredEmployeeCountByProtesto = s.FiredEmployeeCountByProtesto,
-                ResistanceNews = s.ResistanceNews.Select(r=>r.News).ToList(),
-                
-                Protestos = s.Protestos.Select(p=> new ProtestoListModel {
-                    ProtestoId = p.Id,
-                    ProtestoStartDate = p.StartDate,
-                    ProtestoTypes = p.ProtestoProtestoTypes.Select(pt=>pt.ProtestoType.Name).ToList()
-                }).ToList()
-            })
+            var data = (from s in _db.Resistance
+                        join coc in _db.CompanyOutsourceCompany on s.CompanyId equals coc.OutsourceCompanyId into oc
+                        from o in oc.DefaultIfEmpty()
+                        where s.Id == id
+                        select new ResistanceEditModel
+                        {
+                            Id = s.Id,
+                            Code = s.Code,
+                            CompanyId = o != null ? o.CompanyId : s.CompanyId,
+                            OutsourceCompanyId = o != null ? o.OutsourceCompanyId : 0,
+                            IsOutsource = s.Company.IsOutsource,
+                            CategoryId = s.CategoryId,
+                            CorporationIds = s.ResistanceCorporations.Select(rc => rc.CorporationId.ToString()).ToList(),
+                            EmploymentTypeIds = s.ResistanceEmploymentTypes.Select(emp => emp.EmploymentTypeId).ToList(),
+                            ResistanceReasonIds = s.ResistanceResistanceReasons.Select(emp => emp.ResistanceReasonId.ToString()).ToList(),
+                            ResistanceNewsIds = s.ResistanceNews.Select(news => new ResistanceNewsModel { Id = news.NewsId, IsDeleted = false }).ToList(),
+                            EmployeeCount = s.EmployeeCountNumber,
+                            EmployeeCountId = s.EmployeeCountId,
+                            HasTradeUnion = s.HasTradeUnion,
+                            DevelopRight = s.DevelopRight,
+                            TradeUnionAuthorityId = s.TradeUnionAuthorityId,
+                            TradeUnionId = s.TradeUnionId.ToString(),
+                            LegalInterventionDesc = s.LegalInterventionDesc,
+                            ResistanceDescription = s.Description,
+                            ResistanceNote = s.Note,
+                            FiredEmployeeCountByProtesto = s.FiredEmployeeCountByProtesto,
+                            ResistanceNews = s.ResistanceNews.OrderByDescending(s => s.News.Date).Select(r => r.News).ToList(),
+
+                            Protestos = s.Protestos.Select(p => new ProtestoListModel
+                            {
+                                ProtestoId = p.Id,
+                                ProtestoStartDate = p.StartDate,
+                                ProtestoTypes = p.ProtestoProtestoTypes.Select(pt => pt.ProtestoType.Name).ToList()
+                            }).ToList()
+                        })
             .FirstOrDefault();
-            return data; 
+            return data;
         }
         public Resistance ExistingResistance(int companyId, int categoryId)
         {
-            return _db.Resistance.FirstOrDefault(c=> c.CompanyId == companyId && c.CategoryId == categoryId);
+            return _db.Resistance.FirstOrDefault(c => c.CompanyId == companyId && c.CategoryId == categoryId);
         }
-
         public void UpdateResistance(ResistanceEditModel viewModel)
         {
-            var resistance = new Resistance{
+            var resistance = new Resistance
+            {
                 Id = viewModel.Id,
                 CategoryId = viewModel.CategoryId,
                 CompanyId = viewModel.OutsourceCompanyId ?? viewModel.CompanyId,
@@ -174,69 +190,66 @@ namespace RS.MVC.Applications
                 EmployeeCountNumber = viewModel.EmployeeCount,
                 HasTradeUnion = viewModel.HasTradeUnion,
                 TradeUnionAuthorityId = viewModel.TradeUnionAuthorityId,
-                TradeUnionId = viewModel.TradeUnionId,
                 Description = viewModel.ResistanceDescription,
                 Note = viewModel.ResistanceNote,
-                AnyLegalIntervention = viewModel.AnyLegalIntervention,
                 LegalInterventionDesc = viewModel.LegalInterventionDesc,
                 FiredEmployeeCountByProtesto = viewModel.FiredEmployeeCountByProtesto,
+                Updater = viewModel.UserName,
+                UpdateDate = DateTime.Now,
                 ResistanceCorporations = new List<ResistanceCorporation>(),
                 ResistanceEmploymentTypes = new List<ResistanceEmploymentType>(),
                 ResistanceResistanceReasons = new List<ResistanceResistanceReason>(),
                 ResistanceNews = new List<ResistanceNews>()
-                
             };
-             if(viewModel.CorporationIds != null)
-                viewModel.CorporationIds.ForEach(corp => resistance.ResistanceCorporations.Add(new ResistanceCorporation{CorporationId = corp}));
-            var rCorporations = _db.ResistanceCorporation.Where(r=>r.ResistanceId == resistance.Id).ToList();
+            if (viewModel.AnyLegalIntervention == 1) resistance.AnyLegalIntervention = true;
+            if (viewModel.AnyLegalIntervention == 2) resistance.AnyLegalIntervention = false;
+            var rCorporations = _db.ResistanceCorporation.Where(r => r.ResistanceId == resistance.Id).ToList();
             _db.ResistanceCorporation.RemoveRange(rCorporations);
-            if(viewModel.EmploymentTypeIds != null)
-                viewModel.EmploymentTypeIds.ForEach(emp => resistance.ResistanceEmploymentTypes.Add(new ResistanceEmploymentType{EmploymentTypeId = emp}));
-            var rEmpl = _db.ResistanceEmploymentType.Where(r=>r.ResistanceId == resistance.Id).ToList();
+            if (viewModel.EmploymentTypeIds != null)
+                viewModel.EmploymentTypeIds.ForEach(emp => resistance.ResistanceEmploymentTypes.Add(new ResistanceEmploymentType { EmploymentTypeId = emp }));
+            var rEmpl = _db.ResistanceEmploymentType.Where(r => r.ResistanceId == resistance.Id).ToList();
             _db.ResistanceEmploymentType.RemoveRange(rEmpl);
-            if(viewModel.ResistanceReasonIds != null)
-                viewModel.ResistanceReasonIds.ForEach(res => resistance.ResistanceResistanceReasons.Add(new ResistanceResistanceReason{ResistanceReasonId = res}));
-            var rReason = _db.ResistanceResistanceReason.Where(r=>r.ResistanceId == resistance.Id).ToList();
+
+            var rReason = _db.ResistanceResistanceReason.Where(r => r.ResistanceId == resistance.Id).ToList();
             _db.ResistanceResistanceReason.RemoveRange(rReason);
-            if(viewModel.ResistanceNewsIds != null)
-                viewModel.ResistanceNewsIds.Where(n=>!n.IsDeleted).ToList().ForEach(news => resistance.ResistanceNews.Add(new ResistanceNews{NewsId = news.Id}));
-            var rNews =  _db.ResistanceNews.Where(r=>r.ResistanceId == resistance.Id).ToList();
+            if (viewModel.ResistanceNewsIds != null)
+                viewModel.ResistanceNewsIds.Where(n => !n.IsDeleted).ToList().ForEach(news => resistance.ResistanceNews.Add(new ResistanceNews { NewsId = news.Id }));
+            var rNews = _db.ResistanceNews.Where(r => r.ResistanceId == resistance.Id).ToList();
             _db.ResistanceNews.RemoveRange(rNews);
-            if(viewModel.NewCorporation!=null){
-                var corporation = _db.Corporation.Add(new Corporation{Name = viewModel.NewCorporation});    
-                resistance.ResistanceCorporations.Add(new ResistanceCorporation{CorporationId = corporation.Entity.Id});
-            }
-                
-            
+
+            BindCorporation(resistance, viewModel.CorporationIds);
+            BindResistanceReason(resistance, viewModel.ResistanceReasonIds);
             _db.Resistance.Update(resistance);
             _db.SaveChanges();
         }
         public void UpdateProtesto(ProtestoEditModel model)
         {
             var protesto = model.ToEntity();
-            _db.ProtestoInterventionType.RemoveRange(_db.ProtestoInterventionType.Where(i=>i.ProtestoId == model.Id).ToList());
-            _db.ProtestoProtestoPlace.RemoveRange(_db.ProtestoProtestoPlace.Where(i=>i.ProtestoId == model.Id).ToList());
-            _db.ProtestoProtestoType.RemoveRange(_db.ProtestoProtestoType.Where(i=>i.ProtestoId == model.Id).ToList());
-            _db.ProtestoCity.RemoveRange(_db.ProtestoCity.Where(i=>i.ProtestoId == model.Id).ToList());
-            _db.ProtestoDistrict.RemoveRange(_db.ProtestoDistrict.Where(i=>i.ProtestoId == model.Id).ToList());
+            BindProtestoType(protesto, model.ProtestoTypeIds);
+            BindProtestoPlace(protesto, model.ProtestoPlaceIds);
+            _db.ProtestoInterventionType.RemoveRange(_db.ProtestoInterventionType.Where(i => i.ProtestoId == model.Id).ToList());
+            _db.ProtestoProtestoPlace.RemoveRange(_db.ProtestoProtestoPlace.Where(i => i.ProtestoId == model.Id).ToList());
+            _db.ProtestoProtestoType.RemoveRange(_db.ProtestoProtestoType.Where(i => i.ProtestoId == model.Id).ToList());
+            _db.ProtestoCity.RemoveRange(_db.ProtestoCity.Where(i => i.ProtestoId == model.Id).ToList());
+            _db.ProtestoDistrict.RemoveRange(_db.ProtestoDistrict.Where(i => i.ProtestoId == model.Id).ToList());
             _db.Protesto.Update(protesto);
             _db.SaveChanges();
         }
-
         public ProtestoEditModel GetProtestoDetail(int id)
         {
-            var protesto = _db.Protesto.Where(p=>p.Id == id).Select(s=> new ProtestoEditModel{
+            var protesto = _db.Protesto.Where(p => p.Id == id).Select(s => new ProtestoEditModel
+            {
                 Id = s.Id,
                 ResistanceId = s.ResistanceId,
                 CustodyCount = s.CustodyCount,
                 EmployeeCountInProtesto = s.EmployeeCountNumber,
                 GenderId = s.GenderId,
                 EmployeeCountInProtestoId = s.ProtestoEmployeeCountId,
-                InterventionTypeIds = s.ProtestoInterventionTypes.Select(i=> i.InterventionTypeId).ToList(),
-                ProtestoPlaceIds = s.ProtestoProtestoPlaces.Select(pp=>pp.ProtestoPlaceId).ToList(),
-                ProtestoTypeIds = s.ProtestoProtestoTypes.Select(pt=>pt.ProtestoTypeId).ToList(),
-                ProtestoCityIds = s.Cities.Select(c=>c.CityId).ToList(),
-                ProtestoDistrictIds = s.Districts!=null ? s.Districts.Select(c=>(int?)c.DistrictId).ToList(): null,
+                InterventionTypeIds = s.ProtestoInterventionTypes.Select(i => i.InterventionTypeId).ToList(),
+                ProtestoPlaceIds = s.ProtestoProtestoPlaces.Select(pp => pp.ProtestoPlaceId.ToString()).ToList(),
+                ProtestoTypeIds = s.ProtestoProtestoTypes.Select(pt => pt.ProtestoTypeId.ToString()).ToList(),
+                ProtestoCityIds = s.Cities.Select(c => c.CityId).ToList(),
+                ProtestoDistrictIds = s.Districts != null ? s.Districts.Select(c => (int?)c.DistrictId).ToList() : null,
                 ProtestoStartDate = s.StartDate,
                 ProtestoEndDate = s.EndDate,
                 ResistanceName = s.Resistance.Company.Name,
@@ -245,21 +258,20 @@ namespace RS.MVC.Applications
             .FirstOrDefault();
             return protesto;
         }
-
         public void AddProtesto(ProtestoAddModel model)
         {
             var protesto = model.ToEntity();
             _db.Protesto.Add(protesto);
             _db.SaveChanges();
         }
-
         public IEnumerable<NewsItem> GetNewsList(int year, int month)
         {
-            var data = (from n in _db.News 
+            var data = (from n in _db.News
                         join r in _db.ResistanceNews on n.Id equals r.NewsId into rnd
                         from rn in rnd.DefaultIfEmpty()
                         where n.Date.Year == year && n.Date.Month == month && n.Status != COMMON.Constants.Enums.Status.Passive
-                        select new NewsItem{
+                        select new NewsItem
+                        {
                             Id = n.Id,
                             Header = n.Header,
                             Content = n.Content,
@@ -268,19 +280,119 @@ namespace RS.MVC.Applications
                             Added = rn != null
                         }
             )
-            .OrderBy(s=>s.Date)
+            .OrderBy(s => s.Date)
             .Distinct()
             .ToList();
-          return data;
+            return data;
         }
         public string GetNewsContent(int newsId)
         {
-            return _db.News.Where(n=>n.Id == newsId).Select(s=>s.Content).Single();
+            return _db.News.Where(n => n.Id == newsId).Select(s => s.Content).Single();
         }
-
         public string GetResistanceName(int id)
         {
-            return _db.Resistance.Where(r=>r.Id == id).Select(s=>s.Company.Name).FirstOrDefault();
+            return _db.Resistance.Where(r => r.Id == id).Select(s => s.Company.Name).FirstOrDefault();
+        }
+
+
+        private void BindTradeUnionId(Resistance resistance, string tradeUnionId)
+        {
+            if (!String.IsNullOrEmpty(tradeUnionId))
+            {
+                int tid;
+                var parseResult = int.TryParse(tradeUnionId, out tid);
+                if (parseResult)
+                {
+                    resistance.TradeUnionId = tid;
+                }
+                else
+                {
+                    var tradeUnion = _db.TradeUnion.Add(new TradeUnion { Name = tradeUnionId });
+                    resistance.TradeUnionId = tradeUnion.Entity.Id;
+                }
+            }
+        }
+
+        private void BindProtestoType(Protesto protesto, List<string> protestoTypeIds)
+        {
+            if (protestoTypeIds != null)
+            {
+                foreach (var typeItem in protestoTypeIds)
+                {
+                    int tid;
+                    var parseResult = int.TryParse(typeItem, out tid);
+                    if (parseResult)
+                    {
+                        protesto.ProtestoProtestoTypes.Add(new ProtestoProtestoType { ProtestoTypeId = tid, ProtestoId = protesto.Id });
+                    }
+                    else
+                    {
+                        var pType = _db.ProtestoType.Add(new ProtestoType { Name = typeItem });
+                        protesto.ProtestoProtestoTypes.Add(new ProtestoProtestoType { ProtestoTypeId = pType.Entity.Id });
+                    }
+                }
+            }
+        }
+        private void BindProtestoPlace(Protesto protesto, List<string> protestoPlaceIds)
+        {
+            if (protestoPlaceIds != null)
+            {
+                foreach (var placeItem in protestoPlaceIds)
+                {
+                    int pid;
+                    var parseResult = int.TryParse(placeItem, out pid);
+                    if (parseResult)
+                    {
+                        protesto.ProtestoProtestoPlaces.Add(new ProtestoProtestoPlace { ProtestoPlaceId = pid, ProtestoId = protesto.Id });
+                    }
+                    else
+                    {
+                        var pType = _db.ProtestoPlace.Add(new ProtestoPlace { Name = placeItem });
+                        protesto.ProtestoProtestoPlaces.Add(new ProtestoProtestoPlace { ProtestoPlaceId = pType.Entity.Id });
+                    }
+                }
+            }
+        }
+
+        private void BindCorporation(Resistance resistance, List<string> corporationIds)
+        {
+            if (corporationIds != null)
+            {
+                foreach (var corporationItem in corporationIds)
+                {
+                    int cid;
+                    var parseResult = int.TryParse(corporationItem, out cid);
+                    if (parseResult)
+                    {
+                        resistance.ResistanceCorporations.Add(new ResistanceCorporation { CorporationId = cid, ResistanceId = resistance.Id });
+                    }
+                    else
+                    {
+                        var corporation = _db.Corporation.Add(new Corporation { Name = corporationItem });
+                        resistance.ResistanceCorporations.Add(new ResistanceCorporation { CorporationId = corporation.Entity.Id });
+                    }
+                }
+            }
+        }
+        private void BindResistanceReason(Resistance resistance, List<string> reasonIds)
+        {
+            if (reasonIds != null)
+            {
+                foreach (var reasonItem in reasonIds)
+                {
+                    int rid;
+                    var parseResult = int.TryParse(reasonItem, out rid);
+                    if (parseResult)
+                    {
+                        resistance.ResistanceResistanceReasons.Add(new ResistanceResistanceReason { ResistanceReasonId = rid, ResistanceId = resistance.Id });
+                    }
+                    else
+                    {
+                        var reason = _db.ResistanceReason.Add(new ResistanceReason { Name = reasonItem });
+                        resistance.ResistanceResistanceReasons.Add(new ResistanceResistanceReason { ResistanceReasonId = reason.Entity.Id });
+                    }
+                }
+            }
         }
     }
 }

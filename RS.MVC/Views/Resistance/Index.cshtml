@@ -1,11 +1,16 @@
     <div class="ui two column divided grid">
         <a id="listCase" class="ui button"><i class="list icon"></i>Vakalar</a>
         <div class="row">
+
             
             <div id="leftColumn" class="column">
-               
+                <div class="ui column dimmer" id="leftDimmer">
+                    <div class="content">
+                        <div class="ui text loader">İşlem Yapılıyor</div>
+                    </div>
+                </div>
             </div>
-            <div class="column" id ="rightColumn" >
+            <div class="column" id="rightColumn">
                 <div class="ui column dimmer" id="rightDimmer">
                     <div class="content">
                         <div class="ui text loader">İşlem Yapılıyor</div>
@@ -20,34 +25,34 @@
                                     <option value="2019">2019</option>
                                     <option value="2020">2020</option>
                                 </select>
-                                </div>
-                                <div class="five wide field">
-                                    <select class="ui fluid search selection dropdown" id="monthId">
-                                        <option value="">--Seçiniz--</option>
-                                        <option value="1">Ocak</option>
-                                        <option value="2">Şubat</option>
-                                        <option value="3">Mart</option>
-                                        <option value="4">Nisan</option>
-                                        <option value="5">Mayıs</option>
-                                        <option value="6">Haziran</option>
-                                        <option value="7">Temmuz</option>
-                                        <option value="8">Ağustos</option>
-                                        <option value="9">Eylül</option>
-                                        <option value="10">Ekim</option>
-                                        <option value="11">Kasım</option>
-                                        <option value="12">Aralık</option>
-                                    </select>
-                                </div>
-                                <div class="four wide field">
-                                    <button id="btnFilterPeriod" class="ui left labeled icon button"><i class="filter icon"></i>Filtrele</button>
-                                </div>
+                            </div>
+                            <div class="five wide field">
+                                <select class="ui fluid search selection dropdown" id="monthId">
+                                    <option value="">--Seçiniz--</option>
+                                    <option value="1">Ocak</option>
+                                    <option value="2">Şubat</option>
+                                    <option value="3">Mart</option>
+                                    <option value="4">Nisan</option>
+                                    <option value="5">Mayıs</option>
+                                    <option value="6">Haziran</option>
+                                    <option value="7">Temmuz</option>
+                                    <option value="8">Ağustos</option>
+                                    <option value="9">Eylül</option>
+                                    <option value="10">Ekim</option>
+                                    <option value="11">Kasım</option>
+                                    <option value="12">Aralık</option>
+                                </select>
+                            </div>
+                            <div class="four wide field">
+                                <button id="btnFilterPeriod" class="ui left labeled icon button"><i class="filter icon"></i>Filtrele</button>
                             </div>
                         </div>
                     </div>
-                    <div class="ui divided items" id="news" style="overflow-y: scroll; height:700px;">
-                    </div>
+                </div>
+                <div class="ui divided items" id="news" style="overflow-y: scroll; height:700px;">
                 </div>
             </div>
+        </div>
         </div>
     </div>
 
@@ -117,8 +122,5 @@
             var newsItem = $("#news").find(".item[data-id='"+id+"']").find("a").css("color","");
             console.log(newsItem);
         });
-       
-           
-      //$(".ddmmyyyy").mask("99.99.9999", { placeholder: "gg.aa.yyyy" });
     </script>
 }

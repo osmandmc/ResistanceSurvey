@@ -1,0 +1,9 @@
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\bin\Release\netcoreapp2.1\RS.COMMON.deps.json
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\bin\Release\netcoreapp2.1\RS.COMMON.dll
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\bin\Release\netcoreapp2.1\RS.COMMON.pdb
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\obj\Release\netcoreapp2.1\RS.COMMON.csprojAssemblyReference.cache
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\obj\Release\netcoreapp2.1\RS.COMMON.csproj.CoreCompileInputs.cache
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\obj\Release\netcoreapp2.1\RS.COMMON.AssemblyInfoInputs.cache
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\obj\Release\netcoreapp2.1\RS.COMMON.AssemblyInfo.cs
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\obj\Release\netcoreapp2.1\RS.COMMON.dll
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\obj\Release\netcoreapp2.1\RS.COMMON.pdb

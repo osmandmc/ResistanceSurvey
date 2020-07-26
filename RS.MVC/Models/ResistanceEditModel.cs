@@ -6,7 +6,7 @@ using RS.COMMON.Entities;
 
 namespace RS.MVC.Models
 {
-    public class ResistanceEditModel
+    public class ResistanceEditModel: BaseViewModel
     {
         public ResistanceEditModel (){}
         public int Id { get; set; }
@@ -24,11 +24,10 @@ namespace RS.MVC.Models
         public int? EmployeeCountId { get; set; }
         public int? EmployeeCount { get; set; }
         public string ResistanceNote { get; set; }
-        public List<int> ResistanceReasonIds { get; set; }
-        public List<int> CorporationIds { get; set; }
-        public string NewCorporation { get; set; }
-        public int? TradeUnionId { get; set; }
-        public bool AnyLegalIntervention { get; set; }
+        public List<string> ResistanceReasonIds { get; set; }
+        public List<string> CorporationIds { get; set; }
+        public string TradeUnionId { get; set; }
+        public short AnyLegalIntervention { get; set; }
         public string LegalInterventionDesc { get; set; }
         public int? FiredEmployeeCountByProtesto { get; set; }
         

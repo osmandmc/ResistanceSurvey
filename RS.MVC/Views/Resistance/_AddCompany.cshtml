@@ -52,15 +52,20 @@
                 $.post("/Resistance/AddCompany", dataToPost)
                         .done(function(response, status, jqxhr){ 
                             console.log(response);
-                            $('#CompanyId').append($('<option>', {
-                                value: response.companyId,
-                                text: response.companyName
-                            }));
-                            
-                           $('#CompanyId').dropdown('set selected', response.companyId);
-                           alert("Kurum eklendi");
+                            if (response.success === true) {
+                                $('#CompanyId').append($('<option>', {
+                                    value: response.companyId,
+                                    text: response.companyName
+                                }));
+
+                                $('#CompanyId').dropdown('set selected', response.companyId);
+                                alert("Kurum eklendi");
+
+                            }
+                            else {
+                                alert("Bu kurum daha önce eklenmiş. Lütfen listeden seçin.")
+                            }
                             $(".ui.modal").modal("hide");
-                            
                         })
                         .fail(function(jqxhr, status, error){ 
                             // this is the ""error"" callback

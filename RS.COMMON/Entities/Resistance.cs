@@ -5,7 +5,7 @@ using RS.COMMON.Entities.LookupEntity;
 
 namespace RS.COMMON.Entities
 {
-    public class Resistance
+    public class Resistance: AuditEntity
     {
         public int Id { get; set; }
         public int CategoryId { get; set; }
@@ -21,7 +21,7 @@ namespace RS.COMMON.Entities
         public int? TradeUnionAuthorityId { get; set; }
         public string Note { get; set; }
         public string Description { get; set; }
-        public bool AnyLegalIntervention { get; set; }
+        public bool? AnyLegalIntervention { get; set; }
         public string LegalInterventionDesc { get; set; }
         public int? FiredEmployeeCountByProtesto { get; set; }
 
@@ -37,6 +37,8 @@ namespace RS.COMMON.Entities
         public List<ResistanceNews> ResistanceNews { get; set; }
 
         public Resistance(){}
+
+        
     }
 
 }

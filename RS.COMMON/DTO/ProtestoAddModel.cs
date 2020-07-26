@@ -23,7 +23,7 @@ namespace RS.COMMON.DTO
         public bool DevelopRight { get; set; }
         public List<int> ProtestoCityIds { get; set; }
         public List<int?> ProtestoDistrictIds { get; set; }
-      
+        public string UserName { get; set; }
         public string Note { get; set; }
         public Protesto ToEntity()
         {
@@ -40,7 +40,8 @@ namespace RS.COMMON.DTO
                 Cities = new List<ProtestoCity>(),
                 Districts = new List<ProtestoDistrict>(),
                 GenderId = GenderId,
-                CustodyCount = CustodyCount
+                CustodyCount = CustodyCount,
+                Note = Note
             };
             if(ProtestoPlaceIds!=null)
                 ProtestoPlaceIds.ForEach(c=> protesto.ProtestoProtestoPlaces.Add(new ProtestoProtestoPlace{ ProtestoPlaceId = c }));

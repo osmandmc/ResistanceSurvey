@@ -14206,39 +14206,46 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\osman.demirci\\.nuget\\packages\\": {}
+    "C:\\Users\\odemirci\\.nuget\\packages\\": {},
+    "C:\\Microsoft\\Xamarin\\NuGet\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\osman.demirci\\source\\vscode\\ResistanceSurvey\\RS.MVC\\RS.MVC.csproj",
+      "projectUniqueName": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.MVC\\RS.MVC.csproj",
       "projectName": "RS.MVC",
-      "projectPath": "C:\\Users\\osman.demirci\\source\\vscode\\ResistanceSurvey\\RS.MVC\\RS.MVC.csproj",
-      "packagesPath": "C:\\Users\\osman.demirci\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\osman.demirci\\source\\vscode\\ResistanceSurvey\\RS.MVC\\obj\\",
+      "projectPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.MVC\\RS.MVC.csproj",
+      "packagesPath": "C:\\Users\\odemirci\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.MVC\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Microsoft\\Xamarin\\NuGet\\"
+      ],
       "configFilePaths": [
-        "C:\\Users\\osman.demirci\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\odemirci\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 19.1.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.1"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\DevExpress 19.1\\Components\\System\\Components\\Packages": {},
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp2.1": {
           "projectReferences": {
-            "C:\\Users\\osman.demirci\\source\\vscode\\ResistanceSurvey\\RS.COMMON\\RS.COMMON.csproj": {
-              "projectPath": "C:\\Users\\osman.demirci\\source\\vscode\\ResistanceSurvey\\RS.COMMON\\RS.COMMON.csproj"
+            "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.COMMON\\RS.COMMON.csproj": {
+              "projectPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.COMMON\\RS.COMMON.csproj"
             },
-            "C:\\Users\\osman.demirci\\source\\vscode\\ResistanceSurvey\\RS.DAL\\RS.DAL.csproj": {
-              "projectPath": "C:\\Users\\osman.demirci\\source\\vscode\\ResistanceSurvey\\RS.DAL\\RS.DAL.csproj"
+            "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.DAL\\RS.DAL.csproj": {
+              "projectPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.DAL\\RS.DAL.csproj"
             },
-            "C:\\Users\\osman.demirci\\source\\vscode\\ResistanceSurvey\\RS.EF\\RS.EF.csproj": {
-              "projectPath": "C:\\Users\\osman.demirci\\source\\vscode\\ResistanceSurvey\\RS.EF\\RS.EF.csproj"
+            "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.EF\\RS.EF.csproj": {
+              "projectPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.EF\\RS.EF.csproj"
             }
           }
         }
@@ -14281,7 +14288,7 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.200\\RuntimeIdentifierGraph.json"
       }
     }
   }

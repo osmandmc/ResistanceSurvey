@@ -1,0 +1,12 @@
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.EF\bin\Release\netcoreapp2.1\RS.EF.deps.json
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.EF\bin\Release\netcoreapp2.1\RS.EF.dll
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.EF\bin\Release\netcoreapp2.1\RS.EF.pdb
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.EF\bin\Release\netcoreapp2.1\RS.COMMON.dll
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.EF\bin\Release\netcoreapp2.1\RS.COMMON.pdb
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.EF\obj\Release\netcoreapp2.1\RS.EF.csprojAssemblyReference.cache
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.EF\obj\Release\netcoreapp2.1\RS.EF.csproj.CoreCompileInputs.cache
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.EF\obj\Release\netcoreapp2.1\RS.EF.AssemblyInfoInputs.cache
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.EF\obj\Release\netcoreapp2.1\RS.EF.AssemblyInfo.cs
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.EF\obj\Release\netcoreapp2.1\RS.EF.csproj.CopyComplete
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.EF\obj\Release\netcoreapp2.1\RS.EF.dll
+C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.EF\obj\Release\netcoreapp2.1\RS.EF.pdb

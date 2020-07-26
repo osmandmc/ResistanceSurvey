@@ -11,12 +11,13 @@ using RS.COMMON;
 using RS.COMMON.DTO;
 using RS.EF;
 using RS.MVC.Applications;
+using RS.MVC.Controllers;
 using RS.MVC.Models;
 
 namespace ResistanceSurvey.Controllers
 {
     
-    public class ResistanceController : Controller
+    public class ResistanceController : BaseController
     {
         private readonly IResistanceApplication _rsApplication;
         private readonly IStorageUtilities _utilities;
@@ -36,7 +37,7 @@ namespace ResistanceSurvey.Controllers
         [Authorize]
         public IActionResult ResistanceList(ResistanceFilterModel filter)
         {
-             ViewBag.Companies = new SelectList(_utilities.GetLookup("company"), "Id", "Name");
+             ViewBag.Companies = new SelectList(_utilities.GetLookup("company").OrderBy(s=>s.Name).ToList(), "Id", "Name");
              var resistances = _rsApplication.GetPaged(filter);
              return PartialView("_ResistanceList", resistances);
         }
@@ -62,11 +63,12 @@ namespace ResistanceSurvey.Controllers
         {
             if (ModelState.IsValid)
             {
+                model.UserName = UserName;
                 _rsApplication.Create(model);
                 return Ok();
             }
             var values=ModelState.Values.Where(m=>m.Errors.Count > 0).Select(s=>s.Errors).ToList();
-            return Json(values);
+            return StatusCode(StatusCodes.Status500InternalServerError, values); 
         }
         [Authorize]
         public IActionResult AddOutsourceCompany()
@@ -116,6 +118,7 @@ namespace ResistanceSurvey.Controllers
         {
             if(ModelState.IsValid)
             {
+                viewModel.UserName = UserName;
                 _rsApplication.AddProtesto(viewModel);
                 return Ok();
             }
@@ -135,11 +138,12 @@ namespace ResistanceSurvey.Controllers
         {
             if(ModelState.IsValid)
             {
+                viewModel.Updater = UserName;
                 _rsApplication.UpdateProtesto(viewModel);
                 return Ok();
             }
             var errors = ModelState.Values.Where(m=>m.Errors.Count > 1).Select(s=>s.Errors).ToList();
-            return Json(errors);
+            return StatusCode(StatusCodes.Status500InternalServerError, errors);
         }
         [Authorize]
         public IActionResult EditResistance(int id)
@@ -155,6 +159,7 @@ namespace ResistanceSurvey.Controllers
         {
             if(ModelState.IsValid)
             {
+                viewModel.UserName = UserName;
                 _rsApplication.UpdateResistance(viewModel);
                 return Ok();
             }
@@ -177,7 +182,7 @@ namespace ResistanceSurvey.Controllers
             var companies = _db.Company.Select(x=> new {Id = x.Id, Name = x.Name, IsOutsource = x.IsOutsource}).ToList();
             ViewBag.Categories = new SelectList(_utilities.GetLookup("category"), "Id", "Name");
             ViewBag.Companies = new SelectList(companies.Where(s=>!s.IsOutsource), "Id", "Name");
-             ViewBag.OutsourceCompanies = new SelectList(companies.Where(s=>s.IsOutsource), "Id", "Name");
+            ViewBag.OutsourceCompanies = new SelectList(companies.Where(s=>s.IsOutsource), "Id", "Name");
             ViewBag.Worklines = new SelectList(_utilities.GetLookup("companyworkline"), "Id", "Name");
             ViewBag.EmployeeCount = new SelectList(_utilities.GetLookup("employeecount"), "Id", "Name");
             ViewBag.EmployeeCountInProtesto = new SelectList(_utilities.GetLookup("ProtestoEmployeeCount"), "Id", "Name");
@@ -185,18 +190,15 @@ namespace ResistanceSurvey.Controllers
             ViewBag.TradeUnions = new SelectList(_utilities.GetLookup("tradeunion"), "Id", "Name");
             ViewBag.TradeUnionAuthorities = new SelectList(_utilities.GetLookup("tradeunionauthority"), "Id", "Name");
             ViewBag.EmploymentTypes = new SelectList(_utilities.GetLookup("employmenttype"), "Id", "Name");
-           
             ViewBag.EmployeeCountInProtesto = new SelectList(_utilities.GetLookup("ProtestoEmployeeCount"), "Id", "Name");
-
             ViewBag.ProtestoTypes = new MultiSelectList(_utilities.GetLookup("protestotype"), "Id", "Name");
             ViewBag.ProtestoPlaces = new MultiSelectList(_utilities.GetLookup("protestoplace"), "Id", "Name");
             ViewBag.ResistanceReasons = new MultiSelectList(_utilities.GetLookup("resistancereason"), "Id", "Name");
-
             ViewBag.Genders = new SelectList(_utilities.GetLookup("gender"), "Id", "Name");
             ViewBag.ProtestoCities = new SelectList(_utilities.GetLookup("city"), "Id", "Name");
             ViewBag.InterventionTypes = new SelectList(_utilities.GetLookup("interventiontype"), "Id", "Name");
             ViewBag.Cities = new SelectList(_utilities.GetLookup("city"), "Id", "Name");
-            ViewBag.Districts = new SelectList(_utilities.GetLookup("district"), "Id", "Name");
+            ViewBag.Districts = new SelectList(_utilities.GetLookup("district").OrderBy(s=>s.Name).ToList(), "Id", "Name");
         }
 
         [Authorize]

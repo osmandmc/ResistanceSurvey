@@ -131,8 +131,9 @@
         <label for="AnyLegalIntervention">Hukuki Girişim</label>
         <select asp-for="AnyLegalIntervention">
             <option value="">--Seçiniz--</option>
-            <option value="true">Evet</option>
-            <option value="false">Hayır</option>
+            <option value="0">Bilinmiyor</option>
+            <option value="1">Evet</option>
+            <option value="2">Hayır</option>
         </select>
         <span asp-validation-for="AnyLegalIntervention" class="text-danger"></span>
     </div>
@@ -170,18 +171,19 @@
          @for(int i= 0; i< Model.ResistanceNews.Count; i++)
          {
              <div class="item" data-id="@Model.ResistanceNews[i].Id">
-                <div class="content">
-                    <a href="#" data-id="@Model.ResistanceNews[i].Id" data-open="0">@Model.ResistanceNews[i].Header</a>
-                    <div class="meta">
-                        <span class="date">@Model.ResistanceNews[i].Date.ToShortDateString()</span>
-                        <button type="button" class="ui icon button red basic mini btnRemove" data-id="@Model.ResistanceNews[i].Id"><i class="trash icon"></i></button>
-                    </div>
-                    <div class="description" data-id="@Model.ResistanceNews[i].Id" style="display:none"></div>
+                 <div class="content">
+                     <a href="#" data-id="@Model.ResistanceNews[i].Id" data-open="0">@Model.ResistanceNews[i].Header</a>
+                     <a href="@Model.ResistanceNews[i].Link" target="_blank"><i class="arrow alternate circle right outline icon"></i></a>
+                     <div class="meta">
+                         <span class="date">@Model.ResistanceNews[i].Date.ToShortDateString()</span>
+                         <button type="button" class="ui icon button red basic mini btnRemove" data-id="@Model.ResistanceNews[i].Id"><i class="trash icon"></i></button>
+                     </div>
+                     <div class="description" data-id="@Model.ResistanceNews[i].Id" style="display:none"></div>
                      @Html.HiddenFor(model => Model.ResistanceNewsIds[i].Id)
-                      @Html.HiddenFor(model => Model.ResistanceNewsIds[i].IsDeleted)
-                    @* <input name='ResistanceNewsIds[@i].Id' type='hidden' value="@Model.ResistanceNews[i].Id">
-                    <input name='ResistanceNewsIds[@i].IsDeleted' type='hidden' value="0"> *@
-                </div>
+                     @Html.HiddenFor(model => Model.ResistanceNewsIds[i].IsDeleted)
+                     @* <input name='ResistanceNewsIds[@i].Id' type='hidden' value="@Model.ResistanceNews[i].Id">
+        <input name='ResistanceNewsIds[@i].IsDeleted' type='hidden' value="0"> *@
+                 </div>
              </div>
          }      
     </div>

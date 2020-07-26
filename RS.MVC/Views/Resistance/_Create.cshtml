@@ -1,7 +1,7 @@
 @model RS.MVC.Models.ResistanceCreateModel
 @using RS.COMMON.Constants
 
-<form id="resistanceForm" class="ui form" method="post" action="Create">
+<form id="resistanceForm" class="ui form segment" method="post" action="Create">
     <h4 class="ui dividing header">Vaka</h4>
     <div class="field">
         <label for="ResistanceDescription">Kısa Açıklama</label>
@@ -98,14 +98,10 @@
             <option value="">Seçiniz</option>
         </select>
     </div>
-   <div class="field">
-        <label for="NewCorporation">Kurumsallık Diğer</label>
-        <input type="text" name="NewCorporation" id="NewCorporation">
-    </div>
    
     <div class="field">
         <label for="TradeUnionId">Tepki Gösterilen Sendika</label>
-        <select asp-for="TradeUnionId" asp-items="@ViewBag.TradeUnions">
+        <select asp-for="TradeUnionId" asp-items="@ViewBag.TradeUnions" class="ui fluid search dropdown">
             <option value="">Seçiniz</option>
         </select>
     </div>
@@ -134,8 +130,9 @@
         <label for="AnyLegalIntervention">Hukuki Girişim</label>
         <select asp-for="AnyLegalIntervention">
             <option value="">--Seçiniz--</option>
-            <option value="true">Evet</option>
-            <option value="false">Hayır</option>
+            <option value="0">Bilinmiyor</option>
+            <option value="1">Evet</option>
+            <option value="2">Hayır</option>
         </select>
             <span asp-validation-for="AnyLegalIntervention" class="text-danger"></span>
     </div>
@@ -177,7 +174,7 @@
            <button id="addLocation" type="button" class="ui button">Lokasyon Ekle</button>
         </div>
         <div class="twelve wide field" id="location">
-            <div class="two fields">
+            <div class="three fields">
                 <div class="field">
                     <label for="ProtestoCityIds[0]">İl</label>
                     <select id="ProtestoCityIds_0_" name="ProtestoCityIds[0]"  class="ui fluid city" data-id="0">'+
@@ -193,6 +190,10 @@
                     <select asp-for="ProtestoDistrictIds[0]"  class="ui fluid" data-id="0">
                         <option value="">--Seçiniz--</option>
                     </select>
+                </div>
+                 <div class="field">
+                    <label for="ProtestoLocation[0]">Meydan</label>
+                    <input name="ProtestoLocation[0]" type ="text" />
                 </div>
             </div>
             
