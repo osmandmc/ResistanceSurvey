@@ -49,15 +49,15 @@
             var dataToPost = $(this).serialize()
             
                 $.post("Resistance/AddCompany", dataToPost)
-                        .done(function(response, status, jqxhr){ 
-                            console.log(response);
+                        .done(function(result, status, jqxhr){ 
+                            console.log(result.response);
                             $('#OutsourceCompanyId').append($('<option>', {
-                                value: response.companyId,
-                                text: response.companyName
+                                value: result.response.companyId,
+                                text: result.response.companyName
                             }));
                             alert("Kurum eklendi");
-                            $('#OutsourceCompanyId').dropdown('set selected', response.companyId)
-                            $('#CompanyId').dropdown('set selected', response.mainCompanyId)
+                            $('#OutsourceCompanyId').dropdown('set selected', result.response.companyId)
+                            $('#CompanyId').dropdown('set selected', result.response.mainCompanyId)
                             $(".ui.modal").modal("hide");
                         })
                         .fail(function(jqxhr, status, error){ 

@@ -44,6 +44,15 @@ var validationRules =
             }
             ]
         },
+        GenderId: {
+            identifier: 'GenderId',
+            rules: [
+                {
+                    type: 'empty',
+                    prompt: 'Lütfen cinsiyet seçiniz'
+                }
+            ]
+        },
         DevelopRight: {
             identifier: 'DevelopRight',
             rules: [
@@ -90,8 +99,6 @@ function submitForm() {
     var dataToPost = $("#protestoForm").serialize()
         $.post("Resistance/EditProtesto", dataToPost)
             .done(function (response) {
-                console.log("gönder");
-                console.log(response);
                 if(response==''){
                     alert("İşleminiz başarılı");
                 }

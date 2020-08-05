@@ -1,4 +1,5 @@
 using RS.COMMON.Entities;
+using System.Collections.Generic;
 
 namespace RS.COMMON.DTO
 {
@@ -15,7 +16,6 @@ namespace RS.COMMON.DTO
     {
         public int CompanyId { get; set; }
         public string CompanyName { get; set; }
-
         public CompanyReturnDto(Company company)
         {
             CompanyId = company.Id;

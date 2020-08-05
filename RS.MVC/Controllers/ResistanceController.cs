@@ -197,7 +197,7 @@ namespace ResistanceSurvey.Controllers
             ViewBag.Genders = new SelectList(_utilities.GetLookup("gender"), "Id", "Name");
             ViewBag.ProtestoCities = new SelectList(_utilities.GetLookup("city"), "Id", "Name");
             ViewBag.InterventionTypes = new SelectList(_utilities.GetLookup("interventiontype"), "Id", "Name");
-            ViewBag.Cities = new SelectList(_utilities.GetLookup("city"), "Id", "Name");
+            ViewBag.Cities = new SelectList(_utilities.GetLookup("city").OrderBy(s => s.Name).ToList(), "Id", "Name");
             ViewBag.Districts = new SelectList(_utilities.GetLookup("district").OrderBy(s=>s.Name).ToList(), "Id", "Name");
         }
 

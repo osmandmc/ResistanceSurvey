@@ -60,6 +60,7 @@ $('.ui.form').form({
         inline: true,
         on: 'blur',
         onSuccess: function () {
+        $("button[type=submit]").prop("disabled", true);
             submitForm();
             return false;
         }

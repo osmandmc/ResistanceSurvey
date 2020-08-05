@@ -101,15 +101,6 @@ var validationRules =
             }
         ]
     },
-    IsAgainstProduction: {
-        identifier: 'IsAgainstProduction',
-        rules: [
-            {
-                type: 'empty',
-                prompt: 'Eylem üretim Yönelik mi?'
-            }
-        ]
-    },
     DevelopRight: {
         identifier: 'DevelopRight',
         rules: [
@@ -134,7 +125,10 @@ $('.ui.form').form({
 }
 );
 
-
+$(function () {
+    console.log("newsCounter: " + newsCounter);
+    newsCounter = 0;
+});
 
 function submitForm() {
     $(".page.dimmer").dimmer("show");

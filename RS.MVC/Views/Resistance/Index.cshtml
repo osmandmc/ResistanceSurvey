@@ -92,9 +92,10 @@
             
         });
         let newsCounter = 0;
+        console.log("newsCounter: " +newsCounter);
         $(document).on('click', ".copyLink", function(){
             let id = $(this).data("id");
-            console.log(id);
+            console.log(newsCounter);
             let newsHtml = $(this).closest(".item").clone().find('.copyLink').remove().end()
             .find('.red').remove().end().html();
              let newsInput = "<input name='ResistanceNewsIds["+newsCounter+"].Id' type='hidden' value='"+id+"'>" +
@@ -103,8 +104,8 @@
             $("#resistanceNews").append("<div class='item' data-id='"+id+"'>");
             $("#resistanceNews").find(".item[data-id='"+id+"']").append(newsHtml);
             $("#resistanceNews").find(".item[data-id='"+id+"']").find(".meta")
-                                .append("<button type='button' class='ui icon button red mini btnRemove' data-id='"+id+"'><i class='trash icon'></i></button>" + newsInput);
-           
+                .append("<button type='button' class='ui icon button red mini btnRemove' data-id='" + id + "'><i class='trash icon'></i></button>" + newsInput);
+            console.log(newsInput);
             $(this).parent().parent().find("a").css("color","red");
 
             newsCounter++;
