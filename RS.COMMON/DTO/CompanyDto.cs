@@ -35,4 +35,21 @@ namespace RS.COMMON.DTO
             MainCompanyId = mainCompanyId;
         }
     }
+    public class CompanyEditModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int? TypeId { get; set; }
+        public int? ScaleId { get; set; }
+        public int? WorklineId { get; set; }
+    }
+    public class OutsourceCompanyEditModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int? TypeId { get; set; }
+        public int? ScaleId { get; set; }
+        public int? WorklineId { get; set; }
+        public int MainCompanyId { get; set; }
+    }
 }

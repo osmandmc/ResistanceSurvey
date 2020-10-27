@@ -24,6 +24,7 @@ namespace RS.COMMON.Entities
         public bool? AnyLegalIntervention { get; set; }
         public string LegalInterventionDesc { get; set; }
         public int? FiredEmployeeCountByProtesto { get; set; }
+        public bool Deleted { get; set; }
 
         public Category Category { get; set; }
         public Company Company { get; set; }

@@ -1,40 +1,42 @@
 @model IEnumerable<NewsListModel>
 
 <table class="ui small compact celled table">
-            <thead>
-                <tr>
-                    <td>Haber</td>
-                    <td>Tarih</td>
-                    <td>Direniş Haberi</td>
-                    <td></td>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var item in Model)
-                {
-                    <tr data-id ="@item.Id">
-                        <td><a href="@item.Link" data-id="@item.Id" target="_blank">@item.Title</a></td>
-                        <td>@item.Date</td>
-                        <td>@if(item.Status==RS.COMMON.Constants.Enums.Status.Linked)
-                            {
-                                <i class="green thumbs up icon"></i>
-                            }
-                            else if(item.Status == RS.COMMON.Constants.Enums.Status.Passive)
-                            {
-                                <i class="red thumbs down icon"></i>
-                            }
-                            else{
-                                <i class="eye icon"></i>
-                            }
-                        </td>   
-                        <td>
-                            <div class="ui buttons">
-                                <button class="ui mini icon button green approve"><i class="icon check"></i></button>
-                                <div class="or"></div>
-                                <button class="ui mini icon button red cancel"><i class="icon cancel"></i></button>
-                            </div>
-                        </td>   
-                    </tr>
-                } 
-                </tbody>
-        </table>
+    <thead>
+        <tr>
+            <td>Haber</td>
+            <td>Tarih</td>
+            <td>Direniş Haberi</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr data-id="@item.Id">
+                <td><a href="@item.Link" data-id="@item.Id" target="_blank">@item.Title</a></td>
+                <td>@item.Date</td>
+                <td>
+                    @if (item.Status == RS.COMMON.Constants.Enums.Status.Linked)
+                    {
+                        <i class="green thumbs up icon"></i>
+                    }
+                    else if (item.Status == RS.COMMON.Constants.Enums.Status.Passive)
+                    {
+                        <i class="red thumbs down icon"></i>
+                    }
+                    else
+                    {
+                        <i class="eye icon"></i>
+                    }
+            </td>
+            <td>
+                <div class="ui buttons">
+                    <button class="ui mini icon button green approve"><i class="icon check"></i></button>
+                    <div class="or"></div>
+                    <button class="ui mini icon button red cancel"><i class="icon cancel"></i></button>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,9 +1,9 @@
 @model RS.MVC.Models.CompanyCreateViewModel
 
-<form class="ui form" id="companyForm">
+<div class="ui form" id="companyForm">
             <div class="field">
-                <label for="Name">Şirket Adı</label>
-                <input type="text" name="Name" id="Name">
+                <label for="CompanyName">Şirket Adı</label>
+                <input type="text" name="CompanyName" id="CompanyName">
             </div>
             <div class="three fields">
                 <div class="field">
@@ -25,56 +25,5 @@
                     </select>
                 </div>
             </div>
-   <button class="ui button" type="submit">Ekle</button>
-</form>
-
-    <script>
-        $(function() {
-            
-                // $("#isOutsourcePartial").change(function(){
-                //     console.log("outsourcePartial");
-                //     if($(this).val()=="1")
-                //     {
-                //         $("#outsourcePartial").show();
-                //         $("#mainCompany").hide();
-                //     }
-                //     else
-                //     {
-                //         $("#outsourcePartial").hide();
-                //         $("#mainCompany").show();
-                //     }
-                // });
-        });
-        $("#companyForm").on('submit', function (e) {
-            e.preventDefault() // prevent the form's normal submission
-            var dataToPost = $(this).serialize()
-          
-                $.post("/Resistance/AddCompany", dataToPost)
-                        .done(function(result, status, jqxhr){ 
-                            console.log(result.response);
-
-                            if (result.success === true) {
-                                
-                                
-                                $('#CompanyId').append($('<option>', {
-                                    value: result.response.companyId,
-                                    text: result.response.companyName
-                                }));
-                                $("#CompanyId").dropdown("clear");
-                                $('#CompanyId').dropdown('set selected', result.response.companyId);
-                                alert("Kurum eklendi");
-
-                            }
-                            else {
-                                alert("Bu kurum daha önce eklenmiş. Lütfen listeden seçin.")
-                            }
-                            $(".ui.modal").modal("hide");
-                        })
-                        .fail(function(jqxhr, status, error){ 
-                            // this is the ""error"" callback
-                        })
-        
-    })
-  
-    </script>
-
+   <button id="btnAddCompany" class="ui button">Ekle</button>
+</div>

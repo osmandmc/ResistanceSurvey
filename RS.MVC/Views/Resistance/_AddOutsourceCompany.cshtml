@@ -1,6 +1,6 @@
-@model RS.MVC.Models.CompanyCreateViewModel
+@model RS.MVC.Models.OutsourceCompanyCreateViewModel
 
-<form class="ui form" id="companyForm">
+<div class="ui form">
             <div class="field">
                 <label for="Name">Şirket Adı</label>
                 <input type="text" name="Name" id="Name">
@@ -27,45 +27,22 @@
             </div>
        
             <div class="field">
-                <label asp-for="CompanyId">Ana Şirket</label>
+                <label asp-for="MainCompanyId">Ana Şirket</label>
                 <div class="two fields">
                     <div class="field">
-                        <select asp-for="CompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown"> <option value="">--Seçiniz--</option></select>
+                        <select asp-for="MainCompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown"> <option value="">--Seçiniz--</option></select>
                     </div>
                 </div>
             </div>
             
-           
+            <button id="btnAddOutsourceCompany" class="ui button">Ekle</button>        
         </div>
-   <button class="ui button" type="submit">Submit</button>
-</form>
+   
 
-    <script>
-        $(function() {
-            
+<script>
+    $(function () {
+        $('.ui.dropdown').dropdown({
+            allowAdditions: true,
         });
-        $("#companyForm").on('submit', function (e) {
-            e.preventDefault() // prevent the form's normal submission
-            var dataToPost = $(this).serialize()
-            
-                $.post("Resistance/AddCompany", dataToPost)
-                        .done(function(result, status, jqxhr){ 
-                            console.log(result.response);
-                            $('#OutsourceCompanyId').append($('<option>', {
-                                value: result.response.companyId,
-                                text: result.response.companyName
-                            }));
-                            alert("Kurum eklendi");
-                            $('#OutsourceCompanyId').dropdown('set selected', result.response.companyId)
-                            $('#CompanyId').dropdown('set selected', result.response.mainCompanyId)
-                            $(".ui.modal").modal("hide");
-                        })
-                        .fail(function(jqxhr, status, error){ 
-                            alert(error);
-                        })
-           
-        
-    })
-  
-    </script>
-
+    });
+</script>

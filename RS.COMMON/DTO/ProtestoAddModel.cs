@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using RS.COMMON.Entities;
 
 namespace RS.COMMON.DTO
@@ -21,6 +23,7 @@ namespace RS.COMMON.DTO
         public int? EmployeeCountInProtesto { get; set; }
         public int? EmployeeCountInProtestoId { get; set; }
         public bool DevelopRight { get; set; }
+        public List<ProtestoLocationModel> ProtestoLocations { get; set; }
         public List<int> ProtestoCityIds { get; set; }
         public List<int?> ProtestoDistrictIds { get; set; }
         public string UserName { get; set; }
@@ -39,6 +42,7 @@ namespace RS.COMMON.DTO
                 ProtestoInterventionTypes = new List<ProtestoInterventionType>(),
                 Cities = new List<ProtestoCity>(),
                 Districts = new List<ProtestoDistrict>(),
+                Locations = new List<ProtestoLocation>(),
                 GenderId = GenderId,
                 CustodyCount = CustodyCount,
                 Note = Note
@@ -54,7 +58,9 @@ namespace RS.COMMON.DTO
                 ProtestoCityIds.ForEach(c=> protesto.Cities.Add(new ProtestoCity{ CityId = c }));
             if(ProtestoDistrictIds!=null)
                 ProtestoDistrictIds.ForEach(c=> {if(c.HasValue) protesto.Districts.Add(new ProtestoDistrict{ DistrictId = c.Value });});
-                 return protesto;
+            if (ProtestoLocations != null)
+                ProtestoLocations.Where(s=>!s.Deleted).ToList().ForEach(c => { protesto.Locations.Add(new ProtestoLocation { CityId = c.CityId, DistrictId = c.DistrictId.Value, Place = c.Place }); });
+            return protesto;
         }
     }
 }

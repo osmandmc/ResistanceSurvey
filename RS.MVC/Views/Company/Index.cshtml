@@ -1,0 +1,26 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="ui page dimmer">
+        <div class="content">
+            <div class="ui text loader">İşlem Yapılıyor</div>
+        </div>
+    </div>
+    <div class="ui container">
+        <div id="companyList" class="ui divided items">
+
+        </div>
+        
+    </div>
+    <div class="ui modal" id="modalCompany">
+        <i class="close icon"></i>
+        <div class="header">
+            Şirket Düzenle
+        </div>
+        <div class="content" id="modalCompany-content">
+        </div>
+    </div>
+        @section Scripts {
+            <script src="~/app/company.js"></script>
+        }

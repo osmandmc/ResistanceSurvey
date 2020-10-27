@@ -19,10 +19,10 @@
         </div>
     </div>
 </div>
-<div id="results" style="overflow-y: scroll; height:700px;">
+<div style="overflow-y: scroll; height:700px;">
     <table class="ui celled striped table">
         <tbody>
-            @foreach(var item in Model.Results)
+            @foreach (var item in Model.Results)
             {
                 <tr>
                     <td>@item.CategoryName</td>
@@ -31,7 +31,7 @@
                     <td><a href="#" onclick="editResistance(@item.Id)"><i class="edit icon"></i></a></td>
                 </tr>
             }
-                
+
         </tbody>
         <tfoot>
             <tr>
@@ -42,7 +42,7 @@
                     <div class="field">
                         <select class="ui compact small dropdown" id="pagingDD">
                             <option value="@Model.CurrentPage">@Model.CurrentPage</option>
-                            @for (int i=1; i <@Model.PageCount+1; i++)
+                            @for (int i = 1; i < @Model.PageCount + 1; i++)
                             {
                                 <option value="@i">@i</option>
                             }

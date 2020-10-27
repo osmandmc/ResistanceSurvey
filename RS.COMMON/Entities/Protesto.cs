@@ -14,14 +14,14 @@ namespace RS.COMMON.Entities
         public int? ProtestoEmployeeCountId { get; set; }
         public int GenderId { get; set; }
         public int? CustodyCount { get; set; }
-       
         public string Note { get; set; }
-
+        public bool Deleted { get; set; }
 
         public Resistance Resistance { get; set; }
         public ProtestoEmployeeCount ProtestoEmployeeCount { get; set; }
         public List<ProtestoCity> Cities { get; set; }
         public List<ProtestoDistrict> Districts { get; set; }
+        public List<ProtestoLocation> Locations { get; set; }
         public List<ProtestoInterventionType> ProtestoInterventionTypes { get; set; }
         public ICollection<ProtestoProtestoPlace> ProtestoProtestoPlaces { get; set; }
         public ICollection<ProtestoProtestoType> ProtestoProtestoTypes { get; set; }

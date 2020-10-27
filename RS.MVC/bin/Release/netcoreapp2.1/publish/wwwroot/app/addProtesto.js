@@ -35,15 +35,6 @@ var validationRules =
             }
             ]
         },
-        IsAgainstProduction: {
-            identifier: 'IsAgainstProduction',
-            rules: [
-            {
-                type   : 'empty',
-                prompt : 'Eylem üretim Yönelik mi?'
-            }
-            ]
-        },
         DevelopRight: {
             identifier: 'DevelopRight',
             rules: [

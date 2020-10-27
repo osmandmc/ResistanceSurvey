@@ -4,55 +4,67 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Direniş İzleme</title>
-    <link rel="stylesheet" href="~/dist/semantic.css" type="text/css"/>
-    <link rel="stylesheet" href="~/css/site.css" type="text/css"/>
+    <link rel="stylesheet" href="~/dist/semantic.css" type="text/css" />
+    <link rel="stylesheet" href="~/css/site.css" type="text/css" />
 </head>
 <body id="example">
-     <div class="ui page dimmer">
+    @*<div class="ui page dimmer">
         <div class="content">
             <div class="ui text loader">İşlem Yapılıyor</div>
         </div>
-    </div>
+    </div>*@
     <div class="ui fixed inverted menu">
         <div class="ui container">
             <a href="#" class="header item">
                 <img class="logo" src="/images/ECTLogo.jpg">
             </a>
-
             <a href="#" class="item">EÇT</a>
-            
-            <a class="item" id="listCase" href="/Resistance">
+            <a class="item" href="/Resistance">
                 Vakalar
-                
             </a>
-
             <a class="item" href="/News">
                 Haberler
             </a>
-
-            <a class="item" href="#">
+            <a class="item" href="/User">
                 Kullanıcılar
             </a>
-        </div>
-        </div>
-  </div>
-  <div class="ui grid container" style="margin-top:20px">
-                @RenderBody()
+            <a class="item" href="/Company">
+                Şirketler
+            </a>
+            <div class="ui simple dropdown item">
+                Sistem Değişkenleri
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    <a class="item" href="/Corporation">Kurumlar</a>
+                    <a class="item" href="/TradeUnion">Sendikalar</a>
+                    <a class="item" href="/ResistanceReason">Vaka Nedenleri</a>
+                    <a class="item" href="/ProtestoType">Eylem Türleri</a>
+                    <a class="item" href="/ProtestoPlace">Eylem Mekanları</a>
+                    <a class="item" href="/InterventionType">Müdahale Tipleri</a>
+                    <a class="item" href="/ProtestoPlace">Eylem Mekanları</a>
                 </div>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="ui grid container" style="margin-top:20px; margin-bottom:20px">
+
+        @RenderBody()
     </div>
     <script src="~/lib/jquery/dist/jquery.js" type="text/javascript"></script>
     <script src="~/dist/semantic.js" type="text/javascript"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.13/jquery.mask.min.js"></script>
-     <script type="text/javascript">
-    $(document).ready(function () {
-          let token = window.localStorage.getItem('token');
+    <script type="text/javascript">
+        $(document).ready(function () {
+            let token = window.localStorage.getItem('token');
             $.ajaxSetup({
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader('Authorization', 'Bearer '+ token);
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
                 }
             });
-            });
-   </script>
+        });
+    </script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

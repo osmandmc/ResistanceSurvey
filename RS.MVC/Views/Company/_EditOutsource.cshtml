@@ -1,0 +1,40 @@
+﻿@model RS.COMMON.DTO.OutsourceCompanyEditModel
+
+
+    <div class="ui form" id="companyForm">
+        @Html.HiddenFor(s => s.Id)
+        <div class="field">
+            <label for="Name">Şirket Adı</label>
+            <input type="text" asp-for="Name">
+        </div>
+        <div class="three fields">
+            <div class="field">
+                <label for="TypeId">Şirketin Niteliği</label>
+                <select asp-for="TypeId" asp-items="@ViewBag.CompanyTypes">
+                    <option value="">--Seçiniz--</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="ScaleId">Şirketin Büyüklüğü</label>
+                <select asp-for="ScaleId" asp-items="@ViewBag.CompanyScales">
+                    <option value="">--Seçiniz--</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="WorklineId">Şirketin İş Kolu</label>
+                <select asp-for="WorklineId" asp-items="@ViewBag.Worklines">
+                    <option value="">--Seçiniz--</option>
+                </select>
+            </div>
+
+        </div>
+        <div class="field">
+            <label asp-for="MainCompanyId">Ana Şirket</label>
+            <div class="two fields">
+                <div class="field">
+                    <select asp-for="MainCompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown"> <option value="">--Seçiniz--</option></select>
+                </div>
+            </div>
+        </div>
+        <button id="btnEditOutsourceCompany" class="ui button">KAYDET</button>
+    </div>

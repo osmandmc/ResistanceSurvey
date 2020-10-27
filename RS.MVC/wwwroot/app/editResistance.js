@@ -81,8 +81,6 @@ function submitForm() {
 
 }
 
-// $(".ddmmyyyy").mask("99.99.9999", { placeholder: "gg.aa.yyyy" });
-
 function addProtesto(id)
 {
     var resistanceName = $("#CompanyId option:selected").text();
@@ -92,7 +90,6 @@ function addProtesto(id)
 }
 function editProtesto(id)
 {
-   
     $("#leftDimmer").dimmer("show");
     $("#leftColumn").load('/Resistance/EditProtesto?id='+id);
     $("#leftDimmer").dimmer("hide");
@@ -129,3 +126,23 @@ $(function () {
     
    
 });
+
+$(document).on("click", "#btnCancelResistance", function () {
+    deleteResistance();
+});
+$(document).on("click", "#btnCancelResistanceModal", function () {
+    $('#modalResistanceDelete').modal('show');
+});
+
+function deleteResistance() {
+    $.post("Resistance/DeleteResistance/", { ResistanceId: $("#Id").val() })
+        .done(function (response) {
+            alert("Silme İşleminiz başarılı");
+            $('.mini.modal').modal('hide');
+        })
+        .fail(function (jqxhr, status, error) {
+            // this is the ""error"" callback
+            alert("Bir hata alındı");
+        })
+
+}

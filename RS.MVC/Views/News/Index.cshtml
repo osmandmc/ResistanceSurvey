@@ -57,7 +57,7 @@
             <div class="ui text loader">İşlem Yapılıyor</div>
         </div>
     </div>
-    <div class="header">Yeni Mezuniyet Belgesi Ekle</div>
+    <div class="header">Yeni Haber Dosyası</div>
     <div class="content">
         <div class="ui blue message" style="text-align: center">
             Dönemi ay ve yıl olarak seçin.
@@ -119,7 +119,6 @@ $("#downloadFile").click(function () {
 
     $("#uploadbutton").click(function () {
         var filename = $("#file").val();
-
         $.ajax({
             type: "POST",
             url: "/News/Upload",
@@ -130,6 +129,7 @@ $("#downloadFile").click(function () {
             },
             success: function () {
                 alert("Data Uploaded: ");
+
             }
         });
     });
@@ -182,7 +182,7 @@ function getFileFromAjax() {
         month = now.getMonth();
     }
     $.ajax({
-        url: "DownloadFile?year="+year+"&month="+month,
+        url: "/News/DownloadFile?year="+year+"&month="+month,
         method: 'GET',
         xhrFields: {
             responseType: 'blob'

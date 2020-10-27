@@ -1,0 +1,63 @@
+﻿@model PagedResult<RS.COMMON.DTO.ComapnyListViewModel>
+
+<h4 class="ui dividing header">Şirketler</h4>
+
+<div class="ui attached secondary segment">
+    <div class="ui small filter form">
+        <div class="fields">
+           
+        </div>
+    </div>
+</div>
+
+    <table class="ui celled striped table">
+        <thead>
+            <tr>
+                <th>Şirket</th>
+                <th>Ana Şirket</th>
+                <th>Tipi</th>
+                <th>Ölçek</th>
+                <th>İş Kolu</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Results)
+            {
+            <tr>
+                @if (string.IsNullOrEmpty(item.MainCorporationName))
+                {
+                    <td><a href="#" class="modalLink" data-id="@item.Id">@item.Name<a></td>
+                }
+                else
+                {
+                    <td><a href="#" class="outsourcemodalLink" data-id="@item.Id">@item.Name<a></td>
+                }
+
+                <td>@item.MainCorporationName</td>
+                <td>@item.Type</td>
+                <td>@item.Scale</td>
+                <td>@item.WorkLine</td>
+                @*<td><a href="#" onclick="editResistance(@item.Id)"><i class="edit icon"></i></a></td>*@
+            </tr>
+            }
+
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="4">
+                    <p>@Model.RowCount kayıttan @Model.From - @Model.To arasındakiler görüntüleniyor.</p>
+                </th>
+                <th>
+                    <div class="ui right floated pagination menu field">
+                        <select class="ui compact small dropdown" id="pagingDD">
+                            <option value="@Model.CurrentPage">@Model.CurrentPage</option>
+                            @for (int i = 1; i < @Model.PageCount + 1; i++)
+                            {
+                                <option value="@i">@i</option>
+                            }
+                        </select>
+                    </div>
+                </th>
+            </tr>
+        </tfoot>
+    </table>
