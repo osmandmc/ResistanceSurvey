@@ -1,0 +1,58 @@
+﻿@model PagedResult<RS.COMMON.Entities.LookupEntity.ProtestoType>
+
+<h4 class="ui dividing header">Kurumlar</h4>
+
+<div class="ui attached secondary segment">
+    <div class="ui small filter form">
+        <div class="fields">
+
+        </div>
+    </div>
+</div>
+
+<table class="ui celled striped table">
+    <thead>
+        <tr>
+            <th>Adı</th>
+            <th>Onay</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Results)
+        {
+        <tr>
+            <td>
+                <div class="ui fluid action input">
+
+                    <input type="text" value="@item.Name" disabled />
+                    <button data-id="@item.Id" class="ui icon button btnEdit"><i class="edit icon"></i></button>
+                </div>
+            </td>
+            <td width="10%">
+                <input type="checkbox" data-id="@item.Id" tabindex="0" checked="@item.Approved" class="checkApproveProtestoType">
+            </td>
+            <td width="10%"><button data-id="@item.Id" class="ui basic red button btnDelete" >Sil</button></td>
+        </tr>
+        }
+
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="2">
+                <p>@Model.RowCount kayıttan @Model.From - @Model.To arasındakiler görüntüleniyor.</p>
+            </th>
+            <th>
+                <div class="ui right floated pagination menu field">
+                    <select class="ui compact small dropdown" id="pagingDD">
+                        <option value="@Model.CurrentPage">@Model.CurrentPage</option>
+                        @for (int i = 1; i < @Model.PageCount + 1; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                </div>
+            </th>
+        </tr>
+    </tfoot>
+</table>

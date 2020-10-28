@@ -68,9 +68,9 @@ namespace ResistanceSurvey.Controllers
                     var path = $@"C:\Users\osman.demirci\ECT_{year}_{month}{ext}";
                     using (var stream = file.OpenReadStream())
                     {
-                        
                         try{
-                            _newsApplication.ReadNews(stream);
+                            
+                            _newsApplication.ReadNews(stream, year, month);
                         }
                         catch(Exception ex)
                         {

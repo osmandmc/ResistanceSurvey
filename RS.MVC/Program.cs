@@ -20,6 +20,7 @@ namespace RS.MVC
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
                 .Build();
     }
 }

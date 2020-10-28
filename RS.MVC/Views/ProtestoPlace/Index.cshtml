@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewData["Title"] = "Eylem Mekanı";
+}
+<div class="ui page dimmer">
+    <div class="content">
+        <div class="ui text loader">İşlem Yapılıyor</div>
+    </div>
+</div>
+<div class="ui container">
+    <div id="protestoPlaceList" class="ui divided items">
+
+    </div>
+
+</div>
+<div class="ui modal" id="modalDeleteProtestoPlace">
+    <i class="close icon"></i>
+    <div class="header">
+        Kurum Sil
+    </div>
+    <div class="content">
+        Kurumu silmek istediğinizden emin misiniz?
+    </div>
+    <div class="actions">
+        <div class="ui negative button">
+            Hayır
+        </div>
+        <div id="btnDeleteProtestoPlace" class="ui positive right labeled icon button">
+            Evet
+            <i class="checkmark icon"></i>
+        </div>
+    </div>
+</div>
+<div class="ui modal" id="modalReplaceProtestoPlace">
+    <i class="close icon"></i>
+    <div class="header">
+        Kurum Değiştir
+    </div>
+    <div class="content">
+        <p>Bu değişken vakalarda kullanılıyor. Silmek için önce başka bir değişken ile değiştirin.</p>
+        <div class="ui form">
+            <div class="field">
+                <label>Eylem Türü</label>
+                <select asp-items="ViewBag.ProtestoPlaces" id="protestoPlaceDD" class="ui dropdown search"></select>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui negative button">
+            Hayır
+        </div>
+        <button id="btnReplaceProtestoPlace" class="ui positive right labeled icon button">
+            Evet
+            <i class="checkmark icon"></i>
+        </button>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/app/protestoPlace.js"></script>
+}

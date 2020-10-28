@@ -11,6 +11,7 @@ namespace RS.COMMON.Entities
         public int? CompanyWorkLineId { get; set; }
         public int? CompanyScaleId { get; set; }
         public int? CompanyTypeId { get; set; }
+        public bool Deleted { get; set; }
 
         public CompanyWorkLine CompanyWorkLine { get; set; }
         public CompanyScale CompanyScale { get; set; }

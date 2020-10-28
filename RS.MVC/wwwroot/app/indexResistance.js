@@ -98,7 +98,7 @@ function getFiltered() {
     $.ajax({
         url: '/Resistance/ResistanceList',
         type: "POST",
-        data: { companyId: companyId },
+        data: { companyId: companyId, pageNumber: $("#pagingDD").val() },
         success: function (result) {
             $('#leftColumn').html(result);
             $("#leftDimmer").dimmer("hide");

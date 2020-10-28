@@ -100,7 +100,7 @@ namespace RS.MVC.Applications
         public Result<CompanyReturnDto> CreateCompany(CompanyCreateViewModel model)
         {
             var result = new Result<CompanyReturnDto>();
-            if (_db.Company.Any(s => s.Name == model.Name))
+            if (_db.Company.Any(s => s.Name == model.Name && !s.Deleted))
             {
                 result.Success = false;
             }

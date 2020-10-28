@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using RS.COMMON.DTO;
@@ -18,17 +19,18 @@ namespace RS.MVC.Controllers
         {
             this.db = db;
         }
-
         public IActionResult Index()
         {
             ViewBag.Corporations = new SelectList(db.Corporation.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name"); ;
             return View();
         }
+        [Authorize]
         public IActionResult _List(FilterModel filter)
         {
             var corporations = db.Corporation.ToPagedFilteredResult(filter);
             return PartialView(corporations);
         }
+        [Authorize]
         [HttpPost]
         public IActionResult Save(Corporation model)
         {
@@ -38,6 +40,7 @@ namespace RS.MVC.Controllers
             db.SaveChanges();
             return Ok();
         }
+        [Authorize]
         [HttpPost]
         public IActionResult SetApproval(Corporation model)
         {
@@ -47,12 +50,13 @@ namespace RS.MVC.Controllers
             db.SaveChanges();
             return Ok();
         }
-
+        [Authorize]
         public IActionResult CheckCorporation(int id)
         {
             var used = db.ResistanceCorporation.Any(s => !s.Resistance.Deleted && s.CorporationId == id);
             return Json(used);
         }
+        [Authorize]
         [HttpPost]
         public IActionResult ReplaceCorporation(ReplaceModel model)
         {
@@ -75,7 +79,7 @@ namespace RS.MVC.Controllers
             db.SaveChanges();
             return Ok();
         }
-
+        [Authorize]
         [HttpPost]
         public IActionResult DeleteCorporation(PostBaseModel model)
         {

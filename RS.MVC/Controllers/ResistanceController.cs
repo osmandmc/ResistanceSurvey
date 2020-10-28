@@ -36,7 +36,7 @@ namespace ResistanceSurvey.Controllers
         [Authorize]
         public IActionResult ResistanceList(ResistanceFilterModel filter)
         {
-            ViewBag.Companies = new SelectList(_db.Company.Select(s=> new LookupEntity { Id = s.Id, Name = s.Name}).OrderBy(s => s.Name).ToList(), "Id", "Name");
+            ViewBag.Companies = new SelectList(_db.Company.Where(s => !s.Deleted).Select(s=> new LookupEntity { Id = s.Id, Name = s.Name}).OrderBy(s => s.Name).ToList(), "Id", "Name");
             var resistances = _rsApplication.GetPaged(filter);
             return PartialView("_ResistanceList", resistances);
         }
@@ -52,7 +52,7 @@ namespace ResistanceSurvey.Controllers
 
         public IActionResult Create()
         {
-            var companies = _db.Company.Select(x => new { Id = x.Id, Name = x.Name, IsOutsource = x.IsOutsource }).ToList();
+            var companies = _db.Company.Where(s => !s.Deleted).Select(x => new { Id = x.Id, Name = x.Name, IsOutsource = x.IsOutsource }).ToList();
             ViewBag.Companies = new SelectList(companies.Where(s => !s.IsOutsource), "Id", "Name");
             SetLookups();
             var name = HttpContext.User.Identity.Name;
@@ -165,11 +165,11 @@ namespace ResistanceSurvey.Controllers
         public IActionResult EditResistance(int id)
         {
             var resistance = _rsApplication.GetResistanceDetail(id);
-            var companies = _db.Company.Select(x => new { Id = x.Id, Name = x.Name, IsOutsource = x.IsOutsource }).ToList();
+            var companies = _db.Company.Where(s => !s.Deleted).Where(s => !s.Deleted).Select(x => new { Id = x.Id, Name = x.Name, IsOutsource = x.IsOutsource }).ToList();
             var outsourceCompanies = (from c in _db.Company
                                       join coc in _db.CompanyOutsourceCompany on c.Id equals coc.OutsourceCompanyId into oc
                                       from o in oc.DefaultIfEmpty()
-                                      where o.CompanyId == resistance.CompanyId
+                                      where o.CompanyId == resistance.CompanyId && !c.Deleted
                                       select new { Id = o.OutsourceCompanyId, Name = o.OutsourceCompany.Name })
                                      .ToList();
 
@@ -245,7 +245,7 @@ namespace ResistanceSurvey.Controllers
             var outsourceCompanies = (from c in _db.Company
                                       join coc in _db.CompanyOutsourceCompany on c.Id equals coc.OutsourceCompanyId into oc
                                       from o in oc.DefaultIfEmpty()
-                                      where o.CompanyId == companyId
+                                      where o.CompanyId == companyId && !c.Deleted
                                       select new { value = o.OutsourceCompanyId, name = o.OutsourceCompany.Name, text = o.OutsourceCompany.Name })
                                      .ToList();
             return Json(outsourceCompanies);

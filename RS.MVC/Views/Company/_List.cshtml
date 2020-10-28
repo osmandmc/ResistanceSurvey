@@ -18,6 +18,7 @@
                 <th>Tipi</th>
                 <th>Ölçek</th>
                 <th>İş Kolu</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -37,7 +38,7 @@
                 <td>@item.Type</td>
                 <td>@item.Scale</td>
                 <td>@item.WorkLine</td>
-                @*<td><a href="#" onclick="editResistance(@item.Id)"><i class="edit icon"></i></a></td>*@
+                <td width="10%"><button data-id="@item.Id" class="ui basic red button btnDelete">Sil</button></td>
             </tr>
             }
 

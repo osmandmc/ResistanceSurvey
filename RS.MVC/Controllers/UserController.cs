@@ -8,13 +8,17 @@ using RS.MVC.Applications;
 
 namespace RS.MVC.Controllers
 {
-     [Authorize]
+    
     public class UserController: Controller
     {
         private IUserApplication _userApplication;
         public UserController(IUserApplication userApplication)
         {
             _userApplication = userApplication;
+        }
+        public IActionResult Index()
+        {
+            return View();
         }
     }
 }

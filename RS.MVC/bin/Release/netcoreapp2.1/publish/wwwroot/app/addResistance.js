@@ -136,7 +136,6 @@ function submitForm() {
     console.log(dataToPost);
     $.post("/Resistance/Create", dataToPost)
         .done(function (response) {
-            console.log(response);
             alert("Direniş eklendi");
         })
         .fail(function (jqxhr, status, error) {
@@ -290,4 +289,26 @@ $("#addLocation").click(function () {
         '</div>';
     $("#location").append(locationHtml);
     id++;
+});
+$(document).on("change", "#CompanyId", function () {
+    $('#OutsourceCompanyId')
+        .dropdown('clear');
+    //$('#OutsourceCompanyId')
+    //    .dropdown('change values');
+    $('#OutsourceCompanyId').empty();
+    $.ajax({
+        url: '/Resistance/GetOutsourceCompanies?CompanyId=' + $("#CompanyId").val(),
+        success(result) {
+            $.each(result, function (i, item) {
+                $('#OutsourceCompanyId').append($('<option>', {
+                    value: item.value,
+                    text: item.text
+                }))
+            })
+            //$("#OutsourceCompanyId")
+            //    .dropdown();
+        }
+
+    });
+
 });

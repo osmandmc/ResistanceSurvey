@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewData["Title"] = "Kurumlar";
+}
+<div class="ui page dimmer">
+    <div class="content">
+        <div class="ui text loader">İşlem Yapılıyor</div>
+    </div>
+</div>
+<div class="ui container">
+    <div id="tradeUnionList" class="ui divided items">
+
+    </div>
+
+</div>
+<div class="ui modal" id="modalDeleteTradeUnion">
+    <i class="close icon"></i>
+    <div class="header">
+        Sendika Sil
+    </div>
+    <div class="content">
+        Sendikayı silmek istediğinizden emin misiniz?
+    </div>
+    <div class="actions">
+        <div class="ui negative button">
+            Hayır
+        </div>
+        <div id="btnDeleteTradeUnion" class="ui positive right labeled icon button">
+            Evet
+            <i class="checkmark icon"></i>
+        </div>
+    </div>
+</div>
+<div class="ui modal" id="modalReplaceTradeUnion">
+    <i class="close icon"></i>
+    <div class="header">
+        Sendika Değiştir
+    </div>
+    <div class="content">
+        <p>Sendika vakalarda kullanılıyor. Silmek için önce başka bir değişken ile değiştirin.</p>
+        <div class="ui form">
+            <div class="field">
+                <label>Kurum</label>
+                <select asp-items="ViewBag.TradeUnions" id="tradeUnionDD" class="ui dropdown search" ></select>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui negative button">
+            Hayır
+        </div>
+        <button id="btnReplaceTradeUnion" class="ui positive right labeled icon button">
+            Evet
+            <i class="checkmark icon"></i>
+        </button>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/app/tradeUnion.js"></script>
+}

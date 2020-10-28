@@ -112,3 +112,12 @@ C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\R
 C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\Corporation\Index.cshtml.g.cs
 C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\Corporation\_List.cshtml.g.cs
 C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\Company\_EditOutsource.cshtml.g.cs
+C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\ResistanceReason\Index.cshtml.g.cs
+C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\ResistanceReason\_List.cshtml.g.cs
+C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\ProtestoPlace\Index.cshtml.g.cs
+C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\ProtestoPlace\_List.cshtml.g.cs
+C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\ProtestoType\Index.cshtml.g.cs
+C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\ProtestoType\_List.cshtml.g.cs
+C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\TradeUnion\Index.cshtml.g.cs
+C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\TradeUnion\_List.cshtml.g.cs
+C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\User\Index.cshtml.g.cs

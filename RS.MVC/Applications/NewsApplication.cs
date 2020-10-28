@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using RS.COMMON.DTO;
 using RS.COMMON.Entities;
 using RS.EF;
@@ -13,7 +14,7 @@ namespace RS.MVC.Applications
     public interface INewsApplication
     {
         IEnumerable<NewsListModel> GetNewsByPeriod(int year, int month);
-        void ReadNews(Stream stream);
+        void ReadNews(Stream stream, int year, int month);
         void MarkAsResistanceNews(int newsId);
         void MarkAsUnrelatedNews(int newsId);
         byte[] GetNewsFile(int year, int month);
@@ -55,7 +56,7 @@ namespace RS.MVC.Applications
             _db.SaveChanges();
         }
 
-        public void ReadNews(Stream stream)
+        public void ReadNews(Stream stream, int year, int month)
         {
             using (var package = new ExcelPackage(stream))
             {
@@ -67,7 +68,14 @@ namespace RS.MVC.Applications
                 {
                     
                 }
-            
+                
+                var dateIntervalStart = new DateTime(year, month, 1);
+                var dateIntervalEnd = new DateTime(year, month, DateTime.DaysInMonth(dateIntervalStart.Year, dateIntervalStart.Month));
+
+                var existingNews = _db.News.Where(s => s.Date >= dateIntervalStart && s.Date <= dateIntervalEnd).ToList();
+                var attachedResistanceNewsIds = _db.ResistanceNews.Where(s => existingNews.Select(d => d.Id).ToList().Contains(s.NewsId)).Select(s=>s.NewsId).ToList();
+                var removableNews = existingNews.Where(s => !attachedResistanceNewsIds.Contains(s.Id)).ToList();
+                _db.News.RemoveRange(removableNews);
                 for (int row = 2; row <= rowCount.Value; row++)
                 {
                     var news = new News();

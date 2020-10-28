@@ -92,8 +92,8 @@ $("#addLocation").click(function(){
     
     let locationHtml = '<div class="two fields">'+
                             '<div class="field">'+ 
-                                '<label for="ProtestoCityIds['+id+']">İl</label>'+
-                                '<select id="ProtestoCityIds_'+id+'_" name="ProtestoCityIds['+id+']" class="ui fluid search selection dropdown city" data-id="'+id+'">'+
+                                '<label for="ProtestoLocations['+id+']">İl</label>'+
+                                '<select id="ProtestoLocations'+id+'_" name="ProtestoLocations['+id+'].CityId" class="ui fluid search selection dropdown city" data-id="'+id+'">'+
                                     '<option value="">--Seçiniz--</option>'+
                                     '<option value="1">Adana</option>'+
                                     '<option value="2">Adiyaman</option>'+
@@ -179,8 +179,8 @@ $("#addLocation").click(function(){
                                 '</select>'+
                             '</div>'+
                             '<div class="field">'+
-                                '<label for="ProtestoDistrictIds['+id+']">İlçe</label>'+
-                                '<select id="ProtestoDistrictIds_'+id+'_" name="ProtestoDistrictIds['+id+']"  class="ui fluid search dropdown" data-id="'+id+'">'+
+                                '<label for="ProtestoLocations['+id+']">İlçe</label>'+
+                                '<select id="ProtestoLocations'+id+'_" name="ProtestoDistrictIds['+id+'].DistrictId"  class="ui fluid search dropdown" data-id="'+id+'">'+
                                     '<option value="">--Seçiniz--</option>'+
                                 '</select>'+
                             '</div>'+
