@@ -1,79 +1,79 @@
 @model RS.MVC.Models.ResistanceCreateModel
 @using RS.COMMON.Constants
 
-<form id="resistanceForm" class="ui form segment" method="post" action="Create">
-    <h4 class="ui dividing header">Vaka</h4>
+<form id="resistanceForm" class="ui form" method="post" action="Create">
+    <h4 class="ui dividing header"><a href="#" id="listCase"><i class="angle double left icon"></i></a>Vakalar</h4>
     <div class="field">
         <label for="ResistanceDescription">Kısa Açıklama</label>
         <textarea type="text" name="ResistanceDescription" id="ResistanceDescription" rows="3"></textarea>
     </div>
-        <div class="field">
-            <label asp-for="CategoryId">Vaka Niteliği</label>
-            <select asp-for="CategoryId" asp-items="@ViewBag.Categories"> <option value="">--Seçiniz--</option></select>
-            <span asp-validation-for="CategoryId" class="text-danger"></span>
-        </div>
-       
+    <div class="field">
+        <label asp-for="CategoryId">Vaka Niteliği</label>
+        <select asp-for="CategoryId" asp-items="@ViewBag.Categories"> <option value="">--Seçiniz--</option></select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
     <div class="fields">
         <div class="six wide field">
             <label for="IsOutsource">Şirket Taşeron mu?</label>
-            <select id="isOutsource">
-                <option value="0">Hayır</option>
-                <option value="1">Evet</option>
+            <select id="isOutsource" name="IsOutsource">
+                <option value="False">Hayır</option>
+                <option value="True">Evet</option>
             </select>
         </div>
         <div class="ten wide field">
-            <label asp-for="CompanyId">Ana Şirket</label>
+            <label asp-for="CompanyId">Şirket</label>
             <div class="two fields">
                 <div class="field">
-                <select asp-for="CompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" onchange="checkExisiting()"> 
-                    <option value="">--Seçiniz--</option>
-                </select>
+                    <select asp-for="CompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" onchange="checkExisiting()">
+                        <option value="">--Seçiniz--</option>
+                    </select>
                 </div>
                 <div class="field">
-                    <button type="button" onclick="openModal()" class="ui button">Yeni Şirket Ekle</button>
+                    <button type="button" onclick="openModal(false)" class="ui button">Yeni Şirket Ekle</button>
                 </div>
             </div>
         </div>
     </div>
     <div id="outsource" style="display:none">
-        <label asp-for="OutsourceCompanyId">Taşeron Şirket</label>
+        <label asp-for="MainCompanyId">Ana Şirket</label>
         <div class="two fields">
             <div class="field">
-                <select asp-for="OutsourceCompanyId" asp-items="@ViewBag.OutsourceCompanies" class="ui fluid search selection dropdown"> 
+                <select asp-for="MainCompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown">
                     <option value="">--Seçiniz--</option>
                 </select>
             </div>
             <div class="field">
-                <button type="button" onclick="openOutsourceModal()" class="ui button"><i class="chevron circle up icon"></i>Taşeron Şirket Ekle</button>
+                <button type="button" onclick="openModal(true)" class="ui button"><i class="chevron circle up icon"></i>Ana Şirket Ekle</button>
             </div>
         </div>
     </div>
     <div class="two fields">
         <div class="field">
-                <label for="ResistanceReasonIds">Vaka Nedeni</label>
-                <select asp-for="ResistanceReasonIds" asp-items="@ViewBag.ResistanceReasons" class="ui fluid search dropdown" multiple="">
-                    <option value="">--Seçiniz--</option>
-                </select>
-            </div>
-            <div class="field">
-                <label for="DevelopRight">Hak Geliştirme/Hak Savunma Özelliği</label>
-                <select asp-for="DevelopRight">
-                    <option value="">--Seçiniz--</option>
-                    <option value="true">Hak Geliştirme</option>
-                    <option value="false">Hak Savunma</option>
-                </select>
-                <span asp-validation-for="DevelopRight" class="text-danger"></span>
-            </div>
+            <label for="ResistanceReasonIds">Vaka Nedeni</label>
+            <select asp-for="ResistanceReasonIds" asp-items="@ViewBag.ResistanceReasons" class="ui fluid search dropdown" multiple="">
+                <option value="">--Seçiniz--</option>
+            </select>
         </div>
+        <div class="field">
+            <label for="DevelopRight">Hak Geliştirme/Hak Savunma Özelliği</label>
+            <select asp-for="DevelopRight">
+                <option value="">--Seçiniz--</option>
+                <option value="true">Hak Geliştirme</option>
+                <option value="false">Hak Savunma</option>
+            </select>
+            <span asp-validation-for="DevelopRight" class="text-danger"></span>
+        </div>
+    </div>
     <div class="two fields">
+        <div class="field">
+            <label for="EmployeeCount">İş Yerindeki İşçi Sayısı (Tam)</label>
+            <input type="number" name="EmployeeCount" id="EmployeeCount">
+        </div>
         <div class="field">
             <label asp-for="EmployeeCountId">İş Yerindeki İşçi Sayısı</label>
             <select asp-for="EmployeeCountId" asp-items="@ViewBag.EmployeeCount"><option value="">--Seçiniz--</option></select>
             <span asp-validation-for="EmployeeCountId" class="text-danger"></span>
-        </div>
-        <div class="field">
-            <label for="EmployeeCount">İş Yerindeki İşçi Sayısı (Tam)</label>
-            <input type="text" name="EmployeeCount" id="EmployeeCount">
         </div>
     </div>
     <div class="two fields">
@@ -84,7 +84,7 @@
                 <option value="true">Var</option>
             </select>
         </div>
-         <div class="field tradeUnionAuthorityGroup" style="display:none">
+        <div class="field tradeUnionAuthorityGroup" style="display:none">
             <label for="TradeUnionAuthorityId">Sendikanın Yetki Durumu</label>
             <select asp-for="TradeUnionAuthorityId" asp-items="@ViewBag.TradeUnionAuthorities">
                 <option value="">--Seçiniz--</option>
@@ -98,12 +98,14 @@
             <option value="">Seçiniz</option>
         </select>
     </div>
-   
+
     <div class="field">
         <label for="TradeUnionId">Tepki Gösterilen Sendika</label>
-        <select asp-for="TradeUnionId" asp-items="@ViewBag.TradeUnions" class="ui fluid search dropdown">
-            <option value="">Seçiniz</option>
-        </select>
+                <select asp-for="TradeUnionId" asp-items="@ViewBag.TradeUnions">
+                    <option value="">Seçiniz</option>
+                </select>
+            </div>
+            
     </div>
     <div class="two fields">
         <div class="field">
@@ -120,7 +122,7 @@
             </select>
             <span asp-validation-for="GenderId" class="text-danger"></span>
         </div>
-        
+
     </div>
     <div class="field">
         <label for="FiredEmployeeCountByProtesto">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>
@@ -134,7 +136,7 @@
             <option value="1">Evet</option>
             <option value="2">Hayır</option>
         </select>
-            <span asp-validation-for="AnyLegalIntervention" class="text-danger"></span>
+        <span asp-validation-for="AnyLegalIntervention" class="text-danger"></span>
     </div>
     <div class="field">
         <label for="LegalIntervantionDesc">Hukuki Girişim Açıklama</label>
@@ -148,58 +150,37 @@
         </select>
         <span asp-validation-for="ProtestoTypeIds" class="text-danger"></span>
     </div>
-    
+
     <div class="two fields">
         <div class="field">
             <label for="ProtestoStartDate">Eylemin Başlangıç Tarihi</label>
-            <input asp-for="ProtestoStartDate" type="text" class="ddmmyyyy"/>
+            <input asp-for="ProtestoStartDate" type="text" class="ddmmyyyy" />
         </div>
         <div class="field">
             <label for="ProtestoEndDate">Eylemin Bitiş Tarihi</label>
-            <input asp-for="ProtestoEndDate" type="text" class="ddmmyyyy"/>
+            <input asp-for="ProtestoEndDate" type="text" class="ddmmyyyy" />
             <span asp-validation-for="ProtestoEndDate" class="text-danger"></span>
         </div>
     </div>
-    
+
     <div class="field">
         <label for="ProtestoPlaceIds">Eylemin Mekanı</label>
         <select asp-for="ProtestoPlaceIds" asp-items="@ViewBag.ProtestoPlaces" class="ui fluid search dropdown" multiple="multiple">
             <option value="">--Seçiniz--</option>
         </select>
-            <span asp-validation-for="ProtestoPlaceIds" class="text-danger"></span>
+        <span asp-validation-for="ProtestoPlaceIds" class="text-danger"></span>
     </div>
-       
-    <div class="fields">
-        <div class="four wide field">
-           <button id="addLocation" type="button" class="ui button">Lokasyon Ekle</button>
-        </div>
-        <div class="twelve wide field" id="location">
-            <div class="three fields">
-                <div class="field">
-                    <label for="ProtestoCityIds[0]">İl</label>
-                    <select id="ProtestoCityIds_0_" name="ProtestoCityIds[0]"  class="ui fluid city" data-id="0">'+
-                        <option value="">--Seçiniz--</option>
-                        @foreach (var city in ViewBag.Cities)
-                        {
-                            <option value="@city.Value">@city.Text</option>
-                        }
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="ProtestoDistrictIds[0]">İlçe</label>
-                    <select asp-for="ProtestoDistrictIds[0]"  class="ui fluid" data-id="0">
-                        <option value="">--Seçiniz--</option>
-                    </select>
-                </div>
-            </div>
-            
-        </div>
+    <div class="field">
+        <button id="addLocation" type="button" class="ui button">Lokasyon Ekle (İl/ilçe)</button>
     </div>
-   
+    <div class="field" id="location">
+
+
+    </div>
     <div class="two fields">
         <div class="field">
             <label for="EmployeeCountInProtesto">Eylemdeki İşçi Sayısı (Tam)</label>
-            <input type="text" name="EmployeeCountInProtesto" id="EmployeeCountInProtesto"/>
+            <input type="number" name="EmployeeCountInProtesto" id="EmployeeCountInProtesto" />
         </div>
         <div class="field">
             <label for="EmployeeCountInProtestoId">Eylemdeki İşçi Sayısı</label>
@@ -208,7 +189,7 @@
             </select>
         </div>
     </div>
-    
+
     <div class="field">
         <label for="InterventionTypeId">Müdahale Tipi</label>
         <select asp-for="InterventionTypeIds" asp-items="@ViewBag.InterventionTypes" class="ui fluid search dropdown" multiple="">
@@ -223,14 +204,14 @@
         <label for="Note">Kontrol Kişisine Notlar</label>
         <textarea type="text" name="Note" id="Note" rows="2"></textarea>
     </div>
-  
+
     <h4 class="ui dividing header">Haberler</h4>
     <div class="ui divided items" id="resistanceNews">
     </div>
     <button type="submit" class="ui ok green button">KAYDET</button>
     <div class="ui error message"></div>
 </form>
-        
+
 <div class="ui modal" id="addCompanyModal">
     <i class="close icon"></i>
     <div class="header">
@@ -248,72 +229,30 @@
     </div>
 </div>
 
+<script src="../app/addResistance.js"></script>
 <script>
-     $(document).on("change","#isOutsource",function () {
-            console.log("outsource");
-            if ($(this).val() == "1") {
-                $("#outsource").show();
-            }
-            else {
-                $("#outsource").hide();
+    
+    function checkExisiting() {
+
+        var companyId = $("#CompanyId").val();
+        var categoryId = $("#CategoryId").val();
+        console.log(companyId);
+        if (companyId != null && categoryId != null) {
+            ExistingResistance(companyId, categoryId);
+        }
+    }
+    function ExistingResistance(companyId, categoryId) {
+        $.ajax({
+            url: "/Resistance/ExistingResistance?companyId=" + companyId + "&categoryId=" + categoryId,
+            success: function (response) {
+                if (response != null) {
+                    alert("mevcut");
+                    console.log(response);
+                }
+
             }
         });
-        </script>
-    <script src="../app/addResistance.js"></script>
-    <script>
-        function openModal() {
-            console.log("open");
-            $.ajax({
-                url: "/Resistance/AddCompany",
-                datatype: "html",
-                success: function (response) {
-                    $("#modal-content").html(response);
-                    $('#addCompanyModal').modal('show');
-                }
-            });
-
-        }
-        function openOutsourceModal() {
-            $.ajax({
-                url: "/Resistance/AddOutsourceCompany",
-                datatype: "html",
-                success: function (response) {
-                    $("#modalOutsource-content").html(response);
-                    $('#addOutsourceCompanyModal').modal('show');
-                }
-            });
-        }
-        function checkExisiting() {
-
-            var companyId = $("#CompanyId").val();
-            var categoryId = $("#CategoryId").val();
-            console.log(companyId);
-            if (companyId != null && categoryId != null) {
-                ExistingResistance(companyId, categoryId);
-            }
-        }
-        function ExistingResistance(companyId, categoryId) {
-            $.ajax({
-                url: "/Resistance/ExistingResistance?companyId=" + companyId + "&categoryId=" + categoryId,
-                success: function (response) {
-                    if (response != null) {
-                        alert("mevcut");
-                        console.log(response);
-                    }
-
-                }
-            });
-        }
-
-        $(function () {
-            $("#HasTradeUnion").change(function () {
-                if ($(this).val() == "true") { $(".tradeUnionAuthorityGroup").show(); }
-                else { $(".tradeUnionAuthorityGroup").hide(); }
-            });
-            $('.ui.dropdown').dropdown({
-                allowAdditions: true,
-            });
-        });
-    </script> 
+    }
+</script>
 
 

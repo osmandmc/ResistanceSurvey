@@ -60,7 +60,7 @@ namespace RS.COMMON.DTO
             if(ProtestoDistrictIds!=null)
                 ProtestoDistrictIds.ForEach(c=> {if(c.HasValue) protesto.Districts.Add(new ProtestoDistrict{ ProtestoId = ProtestoId, DistrictId = c.Value });});
             if (Locations!= null)
-                Locations.Where(s=>!s.Deleted).ToList().ForEach(c => { protesto.Locations.Add(new ProtestoLocation { ProtestoId = ProtestoId, CityId = c.CityId, DistrictId = c.DistrictId, Place = c.Place }); });
+                Locations.Where(s=>!s.Deleted).ToList().ForEach(c => { protesto.Locations.Add(new ProtestoLocation { ProtestoId = ProtestoId, CityId = c.CityId.Value, DistrictId = c.DistrictId, Place = c.Place }); });
             return protesto;
         }
     }

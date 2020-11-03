@@ -1,10 +1,9 @@
 {
   "version": 2,
-  "dgSpecHash": "y2p6aAppybeqJae/x57N6Ed8S62udiTk1ww0ub5XsFWMviL3iN2vqe7mU0EDuRAc6ulnPKEMXDjk2igLWCWh9w==",
+  "dgSpecHash": "6UfyX+Gk7yvDpmHUXMU/EBhgeyXXllwj0CX5Rad41eaA2Ki6EHQ33ceWnIjPyzGmBz5oLfxJ8be7TtF+C7UUrQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.MVC\\RS.MVC.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\odemirci\\.nuget\\packages\\dapper\\1.50.5\\dapper.1.50.5.nupkg.sha512",
     "C:\\Users\\odemirci\\.nuget\\packages\\epplus\\4.5.3.2\\epplus.4.5.3.2.nupkg.sha512",
     "C:\\Users\\odemirci\\.nuget\\packages\\libuv\\1.10.0\\libuv.1.10.0.nupkg.sha512",
     "C:\\Users\\odemirci\\.nuget\\packages\\messagepack\\1.7.3.4\\messagepack.1.7.3.4.nupkg.sha512",
@@ -302,7 +301,7 @@
     "C:\\Users\\odemirci\\.nuget\\packages\\system.reflection.extensions\\4.3.0\\system.reflection.extensions.4.3.0.nupkg.sha512",
     "C:\\Users\\odemirci\\.nuget\\packages\\system.reflection.metadata\\1.6.0\\system.reflection.metadata.1.6.0.nupkg.sha512",
     "C:\\Users\\odemirci\\.nuget\\packages\\system.reflection.primitives\\4.3.0\\system.reflection.primitives.4.3.0.nupkg.sha512",
-    "C:\\Users\\odemirci\\.nuget\\packages\\system.reflection.typeextensions\\4.4.0\\system.reflection.typeextensions.4.4.0.nupkg.sha512",
+    "C:\\Users\\odemirci\\.nuget\\packages\\system.reflection.typeextensions\\4.3.0\\system.reflection.typeextensions.4.3.0.nupkg.sha512",
     "C:\\Users\\odemirci\\.nuget\\packages\\system.resources.resourcemanager\\4.3.0\\system.resources.resourcemanager.4.3.0.nupkg.sha512",
     "C:\\Users\\odemirci\\.nuget\\packages\\system.runtime\\4.3.0\\system.runtime.4.3.0.nupkg.sha512",
     "C:\\Users\\odemirci\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.5.2\\system.runtime.compilerservices.unsafe.4.5.2.nupkg.sha512",

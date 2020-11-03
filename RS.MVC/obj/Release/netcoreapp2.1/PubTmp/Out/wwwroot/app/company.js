@@ -101,3 +101,90 @@ function getCompanies() {
         }
     });
 }
+$(document).on("click", ".btnDelete", function () {
+    let companyId = $(this).data("id");
+    $.ajax({
+        url: '/Company/CheckCompany/' + companyId,
+        success: function (result) {
+            console.log(result);
+
+            if (result == true) {
+                $("#btnReplaceCompany").data("id", companyId);
+                $("#modalReplaceCompany").modal("show");
+            }
+            else {
+                $("#btnDeleteCompany").data("id", companyId);
+                $("#modalDeleteCompany").modal("show");
+            }
+        },
+        error(jqxhr, status, error) {
+            alert("Bir hata oldu");
+        }
+    });
+    $(".ui .dropdown").dropdown();
+});
+
+$(document).on("click", "#btnDeleteCompany", function () {
+    let companyId = $(this).data("id");
+    $.ajax({
+        url: '/Company/DeleteCompany',
+        method: 'POST',
+        data: { id: companyId },
+        success: function (result) {
+            alert("İşleminiz başarılı");
+            $("#modalReplaceCompany").modal("hide");
+            getCompanies();
+        },
+        error(jqxhr, status, error) {
+            alert("Bir hata oldu");
+        }
+    });
+});
+$(document).on("click", "#btnReplaceCompany", function () {
+    let companyId = $(this).data("id");
+    let newCompanyId = $("#companyDD").val();
+    $.ajax({
+        url: '/Company/ReplaceCompany',
+        method: 'POST',
+        data: { id: companyId, newId: newCompanyId },
+        success: function (result) {
+            alert("İşleminiz başarılı");
+            $("#modalReplaceCompany").modal("hide");
+            getCompanies();
+        },
+        error(jqxhr, status, error) {
+            alert("Bir hata oldu");
+        }
+    });
+});
+
+$(document).on("click", ".checkApproveCompany", function () {
+    var checkbox = $(this);
+    var approved = checkbox.is(":checked");
+    let companyId = $(this).data("id");
+    $.ajax({
+        url: '/Company/SetApproval',
+        method: 'POST',
+        data: { id: companyId, approved: approved },
+        success: function (result) {
+        },
+        error(jqxhr, status, error) {
+            alert("Bir hata oldu");
+        }
+    });
+});
+
+
+function getCompany() {
+    $.ajax({
+        url: '/Company/_List',
+        type: "POST",
+        data: {
+            pageNumber: $("#pagingDD").val()
+        },
+        success: function (result) {
+            $('#companyList').html(result);
+            $(".dimmer").dimmer("hide");
+        }
+    });
+}

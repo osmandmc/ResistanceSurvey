@@ -1,193 +1,191 @@
 @model RS.MVC.Models.ResistanceEditModel
 
-    <form id="resistanceForm" class="ui form">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form id="resistanceForm" class="ui form">
+    <h4 class="ui dividing header"><a href="#" id="listCase"><i class="angle double left icon"></i></a>Vakalar</h4>
+    <input type="hidden" name="Id" id="Id" value="@Model.Id" />
+    <div class="field">
+        <label for="ResistanceDescription">Kısa Açıklama</label>
+        <textarea type="text" name="ResistanceDescription" id="ResistanceDescription" rows="3">@Model.ResistanceDescription</textarea>
+    </div>
+    <div class="field">
+        <label asp-for="CategoryId">Vaka Niteliği</label>
+        <select asp-for="CategoryId" asp-items="@ViewBag.Categories"> <option value="">--Seçiniz--</option></select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
 
-        <h3 class="ui dividing header">Vaka</h3>
-        <input type="hidden" name="Id" id="Id" value="@Model.Id" />
+    <div class="two fields">
         <div class="field">
-            <label for="ResistanceDescription">Kısa Açıklama</label>
-            <textarea type="text" name="ResistanceDescription" id="ResistanceDescription" rows="3">@Model.ResistanceDescription</textarea>
+            <label for="ResistanceReasonIds">Vaka Nedeni</label>
+            <select asp-for="ResistanceReasonIds" asp-items="ViewBag.ResistanceReasons" class="ui fluid search dropdown" multiple="">
+                <option value="">Seçiniz</option>
+            </select>
         </div>
         <div class="field">
-            <label asp-for="CategoryId">Vaka Niteliği</label>
-            <select asp-for="CategoryId" asp-items="@ViewBag.Categories"> <option value="">--Seçiniz--</option></select>
-            <span asp-validation-for="CategoryId" class="text-danger"></span>
+            <label for="DevelopRight">Hak Geliştirme/Hak Savunma Özelliği</label>
+            <select asp-for="DevelopRight">
+                <option value="">--Seçiniz--</option>
+                <option value="true">Hak Geliştirme</option>
+                <option value="false">Hak Savunma</option>
+            </select>
+            <span asp-validation-for="DevelopRight" class="text-danger"></span>
         </div>
-
+    </div>
+    <div class="sixty wide field">
+        <div class="field">
+            <label for="IsOutsource">Şirket Taşeron mu?</label>
+            <select id="isOutsource" asp-for="IsOutsource">
+                <option value="False">Hayır</option>
+                <option value="True">Evet</option>
+            </select>
+        </div>
+        <label asp-for="CompanyId">Şirket</label>
         <div class="two fields">
             <div class="field">
-                <label for="ResistanceReasonIds">Vaka Nedeni</label>
-                <select asp-for="ResistanceReasonIds" asp-items="ViewBag.ResistanceReasons" class="ui fluid search dropdown" multiple="">
-                    <option value="">Seçiniz</option>
-                </select>
+                <select asp-for="CompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown"> <option value="">--Seçiniz--</option></select>
             </div>
             <div class="field">
-                <label for="DevelopRight">Hak Geliştirme/Hak Savunma Özelliği</label>
-                <select asp-for="DevelopRight">
-                    <option value="">--Seçiniz--</option>
-                    <option value="true">Hak Geliştirme</option>
-                    <option value="false">Hak Savunma</option>
-                </select>
-                <span asp-validation-for="DevelopRight" class="text-danger"></span>
+                <button type="button" onclick="openModal(false)" class="ui button"><i class="chevron circle up icon"></i>Şirket Ekle</button>
             </div>
         </div>
+    </div>
+    @if (Model.MainCompanyId != null)
+    {
+        ViewBag.OutsourceVisible = "block";
+    }
+    else
+    {
+        ViewBag.OutsourceVisible = "none";
+    }
+
+    <div id="outsource" style="display:@ViewBag.OutsourceVisible">
         <div class="sixty wide field">
-            <div class="field">
-                <label for="IsOutsource">Şirket Taşeron mu?</label>
-                <select id="isOutsource" asp-for="IsOutsource">
-                    <option value="False">Hayır</option>
-                    <option value="True">Evet</option>
-                </select>
-            </div>
-            <label asp-for="CompanyId">Ana Şirket</label>
+            <label asp-for="MainCompanyId">Ana Şirket</label>
             <div class="two fields">
                 <div class="field">
-                    <select asp-for="CompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown"> <option value="">--Seçiniz--</option></select>
+                    <select asp-for="MainCompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown"> <option value="">--Seçiniz--</option></select>
                 </div>
                 <div class="field">
-                    <button type="button" onclick="openModal()" class="ui button"><i class="chevron circle up icon"></i>Yeni Şirket Ekle</button>
+                    <button type="button" onclick="openModal(true)" class="ui button"><i class="chevron circle up icon"></i>Ana Şirket Ekle</button>
                 </div>
             </div>
         </div>
-        @if (Model.IsOutsource == true)
-        {
-            ViewBag.OutsourceVisible = "block";
-        }
-        else
-        {
-            ViewBag.OutsourceVisible = "none";
-        }
+    </div>
 
-        <div id="outsource" style="display:@ViewBag.OutsourceVisible">
-            <div class="sixty wide field">
-                <label asp-for="OutsourceCompanyId">Taşeron Şirket</label>
-                <div class="two fields">
-                    <div class="field">
-                        <select asp-for="OutsourceCompanyId" asp-items="@ViewBag.OutsourceCompanies" class="ui fluid search selection dropdown"> <option value="">--Seçiniz--</option></select>
-                    </div>
-                    <div class="field">
-                        <button type="button" onclick="openOutsourceModal()" class="ui button"><i class="chevron circle up icon"></i>Yeni Taşeron Şirket Ekle</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="two fields">
-            <div class="field">
-                <label asp-for="EmployeeCountId">İş Yerindeki İşçi Sayısı</label>
-                <select asp-for="EmployeeCountId" asp-items="@ViewBag.EmployeeCount"><option value="">--Seçiniz--</option></select>
-                <span asp-validation-for="EmployeeCountId" class="text-danger"></span>
-            </div>
-            <div class="field">
-                <label for="EmployeeCount">İş Yerindeki İşçi Sayısı (Tam)</label>
-                <input type="text" name="EmployeeCount" id="EmployeeCount" value="@Model.EmployeeCount">
-            </div>
+    <div class="two fields">
+        <div class="field">
+            <label asp-for="EmployeeCountId">İş Yerindeki İşçi Sayısı</label>
+            <select asp-for="EmployeeCountId" asp-items="@ViewBag.EmployeeCount"><option value="">--Seçiniz--</option></select>
+            <span asp-validation-for="EmployeeCountId" class="text-danger"></span>
         </div>
         <div class="field">
-            <label for="HasTradeUnion">Sendika Var Mı?</label>
-            <select asp-for="HasTradeUnion">
-                <option value="false">Yok</option>
-                <option value="true">Var</option>
-            </select>
+            <label for="EmployeeCount">İş Yerindeki İşçi Sayısı (Tam)</label>
+            <input type="text" name="EmployeeCount" id="EmployeeCount" value="@Model.EmployeeCount">
         </div>
-        <div class="field tradeUnionAuthorityGroup">
-            <label for="TradeUnionAuthorityId">Sendikanın Yetki Durumu</label>
-            <select asp-for="TradeUnionAuthorityId" asp-items="@ViewBag.TradeUnionAuthorities">
+    </div>
+    <div class="field">
+        <label for="HasTradeUnion">Sendika Var Mı?</label>
+        <select asp-for="HasTradeUnion">
+            <option value="false">Yok</option>
+            <option value="true">Var</option>
+        </select>
+    </div>
+    <div class="field tradeUnionAuthorityGroup">
+        <label for="TradeUnionAuthorityId">Sendikanın Yetki Durumu</label>
+        <select asp-for="TradeUnionAuthorityId" asp-items="@ViewBag.TradeUnionAuthorities">
+            <option value="">--Seçiniz--</option>
+        </select>
+        <span asp-validation-for="TradeUnionAuthorityId" class="text-danger"></span>
+
+    </div>
+    <div class="field">
+        <label for="CorporationIds">Kurumsallık</label>
+        <select asp-for="CorporationIds" asp-items="ViewBag.Corporations" class="ui fluid search dropdown" multiple="">
+            <option value="">Seçiniz</option>
+        </select>
+    </div>
+
+    <div class="field tradeUnionAuthorityGroup">
+        <label for="TradeUnionId">Tepki Gösterilen Sendika</label>
+        <select asp-for="TradeUnionId" asp-items="@ViewBag.TradeUnions">
+            <option value="">Seçiniz</option>
+        </select>
+    </div>
+    <div class="two fields">
+        <div class="field">
+            <label for="EmploymentTypeIds">İstihdam Türü</label>
+            <select asp-for="EmploymentTypeIds" asp-items="@ViewBag.EmploymentTypes" class="ui fluid search dropdown" multiple="">
                 <option value="">--Seçiniz--</option>
             </select>
-            <span asp-validation-for="TradeUnionAuthorityId" class="text-danger"></span>
-
-        </div>
-        <div class="field">
-            <label for="CorporationIds">Kurumsallık</label>
-            <select asp-for="CorporationIds" asp-items="ViewBag.Corporations" class="ui fluid search dropdown" multiple="">
-                <option value="">Seçiniz</option>
-            </select>
         </div>
 
-        <div class="field tradeUnionAuthorityGroup">
-            <label for="TradeUnionId">Tepki Gösterilen Sendika</label>
-            <select asp-for="TradeUnionId" asp-items="@ViewBag.TradeUnions">
-                <option value="">Seçiniz</option>
-            </select>
-        </div>
-        <div class="two fields">
-            <div class="field">
-                <label for="EmploymentTypeIds">İstihdam Türü</label>
-                <select asp-for="EmploymentTypeIds" asp-items="@ViewBag.EmploymentTypes" class="ui fluid search dropdown" multiple="">
-                    <option value="">--Seçiniz--</option>
-                </select>
-            </div>
-
-        </div>
-        <div class="field">
-            <label for="FiredEmployeeCountByProtesto">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>
-            <input type="number" name="FiredEmployeeCountByProtesto" id="FiredEmployeeCountByProtesto" value="@Model.FiredEmployeeCountByProtesto">
-        </div>
-        <div class="field">
-            <label for="AnyLegalIntervention">Hukuki Girişim</label>
-            <select asp-for="AnyLegalIntervention">
-                <option value="">--Seçiniz--</option>
-                <option value="0">Bilinmiyor</option>
-                <option value="1">Evet</option>
-                <option value="2">Hayır</option>
-            </select>
-            <span asp-validation-for="AnyLegalIntervention" class="text-danger"></span>
-        </div>
-        <div class="field">
-            <label for="LegalInterventionDesc">Hukuki Girişim Açıklama</label>
-            <textarea type="text" name="LegalInterventionDesc" id="LegalInterventionDesc" value="" rows="2">@Model.LegalInterventionDesc</textarea>
-        </div>
-        <div class="field">
-            <label for="ResistanceNote">Kontrol Kişisine Notlar</label>
-            <textarea type="text" name="ResistanceNote" id="ResistanceNote" rows="3">@Model.ResistanceNote</textarea>
-        </div>
-        <h3 class="ui dividing header">Eylemler </h3>
-        <a class="ui right labeled small green icon button" onclick="addProtesto(@Model.Id)">Eylem Ekle<i class="plus icon"></i></a>
-        <table class="ui celled table">
-            <tbody>
-                @foreach (var item in @Model.Protestos)
-                {
-                    <tr>
-                        <td>
-                            <ul>
-                                @foreach (var pt in item.ProtestoTypes)
-                                {
-                                    <li>@pt</li>
-                                }
-                            </ul>
-                        </td>
-                        <td>@item.ProtestoStartDate.ToShortDateString()</td>
-                        <td><a class="ui right labeled small blue icon button" onclick="editProtesto(@item.ProtestoId)">Görüntüle<i class="right chevron icon"></i></a></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <h4 class="ui dividing header">Haberler</h4>
-        <div class="ui divided items" id="resistanceNews">
-            @for (int i = 0; i < Model.ResistanceNews.Count; i++)
+    </div>
+    <div class="field">
+        <label for="FiredEmployeeCountByProtesto">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>
+        <input type="number" name="FiredEmployeeCountByProtesto" id="FiredEmployeeCountByProtesto" value="@Model.FiredEmployeeCountByProtesto">
+    </div>
+    <div class="field">
+        <label for="AnyLegalIntervention">Hukuki Girişim</label>
+        <select asp-for="AnyLegalIntervention">
+            <option value="">--Seçiniz--</option>
+            <option value="0">Bilinmiyor</option>
+            <option value="1">Evet</option>
+            <option value="2">Hayır</option>
+        </select>
+        <span asp-validation-for="AnyLegalIntervention" class="text-danger"></span>
+    </div>
+    <div class="field">
+        <label for="LegalInterventionDesc">Hukuki Girişim Açıklama</label>
+        <textarea type="text" name="LegalInterventionDesc" id="LegalInterventionDesc" value="" rows="2">@Model.LegalInterventionDesc</textarea>
+    </div>
+    <div class="field">
+        <label for="ResistanceNote">Kontrol Kişisine Notlar</label>
+        <textarea type="text" name="ResistanceNote" id="ResistanceNote" rows="3">@Model.ResistanceNote</textarea>
+    </div>
+    <h3 class="ui dividing header">Eylemler </h3>
+    <a class="ui right labeled small green icon button" onclick="addProtesto(@Model.Id)">Eylem Ekle<i class="plus icon"></i></a>
+    <table class="ui celled table">
+        <tbody>
+            @foreach (var item in @Model.Protestos)
             {
-                <div class="item" data-id="@Model.ResistanceNews[i].Id">
-                    <div class="content">
-                        <a href="#" data-id="@Model.ResistanceNews[i].Id" data-open="0">@Model.ResistanceNews[i].Header</a>
-                        <a href="@Model.ResistanceNews[i].Link" target="_blank"><i class="arrow alternate circle right outline icon"></i></a>
-                        <div class="meta">
-                            <span class="date">@Model.ResistanceNews[i].Date.ToShortDateString()</span>
-                            <button type="button" class="ui icon button red basic mini btnRemove" data-id="@Model.ResistanceNews[i].Id"><i class="trash icon"></i></button>
-                        </div>
-                        <div class="description" data-id="@Model.ResistanceNews[i].Id" style="display:none"></div>
-                        @Html.HiddenFor(model => Model.ResistanceNewsIds[i].Id)
-                        @Html.HiddenFor(model => Model.ResistanceNewsIds[i].IsDeleted)
-                        @* <input name='ResistanceNewsIds[@i].Id' type='hidden' value="@Model.ResistanceNews[i].Id">
-                        <input name='ResistanceNewsIds[@i].IsDeleted' type='hidden' value="0"> *@
-                    </div>
-                </div>
+                <tr>
+                    <td>
+                        <ul>
+                            @foreach (var pt in item.ProtestoTypes)
+                            {
+                                <li>@pt</li>
+                            }
+                        </ul>
+                    </td>
+                    <td>@item.ProtestoStartDate.ToShortDateString()</td>
+                    <td><a class="ui right labeled small blue icon button" onclick="editProtesto(@item.ProtestoId)">Görüntüle<i class="right chevron icon"></i></a></td>
+                </tr>
             }
-        </div>
-        <button type="submit" class="ui primary button">KAYDET</button>
-        <button type="button" id="btnCancelResistanceModal" class="ui negative button">SİL</button>
-    </form>
+        </tbody>
+    </table>
+    <h4 class="ui dividing header">Haberler</h4>
+    <div class="ui divided items" id="resistanceNews">
+        @for (int i = 0; i < Model.ResistanceNews.Count; i++)
+        {
+            <div class="item" data-id="@Model.ResistanceNews[i].Id">
+                <div class="content">
+                    <a href="#" data-id="@Model.ResistanceNews[i].Id" data-open="0">@Model.ResistanceNews[i].Header</a>
+                    <a href="@Model.ResistanceNews[i].Link" target="_blank"><i class="arrow alternate circle right outline icon"></i></a>
+                    <div class="meta">
+                        <span class="date">@Model.ResistanceNews[i].Date.ToShortDateString()</span>
+                        <button type="button" class="ui icon button red basic mini btnRemove" data-id="@Model.ResistanceNews[i].Id"><i class="trash icon"></i></button>
+                    </div>
+                    <div class="description" data-id="@Model.ResistanceNews[i].Id" style="display:none"></div>
+                    @Html.HiddenFor(model => Model.ResistanceNewsIds[i].Id)
+                    @Html.HiddenFor(model => Model.ResistanceNewsIds[i].IsDeleted)
+                    @* <input name='ResistanceNewsIds[@i].Id' type='hidden' value="@Model.ResistanceNews[i].Id">
+                        <input name='ResistanceNewsIds[@i].IsDeleted' type='hidden' value="0"> *@
+                </div>
+            </div>
+        }
+    </div>
+    <button type="submit" class="ui primary button">KAYDET</button>
+    <button type="button" id="btnCancelResistanceModal" class="ui negative button">SİL</button>
+</form>
 
 <div class="ui modal" id="addCompanyModal">
     <i class="close icon"></i>
@@ -209,30 +207,6 @@
 
 <script src="/app/editResistance.js"></script>
 <script>
-
-   
-    function openModal() {
-        console.log("open");
-        $.ajax({
-            url: "/Resistance/AddCompany",
-            datatype: "html",
-            success: function (response) {
-                $("#modal-content").html(response);
-                $('#addCompanyModal').modal('show');
-            }
-        });
-
-    }
-    function openOutsourceModal() {
-        $.ajax({
-            url: "/Resistance/AddOutsourceCompany",
-            datatype: "html",
-            success: function (response) {
-                $("#modalOutsource-content").html(response);
-                $('#addOutsourceCompanyModal').modal('show');
-            }
-        });
-    }
     function checkExisiting() {
 
         var companyId = $("#CompanyId").val();
@@ -263,41 +237,41 @@
             $("#outsource").hide();
         }
     });
-    function openOutsourceModal() {
-        $.ajax({
-            url: "/Resistance/AddOutsourceCompany",
-            datatype: "html",
-            success: function (response) {
-                $("#modalOutsource-content").html(response);
-                $('#addOutsourceCompanyModal').modal('show');
-            }
-        });
-    }
-    $(document).on("change", "#CompanyId", function () {
-        $('#OutsourceCompanyId')
-            .dropdown('clear');
-        //$('#OutsourceCompanyId')
-        //    .dropdown('change values');
-        $('#OutsourceCompanyId').empty();
-        $.ajax({
-            url: '/Resistance/GetOutsourceCompanies?CompanyId=' + $("#CompanyId").val(),
-            success(result) {
-                $.each(result, function (i, item) {
-                    $('#OutsourceCompanyId').append($('<option>', {
-                        value: item.value,
-                        text: item.text
-                    }))
-                })
-                //$("#OutsourceCompanyId")
-                //    .dropdown();
-            }
+    //function openOutsourceModal() {
+    //    $.ajax({
+    //        url: "/Resistance/AddOutsourceCompany",
+    //        datatype: "html",
+    //        success: function (response) {
+    //            $("#modalOutsource-content").html(response);
+    //            $('#addOutsourceCompanyModal').modal('show');
+    //        }
+    //    });
+    //}
+    //$(document).on("change", "#CompanyId", function () {
+    //    $('#OutsourceCompanyId')
+    //        .dropdown('clear');
+    //    //$('#OutsourceCompanyId')
+    //    //    .dropdown('change values');
+    //    $('#OutsourceCompanyId').empty();
+    //    $.ajax({
+    //        url: '/Resistance/GetOutsourceCompanies?CompanyId=' + $("#CompanyId").val(),
+    //        success(result) {
+    //            $.each(result, function (i, item) {
+    //                $('#OutsourceCompanyId').append($('<option>', {
+    //                    value: item.value,
+    //                    text: item.text
+    //                }))
+    //            })
+    //            //$("#OutsourceCompanyId")
+    //            //    .dropdown();
+    //        }
 
-        });
-        
-    });
-    
+    //    });
 
-    
+    //});
+
+
+
 </script>
 
 

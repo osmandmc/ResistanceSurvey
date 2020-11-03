@@ -19,6 +19,7 @@ namespace RS.COMMON.Entities
 
         public Resistance Resistance { get; set; }
         public ProtestoEmployeeCount ProtestoEmployeeCount { get; set; }
+        public Gender Gender { get; set; }
         public List<ProtestoCity> Cities { get; set; }
         public List<ProtestoDistrict> Districts { get; set; }
         public List<ProtestoLocation> Locations { get; set; }

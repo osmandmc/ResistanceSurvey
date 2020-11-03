@@ -34,11 +34,14 @@ namespace ResistanceSurvey.Controllers
             return View();
         }
         [Authorize]
+        [HttpPost]
         public IActionResult ResistanceList(ResistanceFilterModel filter)
         {
+            ViewBag.Categories = new SelectList(_db.Category.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.Companies = new SelectList(_db.Company.Where(s => !s.Deleted).Select(s=> new LookupEntity { Id = s.Id, Name = s.Name}).OrderBy(s => s.Name).ToList(), "Id", "Name");
-            var resistances = _rsApplication.GetPaged(filter);
-            return PartialView("_ResistanceList", resistances);
+            var result = _rsApplication.GetPaged(filter);
+            result.Filter = filter;
+            return PartialView("_ResistanceList", result);
         }
         [Authorize]
         public IActionResult NewsList(int year, int month)
@@ -52,19 +55,19 @@ namespace ResistanceSurvey.Controllers
 
         public IActionResult Create()
         {
-            var companies = _db.Company.Where(s => !s.Deleted).Select(x => new { Id = x.Id, Name = x.Name, IsOutsource = x.IsOutsource }).ToList();
-            ViewBag.Companies = new SelectList(companies.Where(s => !s.IsOutsource), "Id", "Name");
+            var companies = _db.Company.Where(s => !s.Deleted).Select(x => new { Id = x.Id, Name = x.Name }).ToList();
+            ViewBag.Companies = new SelectList(companies, "Id", "Name");
             SetLookups();
             var name = HttpContext.User.Identity.Name;
             return PartialView("_Create");
         }
         [Authorize]
         [HttpPost]
-        public IActionResult Create(ResistanceCreateModel model)
+        public IActionResult Create(ResistanceForm model)
         {
             if (ModelState.IsValid)
             {
-                model.UserName = UserName;
+                //model.UserName = UserName;
                 _rsApplication.Create(model);
                 return Ok();
             }
@@ -81,13 +84,12 @@ namespace ResistanceSurvey.Controllers
             return PartialView("_AddOutsourceCompany");
         }
         [Authorize]
-        public IActionResult AddCompany()
+        public IActionResult AddCompany(bool isMain)
         {
-          
             ViewBag.Worklines = new SelectList(_utilities.GetLookup("companyworkline"), "Id", "Name");
             ViewBag.CompanyTypes = new SelectList(_utilities.GetLookup("companytype"), "Id", "Name");
             ViewBag.CompanyScales = new SelectList(_utilities.GetLookup("companyscale"), "Id", "Name");
-            return PartialView("_AddCompany");
+            return PartialView("_AddCompany", new CompanyCreateViewModel { IsMain = isMain});
         }
         [Authorize]
         [HttpPost]
@@ -100,17 +102,7 @@ namespace ResistanceSurvey.Controllers
             }
             return Json(ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors));
         }
-        [Authorize]
-        [HttpPost]
-        public IActionResult AddOutsourceCompany(OutsourceCompanyCreateViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var result = _rsApplication.CreateOutsourceCompany(model);
-                return Ok(result);
-            }
-            return Json(ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors));
-        }
+       
         [Authorize]
         public IActionResult AddProtesto(int id)
         {
@@ -130,7 +122,8 @@ namespace ResistanceSurvey.Controllers
                 _rsApplication.AddProtesto(viewModel);
                 return Ok();
             }
-            return Json(ModelState.Values.Where(m => m.Errors.Count > 1).Select(s => s.Errors));
+            var values = ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors).ToList();
+            return StatusCode(StatusCodes.Status500InternalServerError, values);
         }
         [Authorize]
         public IActionResult EditProtesto(int id)
@@ -165,7 +158,7 @@ namespace ResistanceSurvey.Controllers
         public IActionResult EditResistance(int id)
         {
             var resistance = _rsApplication.GetResistanceDetail(id);
-            var companies = _db.Company.Where(s => !s.Deleted).Where(s => !s.Deleted).Select(x => new { Id = x.Id, Name = x.Name, IsOutsource = x.IsOutsource }).ToList();
+            var companies = _db.Company.Where(s => !s.Deleted).Where(s => !s.Deleted).Select(x => new { Id = x.Id, Name = x.Name }).ToList();
             var outsourceCompanies = (from c in _db.Company
                                       join coc in _db.CompanyOutsourceCompany on c.Id equals coc.OutsourceCompanyId into oc
                                       from o in oc.DefaultIfEmpty()
@@ -173,7 +166,7 @@ namespace ResistanceSurvey.Controllers
                                       select new { Id = o.OutsourceCompanyId, Name = o.OutsourceCompany.Name })
                                      .ToList();
 
-            ViewBag.Companies = new SelectList(companies.Where(s => !s.IsOutsource), "Id", "Name");
+            ViewBag.Companies = new SelectList(companies, "Id", "Name");
             ViewBag.OutsourceCompanies = new SelectList(outsourceCompanies, "Id", "Name");
             SetLookups();
             return PartialView("_EditResistance", resistance);
@@ -181,16 +174,16 @@ namespace ResistanceSurvey.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult Edit(ResistanceEditModel viewModel)
+        public IActionResult Edit(ResistanceEditForm viewModel)
         {
             if (ModelState.IsValid)
             {
-                viewModel.UserName = UserName;
+                viewModel.Resistance.UserName = UserName;
                 _rsApplication.UpdateResistance(viewModel);
                 return Ok();
             }
-            var errors = ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors).ToList();
-            return Json(errors);
+            var values = ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors).ToList();
+            return StatusCode(StatusCodes.Status500InternalServerError, values);
         }
         [Authorize]
         [HttpPost]
@@ -213,31 +206,28 @@ namespace ResistanceSurvey.Controllers
         public void SetLookups()
         {
           
-            ViewBag.Categories = new SelectList(_utilities.GetLookup("category"), "Id", "Name");
-            
-            
-            ViewBag.Worklines = new SelectList(_utilities.GetLookup("companyworkline"), "Id", "Name");
-            ViewBag.EmployeeCount = new SelectList(_utilities.GetLookup("employeecount"), "Id", "Name");
-            ViewBag.EmployeeCountInProtesto = new SelectList(_utilities.GetLookup("ProtestoEmployeeCount"), "Id", "Name");
-            ViewBag.Corporations = new SelectList(_utilities.GetLookup("corporation").OrderBy(x => x.Name).ToList(), "Id", "Name");
-            ViewBag.TradeUnions = new SelectList(_utilities.GetLookup("tradeunion"), "Id", "Name");
-            ViewBag.TradeUnionAuthorities = new SelectList(_utilities.GetLookup("tradeunionauthority"), "Id", "Name");
-            ViewBag.EmploymentTypes = new SelectList(_utilities.GetLookup("employmenttype"), "Id", "Name");
-            ViewBag.EmployeeCountInProtesto = new SelectList(_utilities.GetLookup("ProtestoEmployeeCount"), "Id", "Name");
-            ViewBag.ProtestoTypes = new MultiSelectList(_utilities.GetLookup("protestotype"), "Id", "Name");
-            ViewBag.ProtestoPlaces = new MultiSelectList(_utilities.GetLookup("protestoplace"), "Id", "Name");
-            ViewBag.ResistanceReasons = new MultiSelectList(_utilities.GetLookup("resistancereason"), "Id", "Name");
-            ViewBag.Genders = new SelectList(_utilities.GetLookup("gender"), "Id", "Name");
-            ViewBag.ProtestoCities = new SelectList(_utilities.GetLookup("city"), "Id", "Name");
-            ViewBag.InterventionTypes = new SelectList(_utilities.GetLookup("interventiontype"), "Id", "Name");
-            ViewBag.Cities = new SelectList(_utilities.GetLookup("city").OrderBy(s => s.Name).ToList(), "Id", "Name");
-            ViewBag.Districts = new SelectList(_utilities.GetLookup("district").OrderBy(s => s.Name).ToList(), "Id", "Name");
+            ViewBag.Categories = new SelectList(_db.Category.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.Worklines = new SelectList(_db.CompanyWorkLine.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.EmployeeCount = new SelectList(_db.EmployeeCount.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.Corporations = new SelectList(_db.Corporation.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.TradeUnions = new SelectList(_db.TradeUnion.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.TradeUnionAuthorities = new SelectList(_db.TradeUnionAuthority.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.EmploymentTypes = new SelectList(_db.EmploymentType.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.EmployeeCountInProtesto = new SelectList(_db.ProtestoEmployeeCount.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.ProtestoTypes = new MultiSelectList(_db.ProtestoType.OrderBy(s=>s.Name).Select(s=> new LookupEntity { Id = s.Id, Name = s.Name}).ToList(), "Id", "Name");
+            ViewBag.ProtestoPlaces = new MultiSelectList(_db.ProtestoPlace.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.ResistanceReasons = new MultiSelectList(_db.ResistanceReason.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.Genders = new SelectList(_db.Gender.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.ProtestoCities = new SelectList(_db.City.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.InterventionTypes = new SelectList(_db.InterventionType.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.Cities = new SelectList(_db.City.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.Districts = new SelectList(_db.District.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
         }
 
         [Authorize]
         public JsonResult GetDistricts(int cityId)
         {
-            return Json(_utilities.GetDistricts(cityId));
+            return Json(_db.District.Where(s=>s.CityId == cityId).OrderBy(s=>s.Name).Select(s=> new LookupEntity { Id = s.Id, Name = s.Name}).ToList());
         }
         [Authorize]
         public JsonResult GetOutsourceCompanies(int companyId)
@@ -249,6 +239,47 @@ namespace ResistanceSurvey.Controllers
                                       select new { value = o.OutsourceCompanyId, name = o.OutsourceCompany.Name, text = o.OutsourceCompany.Name })
                                      .ToList();
             return Json(outsourceCompanies);
+        }
+        [Authorize]
+        public IActionResult Export(ResistanceFilterModel filter)
+        {
+            var result = _db.Resistance
+                    .Include("Category")
+                    .Include("Company")
+                    .Include("Company.CompanyWorkLine")
+                    .Include("Company.OutsourceCompanies")
+                    .Include("Company.OutsourceCompanies.Company")
+                    .Include("Company.OutsourceCompanies.Company.CompanyWorkLine")
+                    .Include("ResistanceEmploymentTypes")
+                    .Include("ResistanceEmploymentTypes.EmploymentType")
+                    .Include("TradeUnion")
+                    .Include("ResistanceResistanceReasons")
+                    .Include("ResistanceResistanceReasons.ResistanceReason")
+                    .Include("ResistanceCorporations")
+                    .Include("ResistanceCorporations.Corporation")
+                    .Include("Protestos")
+                    .Include("Protestos.Gender")
+                    .Include("Protestos.ProtestoEmployeeCount")
+                    .Include("Protestos.ProtestoProtestoTypes")
+                    .Include("Protestos.ProtestoProtestoTypes.ProtestoType")
+                    .Include("Protestos.ProtestoProtestoPlaces")
+                    .Include("Protestos.ProtestoProtestoPlaces.ProtestoPlace")
+                    .Include("Protestos.ProtestoInterventionTypes")
+                    .Include("Protestos.ProtestoInterventionTypes.InterventionType")
+                    .Include("Protestos.Locations")
+                    .Include("Protestos.Locations.City")
+                    .Include("Protestos.Locations.District")
+                    .Include("ResistanceNews")
+                    .Include("ResistanceNews.News")
+                    .Where(rs => !rs.Deleted
+                    && (filter.CompanyId == null || rs.CompanyId == filter.CompanyId)
+                    && (filter.CategoryId == null || rs.CategoryId == filter.CategoryId)
+                    && (filter.YearId == null || rs.Protestos.Any(s => s.StartDate.Year == filter.YearId && s.StartDate.Month == filter.MonthId))
+                    && (filter.PersonalNote == null || String.IsNullOrEmpty(rs.Note) == !filter.PersonalNote)
+                    )
+                    .ToList();
+
+            return Json(result);
         }
     }
 }

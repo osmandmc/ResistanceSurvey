@@ -1,29 +1,38 @@
 @model RS.MVC.Models.CompanyCreateViewModel
 
-<div class="ui form" id="companyForm">
+    <div class="ui form" id="companyForm">
+        @Html.Hidden("IsMain")
+        <div class="field">
+            <label for="CompanyName">Şirket Adı</label>
+            <input type="text" name="CompanyName" id="CompanyName">
+        </div>
+        <div class="three fields">
             <div class="field">
-                <label for="CompanyName">Şirket Adı</label>
-                <input type="text" name="CompanyName" id="CompanyName">
-            </div>
-            <div class="three fields">
-                <div class="field">
-                    <label for="TypeId">Şirketin Niteliği</label>
-                    <select asp-for="TypeId" asp-items="@ViewBag.CompanyTypes">
+                <label for="TypeId">Şirketin Niteliği</label>
+                <select asp-for="TypeId" asp-items="@ViewBag.CompanyTypes">
                     <option value="">--Seçiniz--</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="ScaleId">Şirketin Büyüklüğü</label>
-                    <select asp-for="ScaleId" asp-items="@ViewBag.CompanyScales">
-                    <option value="">--Seçiniz--</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="WorklineId">Şirketin İş Kolu</label>
-                    <select asp-for="WorklineId" asp-items="@ViewBag.Worklines">
-                        <option value="">--Seçiniz--</option>
-                    </select>
-                </div>
+                </select>
             </div>
-   <button id="btnAddCompany" class="ui button">Ekle</button>
-</div>
+            <div class="field">
+                <label for="ScaleId">Şirketin Büyüklüğü</label>
+                <select asp-for="ScaleId" asp-items="@ViewBag.CompanyScales">
+                    <option value="">--Seçiniz--</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="WorklineId">Şirketin İş Kolu</label>
+                <select asp-for="WorklineId" asp-items="@ViewBag.Worklines">
+                    <option value="">--Seçiniz--</option>
+                </select>
+            </div>
+        </div>
+        @if (Model.IsMain)
+        {
+            <button id="btnAddMainCompany" class="ui button">Ana Şirket Ekle</button>
+        }
+        else
+        {
+            <button id="btnAddCompany" class="ui button">Şirket Ekle</button>
+        }
+
+    </div>

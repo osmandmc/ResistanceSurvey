@@ -31,7 +31,7 @@ function login() {
     $.post("/Home/Login", params, "json")
     .fail(function (data) {
         $(".page.dimmer").dimmer("hide");
-        ShowErrorMessages(["İşlem sırasında bir hata oluştu. Lütfen tekrar deneyiniz."]);
+        alert(["İşlem sırasında bir hata oluştu. Lütfen tekrar deneyiniz."]);
     })
     .done(function (response) {
         console.log(response);
@@ -42,7 +42,7 @@ function login() {
         else {
 
             $(".page.dimmer").dimmer("hide");
-            ShowErrorMessages(response.ErrorMessages);
+            alert("Giriş başarısız");
         }
 
     });

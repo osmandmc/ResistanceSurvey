@@ -36,7 +36,7 @@ namespace RS.EF
         public DbSet<ResistanceNews> ResistanceNews { get; set; }
 
         public DbSet<ProtestoLocation> ProtestoLocation { get; set; }
-
+        public DbSet<ProtestoEmployeeCount> ProtestoEmployeeCount { get; set; }
         public DbSet<ProtestoProtestoPlace> ProtestoProtestoPlace { get; set; }
         public DbSet<ResistanceResistanceReason> ResistanceResistanceReason  { get; set; }
         public DbSet<ProtestoProtestoType> ProtestoProtestoType { get; set; }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using RS.COMMON.DTO;
 using RS.COMMON.Entities;
 
@@ -12,8 +13,8 @@ namespace RS.MVC.Models
         public int CategoryId { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public int CompanyId { get; set; }
+        public int? MainCompanyId { get; set; }
         public string Code { get; set; }
-        public int? OutsourceCompanyId { get; set; }
         public bool HasTradeUnion { get; set; }
         public int? TradeUnionAuthorityId { get; set; }
         public string Note { get; set; }
@@ -26,7 +27,6 @@ namespace RS.MVC.Models
         public int? EmployeeCountInProtesto { get; set; }
 
         public List<string> CorporationIds { get; set; }
-        public string NewCorporation { get; set; }
         public string TradeUnionId { get; set; }
         public List<int> EmploymentTypeIds { get; set; }
         public List<string> ResistanceReasonIds { get; set; }
@@ -49,12 +49,14 @@ namespace RS.MVC.Models
         //public List<int> ResistanceNewsIds { get; set; }
         public List<int> ProtestoCityIds { get; set; }
         public List<int?> ProtestoDistrictIds { get; set; }
+        public List<ProtestoLocationModel> Locations { get; set; }
         public List<ResistanceNewsModel> ResistanceNewsIds { get; set; }
         public Resistance MapToResistanceDto()
         {
             var resistance = new Resistance
             {
-                CompanyId = OutsourceCompanyId ?? CompanyId,
+                CompanyId = CompanyId,
+                MainCompanyId = MainCompanyId,
                 CategoryId = CategoryId,
                 Code = Code,
                 HasTradeUnion = HasTradeUnion,
@@ -73,7 +75,7 @@ namespace RS.MVC.Models
                 ResistanceCorporations = new List<ResistanceCorporation>(),
                 ResistanceEmploymentTypes = new List<ResistanceEmploymentType>(),
                 ResistanceResistanceReasons = new List<ResistanceResistanceReason>(),
-                ResistanceNews = new List<ResistanceNews>()
+                ResistanceNews = new List<ResistanceNews>(),
             };
             if (AnyLegalIntervention == 1) resistance.AnyLegalIntervention = true;
             if (AnyLegalIntervention == 2) resistance.AnyLegalIntervention = false;
@@ -90,7 +92,6 @@ namespace RS.MVC.Models
             {
                 ProtestoEmployeeCountId = EmployeeCountInProtestoId,
                 EmployeeCountNumber = EmployeeCountInProtesto,
-               
                 StartDate = ProtestoStartDate,
                 EndDate = ProtestoEndDate,
                 GenderId = GenderId,
@@ -101,18 +102,17 @@ namespace RS.MVC.Models
                 ProtestoProtestoPlaces = new List<ProtestoProtestoPlace>(),
                 ProtestoInterventionTypes = new List<ProtestoInterventionType>(),
                 Cities = new List<ProtestoCity>(),
-                Districts = new List<ProtestoDistrict>()  
+                Districts = new List<ProtestoDistrict>(),
+                Locations = new List<ProtestoLocation>()
             };
-            //if(ProtestoPlaceIds!=null)
-            //    ProtestoPlaceIds.ForEach(c=> protesto.ProtestoProtestoPlaces.Add(new ProtestoProtestoPlace{ ProtestoPlaceId = c }));
-            //if(ProtestoTypeIds!=null)
-            //    ProtestoTypeIds.ForEach(c=> protesto.ProtestoProtestoTypes.Add(new ProtestoProtestoType{ ProtestoTypeId = c }));
             if(InterventionTypeIds!=null)
                 InterventionTypeIds.ForEach(c=> protesto.ProtestoInterventionTypes.Add(new ProtestoInterventionType{ InterventionTypeId = c}));
             if(ProtestoCityIds!=null)
                 ProtestoCityIds.ForEach(c=> protesto.Cities.Add(new ProtestoCity{ CityId = c}));
             if(ProtestoDistrictIds!=null)
                 ProtestoDistrictIds.ForEach(c=> {if(c.HasValue) protesto.Districts.Add(new ProtestoDistrict{ DistrictId = c.Value});} );
+            if (Locations != null)
+                Locations.Where(s => !s.Deleted).ToList().ForEach(c => { protesto.Locations.Add(new ProtestoLocation { CityId = c.CityId.Value, DistrictId = c.DistrictId, Place = c.Place }); });
             return protesto;
         }
     }

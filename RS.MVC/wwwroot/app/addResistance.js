@@ -126,15 +126,26 @@ $('.ui.form').form({
 );
 
 $(function () {
-    console.log("newsCounter: " + newsCounter);
-    newsCounter = 0;
+    $('.ui.dropdown').dropdown({
+        clearable: true
+    });
 });
 
 function submitForm() {
     $(".page.dimmer").dimmer("show");
-    var dataToPost = $("#resistanceForm").serialize();
-    console.log(dataToPost);
-    $.post("/Resistance/Create", dataToPost)
+    var locations = [];
+    var resistance = getFormData($("#resistanceForm"));
+    var locationCities = $("#location").find("select[name $= CityId]");
+    console.log(locationCities);
+    $.each(locationCities, function (n, i) {
+        var location = { cityId: $(this).val(), districtId: $(this).closest(".fields").find("select[name $= DistrictId]").val(), place: $(this).closest(".fields").find("input[name $= Place]").val(), deleted: $(this).closest(".fields").find("input[name $= Deleted]").val() };
+        console.log($(this));
+        locations.push(location);
+    });
+    resistance.Locations = locations;
+    console.log(resistance);
+    var postData = { resistance: resistance, company: company, mainCompany: mainCompany }
+    $.post("/Resistance/Create", postData)
         .done(function (response) {
             alert("Direniş eklendi");
         })
@@ -145,7 +156,17 @@ function submitForm() {
         })
     $(".page.dimmer").dimmer("hide");
 }
+function getFormData($form) {
+    var unindexed_array = $form.serializeArray();
+    console.log(unindexed_array);
+    var indexed_array = {};
 
+    $.map(unindexed_array, function (n, i) {
+        indexed_array[n['name']] = n['value'];
+    });
+
+    return indexed_array;
+}
 //$(".ddmmyyyy").mask("99.99.9999", { placeholder: "gg.aa.yyyy" });
 
 $("#cities").dropdown({
@@ -153,30 +174,7 @@ $("#cities").dropdown({
         loadDistricts(value);
     }
 });
-$(document).on("change", ".city", function () {
-    var select = $(this);
-    let id = select.data("id");
-    let citySelect = $("#ProtestoCityIds_" + id + "_");
 
-    $.ajax({
-        url: "/Resistance/GetDistricts?cityId=" + citySelect.val(),
-        success: function (items) {
-            console.log(items);
-            let districtSelect = $("#ProtestoDistrictIds_" + id + "_");
-            districtSelect.empty();
-            districtSelect.append($('<option>', {
-                value: "",
-                text: "--Seçiniz--"
-            }));
-            $.each(items, function (i, item) {
-                districtSelect.append($('<option>', {
-                    value: item.id,
-                    text: item.name
-                }));
-            });
-        }
-    });
-});
 $("#InterventionTypeIds").change(function () {
     console.log($("#InterventionTypeIds").dropdown("get value"));
 
@@ -188,14 +186,14 @@ $("#InterventionTypeIds").change(function () {
         $("#InterventionTypeArea").hide();
     }
 });
-let id = 1;
+let id = 0;
 $("#addLocation").click(function () {
 
 
-    let locationHtml = '<div class="two fields">' +
-        '<div class="field">' +
-        '<label for="ProtestoCityIds[' + id + ']">İl</label>' +
-        '<select id="ProtestoCityIds_' + id + '_" name="ProtestoCityIds[' + id + ']" class="ui fluid search selection dropdown city" data-id="' + id + '">' +
+    let locationHtml = '<div class="fields">' +
+        ' <input type="hidden" name ="Locations[' + id + '].Deleted" value="false" />' +
+        '<div class="four field">' +
+        '<select name="Locations[' + id + '].CityId" class="ui selection dropdown city" data-id="' + id + '">' +
         '<option value="">--Seçiniz--</option>' +
         '<option value="1">Adana</option>' +
         '<option value="2">Adiyaman</option>' +
@@ -280,35 +278,38 @@ $("#addLocation").click(function () {
         '<option value="81">Düzce</option>' +
         '</select>' +
         '</div>' +
-        '<div class="field">' +
-        '<label for="ProtestoDistrictIds[' + id + ']">İlçe</label>' +
-        '<select id="ProtestoDistrictIds_' + id + '_" name="ProtestoDistrictIds[' + id + ']"  class="ui fluid search dropdown" data-id="' + id + '">' +
+        '<div class="four field">' +
+        '<select name="Locations[' + id + '].DistrictId"  class="ui selection dropdown" data-id="' + id + '" data-deleted="false">' +
         '<option value="">--Seçiniz--</option>' +
         '</select>' +
+        '</div>' +
+        '<div class="two field">' +
+        '<input class="text-box single-line" id="Locations_0__Place" name="Locations[' + id + '].Place" type="text">' +
+        '</div>' +
+        '<div class="four field">' +
+        '<button id="btnDeleteLocation" type="button" class="ui icon button red basic"><i class="trash icon"></i></button>' +
         '</div>' +
         '</div>';
     $("#location").append(locationHtml);
     id++;
+    
 });
-$(document).on("change", "#CompanyId", function () {
-    $('#OutsourceCompanyId')
-        .dropdown('clear');
-    //$('#OutsourceCompanyId')
-    //    .dropdown('change values');
-    $('#OutsourceCompanyId').empty();
+$(document).on("click", "#btnDeleteLocation", function () {
+    var location = $(this).closest(".fields");
+    console.log(location);
+    var deleted = location.find(":first");
+    console.log(deleted);
+    deleted.val(true);
+    location.hide();
+});
+function openModal(isMain) {
+    console.log("open");
     $.ajax({
-        url: '/Resistance/GetOutsourceCompanies?CompanyId=' + $("#CompanyId").val(),
-        success(result) {
-            $.each(result, function (i, item) {
-                $('#OutsourceCompanyId').append($('<option>', {
-                    value: item.value,
-                    text: item.text
-                }))
-            })
-            //$("#OutsourceCompanyId")
-            //    .dropdown();
+        url: "/Resistance/AddCompany?isMain=" + isMain,
+        datatype: "html",
+        success: function (response) {
+            $("#modal-content").html(response);
+            $('#addCompanyModal').modal('show');
         }
-
     });
-
-});
+}

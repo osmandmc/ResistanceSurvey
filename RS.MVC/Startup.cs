@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RS.COMMON;
-using RS.DAL;
 using RS.EF;
 using RS.MVC.Applications;
-using RS.MVC.Utilities;
 using Microsoft.EntityFrameworkCore;
 using RS.MVC.Models;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Http;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 
@@ -38,7 +30,6 @@ namespace RS.MVC
             services.AddScoped<INewsApplication, NewsApplication>();
              services.AddScoped<IUserApplication, UserApplication>();
             services.AddDbContext<RSDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RSConnectionString")));
-            services.AddScoped<IStorageUtilities>(s => new StorageUtilities(Configuration.GetConnectionString("RSConnectionString")));
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.DateFormatString = "dd.MM.yyyy";

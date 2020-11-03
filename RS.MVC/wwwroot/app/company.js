@@ -173,13 +173,27 @@ $(document).on("click", ".checkApproveCompany", function () {
         }
     });
 });
+$(document).on("click", "#btnFilter", function () {
+    getCompany();
+});
+$(document).on("click", "#btnClearFilter", function () {
+    var selects = $(".companyFilter").find("select");
+    $.each(selects, function (i, v) {
+        console.log($(this));
+        $(this).dropdown('clear');
+    });
+});
 
 
 function getCompany() {
+    var companyId = $("select[name=filterCompanyId]").val();
+    var mainCompanyId = $("select[name=filterMainCompanyId]").val();
     $.ajax({
         url: '/Company/_List',
         type: "POST",
         data: {
+            companyId: companyId,
+            mainCompanyId: mainCompanyId,
             pageNumber: $("#pagingDD").val()
         },
         success: function (result) {

@@ -14,4 +14,3 @@ C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\obj\Debug\netcoreapp2.
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\obj\Debug\netcoreapp2.1\RS.COMMON.AssemblyInfo.cs
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\obj\Debug\netcoreapp2.1\RS.COMMON.dll
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.COMMON\obj\Debug\netcoreapp2.1\RS.COMMON.pdb
-C:\Users\odemirci\source\repos\ResistanceSurvey\RS.COMMON\obj\Debug\netcoreapp2.1\RS.COMMON.csprojAssemblyReference.cache

@@ -23,19 +23,22 @@ namespace RS.MVC.Controllers
         }
         public IActionResult Index()
         {
-            ViewBag.Company = new SelectList(db.Company.Where(s=>!s.Deleted).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }), "Id", "Name");
+           
             return View();
         }
         [HttpPost]
         [Authorize]
         public IActionResult _List(CompanyFilterModel filter)
         {
-
+            ViewBag.Companies = new SelectList(db.Company.Where(s => !s.Deleted).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }), "Id", "Name");
             var companies = (from c in db.Company
                              join coc in db.CompanyOutsourceCompany on c.Id equals coc.OutsourceCompanyId
                              into cod
                              from d in cod.DefaultIfEmpty()
                              where !c.Deleted
+                             && (filter.CompanyId == null || c.Id == filter.CompanyId)
+                             && (filter.MainCompanyId == null || d.CompanyId == filter.MainCompanyId)
+                             orderby c.Name
                              select new ComapnyListViewModel
                              {
                                  Id = c.Id,

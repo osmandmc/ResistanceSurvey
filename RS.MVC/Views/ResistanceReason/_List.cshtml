@@ -1,4 +1,4 @@
-﻿@model PagedResult<RS.COMMON.Entities.LookupEntity.ResistanceReason>
+﻿@model PagedResult<RS.COMMON.Entities.LookupEntity.ResistanceReason, FilterModel>
 
 <h4 class="ui dividing header">Kurumlar</h4>
 
@@ -45,7 +45,7 @@
             <th>
                 <div class="ui right floated pagination menu field">
                     <select class="ui compact small dropdown" id="pagingDD">
-                        <option value="@Model.CurrentPage">@Model.CurrentPage</option>
+                        <option value="@Model.Filter.PageNumber">@Model.Filter.PageNumber</option>
                         @for (int i = 1; i < @Model.PageCount + 1; i++)
                         {
                             <option value="@i">@i</option>

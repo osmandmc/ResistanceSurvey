@@ -6,7 +6,8 @@ namespace RS.MVC.Models
         public int? TypeId { get; set; }
         public int? ScaleId { get; set; }
         public int? WorklineId { get; set; }
-        
+        public bool IsMain { get; set; }
+
     }
     public class OutsourceCompanyCreateViewModel
     {

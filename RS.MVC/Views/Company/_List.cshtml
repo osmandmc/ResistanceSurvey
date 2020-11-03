@@ -1,11 +1,30 @@
-﻿@model PagedResult<RS.COMMON.DTO.ComapnyListViewModel>
+﻿@model PagedResult<RS.COMMON.DTO.ComapnyListViewModel, CompanyFilterModel>
 
 <h4 class="ui dividing header">Şirketler</h4>
 
-<div class="ui attached secondary segment">
-    <div class="ui small filter form">
-        <div class="fields">
-           
+<div class="ui attached secondary segment companyFilter">
+    <div class="ui accordion field">
+        <div class="title">
+            <i class="icon dropdown"></i>
+            Filtreler
+        </div>
+        <div class="content ui form">
+            <div class="field">
+                <label class="transition visible">Şirket</label>
+                <select asp-for="@Model.Filter.CompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" name="filterCompanyId">
+                    <option value="">--Seçiniz--</option>
+                </select>
+            </div>
+            <div class="field">
+                <label class="transition visible">Ana Şirket</label>
+                <select asp-for="@Model.Filter.MainCompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" name="filterMainCompanyId"><option value="">--Seçiniz--</option></select>
+            </div>
+            
+            
+            <div class="field">
+                <button id="btnFilter" class="ui button">Filtrele</button>
+                <button id="btnClearFilter" class="ui basic button clear">Temizle</button>
+            </div>
         </div>
     </div>
 </div>
@@ -45,13 +64,13 @@
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="4">
+                <th colspan="5">
                     <p>@Model.RowCount kayıttan @Model.From - @Model.To arasındakiler görüntüleniyor.</p>
                 </th>
                 <th>
                     <div class="ui right floated pagination menu field">
                         <select class="ui compact small dropdown" id="pagingDD">
-                            <option value="@Model.CurrentPage">@Model.CurrentPage</option>
+                            <option value="@Model.Filter.PageNumber">@Model.Filter.PageNumber</option>
                             @for (int i = 1; i < @Model.PageCount + 1; i++)
                             {
                                 <option value="@i">@i</option>
@@ -62,3 +81,11 @@
             </tr>
         </tfoot>
     </table>
+    <script>
+    $(document).ready(function () {
+        $('.ui.dropdown').dropdown({
+            clearable: true
+        });
+        $('.ui.accordion').accordion();
+    });
+    </script>

@@ -10,6 +10,7 @@ namespace RS.COMMON.Entities
         public int Id { get; set; }
         public int CategoryId { get; set; }
         public int CompanyId { get; set; }
+        public int? MainCompanyId { get; set; }
         public string Code { get; set; }
         public int? EmployeeCountNumber { get; set; }
         public int? EmployeeCountId { get; set; }
@@ -28,6 +29,7 @@ namespace RS.COMMON.Entities
 
         public Category Category { get; set; }
         public Company Company { get; set; }
+        public Company MainCompany { get; set; }
         public EmployeeCount EmployeeCount { get; set; }
         public TradeUnion TradeUnion { get; set; }
         public TradeUnionAuthority TradeUnionAuthority { get; set; }

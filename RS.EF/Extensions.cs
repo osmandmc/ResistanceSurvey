@@ -9,16 +9,17 @@ namespace RS.EF
 {
     public static class Extensions
     {
-        public static PagedResult<T> ToPagedFilteredResult<T>(this IQueryable<T> queryable, FilterModel filter) where T : class
+        public static PagedResult<T, U> ToPagedFilteredResult<T, U>(this IQueryable<T> queryable, U filter) 
+            where T : class 
+            where U : FilterModel
         {
             var rowCount = queryable.Count();
-            var pageCount = (double)rowCount / filter.PageSize;
             var queryResult = queryable
                 .AsNoTracking()
                 .Skip((filter.PageNumber -1) * filter.PageSize)
                 .Take(filter.PageSize)
                 .ToList();
-            return new PagedResult<T> { Results = queryResult, CurrentPage = filter.PageNumber, PageCount = (int)Math.Ceiling(pageCount), PageSize = filter.PageSize, RowCount = rowCount };
+            return new PagedResult<T, U> ( queryResult, filter, rowCount );
         }
     }
 }

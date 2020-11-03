@@ -84,6 +84,7 @@ $(document).on("click", "#btnDeleteCorporation", function () {
         success: function (result) {
             alert("İşleminiz başarılı");
             $("#modalReplaceCorporation").modal("hide");
+            getCorporation();
         },
         error(jqxhr, status, error) {
             alert("Bir hata oldu");
@@ -100,6 +101,7 @@ $(document).on("click", "#btnReplaceCorporation", function () {
         success: function (result) {
             alert("İşleminiz başarılı");
             $("#modalReplaceCorporation").modal("hide");
+            getCorporation();
         },
         error(jqxhr, status, error) {
             alert("Bir hata oldu");

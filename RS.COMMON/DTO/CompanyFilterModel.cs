@@ -6,6 +6,7 @@ namespace RS.COMMON.DTO
 {
     public class CompanyFilterModel: FilterModel
     {
-        public string Name { get; set; }
+        public int? CompanyId { get; set; }
+        public int? MainCompanyId { get; set; }
     }
 }
