@@ -65,20 +65,21 @@ $('.ui.form').form({
     }
 );
 
-
-
 function submitForm() {
-    
-    var dataToPost = $("#resistanceForm").serialize()
-        $.post("/Resistance/Edit", dataToPost)
-            .done(function (response, status, jqxhr) {
-                alert("İşlem başarılı");
-                counter = 0;
-            })
-            .fail(function (jqxhr, status, error) {
-                // this is the ""error"" callback
-            })
-
+    $(".page.dimmer").dimmer("show");
+    var resistance = getFormData($("#resistanceForm"));
+    console.log(resistance);
+    var postData = { resistance: resistance, company: company, mainCompany: mainCompany }
+    $.post("/Resistance/Edit", postData)
+        .done(function (response) {
+            alert("Direniş eklendi");
+        })
+        .fail(function (jqxhr, status, error) {
+            alert("Bir hata oldu");
+            $("button[type=submit]").prop("disabled", false);
+            // this is the ""error"" callback
+        })
+    $(".page.dimmer").dimmer("hide");
 }
 
 function addProtesto(id)
@@ -99,32 +100,9 @@ function back(id)
     $('#leftColumn').load('/Resistance/EditResistance/'+id);
 }
 $(function () {
-    newsCounter = $("#resistanceNews .item").length;
-    console.log(newsCounter);
-    $("#HasTradeUnion").change(function () {
-        if ($(this).val() == "true") {
-            $(".tradeUnionAuthorityGroup").show();
-        }
-        else {
-            $(".tradeUnionAuthorityGroup").hide();
-        }
-    });
     $('.ui.dropdown').dropdown({
         allowAdditions: true,
     });
-    $("#isOutsource").change(function () {
-        console.log("outsource");
-        if ($(this).val() == "True") {
-            $("#outsource").show();
-        }
-        else {
-            $("#outsource").hide();
-        }
-    });
-    
-    
-    
-   
 });
 
 $(document).on("click", "#btnCancelResistance", function () {
@@ -145,4 +123,15 @@ function deleteResistance() {
             alert("Bir hata alındı");
         })
 
+}
+function openModal(isMain) {
+    console.log(isMain);
+    $.ajax({
+        url: "/Resistance/AddCompany?isMain=" + isMain,
+        datatype: "html",
+        success: function (response) {
+            $("#modal-content").html(response);
+            $('#addCompanyModal').modal('show');
+        }
+    });
 }

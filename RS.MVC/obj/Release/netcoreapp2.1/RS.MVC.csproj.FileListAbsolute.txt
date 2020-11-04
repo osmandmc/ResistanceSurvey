@@ -17,9 +17,7 @@ C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\RS.MVC.Views.dll
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\RS.MVC.Views.pdb
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\RS.COMMON.dll
-C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\RS.DAL.dll
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\RS.EF.dll
-C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\RS.DAL.pdb
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\RS.COMMON.pdb
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\RS.EF.pdb
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\obj\Release\netcoreapp2.1\RS.MVC.TagHelpers.input.cache

@@ -223,9 +223,9 @@ function exportReport() {
     var personalNote = $("select[name=filterPersonalNote]").val();
     console.log(personalNote);
     $("#leftDimmer").dimmer("show");
+
     $.ajax({
-        url: '/Resistance/Export',
-        type: "POST",
+        url: "/Resistance/Export",
         data: {
             companyId: companyId,
             categoryId: categoryId,
@@ -234,11 +234,28 @@ function exportReport() {
             personalNote: personalNote,
             pageNumber: $("#pagingDD").val()
         },
-        success: function (result) {
-            console.log(result);
-            $("#leftDimmer").dimmer("hide");
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (data) {
+            var a = document.createElement('a');
+            var url = window.URL.createObjectURL(data);
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                var blob = new Blob(
+                    [data],
+                    { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," }
+                );
+                window.navigator.msSaveOrOpenBlob(blob, "ECT Rapor");
+            }
+            a.href = url;
+            a.download = "ECT Rapor";
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+
         }
     });
+    $("#leftDimmer").dimmer("hide");
 }
 
 function getFormData($form) {

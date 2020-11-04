@@ -139,27 +139,7 @@ $(document).on("click", "#btnCancelProtestoModal", function () {
 
 
 
-$(document).on("change", ".city", function () {
-    var select = $(this);
-    console.log(select);
-    let id = select.data("id");
-    let citySelect = $("select[name='Locations[" + id + "].CityId']");
-    console.log(citySelect);
-    $.ajax({
-        url: "/Resistance/GetDistricts?cityId=" + citySelect.val(),
-        success: function (items) {
-            console.log(items);
-            let districtSelect = $("select[name='Locations["+id+"].DistrictId']");
-            districtSelect.empty();
-            $.each(items, function (i, item) {
-                districtSelect.append($('<option>', {
-                    value: item.id,
-                    text: item.name
-                }));
-            });
-        }
-    });
-});
+
 $(document).on("click", "#btnDeleteLocation", function () {
     var location = $(this).closest(".fields");
     console.log(location);
