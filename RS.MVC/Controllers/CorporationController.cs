@@ -27,7 +27,8 @@ namespace RS.MVC.Controllers
         [Authorize]
         public IActionResult _List(FilterModel filter)
         {
-            var corporations = db.Corporation.ToPagedFilteredResult(filter);
+            ViewBag.CorporationTypes = new SelectList(db.CorporationType.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            var corporations = db.Corporation.Select(s => new CorporationListView { Id=s.Id, Name = s.Name, CorporationTypeId = s.CorporationTypeId, CorporationTypeName = s.CorporationType != null ? s.CorporationType.Name : "", Approved = s.Approved }).ToPagedFilteredResult(filter);
             return PartialView(corporations);
         }
         [Authorize]
@@ -46,6 +47,16 @@ namespace RS.MVC.Controllers
         {
             var corporation = db.Corporation.Find(model.Id);
             corporation.Approved = model.Approved;
+            db.Entry(corporation).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            db.SaveChanges();
+            return Ok();
+        }
+        [Authorize]
+        [HttpPost]
+        public IActionResult SetCorporationType(Corporation model)
+        {
+            var corporation = db.Corporation.Find(model.Id);
+            corporation.CorporationTypeId = model.CorporationTypeId;
             db.Entry(corporation).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             db.SaveChanges();
             return Ok();
@@ -88,7 +99,13 @@ namespace RS.MVC.Controllers
             db.SaveChanges();
             return Ok();
         }
-
+        [HttpPost]
+        public ActionResult IsTradeUnion(List<int> corporationIds)
+        {
+            var ids = corporationIds.Select(s => Convert.ToInt32(s)).ToList();
+            var isTradeUnion = db.Corporation.Any(s => ids.Contains(s.Id) && s.CorporationTypeId == 1);
+            return Json(isTradeUnion);
+        }
     }
 
 }

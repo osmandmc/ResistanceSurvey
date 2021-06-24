@@ -27,7 +27,7 @@ namespace RS.MVC.Models
         public int? EmployeeCountInProtesto { get; set; }
 
         public List<string> CorporationIds { get; set; }
-        public string TradeUnionId { get; set; }
+        public int? TradeUnionId { get; set; }
         public List<int> EmploymentTypeIds { get; set; }
         public List<string> ResistanceReasonIds { get; set; }
         public int CompanyTypeId { get; set; }
@@ -61,6 +61,7 @@ namespace RS.MVC.Models
                 Code = Code,
                 HasTradeUnion = HasTradeUnion,
                 DevelopRight = DevelopRight,
+                TradeUnionId = TradeUnionId,
                 TradeUnionAuthorityId = TradeUnionAuthorityId,
                 EmployeeCountId = EmployeeCountId,
                 EmployeeCountNumber = EmployeeCount,

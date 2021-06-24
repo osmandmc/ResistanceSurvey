@@ -25,6 +25,7 @@ namespace RS.EF
         public DbSet<CompanyType> CompanyType { get; set; }
         public DbSet<CompanyWorkLine> CompanyWorkLine { get; set; }
         public DbSet<Corporation> Corporation { get; set; }
+        public DbSet<CorporationType> CorporationType { get; set; }
         public DbSet<District> District { get; set; }
         public DbSet<EmployeeCount> EmployeeCount { get; set; }
         public DbSet<EmploymentType> EmploymentType { get; set; }

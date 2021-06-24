@@ -76,36 +76,28 @@
             <span asp-validation-for="EmployeeCountId" class="text-danger"></span>
         </div>
     </div>
-    <div class="two fields">
-        <div class="field">
-            <label for="HasTradeUnion">Örgütleyen Sendika Var Mı?</label>
-            <select asp-for="HasTradeUnion">
-                <option value="false">Yok</option>
-                <option value="true">Var</option>
-            </select>
-        </div>
-        <div class="field tradeUnionAuthorityGroup" style="display:none">
-            <label for="TradeUnionAuthorityId">Sendikanın Yetki Durumu</label>
-            <select asp-for="TradeUnionAuthorityId" asp-items="@ViewBag.TradeUnionAuthorities">
-                <option value="">--Seçiniz--</option>
-            </select>
-            <span asp-validation-for="TradeUnionAuthorityId" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="field">
-        <label for="CorporationIds">Kurumsallık</label>
-        <select asp-for="CorporationIds" asp-items="ViewBag.Corporations" class="ui fluid search dropdown" multiple="">
-            <option value="">Seçiniz</option>
-        </select>
-    </div>
 
     <div class="field">
+        <label for="CorporationIds">Kurumsallık</label>
+        <select asp-for="CorporationIds" class="ui fluid search dropdown" multiple="">
+            <option value="">Seçiniz</option>
+            @foreach (var item in ViewBag.Corporations)
+            {
+                <option value="@item.Id" data-type="@item.CorporationTypeId">@item.Name</option>
+            }
+        </select>
+    </div>
+    <div class="field tradeUnionAuthorityGroup" style="display:none">
+        <label for="TradeUnionAuthorityId">Sendikanın Yetki Durumu</label>
+        <select asp-for="TradeUnionAuthorityId" asp-items="@ViewBag.TradeUnionAuthorities">
+            <option value="">--Seçiniz--</option>
+        </select>
+    </div>
+    <div class="field">
         <label for="TradeUnionId">Tepki Gösterilen Sendika</label>
-                <select asp-for="TradeUnionId" asp-items="@ViewBag.TradeUnions">
-                    <option value="">Seçiniz</option>
-                </select>
-            </div>
-            
+        <select asp-for="TradeUnionId" asp-items="@ViewBag.TradeUnions">
+            <option value="">Seçiniz</option>
+        </select>
     </div>
     <div class="two fields">
         <div class="field">
@@ -128,20 +120,7 @@
         <label for="FiredEmployeeCountByProtesto">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>
         <input asp-for="FiredEmployeeCountByProtesto" type="number" />
     </div>
-    <div class="field">
-        <label for="AnyLegalIntervention">Hukuki Girişim</label>
-        <select asp-for="AnyLegalIntervention">
-            <option value="">--Seçiniz--</option>
-            <option value="0">Bilinmiyor</option>
-            <option value="1">Evet</option>
-            <option value="2">Hayır</option>
-        </select>
-        <span asp-validation-for="AnyLegalIntervention" class="text-danger"></span>
-    </div>
-    <div class="field">
-        <label for="LegalIntervantionDesc">Hukuki Girişim Açıklama</label>
-        <textarea type="text" name="LegalIntervantionDesc" id="LegalIntervantionDesc" rows="2"></textarea>
-    </div>
+   
     <h3 class="ui dividing header">Eylem</h3>
     <div class="field">
         <label for="ProtestoTypeIds">Eylemin Türü</label>
@@ -231,7 +210,7 @@
 
 <script src="../app/addResistance.js"></script>
 <script>
-    
+
     function checkExisiting() {
 
         var companyId = $("#CompanyId").val();

@@ -1,4 +1,4 @@
-﻿@model PagedResult<RS.COMMON.Entities.LookupEntity.Corporation, FilterModel>
+﻿@model PagedResult<RS.COMMON.DTO.CorporationListView, FilterModel>
 
 <h4 class="ui dividing header">Kurumlar</h4>
 
@@ -14,6 +14,7 @@
     <thead>
         <tr>
             <th>Adı</th>
+            <th>Tipi</th>
             <th>Onay</th>
             <th></th>
         </tr>
@@ -29,10 +30,19 @@
                     <button data-id="@item.Id" class="ui icon button btnEdit"><i class="edit icon"></i></button>
                 </div>
             </td>
+            <td>
+                <div class="ui fluid action input">
+                    <select data-id="@item.Id" asp-for="@item.CorporationTypeId" asp-items="ViewBag.CorporationTypes" class="ui dropdown fluid setCorporationType">
+                        <option>Seçiniz</option>
+                    </select>
+                    @*<input type="text" value="@item.CorporationTypeName" disabled />
+                    <button data-id="@item.Id" class="ui icon button btnEdit"><i class="edit icon"></i></button>*@
+                </div>  
+            </td>
             <td width="10%">
                 <input type="checkbox" data-id="@item.Id" tabindex="0" checked="@item.Approved" class="checkApproveCorporation">
             </td>
-            <td width="10%"><button data-id="@item.Id" class="ui basic red button btnDelete" >Sil</button></td>
+            <td width="10%"><button data-id="@item.Id" class="ui basic red button btnDelete">Sil</button></td>
         </tr>
         }
 
@@ -48,7 +58,7 @@
                         <option value="@Model.Filter.PageNumber">@Model.Filter.PageNumber</option>
                         @for (int i = 1; i < @Model.PageCount + 1; i++)
                         {
-                            <option value="@i">@i</option>
+                        <option value="@i">@i</option>
                         }
                     </select>
                 </div>

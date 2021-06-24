@@ -131,18 +131,41 @@ $(function () {
     });
 });
 
+function getArrayFromInput(selectInput) {
+    var array = [];
+    var input = $("#resistanceForm").find(selectInput).val();
+    $.each(input, function (n, i) {
+        array.push(i);
+    });
+    return array;
+}
+
 function submitForm() {
     $(".page.dimmer").dimmer("show");
-    var locations = [];
+    
     var resistance = getFormData($("#resistanceForm"));
+    resistance.ResistanceReasonIds = getArrayFromInput($("#resistanceForm").find('select[name=ResistanceReasonIds]'));;
+    resistance.CorporationIds = getArrayFromInput($("#resistanceForm").find('select[name=CorporationIds]'));;
+    resistance.EmploymentTypeIds = getArrayFromInput($("#resistanceForm").find('select[name=EmploymentTypeIds]'));;
+    resistance.ProtestoTypeIds = getArrayFromInput($("#resistanceForm").find('select[name=ProtestoTypeIds]'));;
+    resistance.ProtestoPlaceIds = getArrayFromInput($("#resistanceForm").find('select[name=ProtestoPlaceIds]'));;
+    resistance.InterventionTypeIds = getArrayFromInput($("#resistanceForm").find('select[name=InterventionTypeIds]'));;
+    var locations = [];
     var locationCities = $("#location").find("select[name $= CityId]");
-    console.log(locationCities);
     $.each(locationCities, function (n, i) {
         var location = { cityId: $(this).val(), districtId: $(this).closest(".fields").find("select[name $= DistrictId]").val(), place: $(this).closest(".fields").find("input[name $= Place]").val(), deleted: $(this).closest(".fields").find("input[name $= Deleted]").val() };
         console.log($(this));
         locations.push(location);
     });
     resistance.Locations = locations;
+
+    var newsList = [];
+    var newsInputs = $("#resistanceNews").find("input[name $= Id]");
+    $.each(newsInputs, function (n, i) {
+        var news = { id: $(this).val(), isDeleted: $(this).siblings("input[name $= Deleted]").val() };
+        newsList.push(news);
+    });
+    resistance.ResistanceNewsIds = newsList;
     console.log(resistance);
     var postData = { resistance: resistance, company: company, mainCompany: mainCompany }
     $.post("/Resistance/Create", postData)

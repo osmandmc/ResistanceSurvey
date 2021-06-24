@@ -92,7 +92,7 @@
 @section Scripts {
     <script src="/app/indexResistance.js" type="text/javascript"></script>
     <script type="text/javascript">
-  
+        
         $(document).on("click", ".a", function(){
             var newsId = $(this).data("id");
             let a = $(this);
@@ -125,10 +125,8 @@
             
         });
         let newsCounter = 0;
-        console.log("newsCounter: " +newsCounter);
         $(document).on('click', ".copyLink", function(){
             let id = $(this).data("id");
-            console.log(newsCounter);
             let newsHtml = $(this).closest(".item").clone().find('.copyLink').remove().end()
             .find('.red').remove().end().html();
              let newsInput = "<input name='ResistanceNewsIds["+newsCounter+"].Id' type='hidden' value='"+id+"'>" +

@@ -11,7 +11,10 @@
         <div class="fields">
             <div class="two wide field">
                 <select class="ui fluid search selection dropdown" id="yearId">
-                    <option value="2019">2019</option>
+                    @for (int i = 2019; i <= DateTime.Now.Year; i++)
+                    {
+                        <option value="@i">@i</option>
+                    }
                 </select>
             </div>
             <div class="two wide field">
@@ -66,7 +69,10 @@
             <div class="two fields">
                 <div class="field">
                     <select class="ui fluid search selection dropdown" name="year">
-                        <option value="2019">2019</option>
+                        @for (int i = 2019; i <= DateTime.Now.Year; i++)
+                        {
+                        <option value="@i">@i</option>
+                        }
                     </select>
                 </div>
                 <div class="field">
@@ -104,7 +110,7 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            
+
             $.ajax({
                 type: "POST",
                 url: "/News/Filter",
@@ -144,7 +150,7 @@
                     processData: false,
                     success: function (data) {
                         console.log(data);
-                        if (data.Success) {
+                        if (data.success) {
                             $(".modal").dimmer('hide');
                             alert("İşleminiz başarılı");
                         } else {

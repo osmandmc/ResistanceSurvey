@@ -26,7 +26,7 @@ namespace RS.MVC.Models
         public string ResistanceNote { get; set; }
         public List<string> ResistanceReasonIds { get; set; }
         public List<string> CorporationIds { get; set; }
-        public string TradeUnionId { get; set; }
+        public int? TradeUnionId { get; set; }
         public short AnyLegalIntervention { get; set; }
         public string LegalInterventionDesc { get; set; }
         public int? FiredEmployeeCountByProtesto { get; set; }

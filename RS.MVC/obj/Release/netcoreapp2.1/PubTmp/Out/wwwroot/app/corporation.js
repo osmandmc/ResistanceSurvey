@@ -125,6 +125,21 @@ $(document).on("click", ".checkApproveCorporation", function () {
     });
 });
 
+$(document).on("change", ".setCorporationType", function () {
+    let corporationId = $(this).data("id");
+    let corporationTypeId = $(this).val();
+    $.ajax({
+        url: '/Corporation/SetCorporationType',
+        method: 'POST',
+        data: { id: corporationId, corporationTypeId: corporationTypeId },
+        success: function (result) {
+        },
+        error(jqxhr, status, error) {
+            alert("Bir hata oldu");
+        }
+    });
+});
+
 
 function getCorporation() {
     $.ajax({

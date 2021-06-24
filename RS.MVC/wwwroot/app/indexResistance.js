@@ -4,6 +4,7 @@ $(document).ready(function () {
     let now = new Date();
     getNewsFiltered(now.getDate(), now.getMonth());
     getFiltered();
+
     $('.ui.dropdown').dropdown({
         clearable: true
     });
@@ -28,7 +29,6 @@ $(document).on("click", "#listCase", function () {
 $(document).on("click", "#btnClearFilter", function () {
     var selects = $(".resistanceFilter").find("select");
     $.each(selects, function (i, v) {
-        console.log($(this));
         $(this).dropdown('clear');
     });
 });
@@ -79,14 +79,11 @@ $(document).on('click', '#btnClearTradeUnion', function () {
 });
 $(document).on("change", ".city", function () {
     var select = $(this);
-    console.log(select);
     let id = select.data("id");
     let citySelect = $("select[name='Locations[" + id + "].CityId']");
-    console.log(citySelect);
     $.ajax({
         url: "/Resistance/GetDistricts?cityId=" + citySelect.val(),
         success: function (items) {
-            console.log(items);
             let districtSelect = $("select[name='Locations[" + id + "].DistrictId']");
             districtSelect.empty();
             districtSelect.append('<option value="">--Seçiniz--</option>');
@@ -144,7 +141,6 @@ $(document).on("focusout", "input[name=ProtestoEndDate]", function () {
 });
 $(document).on("focusout", "input[name=ProtestoStartDate]", function () {
     var startDate = $(this).val();
-    console.log(startDate);
     var endDate = $("input[name = ProtestoEndDate]").val();
     if (endDate == '') return;
     if (startDate > endDate) {
@@ -155,9 +151,24 @@ $(document).on("focusout", "input[name=ProtestoStartDate]", function () {
 
 
 
-$(document).on("change", "#HasTradeUnion", function () {
-    if ($(this).val() == "true") $(".tradeUnionAuthorityGroup").show();
-    else $(".tradeUnionAuthorityGroup").hide();
+$(document).on("change", "#CorporationIds", function () {
+    var ids = JSON.stringify($(this).val());
+
+    console.log(ids);
+    $.ajax({
+        url: "/Corporation/IsTradeUnion",
+        method: "POST",
+        data: { corporationIds: $(this).val()},
+        success: function (response) {
+            if (response == true) {
+                $(".tradeUnionAuthorityGroup").show();
+            }
+            else {
+                $("#TradeUnionAuthorityId").val(0);
+                $(".tradeUnionAuthorityGroup").hide();
+            }
+        }
+    });
 });
 $(document).on("change", "#isOutsource", function () {
     if ($(this).val() == "True") { $("#outsource").show(); }
@@ -169,17 +180,20 @@ $('.ui.dropdown').dropdown({
 
 function getFiltered() {
     var companyId = $("select[name=filterCompanyId]").val();
+    var mainCompanyId = $("select[name=filterMainCompanyId]").val();
+
     var categoryId = $("select[name=filterCategoryId]").val();
     var filterProtestoYearId = $("select[name=filterProtestoYearId]").val();
     var filterProtestoMonthId = $("select[name=filterProtestoMonthId]").val();
     var personalNote = $("select[name=filterPersonalNote]").val();
-    console.log(personalNote);
+    console.log($("select[name=filterMainCompanyId]").val());
     $("#leftDimmer").dimmer("show");
     $.ajax({
         url: '/Resistance/ResistanceList',
         type: "POST",
         data: {
             companyId: companyId,
+            mainCompanyId: mainCompanyId,
             categoryId: categoryId,
             monthId: filterProtestoMonthId,
             yearId: filterProtestoYearId,
@@ -217,17 +231,18 @@ function editResistance(id) {
 }
 function exportReport() {
     var companyId = $("select[name=filterCompanyId]").val();
+    var mainCompanyId = $("select[name=filterMainCompanyId]").val();
     var categoryId = $("select[name=filterCategoryId]").val();
     var filterProtestoYearId = $("select[name=filterProtestoYearId]").val();
     var filterProtestoMonthId = $("select[name=filterProtestoMonthId]").val();
     var personalNote = $("select[name=filterPersonalNote]").val();
-    console.log(personalNote);
     $("#leftDimmer").dimmer("show");
 
     $.ajax({
         url: "/Resistance/Export",
         data: {
             companyId: companyId,
+            mainCompanyId: mainCompanyId,
             categoryId: categoryId,
             monthId: filterProtestoMonthId,
             yearId: filterProtestoYearId,
@@ -260,7 +275,6 @@ function exportReport() {
 
 function getFormData($form) {
     var unindexed_array = $form.serializeArray();
-    console.log(unindexed_array);
     var indexed_array = {};
 
     $.map(unindexed_array, function (n, i) {
@@ -269,3 +283,11 @@ function getFormData($form) {
 
     return indexed_array;
 }
+$(document).ready(function () {
+    $(window).keydown(function (event) {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+            return false;
+        }
+    });
+});

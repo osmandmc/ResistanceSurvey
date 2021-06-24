@@ -51,6 +51,16 @@ namespace RS.MVC.Controllers
             return Ok();
         }
         [Authorize]
+        [HttpPost]
+        public IActionResult SetAgainstProduction(ProtestoType model)
+        {
+            var protestoType = db.ProtestoType.Find(model.Id);
+            protestoType.AgainstProduction = model.AgainstProduction;
+            db.Entry(protestoType).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            db.SaveChanges();
+            return Ok();
+        }
+        [Authorize]
         public IActionResult CheckProtestoType(int id)
         {
             var used = db.ProtestoProtestoType.Any(s => !s.Protesto.Deleted && s.ProtestoTypeId == id);

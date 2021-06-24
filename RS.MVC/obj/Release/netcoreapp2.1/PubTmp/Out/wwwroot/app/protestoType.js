@@ -124,7 +124,21 @@ $(document).on("click", ".checkApproveProtestoType", function () {
         }
     });
 });
-
+$(document).on("click", ".setAgainstProduction", function () {
+    var checkbox = $(this);
+    var againstProduction = checkbox.is(":checked");
+    let protestoTypeId = $(this).data("id");
+    $.ajax({
+        url: '/ProtestoType/SetAgainstProduction',
+        method: 'POST',
+        data: { id: protestoTypeId, againstProduction: againstProduction },
+        success: function (result) {
+        },
+        error(jqxhr, status, error) {
+            alert("Bir hata oldu");
+        }
+    });
+});
 
 function getProtestoType() {
     $.ajax({

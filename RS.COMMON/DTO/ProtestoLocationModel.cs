@@ -10,6 +10,8 @@ namespace RS.COMMON.DTO
         public int? CityId { get; set; }
         public int? DistrictId { get; set; }
         public string Place { get; set; }
+        public string CityName { get; set; }
+        public string DistirctName { get; set; }
         public bool Deleted { get; set; }
     }
 }

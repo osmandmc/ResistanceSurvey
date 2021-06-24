@@ -23,7 +23,7 @@ namespace RS.COMMON.DTO
         public int? EmployeeCountInProtesto { get; set; }
         public int? EmployeeCountInProtestoId { get; set; }
         public bool DevelopRight { get; set; }
-        public List<ProtestoLocationModel> ProtestoLocations { get; set; }
+        public List<ProtestoLocationModel> Locations { get; set; }
         public List<int> ProtestoCityIds { get; set; }
         public List<int?> ProtestoDistrictIds { get; set; }
         public string UserName { get; set; }
@@ -58,8 +58,8 @@ namespace RS.COMMON.DTO
                 ProtestoCityIds.ForEach(c=> protesto.Cities.Add(new ProtestoCity{ CityId = c }));
             if(ProtestoDistrictIds!=null)
                 ProtestoDistrictIds.ForEach(c=> {if(c.HasValue) protesto.Districts.Add(new ProtestoDistrict{ DistrictId = c.Value });});
-            if (ProtestoLocations != null)
-                ProtestoLocations.Where(s=>!s.Deleted).ToList().ForEach(c => { protesto.Locations.Add(new ProtestoLocation { CityId = c.CityId.Value, DistrictId = c.DistrictId.Value, Place = c.Place }); });
+            if (Locations != null)
+                Locations.Where(s=>!s.Deleted).ToList().ForEach(c => { protesto.Locations.Add(new ProtestoLocation { CityId = c.CityId.Value, DistrictId = c.DistrictId.Value, Place = c.Place }); });
             return protesto;
         }
     }

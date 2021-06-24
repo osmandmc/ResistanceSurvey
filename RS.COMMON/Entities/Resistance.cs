@@ -31,7 +31,7 @@ namespace RS.COMMON.Entities
         public Company Company { get; set; }
         public Company MainCompany { get; set; }
         public EmployeeCount EmployeeCount { get; set; }
-        public TradeUnion TradeUnion { get; set; }
+        public Corporation TradeUnion { get; set; }
         public TradeUnionAuthority TradeUnionAuthority { get; set; }
         public List<Protesto> Protestos { get; set; }
         public List<ResistanceCorporation> ResistanceCorporations { get; set; }

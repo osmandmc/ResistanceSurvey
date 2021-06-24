@@ -23,14 +23,14 @@ namespace RS.MVC.Controllers
         }
         public IActionResult Index()
         {
-           
+            ViewBag.Companies = new SelectList(db.Company.Where(s => !s.Deleted).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             return View();
         }
         [HttpPost]
         [Authorize]
         public IActionResult _List(CompanyFilterModel filter)
         {
-            ViewBag.Companies = new SelectList(db.Company.Where(s => !s.Deleted).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }), "Id", "Name");
+            ViewBag.Companies = new SelectList(db.Company.Where(s => !s.Deleted).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             var companies = (from c in db.Company
                              join coc in db.CompanyOutsourceCompany on c.Id equals coc.OutsourceCompanyId
                              into cod
@@ -43,6 +43,7 @@ namespace RS.MVC.Controllers
                              {
                                  Id = c.Id,
                                  Name = c.Name,
+                                 MainCompanyId = d.Company != null ? d.CompanyId : 0,
                                  MainCorporationName = d.Company != null ? d.Company.Name : "",
                                  Scale = c.CompanyScale != null ? c.CompanyScale.Name : "",
                                  Type = c.CompanyType != null ? c.CompanyType.Name : "",
@@ -50,7 +51,7 @@ namespace RS.MVC.Controllers
                              }
                              )
                              .ToPagedFilteredResult(filter);
-                             
+
             return PartialView(companies);
         }
         [Authorize]
@@ -89,21 +90,21 @@ namespace RS.MVC.Controllers
             ViewBag.Worklines = new SelectList(db.CompanyWorkLine.ToList(), "Id", "Name");
             ViewBag.CompanyTypes = new SelectList(db.CompanyType.ToList(), "Id", "Name");
             ViewBag.CompanyScales = new SelectList(db.CompanyScale.ToList(), "Id", "Name");
-            ViewBag.Companies = new SelectList(db.Company.Where(s => !s.Deleted).Select(s=>new LookupEntity { Id = s.Id, Name= s.Name}).ToList(), "Id", "Name");
+            ViewBag.Companies = new SelectList(db.Company.Where(s => !s.Deleted).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             var company = (from c in db.Company
-             join coc in db.CompanyOutsourceCompany on c.Id equals coc.OutsourceCompanyId
-             into cod
-             from d in cod.DefaultIfEmpty()
-             where c.Id == id
-             select new OutsourceCompanyEditModel
-             {
-                 Id = c.Id,
-                 Name = c.Name,
-                 ScaleId = c.CompanyScaleId,
-                 TypeId = c.CompanyTypeId,
-                 WorklineId = c.CompanyWorkLineId,
-                 MainCompanyId = d.CompanyId
-                })
+                           join coc in db.CompanyOutsourceCompany on c.Id equals coc.OutsourceCompanyId
+                           into cod
+                           from d in cod.DefaultIfEmpty()
+                           where c.Id == id 
+                           select new OutsourceCompanyEditModel
+                           {
+                               Id = c.Id,
+                               Name = c.Name,
+                               ScaleId = c.CompanyScaleId,
+                               TypeId = c.CompanyTypeId,
+                               WorklineId = c.CompanyWorkLineId,
+                               MainCompanyId = d.CompanyId
+                           })
                 .SingleOrDefault();
             return PartialView(company);
         }
@@ -122,15 +123,20 @@ namespace RS.MVC.Controllers
             return Ok();
         }
         [Authorize]
-        public IActionResult CheckCompany(int id)
+        public IActionResult CheckCompany(int id, int mainCompanyId)
         {
-            var used = db.Resistance.Any(s => !s.Deleted && s.CompanyId == id && !s.Company.Deleted);
+            var used = db.Resistance.Any(s =>
+                !s.Deleted && s.CompanyId == id &&
+                !s.Company.Deleted &&
+                (mainCompanyId == 0 || mainCompanyId == s.MainCompanyId && !s.MainCompany.Deleted)
+            );
             return Json(used);
         }
         [Authorize]
         [HttpPost]
         public IActionResult ReplaceCompany(ReplaceModel model)
         {
+
             var usedResistances = db.Resistance.Where(s => s.CompanyId == model.Id).ToList();
             foreach (var item in usedResistances)
             {
@@ -144,10 +150,23 @@ namespace RS.MVC.Controllers
         }
         [Authorize]
         [HttpPost]
-        public IActionResult DeleteCompany(PostBaseModel model)
+        public IActionResult DeleteCompany(CompanyDeleteModel model)
         {
-            var company = db.Company.Find(model.Id);
-            db.Company.Remove(company);
+            var used = db.Resistance.Any(s =>
+                !s.Deleted && s.CompanyId == model.CompanyId &&
+                !s.Company.Deleted &&
+                (model.MainCompanyId == 0 || model.MainCompanyId == s.MainCompanyId && !s.MainCompany.Deleted)
+            );
+            if (model.MainCompanyId != 0)
+            {
+                var coc = db.CompanyOutsourceCompany.Where(s => s.CompanyId == model.MainCompanyId && s.OutsourceCompanyId == model.CompanyId).FirstOrDefault();
+                db.CompanyOutsourceCompany.Remove(coc);
+            }
+            if (!used)
+            {
+                var company = db.Company.Find(model.CompanyId);
+                db.Company.Remove(company);
+            }
             db.SaveChanges();
             return Ok();
         }

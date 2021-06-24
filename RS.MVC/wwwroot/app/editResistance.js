@@ -65,14 +65,39 @@ $('.ui.form').form({
     }
 );
 
+//$(document).on("click", "#btnSave", function () {
+//    submitForm();
+//});
+
+
+
+function getArrayFromInput(selectInput) {
+    var array = [];
+    var input = $("#resistanceForm").find(selectInput).val();
+    $.each(input, function (n, i) {
+        array.push(i);
+    });
+    return array;
+}
 function submitForm() {
     $(".page.dimmer").dimmer("show");
+   
     var resistance = getFormData($("#resistanceForm"));
+    resistance.ResistanceReasonIds = getArrayFromInput($("#resistanceForm").find('select[name=ResistanceReasonIds]'));;
+    resistance.CorporationIds = getArrayFromInput($("#resistanceForm").find('select[name=CorporationIds]'));;
+    resistance.EmploymentTypeIds = getArrayFromInput($("#resistanceForm").find('select[name=EmploymentTypeIds]'));;
+    var newsList = [];
+    var newsInputs = $("#resistanceNews").find("input[name $= Id]");
+    $.each(newsInputs, function (n, i) {
+        var news = { id: $(this).val(), isDeleted: $(this).siblings("input[name $= Deleted]").val() };
+        newsList.push(news);
+    });
+    resistance.ResistanceNewsIds = newsList;
     console.log(resistance);
     var postData = { resistance: resistance, company: company, mainCompany: mainCompany }
     $.post("/Resistance/Edit", postData)
         .done(function (response) {
-            alert("Direniş eklendi");
+            alert("Direniş güncellendi");
         })
         .fail(function (jqxhr, status, error) {
             alert("Bir hata oldu");
@@ -102,6 +127,20 @@ function back(id)
 $(function () {
     $('.ui.dropdown').dropdown({
         allowAdditions: true,
+    });
+    $.ajax({
+        url: "/Corporation/IsTradeUnion",
+        method: "POST",
+        data: { corporationIds: $("#CorporationIds").val() },
+        success: function (response) {
+            if (response == true) {
+                $(".tradeUnionAuthorityGroup").show();
+            }
+            else {
+                $("#TradeUnionAuthorityId").val(0);
+                $(".tradeUnionAuthorityGroup").hide();
+            }
+        }
     });
 });
 

@@ -29,10 +29,11 @@ namespace RS.MVC.Applications
         public IEnumerable<NewsListModel> GetNewsByPeriod(int year, int month)
         {
             return _db.News
-            .Where(n=>n.Date.Year == year && n.Date.Month == month)
-            .OrderBy(o=>o.Date)
-            .Select(n=> 
-            new NewsListModel{ 
+            .Where(n => n.Date.Year == year && n.Date.Month == month)
+            .OrderBy(o => o.Date)
+            .Select(n =>
+            new NewsListModel
+            {
                 Id = n.Id,
                 Title = n.Header,
                 Link = n.Link,
@@ -43,14 +44,14 @@ namespace RS.MVC.Applications
         }
         public void MarkAsResistanceNews(int newsId)
         {
-            var news = _db.News.Where(n=>n.Id == newsId).FirstOrDefault();
+            var news = _db.News.Where(n => n.Id == newsId).FirstOrDefault();
             news.Status = COMMON.Constants.Enums.Status.Linked;
             _db.Entry(news).State = EntityState.Modified;
             _db.SaveChanges();
         }
         public void MarkAsUnrelatedNews(int newsId)
         {
-            var news = _db.News.Where(n=>n.Id == newsId).FirstOrDefault();
+            var news = _db.News.Where(n => n.Id == newsId).FirstOrDefault();
             news.Status = COMMON.Constants.Enums.Status.Passive;
             _db.Entry(news).State = EntityState.Modified;
             _db.SaveChanges();
@@ -66,34 +67,38 @@ namespace RS.MVC.Applications
 
                 if (!rowCount.HasValue || !colCount.HasValue)
                 {
-                    
+
                 }
-                
+
                 var dateIntervalStart = new DateTime(year, month, 1);
                 var dateIntervalEnd = new DateTime(year, month, DateTime.DaysInMonth(dateIntervalStart.Year, dateIntervalStart.Month));
 
                 var existingNews = _db.News.Where(s => s.Date >= dateIntervalStart && s.Date <= dateIntervalEnd).ToList();
-                var attachedResistanceNewsIds = _db.ResistanceNews.Where(s => existingNews.Select(d => d.Id).ToList().Contains(s.NewsId)).Select(s=>s.NewsId).ToList();
-                var removableNews = existingNews.Where(s => !attachedResistanceNewsIds.Contains(s.Id)).ToList();
-                _db.News.RemoveRange(removableNews);
+                if (existingNews.Count != 0)
+                {
+                    var attachedResistanceNewsIds = _db.ResistanceNews.Where(s => existingNews.Select(d => d.Id).ToList().Contains(s.NewsId)).Select(s => s.NewsId).ToList();
+                    var removableNews = existingNews.Where(s => !attachedResistanceNewsIds.Contains(s.Id)).ToList();
+                    _db.News.RemoveRange(removableNews);
+                }
                 for (int row = 2; row <= rowCount.Value; row++)
                 {
                     var news = new News();
-                        news.Link = worksheet.Cells[row, 5].Value.ToString();
-                        news.Header = worksheet.Cells[row, 3].Value.ToString();
-                        news.Date = DateTime.Parse(worksheet.Cells[row, 2].Value.ToString());
-                        news.Content = worksheet.Cells[row, 1].Value.ToString();
+                    news.Link = worksheet.Cells[row, 1].Value.ToString();
+                    news.Date = DateTime.Parse(worksheet.Cells[row, 2].Value.ToString());
+                    news.Header = worksheet.Cells[row, 3].Value.ToString();
+                    news.Content = worksheet.Cells[row, 4].Value.ToString();
                     _db.News.Add(news);
                 }
-            _db.SaveChanges();
+                _db.SaveChanges();
             }
         }
         public byte[] GetNewsFile(int year, int month)
         {
             var news = _db.News
-            .Where(n=>n.Date.Year == year && n.Date.Month == month)
-            .Select(n=> 
-            new { 
+            .Where(n => n.Date.Year == year && n.Date.Month == month)
+            .Select(n =>
+            new
+            {
                 Link = n.Link,
                 Title = n.Header,
                 Status = n.Status,

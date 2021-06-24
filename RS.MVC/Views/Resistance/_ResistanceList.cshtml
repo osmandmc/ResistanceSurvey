@@ -16,6 +16,12 @@
                 </select>
             </div>
             <div class="field">
+                <label class="transition visible">Ana Şirket</label>
+                <select asp-for="@Model.Filter.MainCompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" name="filterMainCompanyId">
+                    <option value="">--Seçiniz--</option>
+                </select>
+            </div>
+            <div class="field">
                 <label class="transition visible">Vaka Niteliği</label>
                 <select asp-for="@Model.Filter.CategoryId" asp-items="@ViewBag.Categories" class="ui fluid selection dropdown" name="filterCategoryId"><option value="">--Seçiniz--</option></select>
             </div>

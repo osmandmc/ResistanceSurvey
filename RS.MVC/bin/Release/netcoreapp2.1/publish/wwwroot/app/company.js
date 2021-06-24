@@ -103,16 +103,19 @@ function getCompanies() {
 }
 $(document).on("click", ".btnDelete", function () {
     let companyId = $(this).data("id");
+    var mainCompanyId = $(this).data("maincompanyid");
     $.ajax({
-        url: '/Company/CheckCompany/' + companyId,
+        url: '/Company/CheckCompany?id=' + companyId + '&mainCompanyId=' + mainCompanyId,
         success: function (result) {
             console.log(result);
-
+            
             if (result == true) {
                 $("#btnReplaceCompany").data("id", companyId);
+                $("#btnReplaceCompany").data("maincompanyid", mainCompanyId);
                 $("#modalReplaceCompany").modal("show");
             }
             else {
+                $("#btnDeleteCompany").data("maincompanyid", mainCompanyId);
                 $("#btnDeleteCompany").data("id", companyId);
                 $("#modalDeleteCompany").modal("show");
             }
@@ -126,10 +129,11 @@ $(document).on("click", ".btnDelete", function () {
 
 $(document).on("click", "#btnDeleteCompany", function () {
     let companyId = $(this).data("id");
+    var mainCompanyId = $(this).data("maincompanyid");
     $.ajax({
         url: '/Company/DeleteCompany',
         method: 'POST',
-        data: { id: companyId },
+        data: { companyId: companyId, mainCompanyId: mainCompanyId },
         success: function (result) {
             alert("İşleminiz başarılı");
             $("#modalReplaceCompany").modal("hide");

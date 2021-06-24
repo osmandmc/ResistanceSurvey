@@ -67,7 +67,7 @@ namespace ResistanceSurvey.Controllers
         {
             if (ModelState.IsValid)
             {
-                //model.UserName = UserName;
+                model.Resistance.UserName = UserName;
                 _rsApplication.Create(model);
                 return Ok();
             }
@@ -121,6 +121,7 @@ namespace ResistanceSurvey.Controllers
         public IActionResult EditProtesto(int id)
         {
             var protesto = _rsApplication.GetProtestoDetail(id);
+
             SetLookups();
             return PartialView("_EditProtesto", protesto);
         }
@@ -151,15 +152,10 @@ namespace ResistanceSurvey.Controllers
         {
             var resistance = _rsApplication.GetResistanceDetail(id);
             var companies = _db.Company.Where(s => !s.Deleted).Where(s => !s.Deleted).Select(x => new { Id = x.Id, Name = x.Name }).ToList();
-            var outsourceCompanies = (from c in _db.Company
-                                      join coc in _db.CompanyOutsourceCompany on c.Id equals coc.OutsourceCompanyId into oc
-                                      from o in oc.DefaultIfEmpty()
-                                      where o.CompanyId == resistance.CompanyId && !c.Deleted
-                                      select new { Id = o.OutsourceCompanyId, Name = o.OutsourceCompany.Name })
-                                     .ToList();
 
             ViewBag.Companies = new SelectList(companies, "Id", "Name");
-            ViewBag.OutsourceCompanies = new SelectList(outsourceCompanies, "Id", "Name");
+
+
             SetLookups();
             return PartialView("_EditResistance", resistance);
         }
@@ -201,8 +197,8 @@ namespace ResistanceSurvey.Controllers
             ViewBag.Categories = new SelectList(_db.Category.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.Worklines = new SelectList(_db.CompanyWorkLine.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.EmployeeCount = new SelectList(_db.EmployeeCount.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
-            ViewBag.Corporations = new SelectList(_db.Corporation.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
-            ViewBag.TradeUnions = new SelectList(_db.TradeUnion.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.Corporations = _db.Corporation.OrderBy(s => s.Name).Select(s => new Corporation { Id = s.Id, Name = s.Name, CorporationTypeId = s.CorporationTypeId }).ToList();
+            ViewBag.TradeUnions = new SelectList(_db.Corporation.Where(s => s.CorporationTypeId == 1).OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.TradeUnionAuthorities = new SelectList(_db.TradeUnionAuthority.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.EmploymentTypes = new SelectList(_db.EmploymentType.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.EmployeeCountInProtesto = new SelectList(_db.ProtestoEmployeeCount.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
@@ -210,10 +206,9 @@ namespace ResistanceSurvey.Controllers
             ViewBag.ProtestoPlaces = new MultiSelectList(_db.ProtestoPlace.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.ResistanceReasons = new MultiSelectList(_db.ResistanceReason.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.Genders = new SelectList(_db.Gender.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
-            ViewBag.ProtestoCities = new SelectList(_db.City.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.InterventionTypes = new SelectList(_db.InterventionType.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.Cities = new SelectList(_db.City.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
-            ViewBag.Districts = new SelectList(_db.District.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+
         }
 
         [Authorize]
@@ -248,6 +243,7 @@ namespace ResistanceSurvey.Controllers
                    .Include("Resistance.ResistanceResistanceReasons.ResistanceReason")
                    .Include("Resistance.ResistanceCorporations")
                    .Include("Resistance.ResistanceCorporations.Corporation")
+                   .Include("Resistance.ResistanceCorporations.Corporation.CorporationType")
                    .Include("Gender")
                    .Include("ProtestoEmployeeCount")
                    .Include("ProtestoProtestoTypes")
@@ -263,6 +259,7 @@ namespace ResistanceSurvey.Controllers
                    .Include("Resistance.ResistanceNews.News")
                    .Where(rs => !rs.Deleted && !rs.Resistance.Deleted
                    && (filter.CompanyId == null || rs.Resistance.CompanyId == filter.CompanyId)
+                   && (filter.MainCompanyId == null || rs.Resistance.MainCompanyId == filter.MainCompanyId)
                    && (filter.CategoryId == null || rs.Resistance.CategoryId == filter.CategoryId)
                    && (filter.YearId == null || rs.StartDate.Year == filter.YearId && rs.StartDate.Month == filter.MonthId)
                    && (filter.PersonalNote == null || String.IsNullOrEmpty(rs.Resistance.Note) == !filter.PersonalNote)
@@ -278,15 +275,17 @@ namespace ResistanceSurvey.Controllers
                     var row = new
                     {
                         ResistanceId = item.Resistance.Id,
+                        Description = item.Resistance.Description,
                         CategoryName = item.Resistance.Category.Name,
                         CompanyName = item.Resistance.Company.Name,
                         CompanyWorkline = item.Resistance.Company.CompanyWorkLine != null ? item.Resistance.Company.CompanyWorkLine.Name : "",
                         MainCompanyName = item.Resistance.MainCompany != null ? item.Resistance.MainCompany.Name : "",
                         MainCompanyWorkline = item.Resistance.MainCompany != null ? item.Resistance.MainCompany.CompanyWorkLine != null ? item.Resistance.MainCompany.CompanyWorkLine.Name : "" : "",
+                        AgainstProduction = item.ProtestoProtestoTypes.Any(s => s.ProtestoType.AgainstProduction) ? "EVET" : "HAYIR",
                         DevelopRight = item.Resistance.DevelopRight ? "EVET" : "HAYIR",
                         EmployeeCount = item.Resistance.EmployeeCount != null ? item.Resistance.EmployeeCount.Name : "",
                         EmployeeCountNumber = item.Resistance.EmployeeCountNumber,
-                        HasTradeUnion = item.Resistance.HasTradeUnion ? "EVET" : "HAYIR",
+                        HasTradeUnion = item.Resistance.ResistanceCorporations.Any(s => s.Corporation.CorporationTypeId == 1) ? "EVET" : "HAYIR",
                         TradeUnionAuthority = item.Resistance.TradeUnionAuthority != null ? item.Resistance.TradeUnionAuthority.Name : "",
                         ResistanceReasons = new List<string>(),
                         Corporations = new List<string>(),
@@ -294,10 +293,12 @@ namespace ResistanceSurvey.Controllers
                         TradeUnionReacted = item.Resistance.TradeUnion != null ? item.Resistance.TradeUnion.Name : "",
                         Gender = item.Gender != null ? item.Gender.Name : "",
                         FiredEmployeeCount = item.Resistance.FiredEmployeeCountByProtesto,
-                        AnyLegalIntervention = item.Resistance.AnyLegalIntervention.HasValue ? item.Resistance.AnyLegalIntervention.HasValue ?  "EVET": "HAYIR": "BÝLÝNMÝYOR",
+                        AnyLegalIntervention = item.Resistance.AnyLegalIntervention.HasValue ? item.Resistance.AnyLegalIntervention.HasValue ? "EVET" : "HAYIR" : "BÝLÝNMÝYOR",
                         LegalInterventionDesc = item.Resistance.LegalInterventionDesc,
                         ProtestoId = item.Id,
+                        ProtestoCount = item.Locations.Count,
                         ProtestoTypes = new List<string>(),
+                        ProtestoPlaces = new List<string>(),
                         StartDate = item.StartDate.ToShortDateString(),
                         EndDate = item.EndDate != null ? item.EndDate.Value.ToShortDateString() : "",
                         Locations = new List<string>(),
@@ -306,12 +307,14 @@ namespace ResistanceSurvey.Controllers
                         InterventionTypes = new List<string>(),
                         CustodyCount = item.CustodyCount,
                         Note = item.Resistance.Note,
+                        ProtestoNote = item.Note
                     };
                     item.Resistance.ResistanceResistanceReasons.ForEach(x => row.ResistanceReasons.Add(x.ResistanceReason.Name));
 
                     if (item.Resistance.ResistanceCorporations != null) item.Resistance.ResistanceCorporations.ForEach(x => row.Corporations.Add(x.Corporation.Name));
                     if (item.Resistance.ResistanceEmploymentTypes != null) item.Resistance.ResistanceEmploymentTypes.ForEach(x => row.EmploymentTypes.Add(x.EmploymentType.Name));
                     if (item.ProtestoProtestoTypes != null) item.ProtestoProtestoTypes.ToList().ForEach(x => row.ProtestoTypes.Add(x.ProtestoType.Name));
+                    if (item.ProtestoProtestoPlaces != null) item.ProtestoProtestoPlaces.ToList().ForEach(x => row.ProtestoPlaces.Add(x.ProtestoPlace.Name));
                     if (item.ProtestoInterventionTypes != null) item.ProtestoInterventionTypes.ForEach(x => row.InterventionTypes.Add(x.InterventionType.Name));
                     item.Locations.ForEach(x =>
                     {
@@ -327,6 +330,7 @@ namespace ResistanceSurvey.Controllers
                 var employmentTypeCount = rows.Max(s => s.EmploymentTypes.Count);
                 var protestoTypeCount = rows.Max(s => s.ProtestoTypes.Count);
                 var locationCount = rows.Max(s => s.Locations.Count);
+                var protestoPlaceCount = rows.Max(s => s.ProtestoPlaces.Count);
                 var interventionTypeCount = rows.Max(s => s.InterventionTypes.Count);
                 byte[] byteArray;
                 using (ExcelPackage pck = new ExcelPackage())
@@ -348,6 +352,7 @@ namespace ResistanceSurvey.Controllers
                         ws.Cells[1, i + index].Value = $"Vaka Nedeni {i + 1}";
                     }
                     index += resistanceReasonCount;
+                    ws.Cells[1, index].Value = "Üretime Yönelik"; index++;
                     ws.Cells[1, index].Value = "Hak Geliþtirme/Hak Savunma Özelliði"; index++;
                     ws.Cells[1, index].Value = "Ýþ Yerindeki Ýþçi Sayýsý"; index++;
                     ws.Cells[1, index].Value = "Ýþ Yerindeki Ýþçi Sayýsý (Tam)"; index++;
@@ -371,9 +376,10 @@ namespace ResistanceSurvey.Controllers
                     ws.Cells[1, index].Value = "Hukuki Giriþim Açýklama"; index++;
                     for (int i = 0; i < protestoTypeCount; i++)
                     {
-                        ws.Cells[1, i + index].Value = $"Eylem Türü {i+1}";
+                        ws.Cells[1, i + index].Value = $"Eylem Türü {i + 1}";
                     }
                     index += protestoTypeCount;
+                    ws.Cells[1, index].Value = "Eylem Sayýsý"; index++;
                     ws.Cells[1, index].Value = "Eylemin Baþlangýç Tarihi"; index++;
                     ws.Cells[1, index].Value = "Eylemin Bitiþ Tarihi"; index++;
                     for (int i = 0; i < locationCount; i++)
@@ -381,6 +387,11 @@ namespace ResistanceSurvey.Controllers
                         ws.Cells[1, i + index].Value = $"Ýl-Ýlçe {i + 1}";
                     }
                     index += locationCount;
+                    for (int i = 0; i < protestoPlaceCount; i++)
+                    {
+                        ws.Cells[1, i + index].Value = $"Eylem Mekaný {i + 1}";
+                    }
+                    index += protestoPlaceCount;
                     ws.Cells[1, index].Value = "Eylemdeki Ýþçi Sayýsý (Tam)"; index++;
                     ws.Cells[1, index].Value = "Eylemdeki Ýþçi Sayýsý"; index++;
                     for (int i = 0; i < interventionTypeCount; i++)
@@ -390,12 +401,13 @@ namespace ResistanceSurvey.Controllers
                     index += interventionTypeCount;
                     ws.Cells[1, index].Value = "Gözaltý sayýsý"; index++;
                     ws.Cells[1, index].Value = "Notlar"; index++;
+                    ws.Cells[1, index].Value = "Eylem Notlarý"; index++;
 
                     for (int i = 0; i < rows.Count; i++)
                     {
                         int r_index = 1;
                         ws.Cells[i + 2, r_index].Value = rows[i].ResistanceId; r_index++;
-                        ws.Cells[i + 2, r_index].Value = rows[i].CategoryName; r_index++;
+                        ws.Cells[i + 2, r_index].Value = rows[i].Description; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].ProtestoId; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].CategoryName; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].CompanyName; r_index++;
@@ -408,6 +420,7 @@ namespace ResistanceSurvey.Controllers
                             ws.Cells[i + 2, k + r_index].Value = rows[i].ResistanceReasons[k];
                         }
                         r_index += resistanceReasonCount;
+                        ws.Cells[i + 2, r_index].Value = rows[i].AgainstProduction; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].DevelopRight; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].EmployeeCount; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].EmployeeCountNumber; r_index++;
@@ -435,6 +448,7 @@ namespace ResistanceSurvey.Controllers
                             ws.Cells[i + 2, n + r_index].Value = rows[i].ProtestoTypes[n];
                         }
                         r_index += protestoTypeCount;
+                        ws.Cells[i + 2, r_index].Value = rows[i].ProtestoCount; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].StartDate; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].EndDate; r_index++;
                         for (int l = 0; l < rows[i].Locations.Count; l++)
@@ -442,6 +456,11 @@ namespace ResistanceSurvey.Controllers
                             ws.Cells[i + 2, l + r_index].Value = rows[i].Locations[l];
                         }
                         r_index += locationCount;
+                        for (int l = 0; l < rows[i].ProtestoPlaces.Count; l++)
+                        {
+                            ws.Cells[i + 2, l + r_index].Value = rows[i].ProtestoPlaces[l];
+                        }
+                        r_index += protestoPlaceCount;
                         ws.Cells[i + 2, r_index].Value = rows[i].EmployeeCountInProtestoNumber; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].EmployeeCountInProtesto; r_index++;
                         for (int z = 0; z < rows[i].InterventionTypes.Count; z++)
@@ -451,6 +470,7 @@ namespace ResistanceSurvey.Controllers
                         r_index += interventionTypeCount;
                         ws.Cells[i + 2, r_index].Value = rows[i].CustodyCount; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].Note; r_index++;
+                        ws.Cells[i + 2, r_index].Value = rows[i].ProtestoNote; r_index++;
                     }
 
 

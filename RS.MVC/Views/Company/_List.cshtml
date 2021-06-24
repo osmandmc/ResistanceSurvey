@@ -46,7 +46,7 @@
             <tr>
                 @if (string.IsNullOrEmpty(item.MainCorporationName))
                 {
-                    <td><a href="#" class="modalLink" data-id="@item.Id">@item.Name<a></td>
+                    <td><a href="#" class="modalLink" data-id="@item.Id" data-mainCompanyId="@item.MainCompanyId">@item.Name<a></td>
                 }
                 else
                 {
@@ -57,7 +57,7 @@
                 <td>@item.Type</td>
                 <td>@item.Scale</td>
                 <td>@item.WorkLine</td>
-                <td width="10%"><button data-id="@item.Id" class="ui basic red button btnDelete">Sil</button></td>
+                <td width="10%"><button data-id="@item.Id" data-mainCompanyId="@item.MainCompanyId" class="ui basic red button btnDelete">Sil</button></td>
             </tr>
             }
 

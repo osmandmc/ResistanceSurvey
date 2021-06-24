@@ -30,26 +30,26 @@ namespace RS.MVC.Controllers
             var tradeUnions = db.TradeUnion.ToPagedFilteredResult(filter);
             return PartialView(tradeUnions);
         }
-        [Authorize]
-        [HttpPost]
-        public IActionResult Save(TradeUnion model)
-        {
-            var tradeUnion = db.TradeUnion.Find(model.Id);
-            tradeUnion.Name = model.Name;
-            db.Entry(tradeUnion).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            db.SaveChanges();
-            return Ok();
-        }
-        [Authorize]
-        [HttpPost]
-        public IActionResult SetApproval(TradeUnion model)
-        {
-            var tradeUnion = db.TradeUnion.Find(model.Id);
-            tradeUnion.Approved = model.Approved;
-            db.Entry(tradeUnion).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            db.SaveChanges();
-            return Ok();
-        }
+        //[Authorize]
+        //[HttpPost]
+        //public IActionResult Save(TradeUnion model)
+        //{
+        //    var tradeUnion = db.TradeUnion.Find(model.Id);
+        //    tradeUnion.Name = model.Name;
+        //    db.Entry(tradeUnion).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        //    db.SaveChanges();
+        //    return Ok();
+        //}
+        //[Authorize]
+        //[HttpPost]
+        //public IActionResult SetApproval(TradeUnion model)
+        //{
+        //    var tradeUnion = db.TradeUnion.Find(model.Id);
+        //    tradeUnion.Approved = model.Approved;
+        //    db.Entry(tradeUnion).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        //    db.SaveChanges();
+        //    return Ok();
+        //}
         [Authorize]
         public IActionResult CheckTradeUnion(int id)
         {
