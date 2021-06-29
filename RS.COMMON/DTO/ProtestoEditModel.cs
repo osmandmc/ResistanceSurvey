@@ -28,6 +28,7 @@ namespace RS.COMMON.DTO
         public int? EmployeeCountInProtestoId { get; set; }
         public string ResistanceName { get; set; }
         public string Note { get; set; }
+        public string SimpleProtestoDescription { get; set; }
         public string Updater { get; set; }
         public Protesto ToEntity()
         {
@@ -39,6 +40,7 @@ namespace RS.COMMON.DTO
                 EmployeeCountNumber = EmployeeCountInProtesto,
                 StartDate = ProtestoStartDate,
                 EndDate = ProtestoEndDate,
+                SimpleProtestoDescription = SimpleProtestoDescription,
                 ProtestoProtestoTypes = new List<ProtestoProtestoType>(),
                 ProtestoProtestoPlaces = new List<ProtestoProtestoPlace>(),
                 ProtestoInterventionTypes = new List<ProtestoInterventionType>(),

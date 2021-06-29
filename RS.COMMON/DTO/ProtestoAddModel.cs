@@ -28,6 +28,7 @@ namespace RS.COMMON.DTO
         public List<int?> ProtestoDistrictIds { get; set; }
         public string UserName { get; set; }
         public string Note { get; set; }
+        public string SimpleProtestoDescription { get; set; }
         public Protesto ToEntity()
         {
             var protesto = new Protesto

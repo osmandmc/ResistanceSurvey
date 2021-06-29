@@ -16,7 +16,7 @@ namespace RS.COMMON.Entities
         public int? CustodyCount { get; set; }
         public string Note { get; set; }
         public bool Deleted { get; set; }
-
+        public string SimpleProtestoDescription { get; set; }
         public Resistance Resistance { get; set; }
         public ProtestoEmployeeCount ProtestoEmployeeCount { get; set; }
         public Gender Gender { get; set; }

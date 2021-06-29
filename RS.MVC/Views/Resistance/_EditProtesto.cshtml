@@ -1,109 +1,114 @@
 @model RS.COMMON.DTO.ProtestoEditModel
 
-<form id="protestoForm" class="ui form">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <a href="#" onclick="back(@Model.ResistanceId)" class="ui labeled icon button">
-        <i class="left arrow icon"></i>
-        Vaka:@Model.ResistanceName
-    </a>
-    <h3 class="ui dividing header">Eylem</h3>
-    <input type="hidden" name="ProtestoId" id="ProtestoId" value="@Model.ProtestoId" />
-    <input type="hidden" name="ResistanceId" id="ResistanceId" value="@Model.ResistanceId" />
-    <div class="field">
-        <label for="ProtestoTypeIds">Eylemin Türü</label>
-        <select asp-for="ProtestoTypeIds" asp-items="@ViewBag.ProtestoTypes" class="ui fluid search dropdown" multiple="multiple">
-            <option value="">--Seçiniz--</option>
-        </select>
-        <span asp-validation-for="ProtestoTypeIds" class="text-danger"></span>
-    </div>
-    <div class="two fields">
+    <form id="protestoForm" class="ui form">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <a href="#" onclick="back(@Model.ResistanceId)" class="ui labeled icon button">
+            <i class="left arrow icon"></i>
+            Vaka:@Model.ResistanceName
+        </a>
+        <h3 class="ui dividing header">Eylem</h3>
+        <input type="hidden" name="ProtestoId" id="ProtestoId" value="@Model.ProtestoId" />
+        <input type="hidden" name="ResistanceId" id="ResistanceId" value="@Model.ResistanceId" />
         <div class="field">
-            <label for="ProtestoStartDate">Eylemin Başlangıç Tarihi</label>
-            @Html.EditorFor(m => m.ProtestoStartDate)
+            <label for="ProtestoTypeIds">Eylemin Türü</label>
+            <select asp-for="ProtestoTypeIds" asp-items="@ViewBag.ProtestoTypes" class="ui fluid search dropdown" multiple="multiple">
+                <option value="">--Seçiniz--</option>
+            </select>
+            <span asp-validation-for="ProtestoTypeIds" class="text-danger"></span>
         </div>
-        <div class="field">
-            <label for="ProtestoEndDate">Eylemin Bitiş Tarihi</label>
-            @Html.EditorFor(m => m.ProtestoEndDate)
+        <div class="field" id="SimpleProtestoDescriptionField" style="display:none">
+            <label for="SimpleProtestoDescription">İş yerinde Basit Eylem Açıklama</label>
+            <input asp-for="SimpleProtestoDescription" type="text" />
+
         </div>
-    </div>
-    <div class="field">
-        <label for="ProtestoPlaceIds">Eylemin Mekanı</label>
-        <select asp-for="ProtestoPlaceIds" asp-items="@ViewBag.ProtestoPlaces" class="ui fluid search dropdown" multiple="multiple">
-            <option value="">--Seçiniz--</option>
-        </select>
-        <span asp-validation-for="ProtestoPlaceIds" class="text-danger"></span>
-    </div>
-    <div class="field">
-        <button id="addLocation" type="button" class="ui button">Lokasyon Ekle (İl/ilçe)</button>
-    </div>
-    <div class="field" id="location">
-        @for (int i = 0; i < Model.Locations.Count(); i++)
-        {
-            <div class="fields">
-                @Html.HiddenFor(m=>m.Locations[i].Deleted)
-                @*<input type="hidden" name ="Locations[@i].Deleted" value="@Model.Locations[i].Deleted" />*@
-                <div class="four field">
-                    <select asp-for="@Model.Locations[i].CityId" asp-items="ViewBag.Cities" class="ui selection dropdown city" data-deleted="false">
-                        <option value="">Seçiniz</option>
-                    </select>
-                </div>
-                <div class="four field">
-                    <input type="hidden" asp-for="@Model.Locations[i].DistrictId" />
-                    <input type="text" value="@Model.Locations[i].DistirctName" disabled />
-                    @*<select asp-for="@Model.Locations[i].DistrictId" asp-items="ViewBag.Districts" class="ui selection dropdown district" data-deleted="false">
-                        <option value="">Seçiniz</option>
-                    </select>*@
-                </div>
-                <div class="four field">
-                    @Html.EditorFor(m=>m.Locations[i].Place)
-                </div>
-                <div class="four field">
-                    <button id="btnDeleteLocation" type="button" class="ui icon button red basic"><i class="trash icon"></i></button>
-                </div>
+        <div class="two fields">
+            <div class="field">
+                <label for="ProtestoStartDate">Eylemin Başlangıç Tarihi</label>
+                @Html.EditorFor(m => m.ProtestoStartDate)
             </div>
-        }
-    </div>
-    <div class="two fields">
+            <div class="field">
+                <label for="ProtestoEndDate">Eylemin Bitiş Tarihi</label>
+                @Html.EditorFor(m => m.ProtestoEndDate)
+            </div>
+        </div>
         <div class="field">
-            <label for="EmployeeCountInProtesto">Eylemdeki İşçi Sayısı (Tam)</label>
-            <input type="text" name="EmployeeCountInProtesto" id="EmployeeCountInProtesto" value="@Model.EmployeeCountInProtesto">
+            <label for="ProtestoPlaceIds">Eylemin Mekanı</label>
+            <select asp-for="ProtestoPlaceIds" asp-items="@ViewBag.ProtestoPlaces" class="ui fluid search dropdown" multiple="multiple">
+                <option value="">--Seçiniz--</option>
+            </select>
+            <span asp-validation-for="ProtestoPlaceIds" class="text-danger"></span>
+        </div>
+        <div class="field">
+            <button id="addLocation" type="button" class="ui button">Lokasyon Ekle (İl/ilçe)</button>
+        </div>
+        <div class="field" id="location">
+            @for (int i = 0; i < Model.Locations.Count(); i++)
+            {
+                <div class="fields">
+                    @Html.HiddenFor(m => m.Locations[i].Deleted)
+                    @*<input type="hidden" name ="Locations[@i].Deleted" value="@Model.Locations[i].Deleted" />*@
+                    <div class="four field">
+                        <select asp-for="@Model.Locations[i].CityId" asp-items="ViewBag.Cities" class="ui selection dropdown city" data-deleted="false">
+                            <option value="">Seçiniz</option>
+                        </select>
+                    </div>
+                    <div class="four field">
+                        <input type="hidden" asp-for="@Model.Locations[i].DistrictId" />
+                        <input type="text" value="@Model.Locations[i].DistirctName" disabled />
+                        @*<select asp-for="@Model.Locations[i].DistrictId" asp-items="ViewBag.Districts" class="ui selection dropdown district" data-deleted="false">
+                            <option value="">Seçiniz</option>
+                        </select>*@
+                    </div>
+                    <div class="four field">
+                        @Html.EditorFor(m => m.Locations[i].Place)
+                    </div>
+                    <div class="four field">
+                        <button id="btnDeleteLocation" type="button" class="ui icon button red basic"><i class="trash icon"></i></button>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label for="EmployeeCountInProtesto">Eylemdeki İşçi Sayısı (Tam)</label>
+                <input type="text" name="EmployeeCountInProtesto" id="EmployeeCountInProtesto" value="@Model.EmployeeCountInProtesto">
+            </div>
+
+            <div class="field">
+                <label for="EmployeeCountInProtestoId">Eylemdeki İşçi Sayısı</label>
+                <select asp-for="EmployeeCountInProtestoId" asp-items="@ViewBag.EmployeeCountInProtesto">
+                    <option value="">--Seçiniz--</option>
+                </select>
+            </div>
+
+        </div>
+        <div class="field">
+            <label for="GenderId">Cinsiyet</label>
+            <select asp-for="GenderId" asp-items="@ViewBag.Genders">
+                <option value="">--Seçiniz--</option>
+
+            </select>
+            <span asp-validation-for="GenderId" class="text-danger"></span>
         </div>
 
         <div class="field">
-            <label for="EmployeeCountInProtestoId">Eylemdeki İşçi Sayısı</label>
-            <select asp-for="EmployeeCountInProtestoId" asp-items="@ViewBag.EmployeeCountInProtesto">
+            <label for="InterventionTypeId">Müdahale Tipi</label>
+            <select asp-for="InterventionTypeIds" asp-items="@ViewBag.InterventionTypes" class="ui fluid search dropdown" multiple="">
                 <option value="">--Seçiniz--</option>
             </select>
         </div>
+        <div class="field" id="InterventionTypeArea">
+            <label for="CustodyCount">Gözaltı Sayısı</label>
+            <input type="text" name="CustodyCount" id="CustodyCount" value="@Model.CustodyCount" />
+        </div>
 
-    </div>
-    <div class="field">
-        <label for="GenderId">Cinsiyet</label>
-        <select asp-for="GenderId" asp-items="@ViewBag.Genders">
-            <option value="">--Seçiniz--</option>
-
-        </select>
-        <span asp-validation-for="GenderId" class="text-danger"></span>
-    </div>
-
-    <div class="field">
-        <label for="InterventionTypeId">Müdahale Tipi</label>
-        <select asp-for="InterventionTypeIds" asp-items="@ViewBag.InterventionTypes" class="ui fluid search dropdown" multiple="">
-            <option value="">--Seçiniz--</option>
-        </select>
-    </div>
-    <div class="field" id="InterventionTypeArea">
-        <label for="CustodyCount">Gözaltı Sayısı</label>
-        <input type="text" name="CustodyCount" id="CustodyCount" value="@Model.CustodyCount" />
-    </div>
-
-    <div class="field">
-        <label for="Note">Kontrol Kişisine Notlar</label>
-        <textarea type="text" name="Note" id="Note" rows="2">@Model.Note</textarea>
-    </div>
-    <button class="ui primary button">KAYDET</button>
-    <button type="button" id="btnCancelProtestoModal" class="ui negative button">SİL</button>
-</form>
+        <div class="field">
+            <label for="Note">Kontrol Kişisine Notlar</label>
+            <textarea type="text" name="Note" id="Note" rows="2">@Model.Note</textarea>
+        </div>
+        <button class="ui primary button">KAYDET</button>
+        <button type="button" id="btnCancelProtestoModal" class="ui negative button">SİL</button>
+    </form>
 
 
 <script src="/app/editProtesto.js"></script>

@@ -144,6 +144,7 @@ namespace RS.MVC.Applications
                             ResistanceDescription = s.Description,
                             ResistanceNote = s.Note,
                             FiredEmployeeCountByProtesto = s.FiredEmployeeCountByProtesto,
+                            ResistanceResult = s.ResistanceResult,
                             ResistanceNews = s.ResistanceNews.OrderBy(s => s.News.Date).Select(r => r.News).ToList(),
 
                             Protestos = s.Protestos.Where(s => !s.Deleted).OrderBy(s=>s.StartDate).Select(p => new ProtestoListModel
@@ -197,6 +198,7 @@ namespace RS.MVC.Applications
             resistance.Note = viewModel.ResistanceNote;
             resistance.LegalInterventionDesc = viewModel.LegalInterventionDesc;
             resistance.FiredEmployeeCountByProtesto = viewModel.FiredEmployeeCountByProtesto;
+            resistance.ResistanceResult = viewModel.ResistanceResult;
             resistance.Updater = viewModel.UserName;
             resistance.UpdateDate = DateTime.Now;
             resistance.ResistanceCorporations = new List<ResistanceCorporation>();
@@ -263,6 +265,7 @@ namespace RS.MVC.Applications
                 EmployeeCountInProtesto = s.EmployeeCountNumber,
                 GenderId = s.GenderId,
                 EmployeeCountInProtestoId = s.ProtestoEmployeeCountId,
+                SimpleProtestoDescription = s.SimpleProtestoDescription,
                 InterventionTypeIds = s.ProtestoInterventionTypes.Select(i => i.InterventionTypeId).ToList(),
                 ProtestoPlaceIds = s.ProtestoProtestoPlaces.Select(pp => pp.ProtestoPlaceId.ToString()).ToList(),
                 ProtestoTypeIds = s.ProtestoProtestoTypes.Select(pt => pt.ProtestoTypeId.ToString()).ToList(),

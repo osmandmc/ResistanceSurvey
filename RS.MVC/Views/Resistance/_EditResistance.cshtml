@@ -120,7 +120,15 @@
             <label for="FiredEmployeeCountByProtesto">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>
             <input type="number" name="FiredEmployeeCountByProtesto" id="FiredEmployeeCountByProtesto" value="@Model.FiredEmployeeCountByProtesto">
         </div>
-       
+        <div class="field">
+            <label for="ResistanceResult">Sonuç</label>
+            <select asp-for="ResistanceResult" class="ui fluid search dropdown">
+                <option value="0">Bilinmiyor</option>
+                <option value="1">Tam Kazanım</option>
+                <option value="2">Yarım Kazanım</option>
+                <option value="3">Sıfır Kazanım</option>
+            </select>
+        </div>
         <div class="field">
             <label for="ResistanceNote">Kontrol Kişisine Notlar</label>
             <textarea type="text" name="ResistanceNote" id="ResistanceNote" rows="3">@Model.ResistanceNote</textarea>

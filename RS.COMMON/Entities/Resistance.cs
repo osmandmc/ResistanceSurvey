@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using RS.COMMON.DTO;
 using RS.COMMON.Entities.LookupEntity;
+using static RS.COMMON.Constants.Enums;
 
 namespace RS.COMMON.Entities
 {
@@ -25,6 +26,7 @@ namespace RS.COMMON.Entities
         public bool? AnyLegalIntervention { get; set; }
         public string LegalInterventionDesc { get; set; }
         public int? FiredEmployeeCountByProtesto { get; set; }
+        public ResistanceResult ResistanceResult { get; set; }
         public bool Deleted { get; set; }
 
         public Category Category { get; set; }

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using RS.COMMON.DTO;
 using RS.COMMON.Entities;
+using static RS.COMMON.Constants.Enums;
 
 namespace RS.MVC.Models
 {
@@ -46,6 +47,9 @@ namespace RS.MVC.Models
         public string LegalIntervantionDesc { get; set; }
         public int? CustodyCount { get; set; }
         public int? FiredEmployeeCountByProtesto { get; set; }
+        public ResistanceResult ResistanceResult { get; set; }
+        public string SimpleProtestoDescription { get; set; }
+
         //public List<int> ResistanceNewsIds { get; set; }
         public List<int> ProtestoCityIds { get; set; }
         public List<int?> ProtestoDistrictIds { get; set; }
@@ -73,6 +77,7 @@ namespace RS.MVC.Models
                 Creator = UserName,
                 CreateDate = DateTime.Now,
                 LegalInterventionDesc = LegalIntervantionDesc,
+                ResistanceResult = ResistanceResult,
                 ResistanceCorporations = new List<ResistanceCorporation>(),
                 ResistanceEmploymentTypes = new List<ResistanceEmploymentType>(),
                 ResistanceResistanceReasons = new List<ResistanceResistanceReason>(),
@@ -97,6 +102,7 @@ namespace RS.MVC.Models
                 EndDate = ProtestoEndDate,
                 GenderId = GenderId,
                 CustodyCount = CustodyCount,
+                SimpleProtestoDescription = SimpleProtestoDescription,
                 Creator = UserName,
                 CreateDate = DateTime.Now,
                 ProtestoProtestoTypes = new List<ProtestoProtestoType>(),

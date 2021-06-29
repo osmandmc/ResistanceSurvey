@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using RS.COMMON.DTO;
 using RS.COMMON.Entities;
+using static RS.COMMON.Constants.Enums;
 
 namespace RS.MVC.Models
 {
@@ -30,7 +31,7 @@ namespace RS.MVC.Models
         public short AnyLegalIntervention { get; set; }
         public string LegalInterventionDesc { get; set; }
         public int? FiredEmployeeCountByProtesto { get; set; }
-        
+        public ResistanceResult ResistanceResult { get; set; }
         public List<int> EmploymentTypeIds { get; set; }
         public List<ResistanceNewsModel> ResistanceNewsIds { get; set; }
         

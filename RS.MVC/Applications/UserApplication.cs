@@ -27,8 +27,8 @@ namespace RS.MVC.Applications
         // users hardcoded for simplicity, store in a db with hashed passwords in production applications
         private List<User> _users = new List<User>
         { 
-            new User { Id = 1, FirstName = "Admin", LastName = "User", Username = "admin", Password = "admin", Role = Role.Admin },
-            new User { Id = 2, FirstName = "Normal", LastName = "User", Username = "user", Password = "user", Role = Role.User } 
+            new User { Id = 1, FirstName = "Admin", LastName = "User", Username = "admin", Password = ".E**çt20!19)Dt", Role = Role.Admin },
+            new User { Id = 2, FirstName = "Normal", LastName = "User", Username = "user", Password = "usr.E**çt20!19)Dt", Role = Role.User } 
         };
 
         private readonly AppSettings _appSettings;
@@ -41,21 +41,22 @@ namespace RS.MVC.Applications
         public Result<UserModel> Authenticate(string username, string password)
         {
             var result = new Result<UserModel>();
-            var user = _users.Where(x => x.Username == username && x.Password == password)
-            .Select(u => new UserModel
-            {
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Role = u.Role,
-                Token = u.Token,
-                Username = u.Username
-            }).SingleOrDefault();
 
+            var user = _users.Where(x => x.Username == username && x.Password == password)
+               .Select(u => new UserModel
+               {
+                   FirstName = u.FirstName,
+                   LastName = u.LastName,
+                   Role = u.Role,
+                   Token = u.Token,
+                   Username = u.Username
+               }).SingleOrDefault();
             // return null if user not found
             if (user == null)
             {
                 result.Success = false;
                 result.ErrorMessages.Add("Kullanıcı adı veya şifre hatalı");
+                return result;
             }
 
             // authentication successful so generate jwt token

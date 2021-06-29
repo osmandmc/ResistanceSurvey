@@ -8,8 +8,15 @@ namespace RS.COMMON.Constants
             Linked,
             Passive
         }
+        public enum ResistanceResult
+        {
+            Unknown = 0,
+            FullGain = 1,
+            PartialGain = 2,
+            ZeroGain = 3
+        }
         
-       
+
     }
     public static class Role
     {

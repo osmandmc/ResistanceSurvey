@@ -21,8 +21,10 @@
                             <div class="fields">
                                 <div class="four wide field">
                                     <select class="ui fluid search selection dropdown" id="yearId">
-                                        <option value="2019">2019</option>
-                                        <option value="2020">2020</option>
+                                        @for (int i = 2019; i <= DateTime.Now.Year; i++)
+                                        {
+                                            <option value="@i">@i</option>
+                                        }
                                     </select>
                                 </div>
                                 <div class="five wide field">

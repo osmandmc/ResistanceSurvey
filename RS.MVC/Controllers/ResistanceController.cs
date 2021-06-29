@@ -202,7 +202,7 @@ namespace ResistanceSurvey.Controllers
             ViewBag.TradeUnionAuthorities = new SelectList(_db.TradeUnionAuthority.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.EmploymentTypes = new SelectList(_db.EmploymentType.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.EmployeeCountInProtesto = new SelectList(_db.ProtestoEmployeeCount.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
-            ViewBag.ProtestoTypes = new MultiSelectList(_db.ProtestoType.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.ProtestoTypes = new MultiSelectList(_db.ProtestoType.OrderBy(s => s.Name).Select(s => new { Id = s.Id, Name = s.Name, Simple = s.Simple }).ToList(), "Id", "Name");
             ViewBag.ProtestoPlaces = new MultiSelectList(_db.ProtestoPlace.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.ResistanceReasons = new MultiSelectList(_db.ResistanceReason.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.Genders = new SelectList(_db.Gender.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");

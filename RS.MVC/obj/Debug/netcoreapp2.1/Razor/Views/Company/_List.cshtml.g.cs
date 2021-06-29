@@ -75,12 +75,12 @@ using RS.COMMON.DTO;
                 ");
             EndContext();
             BeginContext(489, 225, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("select", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7683ba9207dd43e281a40f5af893a628", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("select", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "ca2491a4f2e2492497412d5f6ab00c89", async() => {
                 BeginContext(628, 22, true);
                 WriteLiteral("\r\n                    ");
                 EndContext();
                 BeginContext(650, 37, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d6b39550b54b4ea0a457080b65de7830", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "872d168216314fb699a75cc27e048ec7", async() => {
                     BeginContext(667, 11, true);
                     WriteLiteral("--Seçiniz--");
                     EndContext();
@@ -132,9 +132,9 @@ __Microsoft_AspNetCore_Mvc_TagHelpers_SelectTagHelper.Items = ViewBag.Companies;
             WriteLiteral("\r\n            </div>\r\n            <div class=\"field\">\r\n                <label class=\"transition visible\">Ana Şirket</label>\r\n                ");
             EndContext();
             BeginContext(855, 193, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("select", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "3221c889f7114f69957c5bf0e215566e", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("select", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "a49089d202a74e8ebfe59c1504a33b8d", async() => {
                 BeginContext(1002, 37, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d53821730a6944698b2b567f870bd46b", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c793932324b14d5f97cf8d70ca62842f", async() => {
                     BeginContext(1019, 11, true);
                     WriteLiteral("--Seçiniz--");
                     EndContext();
@@ -396,7 +396,7 @@ __Microsoft_AspNetCore_Mvc_TagHelpers_SelectTagHelper.Items = ViewBag.Companies;
                             ");
             EndContext();
             BeginContext(2958, 74, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "05a8b5d9776b4103884c0691e851a100", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "34003c5d1969401cb2a0398a365c0889", async() => {
                 BeginContext(3000, 23, false);
 #line 73 "C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\Views\Company\_List.cshtml"
                                                                 Write(Model.Filter.PageNumber);
@@ -438,7 +438,7 @@ __Microsoft_AspNetCore_Mvc_TagHelpers_SelectTagHelper.Items = ViewBag.Companies;
             WriteLiteral("                                ");
             EndContext();
             BeginContext(3174, 30, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "17bb1186470444bca807948c61f6e0c9", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c6303e7fa2994eec9740c23390d96fc8", async() => {
                 BeginContext(3194, 1, false);
 #line 76 "C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\Views\Company\_List.cshtml"
                                               Write(i);
