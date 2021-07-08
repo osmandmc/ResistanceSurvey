@@ -14,7 +14,7 @@ namespace RS.MVC.Applications
     public interface INewsApplication
     {
         IEnumerable<NewsListModel> GetNewsByPeriod(int year, int month);
-        void ReadNews(Stream stream, int year, int month);
+        void ReadNews(Stream stream, int source, int year, int month);
         void MarkAsResistanceNews(int newsId);
         void MarkAsUnrelatedNews(int newsId);
         byte[] GetNewsFile(int year, int month);
@@ -57,7 +57,7 @@ namespace RS.MVC.Applications
             _db.SaveChanges();
         }
 
-        public void ReadNews(Stream stream, int year, int month)
+        public void ReadNews(Stream stream, int source, int year, int month)
         {
             using (var package = new ExcelPackage(stream))
             {
@@ -65,24 +65,20 @@ namespace RS.MVC.Applications
                 var rowCount = worksheet.Dimension?.Rows;
                 var colCount = worksheet.Dimension?.Columns;
 
-                if (!rowCount.HasValue || !colCount.HasValue)
-                {
-
-                }
-
                 var dateIntervalStart = new DateTime(year, month, 1);
                 var dateIntervalEnd = new DateTime(year, month, DateTime.DaysInMonth(dateIntervalStart.Year, dateIntervalStart.Month));
 
-                var existingNews = _db.News.Where(s => s.Date >= dateIntervalStart && s.Date <= dateIntervalEnd).ToList();
+                var existingNews = _db.News.Where(s => s.Date >= dateIntervalStart && s.Date <= dateIntervalEnd && s.Source == source).ToList();
                 if (existingNews.Count != 0)
                 {
-                    var attachedResistanceNewsIds = _db.ResistanceNews.Where(s => existingNews.Select(d => d.Id).ToList().Contains(s.NewsId)).Select(s => s.NewsId).ToList();
+                    var attachedResistanceNewsIds = _db.ResistanceNews.Where(s => existingNews.Select(d => d.Id).Contains(s.NewsId)).Select(s => s.NewsId).ToList();
                     var removableNews = existingNews.Where(s => !attachedResistanceNewsIds.Contains(s.Id)).ToList();
                     _db.News.RemoveRange(removableNews);
                 }
                 for (int row = 2; row <= rowCount.Value; row++)
                 {
                     var news = new News();
+                    news.Source = source;
                     news.Link = worksheet.Cells[row, 1].Value.ToString();
                     news.Date = DateTime.Parse(worksheet.Cells[row, 2].Value.ToString());
                     news.Header = worksheet.Cells[row, 3].Value.ToString();

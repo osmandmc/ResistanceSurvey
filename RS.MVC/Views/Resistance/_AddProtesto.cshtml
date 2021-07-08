@@ -1,71 +1,77 @@
 @model RS.COMMON.DTO.ProtestoAddModel
 
-<form id="protestoForm" class="ui form">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-      <a href="#" onclick="back(@ViewBag.ResistanceId)" class="ui labeled icon button">
+    <form id="protestoForm" class="ui form">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <a href="#" onclick="back(@ViewBag.ResistanceId)" class="ui labeled icon button">
             <i class="left arrow icon"></i>
-             Vaka:@ViewBag.ResistanceName 
+            Vaka:@ViewBag.ResistanceName
         </a>
-    <h3 class="ui dividing header">Eylem
-    </h3>
-    <input type="hidden" name="ResistanceId" id="ResistanceId"  value="@ViewBag.ResistanceId"/>
-    <div class="field">
+        <h3 class="ui dividing header">
+            Eylem
+        </h3>
+        <input type="hidden" name="ResistanceId" id="ResistanceId" value="@ViewBag.ResistanceId" />
         <div class="field">
-            <label for="ProtestoTypeIds">Eylemin Türü</label>
-            <select asp-for="ProtestoTypeIds" asp-items="@ViewBag.ProtestoTypes" class="ui fluid search dropdown" multiple="">
-                <option value="">--Seçiniz--</option>
-            </select>
-            <span asp-validation-for="ProtestoTypeIds" class="text-danger"></span>
+            <div class="field">
+                <label for="ProtestoTypeIds">Eylemin Türü</label>
+                <select asp-for="ProtestoTypeIds" asp-items="@ViewBag.ProtestoTypes" class="ui fluid search dropdown" multiple="">
+                    <option value="">--Seçiniz--</option>
+                </select>
+                <span asp-validation-for="ProtestoTypeIds" class="text-danger"></span>
+            </div>
         </div>
-    </div>
-    @*<div class="field">
-        <label for="IsAgainsttProduction">Eylem Üretime Yönelik mi?</label>
-        <select asp-for="IsAgainstProduction">
-            <option value="">--Seçiniz--</option>
-            <option value="true">Evet</option>
-            <option value="false">Hayır</option>
-        </select>
-        <span asp-validation-for="IsAgainstProduction" class="text-danger"></span>
-    </div>*@
-    <div class="two fields">
-        <div class="field">
-            <label for="ProtestoStartDate">Eylemin Başlangıç Tarihi</label>
-            @Html.EditorFor(m=>m.ProtestoStartDate)
-        </div>
-        <div class="field">
-            <label for="ProtestoEndDate">Eylemin Bitiş Tarihi</label>
-           @Html.EditorFor(m=>m.ProtestoEndDate)
-        </div>
-    </div>
-    <div class="two fields">
-        <div class="field">
-            <label for="ProtestoPlaceIds">Eylemin Mekanı</label>
-            <select asp-for="ProtestoPlaceIds" asp-items="@ViewBag.ProtestoPlaces" class="ui fluid search dropdown" multiple="multiple">
-                <option value="">--Seçiniz--</option>
-            </select>
-            <span asp-validation-for="ProtestoPlaceIds" class="text-danger"></span>
-        </div>
-      
-    </div>
-    <div class="field">
-        <button id="addLocation" type="button" class="ui button">Lokasyon Ekle</button>
-    </div>
-    <div class="field" id="location"></div>
-    <div class="two fields">
-        <div class="field">
-            <label for="EmployeeCountInProtesto">Eylemdeki İşçi Sayısı (Tam)</label>
-            <input type="text" name="EmployeeCountInProtesto" id="EmployeeCountInProtesto" />
-        </div>
+        <div class="field" id="SimpleProtestoDescriptionField" style="display:none">
+            <label for="SimpleProtestoDescription">İş yerinde Basit Eylem Açıklama</label>
+            <input asp-for="SimpleProtestoDescription" type="text" />
 
-        <div class="field">
-            <label for="EmployeeCountInProtestoId">Eylemdeki İşçi Sayısı</label>
-            <select asp-for="EmployeeCountInProtestoId" asp-items="@ViewBag.EmployeeCountInProtesto">
-                <option value="">--Seçiniz--</option>
-            </select>
         </div>
+        @*<div class="field">
+            <label for="IsAgainsttProduction">Eylem Üretime Yönelik mi?</label>
+            <select asp-for="IsAgainstProduction">
+                <option value="">--Seçiniz--</option>
+                <option value="true">Evet</option>
+                <option value="false">Hayır</option>
+            </select>
+            <span asp-validation-for="IsAgainstProduction" class="text-danger"></span>
+        </div>*@
+        <div class="two fields">
+            <div class="field">
+                <label for="ProtestoStartDate">Eylemin Başlangıç Tarihi</label>
+                @Html.EditorFor(m => m.ProtestoStartDate)
+            </div>
+            <div class="field">
+                <label for="ProtestoEndDate">Eylemin Bitiş Tarihi</label>
+                @Html.EditorFor(m => m.ProtestoEndDate)
+            </div>
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label for="ProtestoPlaceIds">Eylemin Mekanı</label>
+                <select asp-for="ProtestoPlaceIds" asp-items="@ViewBag.ProtestoPlaces" class="ui fluid search dropdown" multiple="multiple">
+                    <option value="">--Seçiniz--</option>
+                </select>
+                <span asp-validation-for="ProtestoPlaceIds" class="text-danger"></span>
+            </div>
 
-    </div>
-  <div class="field">
+        </div>
+        <div class="field">
+            <button id="addLocation" type="button" class="ui button">Lokasyon Ekle</button>
+        </div>
+        <div class="field" id="location"></div>
+        <div class="two fields">
+            <div class="field">
+                <label for="EmployeeCountInProtesto">Eylemdeki İşçi Sayısı (Tam)</label>
+                <input type="text" name="EmployeeCountInProtesto" id="EmployeeCountInProtesto" />
+            </div>
+
+            <div class="field">
+                <label for="EmployeeCountInProtestoId">Eylemdeki İşçi Sayısı</label>
+                <select asp-for="EmployeeCountInProtestoId" asp-items="@ViewBag.EmployeeCountInProtesto">
+                    <option value="">--Seçiniz--</option>
+                </select>
+            </div>
+
+        </div>
+        <div class="field">
             <label for="GenderId">Cinsiyet</label>
             <select asp-for="GenderId" asp-items="@ViewBag.Genders">
                 <option value="">--Seçiniz--</option>
@@ -73,23 +79,23 @@
             </select>
             <span asp-validation-for="GenderId" class="text-danger"></span>
         </div>
-    <div class="field">
-        <label for="InterventionTypeId">Müdahale Tipi</label>
-        <select asp-for="InterventionTypeIds" asp-items="@ViewBag.InterventionTypes" class="ui fluid search dropdown" multiple="">
-            <option value="">--Seçiniz--</option>
-        </select>
-    </div>
-    <div class="field" id="InterventionTypeArea" style="display:none">
-        <label for="CustodyCount">Gözaltı Sayısı</label>
-        <input type="text" name="CustodyCount" id="CustodyCount" />
-    </div>
+        <div class="field">
+            <label for="InterventionTypeId">Müdahale Tipi</label>
+            <select asp-for="InterventionTypeIds" asp-items="@ViewBag.InterventionTypes" class="ui fluid search dropdown" multiple="">
+                <option value="">--Seçiniz--</option>
+            </select>
+        </div>
+        <div class="field" id="InterventionTypeArea" style="display:none">
+            <label for="CustodyCount">Gözaltı Sayısı</label>
+            <input type="text" name="CustodyCount" id="CustodyCount" />
+        </div>
 
-    <div class="field">
-        <label for="Note">Kontrol Kişisine Notlar</label>
-        <textarea type="text" name="Note" id="Note" rows="2"></textarea>
-    </div>
-    <button type="submit" class="ui primary button">KAYDET</button>
-</form>
+        <div class="field">
+            <label for="Note">Kontrol Kişisine Notlar</label>
+            <textarea type="text" name="Note" id="Note" rows="2"></textarea>
+        </div>
+        <button type="submit" class="ui primary button">KAYDET</button>
+    </form>
           
 <script src="/app/addProtesto.js"></script>
 <script>

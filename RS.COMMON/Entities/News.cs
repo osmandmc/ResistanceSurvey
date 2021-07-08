@@ -11,6 +11,7 @@ namespace RS.COMMON.Entities
         public DateTime Date { get; set; } 
         public string Link { get; set; }
         public Enums.Status Status { get; set; }
-        
+        public int Source { get; set; }
+
     }
 }

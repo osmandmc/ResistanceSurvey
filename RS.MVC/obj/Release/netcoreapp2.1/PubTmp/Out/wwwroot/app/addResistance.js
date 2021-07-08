@@ -209,6 +209,22 @@ $("#InterventionTypeIds").change(function () {
         $("#InterventionTypeArea").hide();
     }
 });
+
+$("#ProtestoTypeIds").change(function () {
+    console.log($("#ProtestoTypeIds").dropdown("get value"));
+
+    if ($("#ProtestoTypeIds").dropdown("get value") != null && $("#ProtestoTypeIds").dropdown("get value").indexOf("35") < 0) {
+        $("#SimpleProtestoDescriptionField").hide();
+    }
+    else if ($("#ProtestoTypeIds").dropdown("get value") == null) {
+        $("#SimpleProtestoDescriptionField").hide();
+    }
+    else {
+        $("#SimpleProtestoDescriptionField").show();
+    }
+});
+
+
 let id = 0;
 $("#addLocation").click(function () {
 

@@ -175,7 +175,7 @@ WriteAttributeValue("", 992, item.Approved, 992, 14, false);
             WriteLiteral(" arasındakiler görüntüleniyor.</p>\r\n            </th>\r\n            <th>\r\n                <div class=\"ui right floated pagination menu field\">\r\n                    <select class=\"ui compact small dropdown\" id=\"pagingDD\">\r\n                        ");
             EndContext();
             BeginContext(1601, 74, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "8232e19e6bd0446f89ffbf59feb1ef60", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "a00c2eb8288844758550538058417565", async() => {
                 BeginContext(1643, 23, false);
 #line 48 "C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\Views\ResistanceReason\_List.cshtml"
                                                             Write(Model.Filter.PageNumber);
@@ -217,7 +217,7 @@ WriteAttributeValue("", 992, item.Approved, 992, 14, false);
             WriteLiteral("                            ");
             EndContext();
             BeginContext(1805, 30, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "3bbe228d72cb4cc1b13d86747e7a2151", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "a82718d1196548b39ee9127235d7ffc0", async() => {
                 BeginContext(1825, 1, false);
 #line 51 "C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\Views\ResistanceReason\_List.cshtml"
                                           Write(i);

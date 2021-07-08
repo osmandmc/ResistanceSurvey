@@ -48,7 +48,7 @@ namespace ResistanceSurvey.Controllers
 
         }
         [Authorize]
-        public ActionResult UploadFile(int year, int month)
+        public ActionResult UploadFile(int source, int year, int month)
         {
             var result = new Result();
             if (HttpContext.Request.Form.Files.Count > 0)
@@ -65,12 +65,11 @@ namespace ResistanceSurvey.Controllers
                             return Json(result);
                     }
 
-                    var path = $@"C:\Users\osman.demirci\ECT_{year}_{month}{ext}";
                     using (var stream = file.OpenReadStream())
                     {
                         try{
                             
-                            _newsApplication.ReadNews(stream, year, month);
+                            _newsApplication.ReadNews(stream, source, year, month);
                         }
                         catch(Exception ex)
                         {

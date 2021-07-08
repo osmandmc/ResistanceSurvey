@@ -77,15 +77,28 @@ function submitForm() {
     
 $("#InterventionTypeIds").change(function () {
     console.log($("#InterventionTypeIds").dropdown("get value"));
-    
     if ($("#InterventionTypeIds").dropdown("get value") != null && $("#InterventionTypeIds").dropdown("get value").indexOf("7") < 0) {
-        console.log($("#InterventionTypeIds").dropdown("get value").indexOf("7"));
         $("#InterventionTypeArea").show();
     }
     else{
         $("#InterventionTypeArea").hide();
     }
 });
+
+$("#ProtestoTypeIds").change(function () {
+    console.log($("#ProtestoTypeIds").dropdown("get value"));
+
+    if ($("#ProtestoTypeIds").dropdown("get value") != null && $("#ProtestoTypeIds").dropdown("get value").indexOf("35") < 0) {
+        $("#SimpleProtestoDescriptionField").hide();
+    }
+    else if ($("#ProtestoTypeIds").dropdown("get value") == null) {
+        $("#SimpleProtestoDescriptionField").hide();
+    }
+    else {
+        $("#SimpleProtestoDescriptionField").show();
+    }
+});
+
 let id= 0;
 $("#addLocation").click(function () {
 
