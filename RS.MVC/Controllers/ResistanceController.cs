@@ -115,7 +115,7 @@ namespace ResistanceSurvey.Controllers
                 return Ok();
             }
             var values = ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors).ToList();
-            return StatusCode(StatusCodes.Status500InternalServerError, values);
+            return StatusCode(StatusCodes.Status400BadRequest, values);
         }
         [Authorize]
         public IActionResult EditProtesto(int id)

@@ -156,5 +156,41 @@
             var newsItem = $("#news").find(".item[data-id='"+id+"']").find("a").css("color","");
             console.log(newsItem);
         });
+
+
+
+        function deleteProtesto() {
+            $.post("Resistance/DeleteProtesto/", { ProtestoId: $("#ProtestoId").val() })
+                .done(function (response) {
+                    alert("Silme İşleminiz başarılı");
+                    $('.mini.modal').modal('hide');
+                })
+                .fail(function (jqxhr, status, error) {
+                    // this is the ""error"" callback
+                    alert("Bir hata alındı");
+                })
+        }
+
+        $(document).on("click", "#btnCancelProtesto", function () {
+            console.log("click");
+            $("#btnCancelProtesto").attr("disabled", "disabled");
+            $("#btnSave").attr("disabled", "disabled");
+            $("#btnCancelProtestoModal").attr("disabled", "disabled");
+
+            deleteProtesto();
+        });
+        $(document).on("click", "#btnCancelProtestoModal", function () {
+            $('#modalprotestoDelete').modal('show');
+        });
+
+
+
+
+        $(document).on("click", "#btnDeleteLocation", function () {
+            var location = $(this).closest(".fields");
+            var deleted = location.find(":first");
+            deleted.val(true);
+            location.hide();
+        });
     </script>
 }

@@ -62,7 +62,7 @@ namespace RS.MVC.Controllers
         {
             var anyResistanceResistanceReason = db.ResistanceResistanceReason.Any(s => s.ResistanceReasonId == model.NewId);
             var usedResistances = db.ResistanceResistanceReason.Where(s => s.ResistanceReasonId == model.Id).ToList();
-            if (anyResistanceResistanceReason)
+            if (!anyResistanceResistanceReason)
             {
                 db.ResistanceResistanceReason.RemoveRange(usedResistances);
             }

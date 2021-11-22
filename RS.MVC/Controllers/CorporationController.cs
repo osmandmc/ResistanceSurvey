@@ -73,7 +73,7 @@ namespace RS.MVC.Controllers
         {
             var anyResistanceCorporation = db.ResistanceCorporation.Any(s => s.CorporationId == model.NewId);
             var usedResistances = db.ResistanceCorporation.Where(s => s.CorporationId == model.Id).ToList();
-            if (anyResistanceCorporation)
+            if (!anyResistanceCorporation)
             {
                 db.ResistanceCorporation.RemoveRange(usedResistances);
             }

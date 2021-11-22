@@ -51,7 +51,6 @@ C:\Users\osman.demirci\source\vscode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreap
 C:\Users\osman.demirci\source\vscode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\User\Login.cshtml.g.cs
 C:\Users\osman.demirci\source\vscode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\_ViewImports.cshtml.g.cs
 C:\Users\osman.demirci\source\vscode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\_ViewStart.cshtml.g.cs
-C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\appsettings.Development.json
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\appsettings.json
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\bundleconfig.json
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\Properties\launchSettings.json

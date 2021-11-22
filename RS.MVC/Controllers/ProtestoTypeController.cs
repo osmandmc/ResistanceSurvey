@@ -72,7 +72,7 @@ namespace RS.MVC.Controllers
         {
             var anyResistanceProtestoType = db.ProtestoProtestoType.Any(s => s.ProtestoTypeId == model.NewId);
             var usedResistances = db.ProtestoProtestoType.Where(s => s.ProtestoTypeId == model.Id).ToList();
-            if (anyResistanceProtestoType)
+            if (!anyResistanceProtestoType)
             {
                 db.ProtestoProtestoType.RemoveRange(usedResistances);
             }

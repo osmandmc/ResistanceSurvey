@@ -127,8 +127,11 @@ $('.ui.form').form({
 
 $(function () {
     $('.ui.dropdown').dropdown({
+        allowAdditions: true,
         clearable: true
+        
     });
+    
 });
 
 function getArrayFromInput(selectInput) {

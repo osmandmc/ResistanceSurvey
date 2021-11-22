@@ -43,7 +43,7 @@ namespace RS.MVC.Applications
                     && (filter.CompanyId == null || rs.CompanyId == filter.CompanyId)
                       && (filter.MainCompanyId == null || rs.MainCompanyId == filter.MainCompanyId)
                     && (filter.CategoryId == null || rs.CategoryId == filter.CategoryId)
-                    && (filter.YearId == null || rs.Protestos.Any(s => s.StartDate.Year == filter.YearId && s.StartDate.Month == filter.MonthId))
+                    && (filter.YearId == null || rs.Protestos.Any(s => !s.Deleted && s.StartDate.Year == filter.YearId && s.StartDate.Month == filter.MonthId))
                     && (filter.PersonalNote == null || String.IsNullOrEmpty(rs.Note) == !filter.PersonalNote)
                     )
                     .Select(r => new ResistanceIndexDto
@@ -198,6 +198,7 @@ namespace RS.MVC.Applications
             resistance.Note = viewModel.ResistanceNote;
             resistance.LegalInterventionDesc = viewModel.LegalInterventionDesc;
             resistance.FiredEmployeeCountByProtesto = viewModel.FiredEmployeeCountByProtesto;
+            resistance.DevelopRight = viewModel.DevelopRight;
             resistance.ResistanceResult = viewModel.ResistanceResult;
             resistance.Updater = viewModel.UserName;
             resistance.UpdateDate = DateTime.Now;
@@ -247,7 +248,8 @@ namespace RS.MVC.Applications
             _db.Protesto.Update(protesto);
 
             var resistance = _db.Resistance.Find(model.ResistanceId);
-            if (protesto.StartDate > resistance.StartDate)
+            var hasMinStartDate = _db.Protesto.Where(s => !s.Deleted && s.ResistanceId == model.ResistanceId && s.Id != model.ProtestoId).Any();
+            if (!hasMinStartDate || model.ProtestoStartDate < resistance.StartDate)
             {
                 resistance.StartDate = protesto.StartDate;
                 _db.Resistance.Update(resistance);
@@ -292,6 +294,11 @@ namespace RS.MVC.Applications
         {
             var protesto = model.ToEntity();
             _db.Protesto.Add(protesto);
+            var res = _db.Resistance.FirstOrDefault(s=>s.Id == model.ResistanceId);
+            if (res.StartDate == default(DateTime) || model.ProtestoStartDate < res.StartDate) {
+                res.StartDate = model.ProtestoStartDate;
+                _db.Resistance.Update(res);
+            }
             _db.SaveChanges();
         }
         public IEnumerable<NewsItem> GetNewsList(int year, int month)
@@ -413,6 +420,10 @@ namespace RS.MVC.Applications
             var protesto = _db.Protesto.Find(model.ProtestoId);
             protesto.Updater = model.UserName;
             protesto.Deleted = true;
+            var res = _db.Resistance.FirstOrDefault(s => s.Id == protesto.ResistanceId);
+            var minProtestoStartDate = _db.Protesto.Where(x => !x.Deleted && x.Id != model.ProtestoId && x.ResistanceId == res.Id).Select(s => s.StartDate);
+            res.StartDate = !minProtestoStartDate.Any() ? default(DateTime): minProtestoStartDate.Min();
+            _db.Resistance.Update(res);
             _db.Entry(protesto).State = EntityState.Modified;
             _db.SaveChanges();
         }

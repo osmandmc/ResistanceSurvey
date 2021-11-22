@@ -4,7 +4,6 @@ C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\obj\Release\netcoreapp2.1
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\obj\Release\netcoreapp2.1\RS.MVC.RazorAssemblyInfo.cs
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\obj\Release\netcoreapp2.1\RS.MVC.AssemblyInfoInputs.cache
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\obj\Release\netcoreapp2.1\RS.MVC.AssemblyInfo.cs
-C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\appsettings.Development.json
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\appsettings.json
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\bundleconfig.json
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\Properties\launchSettings.json
