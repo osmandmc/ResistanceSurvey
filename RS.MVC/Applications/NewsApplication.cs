@@ -82,7 +82,7 @@ namespace RS.MVC.Applications
                     news.Link = worksheet.Cells[row, 1].Value.ToString();
                     news.Date = DateTime.Parse(worksheet.Cells[row, 2].Value.ToString());
                     news.Header = worksheet.Cells[row, 3].Value.ToString();
-                    news.Content = worksheet.Cells[row, 4].Value.ToString();
+                    news.Content = worksheet.Cells[row, 4].Value?.ToString();
                     _db.News.Add(news);
                 }
                 _db.SaveChanges();

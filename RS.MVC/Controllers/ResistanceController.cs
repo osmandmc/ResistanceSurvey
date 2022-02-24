@@ -307,7 +307,8 @@ namespace ResistanceSurvey.Controllers
                         InterventionTypes = new List<string>(),
                         CustodyCount = item.CustodyCount,
                         Note = item.Resistance.Note,
-                        ProtestoNote = item.Note
+                        ProtestoNote = item.Note,   
+                        ResistanceResult = item.Resistance.ResistanceResult.ToString(),
                     };
                     item.Resistance.ResistanceResistanceReasons.ForEach(x => row.ResistanceReasons.Add(x.ResistanceReason.Name));
 
@@ -342,6 +343,7 @@ namespace ResistanceSurvey.Controllers
                     ws.Cells[1, index].Value = "Kýsa Açýklama"; index++;
                     ws.Cells[1, index].Value = "Eylem"; index++;
                     ws.Cells[1, index].Value = "Vaka Niteliði"; index++;
+                    ws.Cells[1, index].Value = "Kazaným Durumu"; index++;
                     ws.Cells[1, index].Value = "Þirket"; index++;
                     ws.Cells[1, index].Value = "Þirket Ýþkolu"; index++;
                     ws.Cells[1, index].Value = "Ana Þirket"; index++;
@@ -410,6 +412,7 @@ namespace ResistanceSurvey.Controllers
                         ws.Cells[i + 2, r_index].Value = rows[i].Description; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].ProtestoId; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].CategoryName; r_index++;
+                        ws.Cells[i + 2, r_index].Value = rows[i].ResistanceResult; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].CompanyName; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].CompanyWorkline; r_index++;
                         ws.Cells[i + 2, r_index].Value = rows[i].MainCompanyName; r_index++;

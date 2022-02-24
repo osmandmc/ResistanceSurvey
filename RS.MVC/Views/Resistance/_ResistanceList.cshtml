@@ -30,9 +30,10 @@
                     <label class="transition visible">Eylem Yıl</label>
                     <select class="ui fluid selection dropdown" name="filterProtestoYearId" asp-for="@Model.Filter.YearId">
                         <option value="">--Seçiniz--</option>
-                        <option value="2018">2018</option>
-                        <option value="2019">2019</option>
-                        <option value="2020">2020</option>
+                        @for (int i = 2018; i <= DateTime.Now.Year; i++)
+                        {
+                        <option value="@i">@i</option>
+                        }
                     </select>
                 </div>
                 <div class="field">

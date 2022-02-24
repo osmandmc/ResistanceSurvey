@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace RS.COMMON.Constants
 {
     public class Enums
@@ -10,9 +12,13 @@ namespace RS.COMMON.Constants
         }
         public enum ResistanceResult
         {
+            [Description("Bilinmiyor")]
             Unknown = 0,
+            [Description("Tam Kazaným")]
             FullGain = 1,
+            [Description("Yarým Kazaným")]
             PartialGain = 2,
+            [Description("Sýfýr Kazaným")]
             ZeroGain = 3
         }
         
