@@ -70,6 +70,7 @@ function submitForm() {
             .fail(function (jqxhr, status, error) {
                 // this is the ""error"" callback
                 alert("Bir hata oldu");
+                $("button[type=submit]").prop("disabled", false);
             })
             $("#leftDimmer").dimmer("hide");
 

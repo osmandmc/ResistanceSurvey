@@ -55,7 +55,8 @@ var validationRules =
     }
 };
 
-$('.ui.form').form({
+
+$('#protestoForm').form({
     fields: validationRules,
     inline: true,
     on: 'blur',
@@ -66,6 +67,25 @@ $('.ui.form').form({
 }
 );
 
+function submitForm() {
+
+    var dataToPost = $("#protestoForm").serialize()
+    $.post("Resistance/EditProtesto", dataToPost)
+        .done(function (response) {
+            if (response == '') {
+                alert("İşleminiz başarılı");
+            }
+            else {
+                alert("Eksik alanlar var");
+            }
+
+        })
+        .fail(function (jqxhr, status, error) {
+            // this is the ""error"" callback
+            alert("Bir hata alındı");
+        })
+
+}
 
 $(function () {
     interventionTypeVisibility();
@@ -91,7 +111,6 @@ $("#InterventionTypeIds").change(function () {
     interventionTypeVisibility();
 });
 $("#isOutsource").change(function () {
-    console.log("outsource");
     if ($(this).val() == "1") { $("#outsource").show(); }
     else { $("#outsource").hide(); }
 });
@@ -120,60 +139,8 @@ $("#ProtestoTypeIds").change(function () {
 });
 
 
-function submitForm() {
 
-    var dataToPost = $("#protestoForm").serialize()
-    $.post("Resistance/EditProtesto", dataToPost)
-        .done(function (response) {
-            if (response == '') {
-                alert("İşleminiz başarılı");
-            }
-            else {
-                alert("Eksik alanlar var");
-            }
-
-        })
-        .fail(function (jqxhr, status, error) {
-            // this is the ""error"" callback
-            alert("Bir hata alındı");
-        })
-
-}
-
-function deleteProtesto() {
-    $.post("Resistance/DeleteProtesto/", { ProtestoId: $("#ProtestoId").val() })
-        .done(function (response) {
-            alert("Silme İşleminiz başarılı");
-            $('.mini.modal').modal('hide');
-        })
-        .fail(function (jqxhr, status, error) {
-            // this is the ""error"" callback
-            alert("Bir hata alındı");
-        })
-
-}
-
-$(document).on("click", "#btnCancelProtesto", function () {
-    $('#modalprotestoDelete').modal('show');
-    deleteProtesto();
-});
-$(document).on("click", "#btnCancelProtestoModal", function () {
-    $('#modalprotestoDelete').modal('show');
-});
-
-
-
-
-$(document).on("click", "#btnDeleteLocation", function () {
-    var location = $(this).closest(".fields");
-    console.log(location);
-    var deleted = location.find(":first");
-    console.log(deleted);
-    deleted.val(true);
-    location.hide();
-});
 let id = $("select[name $='CityId']").length;
-console.log(id);
 $("#addLocation").click(function () {
 
 
@@ -282,47 +249,3 @@ $("#addLocation").click(function () {
     
 });
 
-
-function openModal() {
-    console.log("open");
-    $.ajax({
-        url: "/Resistance/AddCompany",
-        datatype: "html",
-        success: function (response) {
-            $("#modal-content").html(response);
-            $('#addCompanyModal').modal('show');
-        }
-    });
-
-}
-function openOutsourceModal() {
-    $.ajax({
-        url: "/Resistance/AddOutsourceCompany",
-        datatype: "html",
-        success: function (response) {
-            $("#modalOutsource-content").html(response);
-            $('#addOutsourceCompanyModal').modal('show');
-        }
-    });
-}
-function checkExisiting() {
-
-    var companyId = $("#CompanyId").val();
-    var categoryId = $("#CategoryId").val();
-    console.log(companyId);
-    if (companyId != null && categoryId != null) {
-        ExistingResistance(companyId, categoryId);
-    }
-}
-function ExistingResistance(companyId, categoryId) {
-    $.ajax({
-        url: "/Resistance/ExistingResistance?companyId=" + companyId + "&categoryId=" + categoryId,
-        success: function (response) {
-            if (response != null) {
-                alert("mevcut");
-                console.log(response);
-            }
-
-        }
-    });
-}

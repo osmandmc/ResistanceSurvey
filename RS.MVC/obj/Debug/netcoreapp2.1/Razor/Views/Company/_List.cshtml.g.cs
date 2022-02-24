@@ -37,11 +37,13 @@ using RS.COMMON.DTO;
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_2 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("name", "filterCompanyId", global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_3 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("name", "filterMainCompanyId", global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
         #line hidden
+        #pragma warning disable 0649
+        private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperExecutionContext __tagHelperExecutionContext;
+        #pragma warning restore 0649
+        private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperRunner __tagHelperRunner = new global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperRunner();
         #pragma warning disable 0169
         private string __tagHelperStringValueBuffer;
         #pragma warning restore 0169
-        private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperExecutionContext __tagHelperExecutionContext;
-        private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperRunner __tagHelperRunner = new global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperRunner();
         private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperScopeManager __backed__tagHelperScopeManager = null;
         private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperScopeManager __tagHelperScopeManager
         {
@@ -75,12 +77,12 @@ using RS.COMMON.DTO;
                 ");
             EndContext();
             BeginContext(489, 225, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("select", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "a4eb0407b8c8485ca59c721371ffa83d", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("select", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "092cfb279ad1c4ae2d2ab86ec0f0f9b24a55692c5301", async() => {
                 BeginContext(628, 22, true);
                 WriteLiteral("\r\n                    ");
                 EndContext();
                 BeginContext(650, 37, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "da5084c305694a01b67e0f238f0bed5d", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "092cfb279ad1c4ae2d2ab86ec0f0f9b24a55692c5705", async() => {
                     BeginContext(667, 11, true);
                     WriteLiteral("--Seçiniz--");
                     EndContext();
@@ -132,9 +134,9 @@ __Microsoft_AspNetCore_Mvc_TagHelpers_SelectTagHelper.Items = ViewBag.Companies;
             WriteLiteral("\r\n            </div>\r\n            <div class=\"field\">\r\n                <label class=\"transition visible\">Ana Şirket</label>\r\n                ");
             EndContext();
             BeginContext(855, 193, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("select", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "f96094b1248c435f96696f8f324a7b8a", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("select", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "092cfb279ad1c4ae2d2ab86ec0f0f9b24a55692c9336", async() => {
                 BeginContext(1002, 37, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "51869069cd054a7c8f9c8b71d82167f6", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "092cfb279ad1c4ae2d2ab86ec0f0f9b24a55692c9605", async() => {
                     BeginContext(1019, 11, true);
                     WriteLiteral("--Seçiniz--");
                     EndContext();
@@ -396,7 +398,7 @@ __Microsoft_AspNetCore_Mvc_TagHelpers_SelectTagHelper.Items = ViewBag.Companies;
                             ");
             EndContext();
             BeginContext(2958, 74, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c61bc46b4a924675b11f20e705661718", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "092cfb279ad1c4ae2d2ab86ec0f0f9b24a55692c21042", async() => {
                 BeginContext(3000, 23, false);
 #line 73 "C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\Views\Company\_List.cshtml"
                                                                 Write(Model.Filter.PageNumber);
@@ -438,7 +440,7 @@ __Microsoft_AspNetCore_Mvc_TagHelpers_SelectTagHelper.Items = ViewBag.Companies;
             WriteLiteral("                                ");
             EndContext();
             BeginContext(3174, 30, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "8735a125497649179726babd314d7dea", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "092cfb279ad1c4ae2d2ab86ec0f0f9b24a55692c23405", async() => {
                 BeginContext(3194, 1, false);
 #line 76 "C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\Views\Company\_List.cshtml"
                                               Write(i);

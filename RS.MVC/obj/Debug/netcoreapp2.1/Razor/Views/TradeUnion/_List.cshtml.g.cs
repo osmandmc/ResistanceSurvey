@@ -33,11 +33,13 @@ using RS.COMMON.DTO;
     public class Views_TradeUnion__List : global::Microsoft.AspNetCore.Mvc.Razor.RazorPage<PagedResult<RS.COMMON.Entities.LookupEntity.TradeUnion, FilterModel>>
     {
         #line hidden
+        #pragma warning disable 0649
+        private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperExecutionContext __tagHelperExecutionContext;
+        #pragma warning restore 0649
+        private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperRunner __tagHelperRunner = new global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperRunner();
         #pragma warning disable 0169
         private string __tagHelperStringValueBuffer;
         #pragma warning restore 0169
-        private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperExecutionContext __tagHelperExecutionContext;
-        private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperRunner __tagHelperRunner = new global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperRunner();
         private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperScopeManager __backed__tagHelperScopeManager = null;
         private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperScopeManager __tagHelperScopeManager
         {
@@ -175,7 +177,7 @@ WriteAttributeValue("", 952, item.Approved, 952, 14, false);
             WriteLiteral(" arasındakiler görüntüleniyor.</p>\r\n            </th>\r\n            <th>\r\n                <div class=\"ui right floated pagination menu field\">\r\n                    <select class=\"ui compact small dropdown\" id=\"pagingDD\">\r\n                        ");
             EndContext();
             BeginContext(1544, 74, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "4ed64621f75d4269912701e55c382990", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "2d189d363a49052aa5aafad61c945b2dc8b748a88323", async() => {
                 BeginContext(1586, 23, false);
 #line 48 "C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\Views\TradeUnion\_List.cshtml"
                                                             Write(Model.Filter.PageNumber);
@@ -217,7 +219,7 @@ WriteAttributeValue("", 952, item.Approved, 952, 14, false);
             WriteLiteral("                            ");
             EndContext();
             BeginContext(1748, 30, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "f8f6a819328c460ea7c3c2ff6b17be9c", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "2d189d363a49052aa5aafad61c945b2dc8b748a810674", async() => {
                 BeginContext(1768, 1, false);
 #line 51 "C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\Views\TradeUnion\_List.cshtml"
                                           Write(i);

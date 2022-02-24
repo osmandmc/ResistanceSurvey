@@ -53,7 +53,6 @@ C:\Users\osman.demirci\source\vscode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreap
 C:\Users\osman.demirci\source\vscode\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\_ViewStart.cshtml.g.cs
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\appsettings.json
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\bundleconfig.json
-C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\Properties\launchSettings.json
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\semantic.json
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\RS.MVC.deps.json
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\RS.MVC.runtimeconfig.json
@@ -66,7 +65,6 @@ C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\R
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\RS.EF.dll
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\RS.COMMON.pdb
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\bin\Debug\netcoreapp2.1\RS.EF.pdb
-C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\RS.MVC.csprojAssemblyReference.cache
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\RS.MVC.RazorAssemblyInfo.cache
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\RS.MVC.RazorAssemblyInfo.cs
 C:\Users\odemirci\Source\Repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\RS.MVC.AssemblyInfoInputs.cache
@@ -118,3 +116,5 @@ C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\R
 C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\User\Index.cshtml.g.cs
 C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\TradeUnion\Index.cshtml.g.cs
 C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\Razor\Views\TradeUnion\_List.cshtml.g.cs
+C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\RS.MVC.csproj.AssemblyReference.cache
+C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\obj\Debug\netcoreapp2.1\RS.MVC.GeneratedMSBuildEditorConfig.editorconfig

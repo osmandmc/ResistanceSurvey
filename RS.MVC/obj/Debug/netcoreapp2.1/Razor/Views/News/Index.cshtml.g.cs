@@ -50,11 +50,13 @@ using RS.COMMON.DTO;
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_15 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("action", new global::Microsoft.AspNetCore.Html.HtmlString("/Profile/UploadDocument"), global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_16 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("enctype", new global::Microsoft.AspNetCore.Html.HtmlString("multipart/form-data"), global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
         #line hidden
+        #pragma warning disable 0649
+        private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperExecutionContext __tagHelperExecutionContext;
+        #pragma warning restore 0649
+        private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperRunner __tagHelperRunner = new global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperRunner();
         #pragma warning disable 0169
         private string __tagHelperStringValueBuffer;
         #pragma warning restore 0169
-        private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperExecutionContext __tagHelperExecutionContext;
-        private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperRunner __tagHelperRunner = new global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperRunner();
         private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperScopeManager __backed__tagHelperScopeManager = null;
         private global::Microsoft.AspNetCore.Razor.Runtime.TagHelpers.TagHelperScopeManager __tagHelperScopeManager
         {
@@ -98,7 +100,7 @@ using RS.COMMON.DTO;
             WriteLiteral("                        ");
             EndContext();
             BeginContext(728, 30, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "bb60fa590dd34d72a330231698dd8eae", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e99839", async() => {
                 BeginContext(748, 1, false);
 #line 16 "C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\Views\News\Index.cshtml"
                                       Write(i);
@@ -139,7 +141,7 @@ using RS.COMMON.DTO;
             WriteLiteral("                </select>\r\n            </div>\r\n            <div class=\"two wide field\">\r\n                <select class=\"ui fluid search selection dropdown\" id=\"monthId\">\r\n                    ");
             EndContext();
             BeginContext(974, 37, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "254e86982232468698baf86e22b79c19", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e912202", async() => {
                 BeginContext(991, 11, true);
                 WriteLiteral("--Seçiniz--");
                 EndContext();
@@ -161,7 +163,7 @@ using RS.COMMON.DTO;
             WriteLiteral("\r\n                    ");
             EndContext();
             BeginContext(1033, 31, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "5f52822480ad4379be4213f60181910c", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e913605", async() => {
                 BeginContext(1051, 4, true);
                 WriteLiteral("Ocak");
                 EndContext();
@@ -183,7 +185,7 @@ using RS.COMMON.DTO;
             WriteLiteral("\r\n                    ");
             EndContext();
             BeginContext(1086, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c351993f44374299bdde70b7276a38ed", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e915001", async() => {
                 BeginContext(1104, 5, true);
                 WriteLiteral("Şubat");
                 EndContext();
@@ -205,7 +207,7 @@ using RS.COMMON.DTO;
             WriteLiteral("\r\n                    ");
             EndContext();
             BeginContext(1140, 31, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "edb3628e8c124dc4b54c5a1545d58944", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e916398", async() => {
                 BeginContext(1158, 4, true);
                 WriteLiteral("Mart");
                 EndContext();
@@ -227,7 +229,7 @@ using RS.COMMON.DTO;
             WriteLiteral("\r\n                    ");
             EndContext();
             BeginContext(1193, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "f37951f049fa456a8ab6cff5a31e9e25", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e917794", async() => {
                 BeginContext(1211, 5, true);
                 WriteLiteral("Nisan");
                 EndContext();
@@ -249,7 +251,7 @@ using RS.COMMON.DTO;
             WriteLiteral("\r\n                    ");
             EndContext();
             BeginContext(1247, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "8265fc977e5844ba9061d106e6be3372", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e919191", async() => {
                 BeginContext(1265, 5, true);
                 WriteLiteral("Mayıs");
                 EndContext();
@@ -271,7 +273,7 @@ using RS.COMMON.DTO;
             WriteLiteral("\r\n                    ");
             EndContext();
             BeginContext(1301, 34, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "f8d08c482a814d189ce5aa76fc8e5dd3", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e920588", async() => {
                 BeginContext(1319, 7, true);
                 WriteLiteral("Haziran");
                 EndContext();
@@ -293,7 +295,7 @@ using RS.COMMON.DTO;
             WriteLiteral("\r\n                    ");
             EndContext();
             BeginContext(1357, 33, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "5bbc564a3de842d5b45991a7131bb07d", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e921987", async() => {
                 BeginContext(1375, 6, true);
                 WriteLiteral("Temmuz");
                 EndContext();
@@ -315,7 +317,7 @@ using RS.COMMON.DTO;
             WriteLiteral("\r\n                    ");
             EndContext();
             BeginContext(1412, 34, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e4cab7d656c54cfdbb9abcdfe514b206", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e923385", async() => {
                 BeginContext(1430, 7, true);
                 WriteLiteral("Ağustos");
                 EndContext();
@@ -337,7 +339,7 @@ using RS.COMMON.DTO;
             WriteLiteral("\r\n                    ");
             EndContext();
             BeginContext(1468, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "9aa05ee484874f1788ef37e19733167b", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e924784", async() => {
                 BeginContext(1486, 5, true);
                 WriteLiteral("Eylül");
                 EndContext();
@@ -359,7 +361,7 @@ using RS.COMMON.DTO;
             WriteLiteral("\r\n                    ");
             EndContext();
             BeginContext(1522, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c3ec2a5dd2434504b7158ca7cee4263b", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e926181", async() => {
                 BeginContext(1541, 4, true);
                 WriteLiteral("Ekim");
                 EndContext();
@@ -381,7 +383,7 @@ using RS.COMMON.DTO;
             WriteLiteral("\r\n                    ");
             EndContext();
             BeginContext(1576, 33, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "404307f03ea9409998106c7f5a4a29c3", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e927579", async() => {
                 BeginContext(1595, 5, true);
                 WriteLiteral("Kasım");
                 EndContext();
@@ -403,7 +405,7 @@ using RS.COMMON.DTO;
             WriteLiteral("\r\n                    ");
             EndContext();
             BeginContext(1631, 34, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "0b0061a6440c41aea4849a5fa740f7d2", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e928978", async() => {
                 BeginContext(1650, 6, true);
                 WriteLiteral("Aralık");
                 EndContext();
@@ -460,12 +462,12 @@ using RS.COMMON.DTO;
         ");
             EndContext();
             BeginContext(2994, 2755, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e62fb1d2c51f42b394fba5c044de213e", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e931774", async() => {
                 BeginContext(3095, 150, true);
                 WriteLiteral("\r\n                <div class=\"field\">\r\n                    <select class=\"ui fluid search selection dropdown\" name=\"source\">\r\n                        ");
                 EndContext();
                 BeginContext(3245, 35, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "66107d8f2f8d4520a262f15d47d9898e", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e932318", async() => {
                     BeginContext(3263, 8, true);
                     WriteLiteral("Evrensel");
                     EndContext();
@@ -487,7 +489,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(3306, 38, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "a7793511fda44e808f7d51ba9c6c9bac", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e933810", async() => {
                     BeginContext(3324, 11, true);
                     WriteLiteral("Kızılbayrak");
                     EndContext();
@@ -518,7 +520,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("                            ");
                 EndContext();
                 BeginContext(3690, 30, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "f9f0fbafb81f4d858be40135f632557a", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e935880", async() => {
                     BeginContext(3710, 1, false);
 #line 80 "C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\Views\News\Index.cshtml"
                                           Write(i);
@@ -559,7 +561,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("                    </select>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <select class=\"ui fluid search selection dropdown\" name=\"month\">\r\n                        ");
                 EndContext();
                 BeginContext(3951, 37, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "8d837692298f42b19767af756f91a08a", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e938375", async() => {
                     BeginContext(3968, 11, true);
                     WriteLiteral("--Seçiniz--");
                     EndContext();
@@ -581,7 +583,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(4014, 31, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "31118de6d8a74d4ea2207225e626c0a9", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e939871", async() => {
                     BeginContext(4032, 4, true);
                     WriteLiteral("Ocak");
                     EndContext();
@@ -603,7 +605,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(4071, 32, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "2b0e48fd2f5f4b84bd7fadb621a8512c", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e941359", async() => {
                     BeginContext(4089, 5, true);
                     WriteLiteral("Şubat");
                     EndContext();
@@ -625,7 +627,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(4129, 31, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "913170b609a544189ff32b1489dceeef", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e942848", async() => {
                     BeginContext(4147, 4, true);
                     WriteLiteral("Mart");
                     EndContext();
@@ -647,7 +649,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(4186, 32, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "8cfaccd5e5ef447f9f4819cc6cbb83a4", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e944336", async() => {
                     BeginContext(4204, 5, true);
                     WriteLiteral("Nisan");
                     EndContext();
@@ -669,7 +671,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(4244, 32, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "666dbc2a916c46db98615753383f5b55", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e945825", async() => {
                     BeginContext(4262, 5, true);
                     WriteLiteral("Mayıs");
                     EndContext();
@@ -691,7 +693,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(4302, 34, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "8c80353524904ea78cfbed5ec1a209cb", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e947314", async() => {
                     BeginContext(4320, 7, true);
                     WriteLiteral("Haziran");
                     EndContext();
@@ -713,7 +715,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(4362, 33, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "5f1e8c6b4d884443b50be53d5d2da72b", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e948805", async() => {
                     BeginContext(4380, 6, true);
                     WriteLiteral("Temmuz");
                     EndContext();
@@ -735,7 +737,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(4421, 34, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c92926b8085f46f693f573a5b3b20a58", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e950295", async() => {
                     BeginContext(4439, 7, true);
                     WriteLiteral("Ağustos");
                     EndContext();
@@ -757,7 +759,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(4481, 32, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "013d8c13010f45ca8ac84c4dee26315c", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e951786", async() => {
                     BeginContext(4499, 5, true);
                     WriteLiteral("Eylül");
                     EndContext();
@@ -779,7 +781,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(4539, 32, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "deca8bab08e84fb789a7050d9f67eeae", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e953275", async() => {
                     BeginContext(4558, 4, true);
                     WriteLiteral("Ekim");
                     EndContext();
@@ -801,7 +803,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(4597, 33, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d5e532a96219407aa4ca722c83e68a6d", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e954765", async() => {
                     BeginContext(4616, 5, true);
                     WriteLiteral("Kasım");
                     EndContext();
@@ -823,7 +825,7 @@ using RS.COMMON.DTO;
                 WriteLiteral("\r\n                        ");
                 EndContext();
                 BeginContext(4656, 34, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "138d6946d08449c7b9dd99f101475a7b", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7694e6ef8c5842e58ca139f99c71cfa01822a2e956256", async() => {
                     BeginContext(4675, 6, true);
                     WriteLiteral("Aralık");
                     EndContext();

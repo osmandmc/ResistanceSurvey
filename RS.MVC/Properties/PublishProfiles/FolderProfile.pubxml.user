@@ -7,5 +7,6 @@ by editing this MSBuild file. In order to learn more about this please visit htt
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
     <_PublishTargetUrl>C:\Users\odemirci\source\repos\ResistanceSurvey\RS.MVC\bin\Release\netcoreapp2.1\publish\</_PublishTargetUrl>
+    <History>True|2021-12-25T16:11:04.1075704Z;True|2021-12-04T22:57:43.7967527+03:00;</History>
   </PropertyGroup>
 </Project>
