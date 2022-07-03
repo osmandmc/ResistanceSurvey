@@ -25,10 +25,14 @@ namespace RS.MVC.Controllers
             return View();
         }
         [Authorize]
-        public IActionResult _List(FilterModel filter)
+        public IActionResult _List(CorporationFilterModel filter)
         {
             ViewBag.CorporationTypes = new SelectList(db.CorporationType.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
-            var corporations = db.Corporation.Select(s => new CorporationListView { Id=s.Id, Name = s.Name, CorporationTypeId = s.CorporationTypeId, CorporationTypeName = s.CorporationType != null ? s.CorporationType.Name : "", Approved = s.Approved }).ToPagedFilteredResult(filter);
+            var corporations = db.Corporation
+                .Where(s=>String.IsNullOrEmpty(filter.Name) || s.Name.Contains(filter.Name))
+                .Select(s => new CorporationListView { Id=s.Id, Name = s.Name, CorporationTypeId = s.CorporationTypeId, CorporationTypeName = s.CorporationType != null ? s.CorporationType.Name : "", Approved = s.Approved })
+                .OrderBy(s=>s.Name)
+                .ToPagedFilteredResult(filter);
             return PartialView(corporations);
         }
         [Authorize]
