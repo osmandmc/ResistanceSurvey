@@ -1,9 +1,0 @@
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netstandard2.0\RS.COMMON.csproj.CoreCompileInputs.cache
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netstandard2.0\RS.COMMON.AssemblyInfoInputs.cache
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netstandard2.0\RS.COMMON.AssemblyInfo.cs
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\bin\Debug\netstandard2.0\RS.COMMON.deps.json
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\bin\Debug\netstandard2.0\RS.COMMON.dll
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\bin\Debug\netstandard2.0\RS.COMMON.pdb
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netstandard2.0\RS.COMMON.dll
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netstandard2.0\RS.COMMON.pdb
-C:\Users\osman.demirci\source\VSCode\ResistanceSurvey\RS.COMMON\obj\Debug\netstandard2.0\RS.COMMON.csprojAssemblyReference.cache
