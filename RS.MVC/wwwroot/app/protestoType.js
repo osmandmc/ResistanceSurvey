@@ -140,12 +140,20 @@ $(document).on("click", ".setAgainstProduction", function () {
     });
 });
 
+$(document).on("click", "#btnFilter", function () {
+    getProtestoType();
+});
+$(document).on("click", "#btnClearFilter", function () {
+    $("#Filter_Name").val('')
+});
+
 function getProtestoType() {
     $.ajax({
         url: '/ProtestoType/_List',
         type: "POST",
         data: {
-            pageNumber: $("#pagingDD").val()
+            pageNumber: $("#pagingDD").val(),
+            name: $("#Filter_Name").val()
         },
         success: function (result) {
             $('#protestoTypeList').html(result);

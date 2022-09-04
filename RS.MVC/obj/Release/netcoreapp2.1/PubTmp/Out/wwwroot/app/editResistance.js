@@ -145,10 +145,10 @@ $(function () {
 });
 
 $(document).on("click", "#btnCancelResistance", function () {
+    $("#btnCancelResistance").prop("disabled", true);
+    $("#btnCancelResistanceModal").prop("disabled", true);
+    $("#btnSave").prop("disabled", true);
     deleteResistance();
-});
-$(document).on("click", "#btnCancelResistanceModal", function () {
-    $('#modalResistanceDelete').modal('show');
 });
 
 function deleteResistance() {
@@ -161,7 +161,6 @@ function deleteResistance() {
             // this is the ""error"" callback
             alert("Bir hata alındı");
         })
-
 }
 function openModal(isMain) {
     console.log(isMain);

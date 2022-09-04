@@ -21,13 +21,15 @@ namespace RS.MVC.Controllers
         }
         public IActionResult Index()
         {
-            ViewBag.ProtestoTypes = new SelectList(db.ProtestoType.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name"); ;
+            ViewBag.ProtestoTypes = new SelectList(db.ProtestoType.OrderBy(s=>s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name"); ;
             return View();
         }
         [Authorize]
-        public IActionResult _List(FilterModel filter)
+        public IActionResult _List(ProtestoTypeFilterModel filter)
         {
-            var protestoTypes = db.ProtestoType.ToPagedFilteredResult(filter);
+            var protestoTypes = db.ProtestoType.OrderBy(s=>s.Name)
+                .Where(s=>String.IsNullOrEmpty(filter.Name) || s.Name.Contains(filter.Name))
+                .ToPagedFilteredResult(filter);
             return PartialView(protestoTypes);
         }
         [Authorize]

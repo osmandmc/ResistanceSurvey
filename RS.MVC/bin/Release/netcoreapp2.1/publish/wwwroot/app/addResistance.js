@@ -131,7 +131,7 @@ $(function () {
         clearable: true
         
     });
-    
+    $('#StrikeDuration').durationPicker();
 });
 
 function getArrayFromInput(selectInput) {
@@ -214,16 +214,24 @@ $("#InterventionTypeIds").change(function () {
 });
 
 $("#ProtestoTypeIds").change(function () {
-    console.log($("#ProtestoTypeIds").dropdown("get value"));
+    var protestoTypeIds = $("#ProtestoTypeIds").dropdown("get value");
+    console.log(protestoTypeIds);
 
-    if ($("#ProtestoTypeIds").dropdown("get value") != null && $("#ProtestoTypeIds").dropdown("get value").indexOf("35") < 0) {
+    if (protestoTypeIds != null && protestoTypeIds.indexOf("35") < 0) {
         $("#SimpleProtestoDescriptionField").hide();
     }
-    else if ($("#ProtestoTypeIds").dropdown("get value") == null) {
+    else if (protestoTypeIds == null) {
         $("#SimpleProtestoDescriptionField").hide();
     }
     else {
         $("#SimpleProtestoDescriptionField").show();
+    }
+    if (protestoTypeIds != null && (protestoTypeIds.indexOf("5") > -1 || protestoTypeIds.indexOf("6") > -1)) {
+        console.log("show");
+        $("#StrikeDurationField").show();
+    }
+    else {
+        $("#StrikeDurationField").hide();
     }
 });
 

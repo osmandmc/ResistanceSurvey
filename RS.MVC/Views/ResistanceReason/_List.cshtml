@@ -1,11 +1,23 @@
-﻿@model PagedResult<RS.COMMON.Entities.LookupEntity.ResistanceReason, FilterModel>
+﻿@model PagedResult<RS.COMMON.Entities.LookupEntity.ResistanceReason, ResistanceReasonFilterModel>
 
-<h4 class="ui dividing header">Kurumlar</h4>
+<h4 class="ui dividing header">Vaka Nedenleri</h4>
 
 <div class="ui attached secondary segment">
     <div class="ui small filter form">
-        <div class="fields">
-
+        <div class="title">
+            <i class="icon dropdown"></i>
+            Filtreler
+        </div>
+        <div class="content ui form">
+            <div class="field">
+                <label class="transition visible">Vaka Nedeni</label>
+                <input asp-for="@Model.Filter.Name" class="ui fluid" name="filterName" />
+            </div>
+            
+            <div class="field">
+                <button id="btnFilter" class="ui button">Filtrele</button>
+                <button id="btnClearFilter" class="ui basic button clear">Temizle</button>
+            </div>
         </div>
     </div>
 </div>

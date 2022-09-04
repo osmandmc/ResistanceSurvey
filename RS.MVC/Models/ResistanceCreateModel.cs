@@ -49,6 +49,7 @@ namespace RS.MVC.Models
         public int? FiredEmployeeCountByProtesto { get; set; }
         public ResistanceResult ResistanceResult { get; set; }
         public string SimpleProtestoDescription { get; set; }
+        public int StrikeDuration { get; set; }
 
         //public List<int> ResistanceNewsIds { get; set; }
         public List<int> ProtestoCityIds { get; set; }
@@ -103,6 +104,7 @@ namespace RS.MVC.Models
                 GenderId = GenderId,
                 CustodyCount = CustodyCount,
                 SimpleProtestoDescription = SimpleProtestoDescription,
+                StrikeDuration = StrikeDuration,
                 Creator = UserName,
                 CreateDate = DateTime.Now,
                 ProtestoProtestoTypes = new List<ProtestoProtestoType>(),

@@ -93,6 +93,7 @@
     </div>
 @section Scripts {
     <script src="/app/indexResistance.js" type="text/javascript"></script>
+    <script src="/lib/bootstrap-duration-picker.js" type="text/javascript"></script>
     <script type="text/javascript">
         
         $(document).on("click", ".a", function(){
@@ -157,8 +158,12 @@
             console.log(newsItem);
         });
 
+        $(document).on("click", "#btnCancelResistanceModal", function () {
+            console.log("modal");
+            $('#modalResistanceDelete').modal('show');
+        });
 
-
+       
         function deleteProtesto() {
             $.post("Resistance/DeleteProtesto/", { ProtestoId: $("#ProtestoId").val() })
                 .done(function (response) {
@@ -166,24 +171,20 @@
                     $('.mini.modal').modal('hide');
                 })
                 .fail(function (jqxhr, status, error) {
-                    // this is the ""error"" callback
+                    // this is the ""error""  
                     alert("Bir hata alındı");
                 })
         }
 
         $(document).on("click", "#btnCancelProtesto", function () {
-            console.log("click");
             $("#btnCancelProtesto").attr("disabled", "disabled");
             $("#btnSave").attr("disabled", "disabled");
             $("#btnCancelProtestoModal").attr("disabled", "disabled");
-
             deleteProtesto();
         });
         $(document).on("click", "#btnCancelProtestoModal", function () {
             $('#modalprotestoDelete').modal('show');
         });
-
-
 
 
         $(document).on("click", "#btnDeleteLocation", function () {

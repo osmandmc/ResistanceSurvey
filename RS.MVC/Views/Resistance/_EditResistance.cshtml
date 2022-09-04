@@ -5,7 +5,7 @@
         <input type="hidden" name="Id" id="Id" value="@Model.Id" />
         <div class="field">
             <label for="ResistanceDescription">Kısa Açıklama</label>
-            <textarea type="text" name="ResistanceDescription" id="ResistanceDescription" rows="3">@Model.ResistanceDescription</textarea>
+            <textarea type="text" name="ResistanceDescription" id="ResistanceDescription" rows="6">@Model.ResistanceDescription</textarea>
         </div>
         <div class="field">
             <label asp-for="CategoryId">Vaka Niteliği</label>
@@ -200,6 +200,12 @@
 <script src="/app/editResistance.js"></script>
 
 <script>
+    $(document).ready(function () {
+            $('.ui.dropdown').dropdown({
+                clearable: true,
+                fullTextSearch: true
+            });
+        });
     function checkExisiting() {
 
         var companyId = $("#CompanyId").val();

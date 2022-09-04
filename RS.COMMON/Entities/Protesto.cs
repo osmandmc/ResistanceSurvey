@@ -17,6 +17,7 @@ namespace RS.COMMON.Entities
         public string Note { get; set; }
         public bool Deleted { get; set; }
         public string SimpleProtestoDescription { get; set; }
+        public int StrikeDuration { get; set; }
         public Resistance Resistance { get; set; }
         public ProtestoEmployeeCount ProtestoEmployeeCount { get; set; }
         public Gender Gender { get; set; }

@@ -13,14 +13,10 @@
         "packagesPath": "C:\\Users\\odemirci\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.COMMON\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
           "C:\\Users\\odemirci\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 19.1.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp2.1"
@@ -32,6 +28,7 @@
         },
         "frameworks": {
           "netcoreapp2.1": {
+            "targetAlias": "netcoreapp2.1",
             "projectReferences": {}
           }
         },
@@ -43,6 +40,7 @@
       },
       "frameworks": {
         "netcoreapp2.1": {
+          "targetAlias": "netcoreapp2.1",
           "dependencies": {
             "Microsoft.NETCore.App": {
               "suppressParent": "All",
@@ -61,27 +59,23 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.200\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.200\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.EF\\RS.EF.csproj": {
+    "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.DAL\\RS.DAL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.EF\\RS.EF.csproj",
-        "projectName": "RS.EF",
-        "projectPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.EF\\RS.EF.csproj",
+        "projectUniqueName": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.DAL\\RS.DAL.csproj",
+        "projectName": "RS.DAL",
+        "projectPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.DAL\\RS.DAL.csproj",
         "packagesPath": "C:\\Users\\odemirci\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.EF\\obj\\",
+        "outputPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.DAL\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
           "C:\\Users\\odemirci\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 19.1.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp2.1"
@@ -93,6 +87,7 @@
         },
         "frameworks": {
           "netcoreapp2.1": {
+            "targetAlias": "netcoreapp2.1",
             "projectReferences": {
               "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.COMMON\\RS.COMMON.csproj": {
                 "projectPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.COMMON\\RS.COMMON.csproj"
@@ -108,6 +103,74 @@
       },
       "frameworks": {
         "netcoreapp2.1": {
+          "targetAlias": "netcoreapp2.1",
+          "dependencies": {
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.1.0, )",
+              "autoReferenced": true
+            },
+            "dapper": {
+              "target": "Package",
+              "version": "[1.50.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.200\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.EF\\RS.EF.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.EF\\RS.EF.csproj",
+        "projectName": "RS.EF",
+        "projectPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.EF\\RS.EF.csproj",
+        "packagesPath": "C:\\Users\\odemirci\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.EF\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\odemirci\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 19.1.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\DevExpress 19.1\\Components\\System\\Components\\Packages": {},
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.1": {
+            "targetAlias": "netcoreapp2.1",
+            "projectReferences": {
+              "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.COMMON\\RS.COMMON.csproj": {
+                "projectPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.COMMON\\RS.COMMON.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.1": {
+          "targetAlias": "netcoreapp2.1",
           "dependencies": {
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
@@ -140,7 +203,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.200\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.200\\RuntimeIdentifierGraph.json"
         }
       }
     },
@@ -153,14 +216,10 @@
         "packagesPath": "C:\\Users\\odemirci\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.MVC\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
           "C:\\Users\\odemirci\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 19.1.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp2.1"
@@ -172,9 +231,13 @@
         },
         "frameworks": {
           "netcoreapp2.1": {
+            "targetAlias": "netcoreapp2.1",
             "projectReferences": {
               "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.COMMON\\RS.COMMON.csproj": {
                 "projectPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.COMMON\\RS.COMMON.csproj"
+              },
+              "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.DAL\\RS.DAL.csproj": {
+                "projectPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.DAL\\RS.DAL.csproj"
               },
               "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.EF\\RS.EF.csproj": {
                 "projectPath": "C:\\Users\\odemirci\\source\\repos\\ResistanceSurvey\\RS.EF\\RS.EF.csproj"
@@ -190,6 +253,7 @@
       },
       "frameworks": {
         "netcoreapp2.1": {
+          "targetAlias": "netcoreapp2.1",
           "dependencies": {
             "EPPlus": {
               "target": "Package",
@@ -224,7 +288,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.200\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.200\\RuntimeIdentifierGraph.json"
         }
       }
     }

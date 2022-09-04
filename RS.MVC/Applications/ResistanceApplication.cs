@@ -268,6 +268,7 @@ namespace RS.MVC.Applications
                 GenderId = s.GenderId,
                 EmployeeCountInProtestoId = s.ProtestoEmployeeCountId,
                 SimpleProtestoDescription = s.SimpleProtestoDescription,
+                StrikeDuration = s.StrikeDuration,
                 InterventionTypeIds = s.ProtestoInterventionTypes.Select(i => i.InterventionTypeId).ToList(),
                 ProtestoPlaceIds = s.ProtestoProtestoPlaces.Select(pp => pp.ProtestoPlaceId.ToString()).ToList(),
                 ProtestoTypeIds = s.ProtestoProtestoTypes.Select(pt => pt.ProtestoTypeId.ToString()).ToList(),

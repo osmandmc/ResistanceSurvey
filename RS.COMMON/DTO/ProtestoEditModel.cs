@@ -29,6 +29,7 @@ namespace RS.COMMON.DTO
         public string ResistanceName { get; set; }
         public string Note { get; set; }
         public string SimpleProtestoDescription { get; set; }
+        public int StrikeDuration { get; set; }
         public string Updater { get; set; }
         public Protesto ToEntity()
         {
@@ -41,6 +42,7 @@ namespace RS.COMMON.DTO
                 StartDate = ProtestoStartDate,
                 EndDate = ProtestoEndDate,
                 SimpleProtestoDescription = SimpleProtestoDescription,
+                StrikeDuration = StrikeDuration,
                 ProtestoProtestoTypes = new List<ProtestoProtestoType>(),
                 ProtestoProtestoPlaces = new List<ProtestoProtestoPlace>(),
                 ProtestoInterventionTypes = new List<ProtestoInterventionType>(),

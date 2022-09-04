@@ -29,6 +29,8 @@ namespace RS.COMMON.DTO
         public string UserName { get; set; }
         public string Note { get; set; }
         public string SimpleProtestoDescription { get; set; }
+        public int StrikeDuration { get; set; }
+        
         public Protesto ToEntity()
         {
             var protesto = new Protesto
@@ -46,7 +48,8 @@ namespace RS.COMMON.DTO
                 Locations = new List<ProtestoLocation>(),
                 GenderId = GenderId,
                 CustodyCount = CustodyCount,
-                Note = Note
+                Note = Note,
+                StrikeDuration = StrikeDuration
             };
             if(ProtestoPlaceIds!=null)
                 ProtestoPlaceIds.ForEach(c=> protesto.ProtestoProtestoPlaces.Add(new ProtestoProtestoPlace{ ProtestoPlaceId = c }));

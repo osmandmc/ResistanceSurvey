@@ -8,7 +8,7 @@ $(document).ready(function () {
     $('.ui.dropdown').dropdown({
         clearable: true
     });
-
+    
 });
 $(document).on("click", "#btnFilterPeriod", function () {
     getNewsFiltered($("#yearId").val(), $("#monthId").val());
@@ -47,6 +47,7 @@ $(document).on("click", "#createResistance", function () {
 })
 
 $(document).on('click', "#btnAddCompany", function () {
+    console.log('add company');
     company = {
         Name: $("input[name=CompanyName]").val(),
         TypeId: $("select[name=TypeId]").val(),
@@ -291,3 +292,5 @@ $(document).ready(function () {
         }
     });
 });
+
+

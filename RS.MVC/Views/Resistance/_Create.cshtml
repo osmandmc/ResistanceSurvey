@@ -138,6 +138,11 @@
             </select>
             <span asp-validation-for="ProtestoTypeIds" class="text-danger"></span>
         </div>
+         <div class="field" id="StrikeDurationField" style="display:none">
+            <label for="StrikeDuration">Eylemin Süresi</label>
+            <input asp-for="StrikeDuration" type="text" />
+            
+        </div>
         <div class="field" id="SimpleProtestoDescriptionField" style="display:none">
             <label for="SimpleProtestoDescription">İş yerinde Basit Eylem Açıklama</label>
             <input asp-for="SimpleProtestoDescription" type="text" />
@@ -223,7 +228,12 @@
 
 <script src="../app/addResistance.js"></script>
 <script>
-
+    $(document).ready(function () {
+        $('.ui.dropdown').dropdown({
+            clearable: true,
+            fullTextSearch: true
+        });
+    });
     function checkExisiting() {
 
         var companyId = $("#CompanyId").val();

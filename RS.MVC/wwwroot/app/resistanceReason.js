@@ -125,13 +125,20 @@ $(document).on("click", ".checkApproveResistanceReason", function () {
     });
 });
 
+$(document).on("click", "#btnFilter", function () {
+    getResistanceReason();
+});
+$(document).on("click", "#btnClearFilter", function () {
+    $("#Filter_Name").val('')
+});
 
 function getResistanceReason() {
     $.ajax({
         url: '/ResistanceReason/_List',
         type: "POST",
         data: {
-            pageNumber: $("#pagingDD").val()
+            pageNumber: $("#pagingDD").val(),
+            name: $("#Filter_Name").val()
         },
         success: function (result) {
             $('#resistanceReasonList').html(result);

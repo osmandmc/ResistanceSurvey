@@ -140,13 +140,20 @@ $(document).on("change", ".setCorporationType", function () {
     });
 });
 
+$(document).on("click", "#btnFilter", function () {
+    getCorporation();
+});
+$(document).on("click", "#btnClearFilter", function () {
+    $("#Filter_Name").val('')
+});
 
 function getCorporation() {
     $.ajax({
         url: '/Corporation/_List',
         type: "POST",
         data: {
-            pageNumber: $("#pagingDD").val()
+            pageNumber: $("#pagingDD").val(),
+            name: $("#Filter_Name").val()
         },
         success: function (result) {
             $('#corporationList').html(result);

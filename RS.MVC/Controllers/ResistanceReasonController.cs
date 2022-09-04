@@ -21,13 +21,14 @@ namespace RS.MVC.Controllers
         }
         public IActionResult Index()
         {
-            ViewBag.ResistanceReasons = new SelectList(db.ResistanceReason.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
+            ViewBag.ResistanceReasons = new SelectList(db.ResistanceReason.OrderBy(s=>s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             return View();
         }
         [Authorize]
-        public IActionResult _List(FilterModel filter)
+        public IActionResult _List(ResistanceReasonFilterModel filter)
         {
-            var resistanceReasons = db.ResistanceReason.ToPagedFilteredResult(filter);
+            var resistanceReasons = db.ResistanceReason.OrderBy(s=>s.Name).Where(s=>String.IsNullOrEmpty(filter.Name) || s.Name.Contains(filter.Name))
+            .ToPagedFilteredResult(filter);
             return PartialView(resistanceReasons);
         }
         [Authorize]
