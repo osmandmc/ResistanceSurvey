@@ -12,14 +12,14 @@ using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 
-namespace RS.MVC
+namespace RS.MVC    
 {
     public class Startup
     {
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-        }
+        }   
 
         public IConfiguration Configuration { get; }
 
@@ -30,10 +30,11 @@ namespace RS.MVC
             services.AddScoped<INewsApplication, NewsApplication>();
              services.AddScoped<IUserApplication, UserApplication>();
             services.AddDbContext<RSDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RSConnectionString")));
-            services.AddMvc().AddJsonOptions(options =>
-            {
-                options.SerializerSettings.DateFormatString = "dd.MM.yyyy";
-            });
+            // services.AddMvc().AddJsonOptions(options =>
+            // {
+                
+            //     options.SerializerSettings.DateFormatString = "dd.MM.yyyy";
+            // });
             services.Configure<RequestLocalizationOptions>(opts =>
             {
                 var supportedCultures = new[]
@@ -71,7 +72,7 @@ namespace RS.MVC
                     ValidateAudience = false
                 };
             });
-            
+            services.AddMvc(options => options.EnableEndpointRouting = false);
             // configure DI for application services
            
         }
@@ -103,6 +104,7 @@ namespace RS.MVC
             app.UseAuthentication();
             app.UseMvc(routes =>
             {
+                
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
