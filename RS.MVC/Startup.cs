@@ -28,8 +28,10 @@ namespace RS.MVC
         {
             services.AddScoped<IResistanceApplication, ResistanceApplication>();
             services.AddScoped<INewsApplication, NewsApplication>();
-             services.AddScoped<IUserApplication, UserApplication>();
-            services.AddDbContext<RSDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RSConnectionString")));
+            services.AddScoped<IUserApplication, UserApplication>();
+            services.AddDbContext<RSDBContext>(options => 
+                options.UseNpgsql(Configuration.GetConnectionString("RSConnectionString"))
+            );
             // services.AddMvc().AddJsonOptions(options =>
             // {
                 
@@ -92,16 +94,19 @@ namespace RS.MVC
             app.UseStaticFiles();
             // app.UseSession();
             //Add JWToken to all incoming HTTP Request Header
+            
             // app.Use(async (context, next) =>
             // {
-            //     var JWToken = context.Session.GetString("JWToken");
+            //     var JWToken = context.Session.Keys["JWToken"].va;
             //     if (!string.IsNullOrEmpty(JWToken))
             //     {
             //         context.Request.Headers.Add("Authorization", "Bearer " + JWToken);
             //     }
             //     await next();
             // });
+
             app.UseAuthentication();
+            app.UseAuthorization();
             app.UseMvc(routes =>
             {
                 

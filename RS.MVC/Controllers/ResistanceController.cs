@@ -193,7 +193,9 @@ namespace ResistanceSurvey.Controllers
         }
         public void SetLookups()
         {
-
+            var aa = _db.Database.GetDbConnection().ConnectionString;
+var cc = _db.Database.CanConnect();
+Console.WriteLine(aa);
             ViewBag.Categories = new SelectList(_db.Category.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.Worklines = new SelectList(_db.CompanyWorkLine.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.EmployeeCount = new SelectList(_db.EmployeeCount.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
@@ -293,7 +295,7 @@ namespace ResistanceSurvey.Controllers
                         TradeUnionReacted = item.Resistance.TradeUnion != null ? item.Resistance.TradeUnion.Name : "",
                         Gender = item.Gender != null ? item.Gender.Name : "",
                         FiredEmployeeCount = item.Resistance.FiredEmployeeCountByProtesto,
-                        AnyLegalIntervention = item.Resistance.AnyLegalIntervention.HasValue ? item.Resistance.AnyLegalIntervention.HasValue ? "EVET" : "HAYIR" : "BÝLÝNMÝYOR",
+                        AnyLegalIntervention = item.Resistance.AnyLegalIntervention.HasValue ? item.Resistance.AnyLegalIntervention.HasValue ? "EVET" : "HAYIR" : "Bï¿½Lï¿½NMï¿½YOR",
                         LegalInterventionDesc = item.Resistance.LegalInterventionDesc,
                         ProtestoId = item.Id,
                         ProtestoCount = item.Locations.Count,
@@ -340,70 +342,70 @@ namespace ResistanceSurvey.Controllers
                     ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Rapor");
                     ws.Row(1).Style.Font.Bold = true;
                     ws.Cells[1, index].Value = "Vaka"; index++;
-                    ws.Cells[1, index].Value = "Kýsa Açýklama"; index++;
+                    ws.Cells[1, index].Value = "Kï¿½sa Aï¿½ï¿½klama"; index++;
                     ws.Cells[1, index].Value = "Eylem"; index++;
-                    ws.Cells[1, index].Value = "Vaka Niteliði"; index++;
-                    ws.Cells[1, index].Value = "Kazaným Durumu"; index++;
-                    ws.Cells[1, index].Value = "Þirket"; index++;
-                    ws.Cells[1, index].Value = "Þirket Ýþkolu"; index++;
-                    ws.Cells[1, index].Value = "Ana Þirket"; index++;
-                    ws.Cells[1, index].Value = "Ana Þirket Ýþkolu"; index++;
+                    ws.Cells[1, index].Value = "Vaka Niteliï¿½i"; index++;
+                    ws.Cells[1, index].Value = "Kazanï¿½m Durumu"; index++;
+                    ws.Cells[1, index].Value = "ï¿½irket"; index++;
+                    ws.Cells[1, index].Value = "ï¿½irket ï¿½ï¿½kolu"; index++;
+                    ws.Cells[1, index].Value = "Ana ï¿½irket"; index++;
+                    ws.Cells[1, index].Value = "Ana ï¿½irket ï¿½ï¿½kolu"; index++;
 
                     for (int i = 0; i < resistanceReasonCount; i++)
                     {
                         ws.Cells[1, i + index].Value = $"Vaka Nedeni {i + 1}";
                     }
                     index += resistanceReasonCount;
-                    ws.Cells[1, index].Value = "Üretime Yönelik"; index++;
-                    ws.Cells[1, index].Value = "Hak Geliþtirme/Hak Savunma Özelliði"; index++;
-                    ws.Cells[1, index].Value = "Ýþ Yerindeki Ýþçi Sayýsý"; index++;
-                    ws.Cells[1, index].Value = "Ýþ Yerindeki Ýþçi Sayýsý (Tam)"; index++;
-                    ws.Cells[1, index].Value = "Örgütleyen Sendika Var Mý?"; index++;
-                    ws.Cells[1, index].Value = "Sendikanýn Yetki Durumu"; index++;
+                    ws.Cells[1, index].Value = "ï¿½retime Yï¿½nelik"; index++;
+                    ws.Cells[1, index].Value = "Hak Geliï¿½tirme/Hak Savunma ï¿½zelliï¿½i"; index++;
+                    ws.Cells[1, index].Value = "ï¿½ï¿½ Yerindeki ï¿½ï¿½ï¿½i Sayï¿½sï¿½"; index++;
+                    ws.Cells[1, index].Value = "ï¿½ï¿½ Yerindeki ï¿½ï¿½ï¿½i Sayï¿½sï¿½ (Tam)"; index++;
+                    ws.Cells[1, index].Value = "ï¿½rgï¿½tleyen Sendika Var Mï¿½?"; index++;
+                    ws.Cells[1, index].Value = "Sendikanï¿½n Yetki Durumu"; index++;
                     for (int i = 0; i < corporationCount; i++)
                     {
-                        ws.Cells[1, i + index].Value = $"Kurumsallýk {i + 1}";
+                        ws.Cells[1, i + index].Value = $"Kurumsallï¿½k {i + 1}";
 
                     }
                     index += corporationCount;
-                    ws.Cells[1, index].Value = "Tepki Gösterilen Sendika"; index++;
+                    ws.Cells[1, index].Value = "Tepki Gï¿½sterilen Sendika"; index++;
                     for (int i = 0; i < employmentTypeCount; i++)
                     {
-                        ws.Cells[1, i + index].Value = $"Ýstihdam Türü {i + 1}";
+                        ws.Cells[1, i + index].Value = $"ï¿½stihdam Tï¿½rï¿½ {i + 1}";
                     }
                     index += employmentTypeCount;
                     ws.Cells[1, index].Value = "Cinsiyet"; index++;
-                    ws.Cells[1, index].Value = "Mücadele Ettiði için Ýþten Atýlan Ýþçi Sayýsý"; index++;
-                    ws.Cells[1, index].Value = "Hukuki Giriþim"; index++;
-                    ws.Cells[1, index].Value = "Hukuki Giriþim Açýklama"; index++;
+                    ws.Cells[1, index].Value = "Mï¿½cadele Ettiï¿½i iï¿½in ï¿½ï¿½ten Atï¿½lan ï¿½ï¿½ï¿½i Sayï¿½sï¿½"; index++;
+                    ws.Cells[1, index].Value = "Hukuki Giriï¿½im"; index++;
+                    ws.Cells[1, index].Value = "Hukuki Giriï¿½im Aï¿½ï¿½klama"; index++;
                     for (int i = 0; i < protestoTypeCount; i++)
                     {
-                        ws.Cells[1, i + index].Value = $"Eylem Türü {i + 1}";
+                        ws.Cells[1, i + index].Value = $"Eylem Tï¿½rï¿½ {i + 1}";
                     }
                     index += protestoTypeCount;
-                    ws.Cells[1, index].Value = "Eylem Sayýsý"; index++;
-                    ws.Cells[1, index].Value = "Eylemin Baþlangýç Tarihi"; index++;
-                    ws.Cells[1, index].Value = "Eylemin Bitiþ Tarihi"; index++;
+                    ws.Cells[1, index].Value = "Eylem Sayï¿½sï¿½"; index++;
+                    ws.Cells[1, index].Value = "Eylemin Baï¿½langï¿½ï¿½ Tarihi"; index++;
+                    ws.Cells[1, index].Value = "Eylemin Bitiï¿½ Tarihi"; index++;
                     for (int i = 0; i < locationCount; i++)
                     {
-                        ws.Cells[1, i + index].Value = $"Ýl-Ýlçe {i + 1}";
+                        ws.Cells[1, i + index].Value = $"ï¿½l-ï¿½lï¿½e {i + 1}";
                     }
                     index += locationCount;
                     for (int i = 0; i < protestoPlaceCount; i++)
                     {
-                        ws.Cells[1, i + index].Value = $"Eylem Mekaný {i + 1}";
+                        ws.Cells[1, i + index].Value = $"Eylem Mekanï¿½ {i + 1}";
                     }
                     index += protestoPlaceCount;
-                    ws.Cells[1, index].Value = "Eylemdeki Ýþçi Sayýsý (Tam)"; index++;
-                    ws.Cells[1, index].Value = "Eylemdeki Ýþçi Sayýsý"; index++;
+                    ws.Cells[1, index].Value = "Eylemdeki ï¿½ï¿½ï¿½i Sayï¿½sï¿½ (Tam)"; index++;
+                    ws.Cells[1, index].Value = "Eylemdeki ï¿½ï¿½ï¿½i Sayï¿½sï¿½"; index++;
                     for (int i = 0; i < interventionTypeCount; i++)
                     {
-                        ws.Cells[1, i + index].Value = $"Müdahale Tipi {i + 1}";
+                        ws.Cells[1, i + index].Value = $"Mï¿½dahale Tipi {i + 1}";
                     }
                     index += interventionTypeCount;
-                    ws.Cells[1, index].Value = "Gözaltý sayýsý"; index++;
+                    ws.Cells[1, index].Value = "Gï¿½zaltï¿½ sayï¿½sï¿½"; index++;
                     ws.Cells[1, index].Value = "Notlar"; index++;
-                    ws.Cells[1, index].Value = "Eylem Notlarý"; index++;
+                    ws.Cells[1, index].Value = "Eylem Notlarï¿½"; index++;
 
                     for (int i = 0; i < rows.Count; i++)
                     {
@@ -481,7 +483,7 @@ namespace ResistanceSurvey.Controllers
                     byteArray = pck.GetAsByteArray();
                 }
 
-                return File(byteArray, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", string.Format("{0}-Tarihli-EÇT Raporu.xlsx", DateTime.Now.ToShortDateString()));
+                return File(byteArray, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", string.Format("{0}-Tarihli-Eï¿½T Raporu.xlsx", DateTime.Now.ToShortDateString()));
             }
             catch (Exception ex)
             {

@@ -45,7 +45,7 @@ namespace RS.MVC.Applications
             var user = _users.Where(x => x.Username == username && x.Password == password)
                .Select(u => new UserModel
                {
-                   FirstName = u.FirstName,
+                   FirstName = u.FirstName, 
                    LastName = u.LastName,
                    Role = u.Role,
                    Token = u.Token,

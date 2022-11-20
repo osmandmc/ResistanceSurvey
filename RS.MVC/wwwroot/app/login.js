@@ -34,8 +34,8 @@ function login() {
         alert(["İşlem sırasında bir hata oluştu. Lütfen tekrar deneyiniz."]);
     })
     .done(function (response) {
-        console.log(response);
-        if (response.token !== null) {
+        console.log(response.response.token);
+        if (response.response.token !== null) {
             window.localStorage.setItem('token', response.response.token);
           location.href ='/Resistance'
         }

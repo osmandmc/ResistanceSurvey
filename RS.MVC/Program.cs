@@ -21,6 +21,6 @@ namespace RS.MVC
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
-                .Build();
+                .Build();   
     }
 }
