@@ -6,7 +6,8 @@ $(document).ready(function () {
     getFiltered();
 
     $('.ui.dropdown').dropdown({
-        clearable: true
+        clearable: true,
+        allowAdditions: true
     });
     
 });
@@ -56,7 +57,7 @@ $(document).on('click', "#btnAddCompany", function () {
     };
     $('#CompanyId').append('<option value="-1">' + company.Name + '<option>');
     $('#CompanyId').dropdown('set selected', -1);
-    alert("Þirket eklendi");
+    alert("ï¿½irket eklendi");
     $('#addCompanyModal').modal('hide');
 });
 
@@ -69,7 +70,7 @@ $(document).on('click', "#btnAddMainCompany", function () {
     };
     $('#MainCompanyId').append('<option value="-1">' + mainCompany.Name + '<option>');
     $('#MainCompanyId').dropdown('set selected', -1)
-    alert("Ana þirket eklendi");
+    alert("Ana ï¿½irket eklendi");
     $('#addCompanyModal').modal('hide');
 });
 
@@ -87,7 +88,7 @@ $(document).on("change", ".city", function () {
         success: function (items) {
             let districtSelect = $("select[name='Locations[" + id + "].DistrictId']");
             districtSelect.empty();
-            districtSelect.append('<option value="">--Seçiniz--</option>');
+            districtSelect.append('<option value="">--Seï¿½iniz--</option>');
             $.each(items, function (i, item) {
                 districtSelect.append($('<option>', {
                     value: item.id,
@@ -110,7 +111,11 @@ $(document).on("focusout", "input[name=EmployeeCountInProtesto]", function () {
     if (employeecountInProtesto > 500 && employeecountInProtesto < 1001) employeeCountInProtestoId.val(7);
     if (employeecountInProtesto > 1000 && employeecountInProtesto < 2501) employeeCountInProtestoId.val(8);
     if (employeecountInProtesto > 2500 && employeecountInProtesto < 5001) employeeCountInProtestoId.val(9);
-    if (employeecountInProtesto > 5000) employeeCountInProtestoId.val(10);
+    if (employeecountInProtesto > 5000 && employeecountInProtesto < 10001) employeeCountInProtestoId.val(10);
+    if (employeecountInProtesto > 10000 && employeecountInProtesto < 25001) employeeCountInProtestoId.val(11);
+    if (employeecountInProtesto > 25000 && employeecountInProtesto < 50001) employeeCountInProtestoId.val(12);
+    if (employeecountInProtesto > 50000 && employeecountInProtesto < 100001) employeeCountInProtestoId.val(13);
+    if (employeecountInProtesto > 100000) employeeCountInProtestoId.val(14);
     employeeCountInProtestoId.attr("readonly", true);
 })
 $(document).on("change", "select[name=EmployeeCountInProtestoId]", function () {
@@ -136,7 +141,7 @@ $(document).on("focusout", "input[name=ProtestoEndDate]", function () {
     if (endDate == '') return;
     var startDate = $("input[name = ProtestoStartDate]").val();
     if (startDate > endDate) {
-        alert("Eylemin baþlangýç tarihi bitiþ tarihinden büyük olamaz");
+        alert("Eylemin baï¿½langï¿½ï¿½ tarihi bitiï¿½ tarihinden bï¿½yï¿½k olamaz");
         $(this).val('');
     }
 });
@@ -145,7 +150,7 @@ $(document).on("focusout", "input[name=ProtestoStartDate]", function () {
     var endDate = $("input[name = ProtestoEndDate]").val();
     if (endDate == '') return;
     if (startDate > endDate) {
-        alert("Eylemin baþlangýç tarihi bitiþ tarihinden büyük olamaz");
+        alert("Eylemin baï¿½langï¿½ï¿½ tarihi bitiï¿½ tarihinden bï¿½yï¿½k olamaz");
         $(this).val('');
     }
 });
@@ -174,9 +179,6 @@ $(document).on("change", "#CorporationIds", function () {
 $(document).on("change", "#isOutsource", function () {
     if ($(this).val() == "True") { $("#outsource").show(); }
     else { $("#outsource").hide(); }
-});
-$('.ui.dropdown').dropdown({
-    allowAdditions: true,
 });
 
 function getFiltered() {

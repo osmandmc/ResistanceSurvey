@@ -35,7 +35,7 @@ function login() {
     })
     .done(function (response) {
         console.log(response);
-        if (response.success) {
+        if (response.response.token) {
             window.localStorage.setItem('token', response.response.token);
           location.href ='/Resistance'
         }
