@@ -16,7 +16,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '6.0' # Specify your .NET version
+        dotnet-version: '9.0' # Specify your .NET version
 
     - name: Restore Dependencies
       run: dotnet restore
@@ -27,6 +27,6 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server: ftp.samkirkland.com
+        server: win1123.site4now.net
         username: ${{ secrets.MSDEPLOY_USERNAME }}
         password: ${{ secrets.MSDEPLOY_PASSWORD }}
