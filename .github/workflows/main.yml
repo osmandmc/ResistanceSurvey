@@ -28,5 +28,7 @@ jobs:
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: win1123.site4now.net
+        server-dir: /site1/
+        local-dir: ./publish/
         username: ${{ secrets.MSDEPLOY_USERNAME }}
         password: ${{ secrets.MSDEPLOY_PASSWORD }}
