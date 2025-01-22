@@ -16,13 +16,19 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '9.0' # Specify your .NET version
+        dotnet-version: '6.0' # Specify your .NET version
 
     - name: Restore Dependencies
       run: dotnet restore
 
     - name: Build and Publish
       run: dotnet publish -c Release -o ./publish
+
+    - name: Install MSDeploy
+      run: |
+        echo "Installing MSDeploy..."
+        choco install webdeploy --yes
+        refreshenv
 
     - name: Deploy with MSDeploy
       run: |
