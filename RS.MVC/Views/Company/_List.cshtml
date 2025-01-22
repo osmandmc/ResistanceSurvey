@@ -11,7 +11,7 @@
         <div class="content ui form">
             <div class="field">
                 <label class="transition visible">Şirket</label>
-                <select asp-for="@Model.Filter.CompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" name="filterCompanyId">
+                <select asp-for="@Model.Filter.CompanyId" asp-items="@ViewBag.Companies" class="ui floating dropdown labeled search icon button" name="filterCompanyId">
                     <option value="">--Seçiniz--</option>
                 </select>
             </div>
@@ -84,7 +84,8 @@
     <script>
     $(document).ready(function () {
         $('.ui.dropdown').dropdown({
-            clearable: true
+            clearable: true,
+            fullTextSearch: 'exact'
         });
         $('.ui.accordion').accordion();
     });

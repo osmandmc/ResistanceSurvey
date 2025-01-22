@@ -226,12 +226,12 @@
     </div>
 </div>
 
-<script src="../app/addResistance.js"></script>
 <script>
     $(document).ready(function () {
         $('.ui.dropdown').dropdown({
             clearable: true,
-            allowAdditions: true
+            allowAdditions: true,
+            fullTextSearch: 'exact'
         });
     });
     function checkExisiting() {

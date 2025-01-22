@@ -1,7 +1,7 @@
 @model PagedResult<RS.COMMON.DTO.ResistanceIndexDto, ResistanceFilterModel>
 
 <h4 class="ui dividing header"><a href="#" id="createResistance"><i class="plus icon"></i></a>Vakalar </h4>
-<a href="#" id="listCase" style="position:absolute; top:0em; right:1em"><i class="redo alternate icon"></i></a>
+<a href="#" id="listCase" style="position:absolute; top:0; right:1em"><i class="redo alternate icon"></i></a>
 <div class="ui attached secondary segment resistanceFilter">
     <div class="ui accordion field">
         <div class="title">
@@ -10,9 +10,9 @@
         </div>
         <div class="content ui form">
             <div class="field">
-                <label class="transition visible">Şirket</label>
+                <label class="transition visible">Şirketler</label>
                 <select asp-for="@Model.Filter.CompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" name="filterCompanyId">
-                    <option value="">--Seçiniz--</option>
+                    <option value="">--Seçinizwww--</option>
                 </select>
             </div>
             <div class="field">
@@ -72,7 +72,7 @@
     </div>
 </div>
 
-    <table class="ui celled selectable striped table">
+<table class="ui celled selectable striped table">
         <tbody>
             @foreach (var item in Model.Results)
             {
@@ -109,7 +109,7 @@
     $(document).ready(function () {
         $('.ui.dropdown').dropdown({
             clearable: true,
-            fullTextSearch: true
+            fullTextSearch: 'exact'
         });
         $('.ui.accordion').accordion();
     });

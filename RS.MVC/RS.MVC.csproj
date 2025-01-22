@@ -1,12 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
 
-  <!-- <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.1.103" />
-  </ItemGroup> -->
+  <!-- Removed deprecated DotNetCliToolReference; code generation tools are now integrated into the SDK. -->
 
   <ItemGroup>
     <ProjectReference Include="..\RS.COMMON\RS.COMMON.csproj" />
@@ -14,10 +12,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPPlus" Version="4.5.3.2" />
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.1" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0" />
+    <!-- Updated EPPlus to the latest stable version. -->
+    <PackageReference Include="EPPlus" Version="7.5.3" />
+
+    <!-- Updated Microsoft.AspNetCore.Authentication.JwtBearer to the latest version compati  ble with .NET 9. -->
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
+
+    <!-- Updated Newtonsoft.Json support for ASP.NET Core to the latest version. -->
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.1" />
+
+    <!-- Updated IdentityModel libraries for JSON Web Tokens and Tokens. -->
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.3.1" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.3.1" />
+
+    <!-- Updated Code Generation Design tools to the latest version. -->
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Web.Deployment" Version="4.0.5" />
   </ItemGroup>
 
 </Project>

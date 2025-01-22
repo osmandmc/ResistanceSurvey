@@ -127,6 +127,7 @@ function back(id)
 $(function () {
     $('.ui.dropdown').dropdown({
         allowAdditions: true,
+        
     });
     $.ajax({
         url: "/Corporation/IsTradeUnion",
