@@ -24,9 +24,11 @@ jobs:
     - name: Build and Publish
       run: dotnet publish -c Release -o ./publish
 
-    - name: Deploy with MSDeploy
-      run: |
-        echo "Starting deployment..."
-        msdeploy.exe -source:contentPath="publish" `
-                     -dest:contentPath="osmandmc-001-site1",computerName="https://win1123.site4now.net:8172/msdeploy.axd?site=osmandmc-001-site1",username="${{ secrets.MSDEPLOY_USERNAME }}",password="${{ secrets.MSDEPLOY_PASSWORD }}" `
-                     -allowUntrusted
+    - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: win1123.site4now.net
+        server-dir: /site1/
+        local-dir: ./publish/
+        username: ${{ secrets.MSDEPLOY_USERNAME }}
+        password: ${{ secrets.MSDEPLOY_PASSWORD }}
