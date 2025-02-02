@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using RS.COMMON.DTO;
 using RS.COMMON.Entities;
+using RS.COMMON.Entities.LookupEntity;
 using static RS.COMMON.Constants.Enums;
 
 namespace RS.MVC.Models
@@ -25,8 +26,8 @@ namespace RS.MVC.Models
         public int? EmployeeCountId { get; set; }
         public int? EmployeeCount { get; set; }
         public string ResistanceNote { get; set; }
-        public List<string> ResistanceReasonIds { get; set; }
-        public List<string> CorporationIds { get; set; }
+        public List<ResistanceReason> ResistanceReasonIds { get; set; }
+        public List<Corporation> CorporationIds { get; set; }
         public int? TradeUnionId { get; set; }
         public short AnyLegalIntervention { get; set; }
         public string LegalInterventionDesc { get; set; }
@@ -36,6 +37,7 @@ namespace RS.MVC.Models
         public List<ResistanceNewsModel> ResistanceNewsIds { get; set; }
         
         public List<ProtestoListModel> Protestos { get; set; }
+        public List<ProtestoEditModel> ProtestoItems { get; set; }
         public List<News> ResistanceNews { get; set; }
         
         

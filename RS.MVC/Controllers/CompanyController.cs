@@ -9,8 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml.ConditionalFormatting;
 using RS.COMMON;
 using RS.COMMON.DTO;
+using RS.COMMON.Entities;
 using RS.COMMON.Entities.LookupEntity;
 using RS.EF;
+using RS.MVC.Models;
 
 namespace RS.MVC.Controllers
 {
@@ -25,6 +27,13 @@ namespace RS.MVC.Controllers
         {
             ViewBag.Companies = new SelectList(db.Company.Where(s => !s.Deleted).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             return View();
+        }
+        [HttpGet]
+        [Authorize]
+        public IActionResult List()
+        {
+            var companies = db.Company.Where(s => !s.Deleted).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList();
+            return Json(companies);
         }
         [HttpPost]
         [Authorize]
@@ -171,6 +180,26 @@ namespace RS.MVC.Controllers
             return Ok();
         }
 
+        [Authorize]
+        [HttpPost]
+        public IActionResult Create([FromBody] CompanyCreateViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return Json(ModelState
+                    .Values
+                    .Where(m => m.Errors.Count > 0)
+                    .Select(s => s.Errors));
+            
+            var company = db.Company.Add(new Company
+            {
+                Name = model.Name,
+                CompanyScaleId = model.ScaleId,
+                CompanyTypeId = model.TypeId,
+                CompanyWorkLineId = model.WorklineId
+            });
+            db.SaveChanges();
+            return Ok(company.Entity);
+        }
     }
 
 }

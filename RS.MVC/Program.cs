@@ -1,26 +1,96 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using RS.EF;
+using RS.MVC.Applications;
+using RS.MVC.Models;
+using System.Globalization;
+using System.Text;
 
-namespace RS.MVC
+var builder = WebApplication.CreateBuilder(args);
+
+// Load Configuration
+var configuration = builder.Configuration;
+
+// Add Services
+builder.Services.AddScoped<IResistanceApplication, ResistanceApplication>();
+builder.Services.AddScoped<INewsApplication, NewsApplication>();
+builder.Services.AddScoped<IUserApplication, UserApplication>();
+
+// Database Context
+builder.Services.AddDbContext<RSDBContext>(options =>
+    options.UseSqlServer(configuration.GetConnectionString("RSConnectionString")));
+
+// Add MVC for both Razor Views & API Controllers
+builder.Services.AddControllersWithViews();
+   
+
+// Enable CORS for Vue 3 Frontend
+builder.Services.AddCors(options =>
 {
-    public class Program
+    options.AddPolicy("VuePolicy", policy =>
     {
-        public static void Main(string[] args)
-        {
-            BuildWebHost(args).Run();
-        }
+        policy.WithOrigins("http://localhost:5173") // Vue dev server URL
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
-                .Build();
-    }
-}
+// Localization Support
+builder.Services.Configure<RequestLocalizationOptions>(opts =>
+{
+    var supportedCultures = new[] { new CultureInfo("tr-TR") };
+    opts.DefaultRequestCulture = new RequestCulture("tr-TR");
+    opts.SupportedCultures = supportedCultures;
+    opts.SupportedUICultures = supportedCultures;
+});
+
+// JWT Authentication
+var appSettingsSection = configuration.GetSection("AppSettings");
+builder.Services.Configure<AppSettings>(appSettingsSection);
+var appSettings = appSettingsSection.Get<AppSettings>();
+var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
+
+// Build the App
+var app = builder.Build();
+
+// Middleware Setup
+app.UseStaticFiles();
+app.UseRouting();
+app.UseCors("VuePolicy"); // Enable CORS for Vue 3
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Localization Middleware
+// var localizationOptions = app.Services.GetRequiredService<RequestLocalizationOptions>();
+// app.UseRequestLocalization(localizationOptions);
+
+// Route Setup
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Catch-all Route for Vue 3
+app.MapFallbackToController("IndexVue", "Resistance");
+
+app.Run();

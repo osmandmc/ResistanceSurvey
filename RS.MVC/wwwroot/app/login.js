@@ -37,7 +37,7 @@ function login() {
         console.log(response);
         if (response.response.token) {
             window.localStorage.setItem('token', response.response.token);
-          location.href ='/Resistance'
+          location.href ='/Resistance/IndexVue'
         }
         else {
 

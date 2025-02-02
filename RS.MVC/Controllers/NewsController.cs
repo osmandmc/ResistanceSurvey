@@ -23,6 +23,7 @@ namespace ResistanceSurvey.Controllers
         {
             return View();
         }
+        
         [Authorize]
         public IActionResult Filter(int? year, int? month)
         {

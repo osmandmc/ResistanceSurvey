@@ -25,6 +25,13 @@ namespace RS.MVC.Controllers
             return View();
         }
         [Authorize]
+        public IActionResult List()
+        {
+            var corporations = db.Corporation.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList();
+            return Json(corporations);
+        }
+        
+        [Authorize]
         public IActionResult _List(CorporationFilterModel filter)
         {
             ViewBag.CorporationTypes = new SelectList(db.CorporationType.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");

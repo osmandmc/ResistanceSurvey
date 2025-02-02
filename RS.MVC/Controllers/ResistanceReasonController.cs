@@ -24,6 +24,13 @@ namespace RS.MVC.Controllers
             ViewBag.ResistanceReasons = new SelectList(db.ResistanceReason.OrderBy(s=>s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             return View();
         }
+        
+        [Authorize]
+        public IActionResult List()
+        {
+            var resistanceReasons = db.ResistanceReason.OrderBy(s=>s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList();
+            return Json(resistanceReasons);
+        }
         [Authorize]
         public IActionResult _List(ResistanceReasonFilterModel filter)
         {

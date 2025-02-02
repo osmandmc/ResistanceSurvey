@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using OfficeOpenXml;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 using ResistanceSurvey.Models;
@@ -33,6 +35,10 @@ namespace ResistanceSurvey.Controllers
         {
             return View();
         }
+        public IActionResult IndexVue()
+        {
+            return View();
+        }
         [Authorize]
         [HttpPost]
         public IActionResult ResistanceList(ResistanceFilterModel filter)
@@ -40,8 +46,16 @@ namespace ResistanceSurvey.Controllers
             ViewBag.Categories = new SelectList(_db.Category.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
             ViewBag.Companies = new SelectList(_db.Company.Where(s => !s.Deleted).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).OrderBy(s => s.Name).ToList(), "Id", "Name");
             var result = _rsApplication.GetPaged(filter);
-            result.Filter = filter;
+            result.Filter = filter; 
             return PartialView("_ResistanceList", result);
+        }
+        [Authorize]
+        [HttpGet]
+        public IActionResult List(ResistanceFilterModel filter)
+        {
+            var result = _rsApplication.GetPaged(filter);
+            result.Filter = filter;
+            return Json(result);
         }
         [Authorize]
         public IActionResult NewsList(int year, int month)
@@ -49,6 +63,21 @@ namespace ResistanceSurvey.Controllers
             ViewBag.News = _rsApplication.GetNewsList(year, month);
             return PartialView("_NewsList");
         }
+        [Authorize]
+        [HttpGet]
+        public IActionResult News(int year, int month)
+        {
+            var news = _rsApplication.GetNewsList(year, month);
+            return Json(news);
+        }
+        
+        [Authorize]
+        public IActionResult Categories()
+        {
+            var categories = _db.Category.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList();
+            return Json(categories);
+        }
+
 
         [Authorize]
         [HttpGet]
@@ -158,6 +187,12 @@ namespace ResistanceSurvey.Controllers
 
             SetLookups();
             return PartialView("_EditResistance", resistance);
+        }
+        [Authorize]
+        public IActionResult Get(int id)
+        {
+            var resistance = _rsApplication.GetResistanceDetail(id);
+            return Json(resistance);
         }
 
         [Authorize]

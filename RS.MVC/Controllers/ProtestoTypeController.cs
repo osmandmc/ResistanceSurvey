@@ -25,6 +25,15 @@ namespace RS.MVC.Controllers
             return View();
         }
         [Authorize]
+        public IActionResult List()
+        {
+            var protestoTypes = db.ProtestoType
+                .OrderBy(s=>s.Name)
+                .Select(s => new LookupEntity { Id = s.Id, Name = s.Name })
+                .ToList();
+            return Json(protestoTypes);
+        }
+        [Authorize]
         public IActionResult _List(ProtestoTypeFilterModel filter)
         {
             var protestoTypes = db.ProtestoType.OrderBy(s=>s.Name)

@@ -9,6 +9,7 @@ using RS.MVC.Models;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
+using System.Text.Json;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
@@ -34,8 +35,11 @@ namespace RS.MVC
                 options.UseSqlServer(Configuration.GetConnectionString("RSConnectionString")));
             
             // Add MVC with views
-            services.AddControllersWithViews();
-
+            services.AddControllersWithViews()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                });
             // Configure localization
             services.Configure<RequestLocalizationOptions>(opts =>
             {
@@ -76,16 +80,6 @@ namespace RS.MVC
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // if (env.IsDevelopment())
-            // {
-            //     app.UseDeveloperExceptionPage();
-            // }
-            // else
-            // {
-            //     app.UseExceptionHandler("/Home/Error");
-            //     app.UseHsts();
-            // }
-
             app.UseStaticFiles();
             app.UseRouting();
 
@@ -99,6 +93,10 @@ namespace RS.MVC
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                
+                // Catch-all route for Vue paths under /Resistance/IndexVue
+                endpoints.MapFallbackToController("IndexVue", "Resistance");
+
             });
         }
     }
