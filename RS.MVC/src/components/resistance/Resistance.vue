@@ -142,7 +142,8 @@
       <label for="CorporationIds">Kurumsallık</label>
       <multiselect id="CorporationIds" 
                    v-model="this.resistance.corporationIds"
-                   placeholder="Seçiniz" label="name" track-by="id" :preselect-first="true"
+                   placeholder="Seçiniz" label="name" track-by="id"
+                   :preselect-first="true"
                    :options="corporations"
                    :multiple="true" 
                    :close-on-select="false" 
@@ -232,7 +233,25 @@ export default {
       }
       this.corporations.push(newTag);
       this.resistance.corporationIds.push(tag)
-    }
+    },
+    customFilter(search, id) {
+      console.log(id);
+      console.log(search);
+      const normalize = (str) =>
+          str
+              .toLowerCase()
+              .normalize("NFD") // Decompose characters
+              .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
+              .replace(/ı/g, "i")
+              .replace(/ğ/g, "g")
+              .replace(/ü/g, "u")
+              .replace(/ş/g, "s")
+              .replace(/ö/g, "o")
+              .replace(/ç/g, "c");
+      const result = normalize(search);
+      console.log(result);
+      return result;
+    },
   },
 };
 </script>

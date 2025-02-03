@@ -13,7 +13,22 @@
         type="button"
         @click="saveProtesto"
     >
-      Kaydet
+      EYLEMİ KAYDET
+    </button>
+    <button
+        class="ui primary button"
+        type="button"
+        @click="cancelProtesto"
+    >
+      VAZGEÇ
+    </button>
+    <button 
+        v-if="protesto.protestoId !== null"
+        class="ui primary button"
+        type="button"
+        @click="deleteProtesto"
+    >
+      SİL
     </button>
   </div>
 </template>
@@ -27,6 +42,7 @@ import {fetchWithToken} from "../../fetchWrapper";
 
 export default {
   name: "EditProtesto",
+  emits: ["cancelProtesto"],
   components: { Protesto },
   props: {
     protesto: {
@@ -67,6 +83,23 @@ export default {
           .catch(error => console.log(error));
       
     },
+    deleteProtesto() {
+      fetchWithToken(`/Resistance/DeleteProtesto/${this.protesto.protestoId}`, {
+        method: 'DELETE',
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON is sent
+        }
+      })
+          .then(response => {
+            console.log(response);
+            this.$router.push(`/edit/${this.protesto.resistanceId}`);
+          })
+          .catch(error => console.log(error));
+    },
+    cancelProtesto() {
+      console.log(this.protesto);
+      this.$emit('cancelProtesto', this.protesto);
+    }
   },
 };
 </script>

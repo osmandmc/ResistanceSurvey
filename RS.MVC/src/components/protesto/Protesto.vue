@@ -20,11 +20,21 @@
     <div class="two fields">
       <div class="field">
         <label for="ProtestoStartDate">Başlangıç Tarihi</label>
-        <VueDatePicker v-model="this.protesto.protestoStartDate"></VueDatePicker>
+        <VueDatePicker v-model="this.protesto.protestoStartDate" 
+                       text-input 
+                       locale="tr-TR"
+                       :format-locale="tr" 
+                       format="dd/MM/yyyy">
+        </VueDatePicker>
       </div>
       <div class="field">
         <label for="ProtestoEndDate">Bitiş Tarihi</label>
-        <VueDatePicker v-model="this.protesto.protestoEndDate"></VueDatePicker>
+        <VueDatePicker v-model="this.protesto.protestoEndDate" 
+                       text-input
+                       locale="tr-TR"
+                       :format-locale="tr"
+                       format="dd/MM/yyyy">
+        </VueDatePicker>
       </div>
     </div>
 

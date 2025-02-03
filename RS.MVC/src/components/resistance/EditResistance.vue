@@ -35,13 +35,14 @@
         :protestoTypeOptions="protestoTypeOptions"
         :genderOptions="genderOptions"
         :employeeCountInProtestoOptions="employeeCountInProtestoOptions"
+        @cancelProtesto="handleCancelProtesto"
     />
 
     <!-- Save and Cancel Buttons -->
     <button id="btnSave" class="ui primary button" @click.prevent="saveForm">
       KAYDET
     </button>
-    <button type="button" id="btnCancelResistanceModal" class="ui negative button">
+    <button type="button" class="ui negative button">
       SİL
     </button>
   </form>
@@ -179,12 +180,20 @@ export default {
           });      
     },
     createProtesto(){
-      const protesto = {
-        resistanceId: this.resistance.id,
-      };
-      this.activeProtestoIndex = this.resistance.protestoItems.length;  
-      this.resistance.protestoItems.push(protesto);
-      console.log(this.activeProtestoIndex);
+      const created = this.resistance.protestoItems.filter(s=>s.protestoId === 0);
+      if(created.length === 0){
+        const protesto = {
+          resistanceId: this.resistance.id,
+          protestoId: 0,
+        };
+        this.activeProtestoIndex = this.resistance.protestoItems.length;
+        this.resistance.protestoItems.push(protesto);
+        console.log(this.activeProtestoIndex);
+      }
+      else{
+        this.activeProtestoIndex = this.resistance.protestoItems.length;
+        console.log('already exists');
+      }
     },
     toggleOutsource() {
       // Show/hide outsource section
@@ -223,6 +232,10 @@ export default {
       })
           .then(response => console.log(response))
           .catch(error => console.log(error));
+    },
+    handleCancelProtesto(protesto) {
+      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== protesto.protestoId);
+      this.activeProtestoIndex = null;
     },
     formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date
