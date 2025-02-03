@@ -14,6 +14,7 @@
             :genderOptions="genderOptions"
             :protestoTypeOptions="protestoTypeOptions"
             :protestoPlaceOptions="protestoPlaceOptions"
+            :employeeCountInProtestoOptions="employeeCountInProtestoOptions"
         />
       </div>
     </div>
@@ -22,7 +23,7 @@
 
 <script>
 
-import EditProtesto from "./edit-protesto.vue";
+import EditProtesto from "./EditProtesto.vue";
 
 export default {
   name: "ProtestoAccordion",
@@ -44,6 +45,10 @@ export default {
       type: Array,
       required: true,
     },
+    employeeCountInProtestoOptions: {
+      type: Array,
+      required: true,
+    }
   },
   mounted() {
   },

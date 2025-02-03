@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using RS.COMMON.DTO;
 using RS.COMMON.Entities;
+using RS.COMMON.Entities.LookupEntity;
 using static RS.COMMON.Constants.Enums;
 
 namespace RS.MVC.Models
@@ -122,6 +123,79 @@ namespace RS.MVC.Models
                 ProtestoDistrictIds.ForEach(c=> {if(c.HasValue) protesto.Districts.Add(new ProtestoDistrict{ DistrictId = c.Value});} );
             if (Locations != null)
                 Locations.Where(s => !s.Deleted).ToList().ForEach(c => { protesto.Locations.Add(new ProtestoLocation { CityId = c.CityId.Value, DistrictId = c.DistrictId, Place = c.Place }); });
+            return protesto;
+        }
+    }
+    
+    public class ResistanceModel: BaseViewModel
+    {
+        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        public int CategoryId { get; set; }
+        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        public int CompanyId { get; set; }
+        public int? MainCompanyId { get; set; }
+        public string Code { get; set; }
+        public bool HasTradeUnion { get; set; }
+        public int? TradeUnionAuthorityId { get; set; }
+        public string Note { get; set; }
+        public string ResistanceDescription { get; set; }
+        public int? EmployeeCountId { get; set; }
+        public int? EmployeeCount { get; set; }
+        public List<Corporation> CorporationIds { get; set; }
+        public int? TradeUnionId { get; set; }
+        public List<EmploymentType> EmploymentTypeIds { get; set; }
+        public List<ResistanceReason> ResistanceReasonIds { get; set; }
+        public ProtestoModel Protesto { get; set; }
+        public List<ResistanceNewsModel> ResistanceNewsIds { get; set; }
+        
+        public Resistance MapToResistance()
+        {
+            var resistance = new Resistance
+            {
+                CompanyId = CompanyId,
+                MainCompanyId = MainCompanyId,
+                CategoryId = CategoryId,
+                Code = Code,
+                HasTradeUnion = HasTradeUnion,
+                //DevelopRight = DevelopRight,
+                TradeUnionId = TradeUnionId,
+                TradeUnionAuthorityId = TradeUnionAuthorityId,
+                EmployeeCountId = EmployeeCountId,
+                EmployeeCountNumber = EmployeeCount,
+                StartDate = Protesto.ProtestoStartDate,
+                EndDate = Protesto.ProtestoEndDate,
+                Description = ResistanceDescription,
+                Note = Note,
+                //FiredEmployeeCountByProtesto = Protesto.FiredEmployeeCountByProtesto,
+                Creator = UserName,
+                CreateDate = DateTime.Now,
+                //LegalInterventionDesc = LegalIntervantionDesc,
+                //ResistanceResult = ResistanceResult,
+                ResistanceCorporations = new List<ResistanceCorporation>(),
+                ResistanceEmploymentTypes = new List<ResistanceEmploymentType>(),
+                ResistanceResistanceReasons = new List<ResistanceResistanceReason>(),
+                ResistanceNews = new List<ResistanceNews>(),
+                Protestos = new List<Protesto>(),
+            };
+            // if (AnyLegalIntervention == 1) resistance.AnyLegalIntervention = true;
+            // if (AnyLegalIntervention == 2) resistance.AnyLegalIntervention = false;
+            if (EmploymentTypeIds != null)
+                EmploymentTypeIds.ForEach(c=> 
+                        resistance.ResistanceEmploymentTypes
+                            .AddRange(new ResistanceEmploymentType
+                            {
+                                EmploymentTypeId = c.Id, ResistanceId = resistance.Id
+                            }));
+            
+            //if(ResistanceNewsIds != null)
+            //    ResistanceNewsIds.ForEach(c=> resistance.ResistanceNews.Add(new ResistanceNews{NewsId = c, ResistanceId = resistance.Id}));
+
+           
+            return resistance;
+        }
+        public Protesto MapToProtestoDto()
+        {
+            var protesto = Protesto.ToEntity();
             return protesto;
         }
     }

@@ -16,6 +16,7 @@ namespace RS.MVC.Applications
         PagedResult<ResistanceIndexDto, ResistanceFilterModel> GetPaged(ResistanceFilterModel filter);
         IEnumerable<ResistanceIndexDto> GetAll();
         void Create(ResistanceForm model);
+        void Create(ResistanceModel model);
         Result<CompanyReturnDto> CreateCompany(CompanyCreateViewModel model);
         Resistance ExistingResistance(int companyId, int categoryId);
         ResistanceEditModel GetResistanceDetail(int id);
@@ -95,6 +96,26 @@ namespace RS.MVC.Applications
             _db.Resistance.Add(resistance);
             protesto.ResistanceId = resistance.Id;
             _db.Protesto.Add(protesto);
+            _db.SaveChanges();
+        }
+        public void Create(ResistanceModel model)
+        {
+            Resistance resistance = model.MapToResistance();
+            BindCorporationId(resistance, model.CorporationIds);
+            BindResistanceReasonId(resistance, model.ResistanceReasonIds);
+
+            if (model.ResistanceNewsIds != null)
+                model.ResistanceNewsIds
+                    .Where(n => !n.IsDeleted)
+                    .ToList()
+                    .ForEach(news => 
+                        resistance.ResistanceNews.Add(new ResistanceNews { NewsId = news.Id }));
+
+            Protesto protesto = model.MapToProtestoDto();
+            BindProtestoTypeId(protesto, model.Protesto.ProtestoTypeIds);
+            BindProtestoPlaceId(protesto, model.Protesto.ProtestoPlaceIds);
+            resistance.Protestos.Add(protesto);
+            _db.Resistance.Add(resistance);
             _db.SaveChanges();
         }
         public Result<CompanyReturnDto> CreateCompany(CompanyCreateViewModel model)
@@ -385,6 +406,25 @@ namespace RS.MVC.Applications
                 }
             }
         }
+        private void BindProtestoTypeId(Protesto protesto, List<ProtestoType> protestoTypeIds)
+        {
+            if (protestoTypeIds != null)
+            {
+                foreach (var typeItem in protestoTypeIds)
+                {
+                    if (typeItem.Id != -1)
+                    {
+                        protesto.ProtestoProtestoTypes.Add(new ProtestoProtestoType { ProtestoTypeId = typeItem.Id, ProtestoId = protesto.Id });
+                    }
+                    else
+                    {
+                        var pType = new ProtestoType { Name = typeItem.Name };
+                        _db.ProtestoType.Add(pType);
+                        protesto.ProtestoProtestoTypes.Add(new ProtestoProtestoType { ProtestoType = pType });
+                    }
+                }
+            }
+        }
         private void BindProtestoPlace(Protesto protesto, List<string> protestoPlaceIds)
         {
             if (protestoPlaceIds != null)
@@ -405,7 +445,25 @@ namespace RS.MVC.Applications
                 }
             }
         }
-
+        private void BindProtestoPlaceId(Protesto protesto, List<ProtestoPlace> protestoPlaceIds)
+        {
+            if (protestoPlaceIds != null)
+            {
+                foreach (var placeItem in protestoPlaceIds)
+                {
+                    if (placeItem.Id != -1)
+                    {
+                        protesto.ProtestoProtestoPlaces.Add(new ProtestoProtestoPlace { ProtestoPlaceId = placeItem.Id, ProtestoId = protesto.Id });
+                    }
+                    else
+                    {
+                        var pType = new ProtestoPlace { Name = placeItem.Name };
+                        _db.ProtestoPlace.Add(pType);
+                        protesto.ProtestoProtestoPlaces.Add(new ProtestoProtestoPlace { ProtestoPlace = pType });
+                    }
+                }
+            }
+        }
 
         private void BindCorporation(Resistance resistance, List<string> corporationIds)
         {
@@ -423,6 +481,25 @@ namespace RS.MVC.Applications
                     {
                         var corporation = _db.Corporation.Add(new Corporation { Name = corporationItem });
                         resistance.ResistanceCorporations.Add(new ResistanceCorporation { CorporationId = corporation.Entity.Id });
+                    }
+                }
+            }
+        }
+        private void BindCorporationId(Resistance resistance, List<Corporation> corporations)
+        {
+            if (corporations != null)
+            {
+                foreach (var corporationItem in corporations)
+                {
+                    if (corporationItem.Id != -1)
+                    {
+                        resistance.ResistanceCorporations.Add(new ResistanceCorporation { CorporationId = corporationItem.Id, ResistanceId = resistance.Id });
+                    }
+                    else
+                    {
+                        var corporation = new Corporation { Name = corporationItem.Name };
+                        _db.Corporation.Add(corporation);
+                        resistance.ResistanceCorporations.Add(new ResistanceCorporation { Corporation = corporation });
                     }
                 }
             }
@@ -448,6 +525,25 @@ namespace RS.MVC.Applications
             }
         }
 
+        private void BindResistanceReasonId(Resistance resistance, List<ResistanceReason> reasons)
+        {
+            if (reasons != null)
+            {
+                foreach (var reasonItem in reasons)
+                {
+                    if (reasonItem.Id != -1)
+                    {
+                        resistance.ResistanceResistanceReasons.Add(new ResistanceResistanceReason { ResistanceReasonId = reasonItem.Id, ResistanceId = resistance.Id });
+                    }
+                    else
+                    {
+                        var reason =new ResistanceReason { Name = reasonItem.Name };
+                        _db.ResistanceReason.Add(reason);
+                        resistance.ResistanceResistanceReasons.Add(new ResistanceResistanceReason{ ResistanceReason = reason});
+                    }
+                }
+            }
+        }
         public void DeleteProtesto(ProtestoDeleteModel model)
         {
             var protesto = _db.Protesto.Find(model.ProtestoId);

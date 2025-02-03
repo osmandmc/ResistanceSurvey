@@ -117,6 +117,13 @@ namespace RS.MVC.Controllers
             var isTradeUnion = db.Corporation.Any(s => ids.Contains(s.Id) && s.CorporationTypeId == 1);
             return Json(isTradeUnion);
         }
+        [HttpGet]
+        public ActionResult CheckTradeUnion(List<int> corporationIds)
+        {
+            var isTradeUnion = db.Corporation
+                .Any(s => corporationIds.Contains(s.Id) && s.CorporationTypeId == 1);
+            return Json(isTradeUnion);
+        }
     }
 
 }

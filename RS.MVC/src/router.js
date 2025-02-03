@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import ResistanceOverview from './components/ResistanceOverview.vue';
-import ListResistance from './components/resistance/list-resistance.vue';
-import CreateResistance from './components/resistance/create-resistance.vue';
-import EditResistance from './components/resistance/edit-resistance.vue';
-import ListNews from './components/news/list-news.vue';
+import ListResistance from './components/resistance/ListResistance.vue';
+import CreateResistance from './components/resistance/CreateResistance.vue';
+import EditResistance from './components/resistance/EditResistance.vue';
+import ListNews from './components/news/ListNews.vue';
 import NotFound from './components/NotFound.vue';
 const routes = [
     {

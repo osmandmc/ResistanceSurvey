@@ -20200,10 +20200,10 @@ const stringifySymbol = (v, i = "") => {
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Modal.vue?vue&type=script&lang=js":
-/*!****************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Modal.vue?vue&type=script&lang=js ***!
-  \****************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=script&lang=js":
+/*!***********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=script&lang=js ***!
+  \***********************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -20212,8 +20212,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: "Modal",
+  name: "CompanyModal",
   props: {
+    isMain: {
+      type: Boolean,
+      "default": false
+    },
     // Data passed from the parent, e.g., API dropdown options
     companyTypes: {
       type: Array,
@@ -20232,16 +20236,23 @@ __webpack_require__.r(__webpack_exports__);
       "default": function _default() {
         return [];
       }
+    },
+    companies: {
+      type: Array,
+      "default": function _default() {
+        return [];
+      }
     }
   },
   data: function data() {
     return {
       formData: {
-        IsMain: false,
-        CompanyName: "",
-        TypeId: "",
-        ScaleId: "",
-        WorklineId: ""
+        companyName: "",
+        typeId: "",
+        scaleId: "",
+        worklineId: "",
+        mainCompanyId: "",
+        isMain: this.isMain
       }
     };
   },
@@ -20260,20 +20271,14 @@ __webpack_require__.r(__webpack_exports__);
     addCompany: function addCompany() {
       console.log("Adding Company:", this.formData);
       var company = {
-        isMain: true,
-        name: this.formData.CompanyName,
-        typeId: this.formData.TypeId,
-        scaleId: this.formData.ScaleId,
-        worklineId: this.formData.WorklineId
+        name: this.formData.companyName,
+        typeId: this.formData.typeId,
+        scaleId: this.formData.scaleId,
+        worklineId: this.formData.worklineId,
+        isMain: this.formData.isMain
       };
-      var company1 = {
-        name: this.formData.CompanyName,
-        typeId: 1,
-        scaleId: 2,
-        worklineId: 3,
-        isMain: false
-      };
-      this.$emit("save-company", company1);
+      console.log("Adding Company:", company);
+      this.$emit("save-company", company);
       this.closeModal();
     }
   }
@@ -20309,11 +20314,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _resistance_list_resistance_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./resistance/list-resistance.vue */ "./src/components/resistance/list-resistance.vue");
-/* harmony import */ var _news_list_news_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./news/list-news.vue */ "./src/components/news/list-news.vue");
-/* harmony import */ var _resistance_create_resistance_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./resistance/create-resistance.vue */ "./src/components/resistance/create-resistance.vue");
-/* harmony import */ var _resistance_edit_resistance_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./resistance/edit-resistance.vue */ "./src/components/resistance/edit-resistance.vue");
-/* harmony import */ var _components_Modal_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/Modal.vue */ "./src/components/Modal.vue");
+/* harmony import */ var _resistance_ListResistance_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./resistance/ListResistance.vue */ "./src/components/resistance/ListResistance.vue");
+/* harmony import */ var _news_ListNews_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./news/ListNews.vue */ "./src/components/news/ListNews.vue");
+/* harmony import */ var _resistance_CreateResistance_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./resistance/CreateResistance.vue */ "./src/components/resistance/CreateResistance.vue");
+/* harmony import */ var _resistance_EditResistance_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./resistance/EditResistance.vue */ "./src/components/resistance/EditResistance.vue");
+/* harmony import */ var _CompanyModal_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./CompanyModal.vue */ "./src/components/CompanyModal.vue");
 
 
 
@@ -20322,21 +20327,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'ResistanceOverview',
   components: {
-    ListResistance: _resistance_list_resistance_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-    ListNews: _news_list_news_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
-    CreateResistance: _resistance_create_resistance_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
-    EditResistance: _resistance_edit_resistance_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
-    Modal: _components_Modal_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
+    ListResistance: _resistance_ListResistance_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
+    ListNews: _news_ListNews_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
+    CreateResistance: _resistance_CreateResistance_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
+    EditResistance: _resistance_EditResistance_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
+    Modal: _CompanyModal_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   mounted: function mounted() {}
 });
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/list-news.vue?vue&type=script&lang=js":
-/*!*************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/list-news.vue?vue&type=script&lang=js ***!
-  \*************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/ListNews.vue?vue&type=script&lang=js":
+/*!************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/ListNews.vue?vue&type=script&lang=js ***!
+  \************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -20393,10 +20398,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/edit-protesto.vue?vue&type=script&lang=js":
-/*!*********************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/edit-protesto.vue?vue&type=script&lang=js ***!
-  \*********************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=script&lang=js":
+/*!********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=script&lang=js ***!
+  \********************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -20406,16 +20411,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.esm.js");
 /* harmony import */ var _vuepic_vue_datepicker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vuepic/vue-datepicker */ "./node_modules/@vuepic/vue-datepicker/dist/vue-datepicker.js");
-/* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vuepic/vue-datepicker/dist/main.css */ "./node_modules/@vuepic/vue-datepicker/dist/main.css");
-/* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _Protesto_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Protesto.vue */ "./src/components/protesto/Protesto.vue");
+/* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @vuepic/vue-datepicker/dist/main.css */ "./node_modules/@vuepic/vue-datepicker/dist/main.css");
+/* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_3__);
+
 
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "EditProtesto",
   components: {
-    Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_0__["default"],
-    VueDatePicker: _vuepic_vue_datepicker__WEBPACK_IMPORTED_MODULE_1__["default"]
+    Protesto: _Protesto_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   props: {
     protesto: {
@@ -20433,9 +20439,12 @@ __webpack_require__.r(__webpack_exports__);
     genderOptions: {
       type: Array,
       required: true
+    },
+    employeeCountInProtestoOptions: {
+      type: Array,
+      required: true
     }
   },
-  mounted: function mounted() {},
   methods: {
     saveProtesto: function saveProtesto() {
       this.$emit("saveProtesto", this.protesto);
@@ -20445,10 +20454,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/protesto-accordion.vue?vue&type=script&lang=js":
-/*!**************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/protesto-accordion.vue?vue&type=script&lang=js ***!
-  \**************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=script&lang=js":
+/*!****************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=script&lang=js ***!
+  \****************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -20456,12 +20465,81 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _edit_protesto_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./edit-protesto.vue */ "./src/components/protesto/edit-protesto.vue");
+/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.esm.js");
+/* harmony import */ var _vuepic_vue_datepicker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vuepic/vue-datepicker */ "./node_modules/@vuepic/vue-datepicker/dist/vue-datepicker.js");
+/* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vuepic/vue-datepicker/dist/main.css */ "./node_modules/@vuepic/vue-datepicker/dist/main.css");
+/* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _fetchWrapper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../fetchWrapper */ "./src/fetchWrapper.js");
+
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: "Protesto",
+  components: {
+    Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_0__["default"],
+    VueDatePicker: _vuepic_vue_datepicker__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
+  data: function data() {
+    return {
+      protestoPlaceOptions: [],
+      protestoTypeOptions: [],
+      genderOptions: [],
+      employeeCountInProtestoOptions: []
+    };
+  },
+  props: {
+    protesto: {
+      type: Object,
+      "default": function _default() {
+        return {};
+      } // Prevents undefined errors
+    }
+  },
+  mounted: function mounted() {
+    var _this = this;
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_3__.fetchWithToken)("/lookup/employeeCounts").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.employeeCounts = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_3__.fetchWithToken)("/ProtestoPlace/List").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.protestoPlaceOptions = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_3__.fetchWithToken)("/ProtestoType/List").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.protestoTypeOptions = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_3__.fetchWithToken)("/lookup/genders").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.genderOptions = data;
+    });
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/ProtestoAccordion.vue?vue&type=script&lang=js":
+/*!*************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/ProtestoAccordion.vue?vue&type=script&lang=js ***!
+  \*************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _EditProtesto_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EditProtesto.vue */ "./src/components/protesto/EditProtesto.vue");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "ProtestoAccordion",
   components: {
-    EditProtesto: _edit_protesto_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+    EditProtesto: _EditProtesto_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   props: {
     protestoItems: {
@@ -20477,6 +20555,10 @@ __webpack_require__.r(__webpack_exports__);
       required: true
     },
     genderOptions: {
+      type: Array,
+      required: true
+    },
+    employeeCountInProtestoOptions: {
       type: Array,
       required: true
     }
@@ -20505,227 +20587,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/create-resistance.vue?vue&type=script&lang=js":
-/*!***************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/create-resistance.vue?vue&type=script&lang=js ***!
-  \***************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
-function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
-function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
-function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  data: function data() {
-    return {
-      form: {
-        ResistanceDescription: '',
-        CategoryId: '',
-        IsOutsource: false,
-        CompanyId: '',
-        MainCompanyId: '',
-        ResistanceReasonIds: [],
-        DevelopRight: '',
-        EmployeeCount: '',
-        EmployeeCountId: '',
-        CorporationIds: [],
-        TradeUnionAuthorityId: '',
-        TradeUnionId: '',
-        EmploymentTypeIds: [],
-        GenderId: '',
-        FiredEmployeeCountByProtesto: '',
-        ResistanceResult: 0,
-        ProtestoTypeIds: [],
-        StrikeDuration: '',
-        SimpleProtestoDescription: '',
-        ProtestoStartDate: '',
-        ProtestoEndDate: '',
-        ProtestoPlaceIds: [],
-        EmployeeCountInProtesto: '',
-        EmployeeCountInProtestoId: '',
-        InterventionTypeIds: [],
-        CustodyCount: '',
-        Note: ''
-      },
-      categories: [],
-      companies: [],
-      resistanceReasons: []
-      // Add other required arrays (e.g., ProtestoTypes, EmployeeCount, etc.)
-    };
-  },
-  mounted: function mounted() {
-    // Fetch the lookup data (categories, companies, resistance reasons, etc.)
-    this.fetchLookupData();
-  },
-  methods: {
-    fetchLookupData: function fetchLookupData() {
-      var _this = this;
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        var _yield$Promise$all, _yield$Promise$all2, categories, companies, resistanceReasons;
-        return _regeneratorRuntime().wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              _context.next = 3;
-              return Promise.all([_this.fetchCategories(), _this.fetchCompanies(), _this.fetchResistanceReasons()]);
-            case 3:
-              _yield$Promise$all = _context.sent;
-              _yield$Promise$all2 = _slicedToArray(_yield$Promise$all, 3);
-              categories = _yield$Promise$all2[0];
-              companies = _yield$Promise$all2[1];
-              resistanceReasons = _yield$Promise$all2[2];
-              _this.categories = categories;
-              _this.companies = companies;
-              _this.resistanceReasons = resistanceReasons;
-              _context.next = 16;
-              break;
-            case 13:
-              _context.prev = 13;
-              _context.t0 = _context["catch"](0);
-              console.error('Error fetching lookup data', _context.t0);
-            case 16:
-            case "end":
-              return _context.stop();
-          }
-        }, _callee, null, [[0, 13]]);
-      }))();
-    },
-    fetchCategories: function fetchCategories() {
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var response;
-        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
-            case 0:
-              _context2.next = 2;
-              return fetch('/api/lookup/categories');
-            case 2:
-              response = _context2.sent;
-              _context2.next = 5;
-              return response.json();
-            case 5:
-              return _context2.abrupt("return", _context2.sent);
-            case 6:
-            case "end":
-              return _context2.stop();
-          }
-        }, _callee2);
-      }))();
-    },
-    fetchCompanies: function fetchCompanies() {
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-        var response;
-        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-          while (1) switch (_context3.prev = _context3.next) {
-            case 0:
-              _context3.next = 2;
-              return fetch('/api/lookup/companies');
-            case 2:
-              response = _context3.sent;
-              _context3.next = 5;
-              return response.json();
-            case 5:
-              return _context3.abrupt("return", _context3.sent);
-            case 6:
-            case "end":
-              return _context3.stop();
-          }
-        }, _callee3);
-      }))();
-    },
-    fetchResistanceReasons: function fetchResistanceReasons() {
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-        var response;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
-            case 0:
-              _context4.next = 2;
-              return fetch('/api/lookup/resistance-reasons');
-            case 2:
-              response = _context4.sent;
-              _context4.next = 5;
-              return response.json();
-            case 5:
-              return _context4.abrupt("return", _context4.sent);
-            case 6:
-            case "end":
-              return _context4.stop();
-          }
-        }, _callee4);
-      }))();
-    },
-    openModal: function openModal(isOutsource) {
-      var modalId = isOutsource ? '#addOutsourceCompanyModal' : '#addCompanyModal';
-      var modal = document.querySelector(modalId);
-      $(modal).modal('show');
-    },
-    checkExisiting: function checkExisiting() {
-      var companyId = this.form.CompanyId;
-      var categoryId = this.form.CategoryId;
-      if (companyId && categoryId) {
-        this.existingResistance(companyId, categoryId);
-      }
-    },
-    existingResistance: function existingResistance(companyId, categoryId) {
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-        var response, data;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
-            case 0:
-              _context5.prev = 0;
-              _context5.next = 3;
-              return fetch("/Resistance/ExistingResistance?companyId=".concat(companyId, "&categoryId=").concat(categoryId));
-            case 3:
-              response = _context5.sent;
-              _context5.next = 6;
-              return response.json();
-            case 6:
-              data = _context5.sent;
-              if (data) {
-                alert('Mevcut');
-              }
-              _context5.next = 13;
-              break;
-            case 10:
-              _context5.prev = 10;
-              _context5.t0 = _context5["catch"](0);
-              console.error('Error checking existing resistance', _context5.t0);
-            case 13:
-            case "end":
-              return _context5.stop();
-          }
-        }, _callee5, null, [[0, 10]]);
-      }))();
-    },
-    submitForm: function submitForm() {
-      // Perform form validation and submission
-      console.log(this.form);
-      // Add form submission logic here
-    },
-    goBack: function goBack() {
-      this.$router.push({
-        name: 'list'
-      }); // Navigate back to list view (assuming you have a router set up)
-    }
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/edit-resistance.vue?vue&type=script&lang=js":
-/*!*************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/edit-resistance.vue?vue&type=script&lang=js ***!
-  \*************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/CreateResistance.vue?vue&type=script&lang=js":
+/*!**************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/CreateResistance.vue?vue&type=script&lang=js ***!
+  \**************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -20735,8 +20600,162 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _fetchWrapper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../fetchWrapper */ "./src/fetchWrapper.js");
 /* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.esm.js");
-/* harmony import */ var _protesto_protesto_accordion_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../protesto/protesto-accordion.vue */ "./src/components/protesto/protesto-accordion.vue");
-/* harmony import */ var _Modal_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Modal.vue */ "./src/components/Modal.vue");
+/* harmony import */ var _CompanyModal_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../CompanyModal.vue */ "./src/components/CompanyModal.vue");
+/* harmony import */ var _protesto_Protesto_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../protesto/Protesto.vue */ "./src/components/protesto/Protesto.vue");
+/* harmony import */ var _Resistance_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Resistance.vue */ "./src/components/resistance/Resistance.vue");
+
+
+
+
+ // Adjust the path based on your folder structure
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: "CreateResistance",
+  components: {
+    Resistance: _Resistance_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
+    Protesto: _protesto_Protesto_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
+    CompanyModal: _CompanyModal_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
+    Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
+  data: function data() {
+    return {
+      resistance: {
+        resistanceDescription: null,
+        categoryId: null,
+        developRight: null,
+        isOutsource: false,
+        mainCompanyId: null,
+        employeeCountId: null,
+        employeeCount: null,
+        resistanceResult: null,
+        employmentTypeIds: null,
+        corporationIds: null,
+        resistanceReasonIds: null,
+        protesto: {}
+      },
+      companies: [],
+      companyTypes: [],
+      companyScales: [],
+      worklines: [],
+      formErrors: {}
+    };
+  },
+  props: ['id'],
+  // The id is passed as a prop from the router
+  mounted: function mounted() {
+    var _this = this;
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/company/list").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.companies = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/companyTypes").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.companyTypes = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/companyScales").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.companyScales = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/companyWorklines").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.worklines = data;
+    });
+  },
+  methods: {
+    toggleOutsource: function toggleOutsource() {
+      // Show/hide outsource section
+    },
+    checkTradeUnion: function checkTradeUnion() {
+      var _this$resistance,
+        _this2 = this;
+      var corporationIds = (_this$resistance = this.resistance) === null || _this$resistance === void 0 || (_this$resistance = _this$resistance.corporationIds) === null || _this$resistance === void 0 ? void 0 : _this$resistance.map(function (s) {
+        return s.id;
+      });
+      var queryParams = new URLSearchParams();
+      corporationIds.forEach(function (id) {
+        return queryParams.append('corporationIds', id);
+      });
+      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/corporation/checkTradeUnion?".concat(queryParams.toString())).then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        return _this2.tradeUnionIncluded = data;
+      });
+    },
+    openCompanyModal: function openCompanyModal(isMain) {
+      this.$refs.modalRef.openModal();
+    },
+    handleSaveCompany: function handleSaveCompany(companyData) {
+      console.log(companyData);
+      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/Company/Create/", {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json" // Ensure JSON is sent
+        },
+        body: JSON.stringify(companyData)
+      }).then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        return console.log(data);
+      });
+      this.companies.push(companyData);
+    },
+    saveForm: function saveForm() {
+      var resistanceData = {
+        categoryId: this.resistance.categoryId,
+        companyId: this.resistance.companyId,
+        resistanceReasonIds: this.resistance.resistanceReasonIds,
+        mainCompanyId: this.resistance.mainCompanyId,
+        corporationIds: this.resistance.corporationIds,
+        hasTradeUnion: true,
+        tradeUnionAuthorityId: this.resistance.tradeUnionAuthorityId,
+        note: this.resistance.note,
+        resistanceDescription: this.resistance.resistanceDescription,
+        employeeCountId: this.resistance.employeeCountId,
+        employeeCount: this.resistance.employeeCount,
+        tradeUnionId: this.resistance.tradeUnionId,
+        protesto: this.resistance.protesto
+      };
+      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/Resistance/CreateResistance", {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json" // Ensure JSON is sent
+        },
+        body: JSON.stringify(resistanceData)
+      }).then(function (response) {
+        return console.log(response);
+      })["catch"](function (error) {
+        return console.log(error);
+      });
+    },
+    formatDate: function formatDate(date) {
+      return new Date(date).toLocaleDateString(); // Format date
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/EditResistance.vue?vue&type=script&lang=js":
+/*!************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/EditResistance.vue?vue&type=script&lang=js ***!
+  \************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _fetchWrapper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../fetchWrapper */ "./src/fetchWrapper.js");
+/* harmony import */ var _Resistance_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Resistance.vue */ "./src/components/resistance/Resistance.vue");
+/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.esm.js");
+/* harmony import */ var _protesto_ProtestoAccordion_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../protesto/ProtestoAccordion.vue */ "./src/components/protesto/ProtestoAccordion.vue");
+/* harmony import */ var _CompanyModal_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../CompanyModal.vue */ "./src/components/CompanyModal.vue");
+
 
 
 
@@ -20745,27 +20764,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "EditResistance",
   components: {
-    Modal: _Modal_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
-    ProtestoAccordion: _protesto_protesto_accordion_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
-    Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_1__["default"]
+    CompanyModal: _CompanyModal_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
+    ProtestoAccordion: _protesto_ProtestoAccordion_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
+    Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_2__["default"],
+    Resistance: _Resistance_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   data: function data() {
     return {
       isLoading: true,
-      resistance: {
-        id: "",
-        resistanceDescription: "",
-        categoryId: "",
-        selectedResistanceReasons: [],
-        developRight: null,
-        isOutsource: false,
-        mainCompanyId: "",
-        employeeCountId: "",
-        employeeCount: "",
-        resistanceResult: 0,
-        protestos: [],
-        protestoItems: []
-      },
+      resistance: {},
       categories: [],
       resistanceReasons: [],
       companies: [],
@@ -20774,27 +20781,10 @@ __webpack_require__.r(__webpack_exports__);
       protestoPlaceOptions: [],
       protestoTypeOptions: [],
       genderOptions: [],
-      companyTypes: [{
-        value: 1,
-        text: "Type 1"
-      }, {
-        value: 2,
-        text: "Type 2"
-      }],
-      companyScales: [{
-        value: 1,
-        text: "Small"
-      }, {
-        value: 2,
-        text: "Medium"
-      }],
-      worklines: [{
-        value: 1,
-        text: "Workline 1"
-      }, {
-        value: 2,
-        text: "Workline 2"
-      }],
+      employeeCountInProtestoOptions: [],
+      companyTypes: [],
+      companyScales: [],
+      worklines: [],
       formErrors: {}
     };
   },
@@ -20818,30 +20808,30 @@ __webpack_require__.r(__webpack_exports__);
     }).then(function (data) {
       return _this.resistanceReasons = data;
     });
-    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/employeeCounts").then(function (response) {
-      return response.json();
-    }).then(function (data) {
-      return _this.employeeCounts = data;
-    });
-    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/ProtestoPlace/List").then(function (response) {
-      return response.json();
-    }).then(function (data) {
-      return _this.protestoPlaceOptions = data;
-    });
-    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/ProtestoType/List").then(function (response) {
-      return response.json();
-    }).then(function (data) {
-      return _this.protestoTypeOptions = data;
-    });
-    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/genders").then(function (response) {
-      return response.json();
-    }).then(function (data) {
-      return _this.genderOptions = data;
-    });
     (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/corporation/list").then(function (response) {
       return response.json();
     }).then(function (data) {
       return _this.corporations = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/companyTypes").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.companyTypes = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/companyScales").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.companyScales = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/companyWorklines").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.worklines = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/employeeCountInProtesto").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.employeeCountInProtestoOptions = data;
     });
     this.initializeSemanticUI();
   },
@@ -20884,7 +20874,7 @@ __webpack_require__.r(__webpack_exports__);
       (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/Company/Create/", {
         method: 'POST',
         headers: {
-          "Content-Type": "application/json" // Ensure JSON is sent
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(companyData)
       }).then(function (response) {
@@ -20900,11 +20890,12 @@ __webpack_require__.r(__webpack_exports__);
     formatDate: function formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date
     },
-    addTag: function addTag(newTag) {
+    addResistanceReason: function addResistanceReason(newTag) {
       var tag = {
         name: newTag,
-        code: newTag.substring(0, 2) + Math.floor(Math.random() * 10000000)
+        id: -1
       };
+      console.log(tag);
       this.resistanceReasons.push(tag);
       this.resistance.resistanceReasonIds.push(tag);
     }
@@ -20913,10 +20904,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/list-resistance.vue?vue&type=script&lang=js":
-/*!*************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/list-resistance.vue?vue&type=script&lang=js ***!
-  \*************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/ListResistance.vue?vue&type=script&lang=js":
+/*!************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/ListResistance.vue?vue&type=script&lang=js ***!
+  \************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21061,10 +21052,115 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Modal.vue?vue&type=template&id=701ac82d&scoped=true":
-/*!********************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Modal.vue?vue&type=template&id=701ac82d&scoped=true ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/Resistance.vue?vue&type=script&lang=js":
+/*!********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/Resistance.vue?vue&type=script&lang=js ***!
+  \********************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.esm.js");
+/* harmony import */ var _fetchWrapper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../fetchWrapper */ "./src/fetchWrapper.js");
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: "Resistance",
+  components: {
+    Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  data: function data() {
+    return {
+      resistanceData: this.resistance,
+      categories: [],
+      resistanceReasons: [],
+      companies: [],
+      corporations: [],
+      employeeCounts: []
+    };
+  },
+  props: {
+    resistance: {
+      type: Object,
+      "default": function _default() {
+        return {};
+      }
+    },
+    formErrors: {
+      type: Object,
+      "default": function _default() {
+        return {};
+      }
+    }
+  },
+  mounted: function mounted() {
+    var _this = this;
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_1__.fetchWithToken)("/company/list").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.companies = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_1__.fetchWithToken)("/resistance/categories").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.categories = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_1__.fetchWithToken)("/lookup/resistancereasons").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.resistanceReasons = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_1__.fetchWithToken)("/lookup/employeeCounts").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.employeeCounts = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_1__.fetchWithToken)("/corporation/list").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.corporations = data;
+    });
+  },
+  methods: {
+    toggleOutsource: function toggleOutsource() {
+      // Show/hide outsource section
+    },
+    addResistanceReason: function addResistanceReason(newTag) {
+      var tag = {
+        name: newTag,
+        id: -1
+      };
+      this.resistanceReasons.push(tag);
+      this.resistance.resistanceReasonIds.push(tag);
+    },
+    addEmploymentType: function addEmploymentType(newTag) {
+      var tag = {
+        name: newTag,
+        id: -1
+      };
+      this.employmentTypes.push(tag);
+      this.resistance.employmentTypeIds.push(tag);
+    },
+    addCorporation: function addCorporation(newTag) {
+      var tag = {
+        name: newTag,
+        id: -1
+      };
+      this.corporations.push(newTag);
+      this.resistance.corporationIds.push(tag);
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=template&id=620f1060&scoped=true":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=template&id=620f1060&scoped=true ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21089,100 +21185,122 @@ var _hoisted_4 = {
   "class": "field"
 };
 var _hoisted_5 = {
-  "class": "three fields"
+  "class": "ui checkbox"
 };
 var _hoisted_6 = {
+  key: 0,
   "class": "field"
 };
-var _hoisted_7 = ["disabled"];
-var _hoisted_8 = ["value"];
+var _hoisted_7 = ["value"];
+var _hoisted_8 = {
+  "class": "field"
+};
 var _hoisted_9 = {
+  "class": "three fields"
+};
+var _hoisted_10 = {
   "class": "field"
 };
-var _hoisted_10 = ["disabled"];
-var _hoisted_11 = ["value"];
-var _hoisted_12 = {
+var _hoisted_11 = ["disabled"];
+var _hoisted_12 = ["value"];
+var _hoisted_13 = {
   "class": "field"
 };
-var _hoisted_13 = ["disabled"];
-var _hoisted_14 = ["value"];
+var _hoisted_14 = ["disabled"];
+var _hoisted_15 = ["value"];
+var _hoisted_16 = {
+  "class": "field"
+};
+var _hoisted_17 = ["disabled"];
+var _hoisted_18 = ["value"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "header"
   }, " Şirket Formu ", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Hidden Input "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "hidden",
     "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
-      return $data.formData.IsMain = $event;
+      return $data.formData.isMain = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.formData.IsMain]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Company Name Field "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.formData.isMain]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "checkbox",
+    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
+      return $data.formData.isMain = $event;
+    })
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelCheckbox, $data.formData.isMain]]), _cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, "Taşeron", -1 /* HOISTED */))])]), $data.formData.isMain ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_6, [_cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "MainCompanyId"
+  }, "Ana Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    id: "MainCompanyId",
+    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+      return $data.formData.mainCompanyId = $event;
+    })
+  }, [_cache[9] || (_cache[9] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.companies, function (type) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: type.id,
+      value: type.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(type.name), 9 /* TEXT, PROPS */, _hoisted_7);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.formData.mainCompanyId]])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Company Name Field "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CompanyName"
   }, "Şirket Adı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     id: "CompanyName",
-    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
-      return $data.formData.CompanyName = $event;
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+      return $data.formData.companyName = $event;
     }),
     placeholder: "Şirket adı giriniz"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.formData.CompanyName]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Dropdown Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" TypeId Dropdown "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[9] || (_cache[9] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.formData.companyName]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Dropdown Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" TypeId Dropdown "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "TypeId"
   }, "Şirketin Niteliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     id: "TypeId",
-    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
-      return $data.formData.TypeId = $event;
+    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+      return $data.formData.typeId = $event;
     }),
     disabled: !$props.companyTypes.length
-  }, [_cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.companyTypes, function (type) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: type.value,
-      value: type.value
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(type.text), 9 /* TEXT, PROPS */, _hoisted_8);
-  }), 128 /* KEYED_FRAGMENT */))], 8 /* PROPS */, _hoisted_7), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.formData.TypeId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" ScaleId Dropdown "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [_cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+      key: type.id,
+      value: type.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(type.name), 9 /* TEXT, PROPS */, _hoisted_12);
+  }), 128 /* KEYED_FRAGMENT */))], 8 /* PROPS */, _hoisted_11), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.formData.typeId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" ScaleId Dropdown "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ScaleId"
   }, "Şirketin Büyüklüğü", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     id: "ScaleId",
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
-      return $data.formData.ScaleId = $event;
+    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
+      return $data.formData.scaleId = $event;
     }),
     disabled: !$props.companyScales.length
-  }, [_cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.companyScales, function (scale) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: scale.value,
-      value: scale.value
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(scale.text), 9 /* TEXT, PROPS */, _hoisted_11);
-  }), 128 /* KEYED_FRAGMENT */))], 8 /* PROPS */, _hoisted_10), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.formData.ScaleId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" WorklineId Dropdown "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+      key: scale.id,
+      value: scale.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(scale.name), 9 /* TEXT, PROPS */, _hoisted_15);
+  }), 128 /* KEYED_FRAGMENT */))], 8 /* PROPS */, _hoisted_14), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.formData.scaleId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" WorklineId Dropdown "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [_cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "WorklineId"
   }, "Şirketin İş Kolu", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     id: "WorklineId",
-    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
-      return $data.formData.WorklineId = $event;
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+      return $data.formData.worklineId = $event;
     }),
     disabled: !$props.worklines.length
-  }, [_cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.worklines, function (workline) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: workline.value,
-      value: workline.value
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(workline.text), 9 /* TEXT, PROPS */, _hoisted_14);
-  }), 128 /* KEYED_FRAGMENT */))], 8 /* PROPS */, _hoisted_13), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.formData.WorklineId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Conditional Button "), $data.formData.IsMain ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
-    key: 0,
-    id: "btnAddMainCompany",
-    "class": "ui button primary",
-    onClick: _cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
-      return $options.addMainCompany && $options.addMainCompany.apply($options, arguments);
-    }, ["prevent"]))
-  }, " Ana Şirket Ekle ")) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
-    key: 1,
+      key: workline.id,
+      value: workline.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(workline.name), 9 /* TEXT, PROPS */, _hoisted_18);
+  }), 128 /* KEYED_FRAGMENT */))], 8 /* PROPS */, _hoisted_17), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.formData.worklineId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     id: "btnAddCompany",
     "class": "ui button positive",
-    onClick: _cache[6] || (_cache[6] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
+    onClick: _cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.addCompany && $options.addCompany.apply($options, arguments);
     }, ["prevent"]))
-  }, " Şirket Ekle "))])])], 512 /* NEED_PATCH */);
+  }, " Şirket Ekle ")])])], 512 /* NEED_PATCH */);
 }
 
 /***/ }),
@@ -21242,10 +21360,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/list-news.vue?vue&type=template&id=9551fd14&scoped=true":
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/list-news.vue?vue&type=template&id=9551fd14&scoped=true ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/ListNews.vue?vue&type=template&id=0046ae0d&scoped=true":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/ListNews.vue?vue&type=template&id=0046ae0d&scoped=true ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21385,10 +21503,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/edit-protesto.vue?vue&type=template&id=325c27c4&scoped=true":
-/*!*************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/edit-protesto.vue?vue&type=template&id=325c27c4&scoped=true ***!
-  \*************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=template&id=322ae0ce&scoped=true":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=template&id=322ae0ce&scoped=true ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21401,11 +21519,46 @@ __webpack_require__.r(__webpack_exports__);
 var _hoisted_1 = {
   "class": "ui form"
 };
-var _hoisted_2 = {
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  var _component_Protesto = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Protesto");
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Protesto, {
+    protesto: $props.protesto,
+    protestoTypeOptions: $props.protestoTypeOptions,
+    protestoPlaceOptions: $props.protestoPlaceOptions,
+    genderOptions: $props.genderOptions,
+    employeeCountInProtestoOptions: $props.employeeCountInProtestoOptions
+  }, null, 8 /* PROPS */, ["protesto", "protestoTypeOptions", "protestoPlaceOptions", "genderOptions", "employeeCountInProtestoOptions"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save Button "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    "class": "ui primary button",
+    type: "button",
+    onClick: _cache[0] || (_cache[0] = function () {
+      return $options.saveProtesto && $options.saveProtesto.apply($options, arguments);
+    })
+  }, " Kaydet ")]);
+}
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+
+var _hoisted_1 = {
   "class": "field"
 };
-var _hoisted_3 = {
+var _hoisted_2 = {
   "class": "two fields"
+};
+var _hoisted_3 = {
+  "class": "field"
 };
 var _hoisted_4 = {
   "class": "field"
@@ -21416,10 +21569,10 @@ var _hoisted_5 = {
 var _hoisted_6 = {
   "class": "field"
 };
-var _hoisted_7 = {
+var _hoisted_7 = ["value"];
+var _hoisted_8 = {
   "class": "field"
 };
-var _hoisted_8 = ["value"];
 var _hoisted_9 = {
   "class": "two fields"
 };
@@ -21429,13 +21582,14 @@ var _hoisted_10 = {
 var _hoisted_11 = {
   "class": "field"
 };
-var _hoisted_12 = {
+var _hoisted_12 = ["value"];
+var _hoisted_13 = {
   "class": "field"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_multiselect = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("multiselect");
   var _component_VueDatePicker = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("VueDatePicker");
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Types "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [_cache[9] || (_cache[9] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Types "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[9] || (_cache[9] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoTypeIds"
   }, "Eylem Türleri", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ProtestoTypeIds",
@@ -21443,7 +21597,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
       return $props.protesto.protestoTypeIds = $event;
     }),
-    options: $props.protestoTypeOptions,
+    options: $data.protestoTypeOptions,
     multiple: true,
     "close-on-select": false,
     "clear-on-select": false,
@@ -21451,21 +21605,21 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     placeholder: "Seçiniz",
     label: "name",
     "track-by": "id"
-  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Start and End Dates "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Start and End Dates "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoStartDate"
   }, "Başlangıç Tarihi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_VueDatePicker, {
     modelValue: $props.protesto.protestoStartDate,
     "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
       return $props.protesto.protestoStartDate = $event;
     })
-  }, null, 8 /* PROPS */, ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoEndDate"
   }, "Bitiş Tarihi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_VueDatePicker, {
     modelValue: $props.protesto.protestoEndDate,
     "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
       return $props.protesto.protestoEndDate = $event;
     })
-  }, null, 8 /* PROPS */, ["modelValue"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Places "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Places "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoPlaceIds"
   }, "Yerler", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ProtestoPlaceIds",
@@ -21473,7 +21627,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
       return $props.protesto.protestoPlaceIds = $event;
     }),
-    options: $props.protestoPlaceOptions,
+    options: $data.protestoPlaceOptions,
     multiple: true,
     "close-on-select": false,
     "clear-on-select": false,
@@ -21481,7 +21635,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     placeholder: "Seçiniz",
     label: "name",
     "track-by": "id"
-  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Gender "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Gender "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "GenderId"
   }, "Cinsiyet", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
@@ -21490,12 +21644,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "GenderId"
   }, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
-  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.genderOptions, function (gender) {
+  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.genderOptions, function (gender) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: gender.id,
       value: gender.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(gender.name), 9 /* TEXT, PROPS */, _hoisted_8);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.genderId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(gender.name), 9 /* TEXT, PROPS */, _hoisted_7);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.genderId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CustodyCount"
   }, "Gözaltı Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
@@ -21503,37 +21657,45 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
       return $props.protesto.custodyCount = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.custodyCount]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [_cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.custodyCount]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [_cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCountInProtesto"
-  }, "Eylemdeki İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, "Eylemdeki İşçi Sayısı (Tam)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
     id: "EmployeeCountInProtesto",
     "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
       return $props.protesto.employeeCountInProtesto = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.employeeCountInProtesto]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Notes "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [_cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.employeeCountInProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "EmployeeCountInProtestoId"
+  }, "Eylemdeki İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
+      return $props.protesto.employeeCountInProtestoId = $event;
+    }),
+    id: "EmployeeCountInProtestoId"
+  }, [_cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.employeeCountInProtestoOptions, function (employeeCountInProtesto) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: employeeCountInProtesto.id,
+      value: employeeCountInProtesto.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(employeeCountInProtesto.name), 9 /* TEXT, PROPS */, _hoisted_12);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.employeeCountInProtestoId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Notes "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "Note"
   }, "Notlar", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     id: "Note",
-    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
+    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
       return $props.protesto.note = $event;
     }),
     rows: "3"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.note]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save Button "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    "class": "ui primary button",
-    type: "button",
-    onClick: _cache[8] || (_cache[8] = function () {
-      return $options.saveProtesto && $options.saveProtesto.apply($options, arguments);
-    })
-  }, " Kaydet ")]);
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.note]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save Button ")], 64 /* STABLE_FRAGMENT */);
 }
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/protesto-accordion.vue?vue&type=template&id=5175ed4a":
-/*!******************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/protesto-accordion.vue?vue&type=template&id=5175ed4a ***!
-  \******************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/ProtestoAccordion.vue?vue&type=template&id=e7507f6e":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/ProtestoAccordion.vue?vue&type=template&id=e7507f6e ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21571,17 +21733,18 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       protesto: protesto,
       genderOptions: $props.genderOptions,
       protestoTypeOptions: $props.protestoTypeOptions,
-      protestoPlaceOptions: $props.protestoPlaceOptions
-    }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions"])], 2 /* CLASS */)]);
+      protestoPlaceOptions: $props.protestoPlaceOptions,
+      employeeCountInProtestoOptions: $props.employeeCountInProtestoOptions
+    }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions"])], 2 /* CLASS */)]);
   }), 128 /* KEYED_FRAGMENT */))]);
 }
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/create-resistance.vue?vue&type=template&id=29942364&scoped=true":
-/*!*******************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/create-resistance.vue?vue&type=template&id=29942364&scoped=true ***!
-  \*******************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/CreateResistance.vue?vue&type=template&id=ed86ebaa&scoped=true":
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/CreateResistance.vue?vue&type=template&id=ed86ebaa&scoped=true ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21592,184 +21755,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
 
 var _hoisted_1 = {
-  "class": "ui dividing header"
-};
-var _hoisted_2 = {
-  "class": "field"
-};
-var _hoisted_3 = {
-  "class": "field"
-};
-var _hoisted_4 = ["value"];
-var _hoisted_5 = {
-  "class": "fields"
-};
-var _hoisted_6 = {
-  "class": "six wide field"
-};
-var _hoisted_7 = {
-  "class": "ten wide field"
-};
-var _hoisted_8 = {
-  "class": "two fields"
-};
-var _hoisted_9 = {
-  "class": "field"
-};
-var _hoisted_10 = ["value"];
-var _hoisted_11 = {
-  "class": "field"
-};
-var _hoisted_12 = {
-  key: 0,
-  "class": "field"
-};
-var _hoisted_13 = {
-  "class": "two fields"
-};
-var _hoisted_14 = {
-  "class": "field"
-};
-var _hoisted_15 = ["value"];
-var _hoisted_16 = {
-  "class": "field"
-};
-var _hoisted_17 = {
-  "class": "field"
-};
-var _hoisted_18 = ["value"];
-var _hoisted_19 = {
-  "class": "field"
+  "class": "ui form"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  var _component_router_link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-link");
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("form", {
-    onSubmit: _cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
-      return $options.submitForm && $options.submitForm.apply($options, arguments);
-    }, ["prevent"])),
-    "class": "ui form",
-    id: "resistanceForm"
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
-    to: "/list",
-    "class": "item"
-  }, {
-    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return _cache[11] || (_cache[11] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
-        "class": "angle double left icon"
-      }, null, -1 /* HOISTED */)]);
-    }),
-    _: 1 /* STABLE */
-  }), _cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Vakalar "))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "ResistanceDescription"
-  }, "Kısa Açıklama", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
-    "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
-      return $data.form.ResistanceDescription = $event;
-    }),
-    id: "ResistanceDescription",
-    rows: "3"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.form.ResistanceDescription]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "CategoryId"
-  }, "Vaka Niteliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
-      return $data.form.CategoryId = $event;
-    }),
-    "class": "ui fluid search selection dropdown"
-  }, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: ""
-  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.categories, function (category) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: category.id,
-      value: category.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(category.name), 9 /* TEXT, PROPS */, _hoisted_4);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.CategoryId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "IsOutsource"
-  }, "Şirket Taşeron mu?", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
-      return $data.form.IsOutsource = $event;
-    }),
-    "class": "ui dropdown"
-  }, _cache[16] || (_cache[16] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: "false"
-  }, "Hayır", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: "true"
-  }, "Evet", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.IsOutsource]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "CompanyId"
-  }, "Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
-      return $data.form.CompanyId = $event;
-    }),
-    onChange: _cache[4] || (_cache[4] = function () {
-      return $options.checkExisiting && $options.checkExisiting.apply($options, arguments);
-    }),
-    "class": "ui fluid search selection dropdown"
-  }, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: ""
-  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.companies, function (company) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: company.id,
-      value: company.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(company.name), 9 /* TEXT, PROPS */, _hoisted_10);
-  }), 128 /* KEYED_FRAGMENT */))], 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.CompanyId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  var _component_Resistance = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Resistance");
+  var _component_Protesto = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Protesto");
+  var _component_company_modal = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("company-modal");
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Resistance, {
+    resistance: $data.resistance,
+    formErrors: $data.formErrors
+  }, null, 8 /* PROPS */, ["resistance", "formErrors"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Protesto, {
+    protesto: $data.resistance.protesto
+  }, null, 8 /* PROPS */, ["protesto"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save and Cancel Buttons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    "class": "ui primary button",
+    onClick: _cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
+      return $options.saveForm && $options.saveForm.apply($options, arguments);
+    }, ["prevent"]))
+  }, " KAYDET "), _cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
-    onClick: _cache[5] || (_cache[5] = function ($event) {
-      return $options.openModal(false);
-    }),
-    "class": "ui button"
-  }, "Yeni Şirket Ekle")])])])]), $data.form.IsOutsource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_12, [_cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "MainCompanyId"
-  }, "Ana Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
-      return $data.form.MainCompanyId = $event;
-    }),
-    "class": "ui fluid search selection dropdown"
-  }, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: ""
-  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.companies, function (company) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: company.id,
-      value: company.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(company.name), 9 /* TEXT, PROPS */, _hoisted_15);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.MainCompanyId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    type: "button",
-    onClick: _cache[7] || (_cache[7] = function ($event) {
-      return $options.openModal(true);
-    }),
-    "class": "ui button"
-  }, "Ana Şirket Ekle")])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "ResistanceReasonIds"
-  }, "Vaka Nedeni", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
-      return $data.form.ResistanceReasonIds = $event;
-    }),
-    multiple: "",
-    "class": "ui fluid search dropdown"
-  }, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.resistanceReasons, function (reason) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: reason.id,
-      value: reason.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(reason.name), 9 /* TEXT, PROPS */, _hoisted_18);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.ResistanceReasonIds]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [_cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "DevelopRight"
-  }, "Hak Geliştirme/Hak Savunma Özelliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
-      return $data.form.DevelopRight = $event;
-    }),
-    "class": "ui dropdown"
-  }, _cache[23] || (_cache[23] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: ""
-  }, "--Seçiniz--", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: "true"
-  }, "Hak Geliştirme", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: "false"
-  }, "Hak Savunma", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.DevelopRight]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" More Fields (Repeat for other fields like EmployeeCount, CorporationIds, etc.) "), _cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"field\" data-v-29942364><button type=\"submit\" class=\"ui ok green button\" data-v-29942364>KAYDET</button></div><div class=\"ui modal\" id=\"addCompanyModal\" data-v-29942364><i class=\"close icon\" data-v-29942364></i><div class=\"header\" data-v-29942364>Yeni Şirket Ekle</div><div class=\"content\" id=\"modal-content\" data-v-29942364><!-- Modal Content Here --></div></div><div class=\"ui modal\" id=\"addOutsourceCompanyModal\" data-v-29942364><i class=\"close icon\" data-v-29942364></i><div class=\"header\" data-v-29942364>Yeni Taşeron Şirket Ekle</div><div class=\"content\" id=\"modalOutsource-content\" data-v-29942364><!-- Modal Content Here --></div></div>", 3))], 32 /* NEED_HYDRATION */);
+    id: "btnCancelResistanceModal",
+    "class": "ui negative button"
+  }, " VAZGEÇ ", -1 /* HOISTED */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_company_modal, {
+    ref: "modalRef",
+    companyTypes: $data.companyTypes,
+    companyScales: $data.companyScales,
+    worklines: $data.worklines,
+    companies: $data.companies,
+    onSaveCompany: $options.handleSaveCompany
+  }, null, 8 /* PROPS */, ["companyTypes", "companyScales", "worklines", "companies", "onSaveCompany"])], 64 /* STABLE_FRAGMENT */);
 }
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/edit-resistance.vue?vue&type=template&id=3b9f0dd4&scoped=true":
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/edit-resistance.vue?vue&type=template&id=3b9f0dd4&scoped=true ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/EditResistance.vue?vue&type=template&id=43c43e39&scoped=true":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/EditResistance.vue?vue&type=template&id=43c43e39&scoped=true ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -21784,312 +21805,78 @@ var _hoisted_1 = {
   "class": "ui dimmer active"
 };
 var _hoisted_2 = {
-  id: "resistanceForm",
-  "class": "ui form"
-};
-var _hoisted_3 = {
   "class": "ui dividing header"
 };
-var _hoisted_4 = {
-  "class": "field"
-};
-var _hoisted_5 = {
-  "class": "field"
-};
-var _hoisted_6 = ["value"];
-var _hoisted_7 = {
-  key: 0,
-  "class": "text-danger"
-};
-var _hoisted_8 = {
-  "class": "two fields"
-};
-var _hoisted_9 = {
-  "class": "field"
-};
-var _hoisted_10 = {
-  "class": "field"
-};
-var _hoisted_11 = {
-  key: 0,
-  "class": "text-danger"
-};
-var _hoisted_12 = {
-  "class": "sixty wide field"
-};
-var _hoisted_13 = {
-  "class": "two fields"
-};
-var _hoisted_14 = {
-  "class": "field"
-};
-var _hoisted_15 = ["value"];
-var _hoisted_16 = {
-  "class": "field"
-};
-var _hoisted_17 = {
-  "class": "field sixty wide"
-};
-var _hoisted_18 = {
-  key: 0,
-  id: "outsource",
-  "class": "sixty wide field"
-};
-var _hoisted_19 = {
-  "class": "two fields"
-};
-var _hoisted_20 = {
-  "class": "field"
-};
-var _hoisted_21 = ["value"];
-var _hoisted_22 = {
-  "class": "field"
-};
-var _hoisted_23 = {
-  "class": "two fields"
-};
-var _hoisted_24 = {
-  "class": "field"
-};
-var _hoisted_25 = ["value"];
-var _hoisted_26 = {
-  key: 0,
-  "class": "text-danger"
-};
-var _hoisted_27 = {
-  "class": "field"
-};
-var _hoisted_28 = {
-  "class": "field"
-};
-var _hoisted_29 = {
-  "class": "field"
+var _hoisted_3 = {
+  "class": "ui form"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_router_link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-link");
-  var _component_multiselect = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("multiselect");
+  var _component_Resistance = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Resistance");
   var _component_protesto_accordion = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("protesto-accordion");
-  var _component_Modal = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Modal");
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [$data.isLoading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, _cache[17] || (_cache[17] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  var _component_company_modal = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("company-modal");
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [$data.isLoading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, _cache[3] || (_cache[3] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "ui text loader"
-  }, "İşlem Yapılıyor...", -1 /* HOISTED */)]))) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
+  }, "İşlem Yapılıyor...", -1 /* HOISTED */)]))) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
     to: "/list",
     "class": "item"
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return _cache[18] || (_cache[18] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      return _cache[4] || (_cache[4] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
         "class": "angle double left icon"
       }, null, -1 /* HOISTED */)]);
     }),
     _: 1 /* STABLE */
-  }), _cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Vaka "))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Hidden Input for ID "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }), _cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Vaka "))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "hidden",
     name: "Id",
     "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
       return $data.resistance.id = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.resistance.id]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Short Description "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "ResistanceDescription"
-  }, "Kısa Açıklama", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
-    id: "ResistanceDescription",
-    rows: "6",
-    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
-      return $data.resistance.resistanceDescription = $event;
-    })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.resistance.resistanceDescription]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Case Category "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "CategoryId"
-  }, "Vaka Niteliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
-      return $data.resistance.categoryId = $event;
-    })
-  }, [_cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: ""
-  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.categories, function (category) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: category.id,
-      value: category.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(category.name), 9 /* TEXT, PROPS */, _hoisted_6);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.resistance.categoryId]]), $data.formErrors.categoryId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_7, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.formErrors.categoryId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Two Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Case Reasons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [_cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "ResistanceReasonIds"
-  }, "Vaka Nedeni", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
-    id: "ResistanceReasonIds",
-    modelValue: $data.resistance.resistanceReasonIds,
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
-      return $data.resistance.resistanceReasonIds = $event;
-    }),
-    options: $data.resistanceReasons,
-    multiple: true,
-    "close-on-select": false,
-    "clear-on-select": false,
-    "preserve-search": true,
-    placeholder: "Seçiniz",
-    label: "name",
-    "track-by": "id",
-    "preselect-first": true,
-    taggable: true,
-    onTag: $options.addTag
-  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Develop Right "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "DevelopRight"
-  }, "Hak Geliştirme/Hak Savunma Özelliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
-      return $data.resistance.developRight = $event;
-    })
-  }, _cache[24] || (_cache[24] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: ""
-  }, "--Seçiniz--", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: true
-  }, "Hak Geliştirme", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: false
-  }, "Hak Savunma", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.resistance.developRight]]), $data.formErrors.developRight ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.formErrors.developRight), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "CompanyId"
-  }, "Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
-      return $data.resistance.companyId = $event;
-    })
-  }, [_cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: ""
-  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.companies, function (company) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: company.id,
-      value: company.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(company.name), 9 /* TEXT, PROPS */, _hoisted_15);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.resistance.companyId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    type: "button",
-    onClick: _cache[6] || (_cache[6] = function ($event) {
-      return $options.openCompanyModal(true);
-    }),
-    "class": "ui button"
-  }, _cache[27] || (_cache[27] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
-    "class": "chevron circle up icon"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Şirket Ekle ")]))])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Is Outsource "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "IsOutsource"
-  }, "Şirket Taşeron mu?", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
-      return $data.resistance.isOutsource = $event;
-    }),
-    onChange: _cache[8] || (_cache[8] = function () {
-      return $options.toggleOutsource && $options.toggleOutsource.apply($options, arguments);
-    })
-  }, _cache[29] || (_cache[29] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: false
-  }, "Hayır", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: true
-  }, "Evet", -1 /* HOISTED */)]), 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.resistance.isOutsource]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Main Company (Conditional) "), $data.resistance.isOutsource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_18, [_cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "MainCompanyId"
-  }, "Ana Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
-      return $data.resistance.mainCompanyId = $event;
-    })
-  }, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: ""
-  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.companies, function (company) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: company.id,
-      value: company.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(company.name), 9 /* TEXT, PROPS */, _hoisted_21);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.resistance.mainCompanyId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    type: "button",
-    onClick: _cache[10] || (_cache[10] = function ($event) {
-      return $options.openCompanyModal(true);
-    }),
-    "class": "ui button"
-  }, _cache[32] || (_cache[32] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
-    "class": "chevron circle up icon"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Ana Şirket Ekle ")]))])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Employee Count "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [_cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "EmployeeCountId"
-  }, "İş Yerindeki İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
-      return $data.resistance.employeeCountId = $event;
-    })
-  }, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: ""
-  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.employeeCounts, function (count) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: count.id,
-      value: count.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(count.name), 9 /* TEXT, PROPS */, _hoisted_25);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.resistance.employeeCountId]]), $data.formErrors.employeeCountId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.formErrors.employeeCountId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [_cache[36] || (_cache[36] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "EmployeeCount"
-  }, "İş Yerindeki İşçi Sayısı (Tam)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    type: "text",
-    id: "EmployeeCount",
-    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
-      return $data.resistance.employeeCount = $event;
-    })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.resistance.employeeCount]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [_cache[37] || (_cache[37] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "CorporationIds"
-  }, "Kurumsallık", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
-    id: "CorporationIds",
-    modelValue: $data.resistance.corporationIds,
-    "onUpdate:modelValue": _cache[13] || (_cache[13] = function ($event) {
-      return $data.resistance.corporationIds = $event;
-    }),
-    options: $data.corporations,
-    multiple: true,
-    "close-on-select": false,
-    "clear-on-select": false,
-    "preserve-search": true,
-    placeholder: "Seçiniz",
-    label: "name",
-    "track-by": "id",
-    "preselect-first": true,
-    taggable: true,
-    onTag: $options.addTag
-  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [_cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "ResistanceResult"
-  }, "Sonuç", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
-      return $data.resistance.resistanceResult = $event;
-    }),
-    "class": "ui fluid dropdown"
-  }, _cache[38] || (_cache[38] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: 0
-  }, "Bilinmiyor", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: 1
-  }, "Tam Kazanım", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: 2
-  }, "Yarım Kazanım", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: 3
-  }, "Sıfır Kazanım", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.resistance.resistanceResult]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protestos "), _cache[41] || (_cache[41] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.resistance.id]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Resistance, {
+    resistance: $data.resistance
+  }, null, 8 /* PROPS */, ["resistance"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protestos "), _cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
     "class": "ui dividing header"
   }, "Eylemler", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "ui right labeled small green icon button",
-    onClick: _cache[15] || (_cache[15] = function () {
+    onClick: _cache[1] || (_cache[1] = function () {
       return _ctx.addProtesto && _ctx.addProtesto.apply(_ctx, arguments);
     })
-  }, _cache[40] || (_cache[40] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Eylem Ekle"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, _cache[6] || (_cache[6] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Eylem Ekle"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "plus icon"
   }, null, -1 /* HOISTED */)])), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_protesto_accordion, {
     protestoItems: $data.resistance.protestoItems,
     protestoPlaceOptions: $data.protestoPlaceOptions,
     protestoTypeOptions: $data.protestoTypeOptions,
-    genderOptions: $data.genderOptions
-  }, null, 8 /* PROPS */, ["protestoItems", "protestoPlaceOptions", "protestoTypeOptions", "genderOptions"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save and Cancel Buttons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    genderOptions: $data.genderOptions,
+    employeeCountInProtestoOptions: $data.employeeCountInProtestoOptions
+  }, null, 8 /* PROPS */, ["protestoItems", "protestoPlaceOptions", "protestoTypeOptions", "genderOptions", "employeeCountInProtestoOptions"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save and Cancel Buttons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     id: "btnSave",
     "class": "ui primary button",
-    onClick: _cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
+    onClick: _cache[2] || (_cache[2] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.saveForm && $options.saveForm.apply($options, arguments);
     }, ["prevent"]))
-  }, " KAYDET "), _cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, " KAYDET "), _cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     id: "btnCancelResistanceModal",
     "class": "ui negative button"
-  }, " SİL ", -1 /* HOISTED */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Modal, {
+  }, " SİL ", -1 /* HOISTED */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_company_modal, {
     ref: "modalRef",
     companyTypes: $data.companyTypes,
     companyScales: $data.companyScales,
     worklines: $data.worklines,
+    companies: $data.companies,
     onSaveCompany: $options.handleSaveCompany
-  }, null, 8 /* PROPS */, ["companyTypes", "companyScales", "worklines", "onSaveCompany"])], 64 /* STABLE_FRAGMENT */);
+  }, null, 8 /* PROPS */, ["companyTypes", "companyScales", "worklines", "companies", "onSaveCompany"])], 64 /* STABLE_FRAGMENT */);
 }
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/list-resistance.vue?vue&type=template&id=7f553c02&scoped=true":
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/list-resistance.vue?vue&type=template&id=7f553c02&scoped=true ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/ListResistance.vue?vue&type=template&id=06c56dcd&scoped=true":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/ListResistance.vue?vue&type=template&id=06c56dcd&scoped=true ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22314,6 +22101,294 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/Resistance.vue?vue&type=template&id=b2e4a6e2&scoped=true":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/Resistance.vue?vue&type=template&id=b2e4a6e2&scoped=true ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+
+var _hoisted_1 = {
+  "class": "ui dividing header"
+};
+var _hoisted_2 = {
+  "class": "field"
+};
+var _hoisted_3 = {
+  "class": "field"
+};
+var _hoisted_4 = ["value"];
+var _hoisted_5 = {
+  key: 0,
+  "class": "text-danger"
+};
+var _hoisted_6 = {
+  "class": "two fields"
+};
+var _hoisted_7 = {
+  "class": "field"
+};
+var _hoisted_8 = {
+  "class": "field"
+};
+var _hoisted_9 = {
+  key: 0,
+  "class": "text-danger"
+};
+var _hoisted_10 = {
+  "class": "sixty wide field"
+};
+var _hoisted_11 = {
+  "class": "two fields"
+};
+var _hoisted_12 = {
+  "class": "field"
+};
+var _hoisted_13 = ["value"];
+var _hoisted_14 = {
+  "class": "field"
+};
+var _hoisted_15 = {
+  "class": "field sixty wide"
+};
+var _hoisted_16 = {
+  key: 0,
+  id: "outsource",
+  "class": "sixty wide field"
+};
+var _hoisted_17 = {
+  "class": "two fields"
+};
+var _hoisted_18 = {
+  "class": "field"
+};
+var _hoisted_19 = ["value"];
+var _hoisted_20 = {
+  "class": "field"
+};
+var _hoisted_21 = {
+  "class": "two fields"
+};
+var _hoisted_22 = {
+  "class": "field"
+};
+var _hoisted_23 = ["value"];
+var _hoisted_24 = {
+  key: 0,
+  "class": "text-danger"
+};
+var _hoisted_25 = {
+  "class": "field"
+};
+var _hoisted_26 = {
+  "class": "field"
+};
+var _hoisted_27 = {
+  "class": "field"
+};
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  var _this = this;
+  var _component_router_link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-link");
+  var _component_multiselect = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("multiselect");
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
+    to: "/list",
+    "class": "item"
+  }, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return _cache[16] || (_cache[16] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+        "class": "angle double left icon"
+      }, null, -1 /* HOISTED */)]);
+    }),
+    _: 1 /* STABLE */
+  }), _cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Vaka "))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Hidden Input for ID "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "hidden",
+    name: "Id",
+    "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
+      return _this.resistanceData.id = $event;
+    })
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistanceData.id]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Short Description "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "ResistanceDescription"
+  }, "Kısa Açıklama", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
+    id: "ResistanceDescription",
+    rows: "6",
+    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
+      return _this.resistanceData.resistanceDescription = $event;
+    })
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistanceData.resistanceDescription]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Case Category "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "CategoryId"
+  }, "Vaka Niteliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+      return _this.resistanceData.categoryId = $event;
+    })
+  }, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.categories, function (category) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: category.id,
+      value: category.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(category.name), 9 /* TEXT, PROPS */, _hoisted_4);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistanceData.categoryId]]), $props.formErrors.categoryId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.categoryId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Two Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Case Reasons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [_cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "ResistanceReasonIds"
+  }, "Vaka Nedeni", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
+    id: "ResistanceReasonIds",
+    modelValue: this.resistanceData.resistanceReasonIds,
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+      return _this.resistanceData.resistanceReasonIds = $event;
+    }),
+    placeholder: "Seçiniz",
+    label: "name",
+    "track-by": "id",
+    "preselect-first": true,
+    options: $data.resistanceReasons,
+    multiple: true,
+    "close-on-select": false,
+    "clear-on-select": false,
+    "preserve-search": true,
+    taggable: true,
+    onTag: $options.addResistanceReason
+  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Develop Right "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "DevelopRight"
+  }, "Hak Geliştirme/Hak Savunma Özelliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+      return _this.resistanceData.developRight = $event;
+    })
+  }, _cache[22] || (_cache[22] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: true
+  }, "Hak Geliştirme", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: false
+  }, "Hak Savunma", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistanceData.developRight]]), $props.formErrors.developRight ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_9, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.developRight), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [_cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "CompanyId"
+  }, "Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
+      return _this.resistanceData.companyId = $event;
+    })
+  }, [_cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.companies, function (company) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: company.id,
+      value: company.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(company.name), 9 /* TEXT, PROPS */, _hoisted_13);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistanceData.companyId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    onClick: _cache[6] || (_cache[6] = function ($event) {
+      return _ctx.openCompanyModal(true);
+    }),
+    "class": "ui button"
+  }, _cache[25] || (_cache[25] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "chevron circle up icon"
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Şirket Ekle ")]))])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Is Outsource "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "IsOutsource"
+  }, "Şirket Taşeron mu?", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
+      return _this.resistanceData.isOutsource = $event;
+    }),
+    onChange: _cache[8] || (_cache[8] = function () {
+      return $options.toggleOutsource && $options.toggleOutsource.apply($options, arguments);
+    })
+  }, _cache[27] || (_cache[27] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: false
+  }, "Hayır", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: true
+  }, "Evet", -1 /* HOISTED */)]), 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistanceData.isOutsource]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Main Company (Conditional) "), this.resistanceData.isOutsource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_16, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "MainCompanyId"
+  }, "Ana Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
+      return $props.resistance.mainCompanyId = $event;
+    })
+  }, [_cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.companies, function (company) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: company.id,
+      value: company.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(company.name), 9 /* TEXT, PROPS */, _hoisted_19);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.resistance.mainCompanyId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    onClick: _cache[10] || (_cache[10] = function ($event) {
+      return _ctx.openCompanyModal(true);
+    }),
+    "class": "ui button"
+  }, _cache[30] || (_cache[30] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "chevron circle up icon"
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Ana Şirket Ekle ")]))])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Employee Count "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [_cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "EmployeeCountId"
+  }, "İş Yerindeki İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
+      return _this.resistanceData.employeeCountId = $event;
+    })
+  }, [_cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.employeeCounts, function (count) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: count.id,
+      value: count.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(count.name), 9 /* TEXT, PROPS */, _hoisted_23);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistanceData.employeeCountId]]), $props.formErrors.employeeCountId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_24, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.employeeCountId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "EmployeeCount"
+  }, "İş Yerindeki İşçi Sayısı (Tam)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    id: "EmployeeCount",
+    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
+      return _this.resistanceData.employeeCount = $event;
+    })
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistanceData.employeeCount]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [_cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "CorporationIds"
+  }, "Kurumsallık", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
+    id: "CorporationIds",
+    modelValue: this.resistanceData.corporationIds,
+    "onUpdate:modelValue": _cache[13] || (_cache[13] = function ($event) {
+      return _this.resistanceData.corporationIds = $event;
+    }),
+    placeholder: "Seçiniz",
+    label: "name",
+    "track-by": "id",
+    "preselect-first": true,
+    options: $data.corporations,
+    multiple: true,
+    "close-on-select": false,
+    "clear-on-select": false,
+    "preserve-search": true,
+    taggable: true,
+    onTag: $options.addCorporation
+  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [_cache[37] || (_cache[37] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "ResistanceResult"
+  }, "Sonuç", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
+      return _this.resistanceData.resistanceResult = $event;
+    }),
+    "class": "ui fluid dropdown"
+  }, _cache[36] || (_cache[36] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: 0
+  }, "Bilinmiyor", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: 1
+  }, "Tam Kazanım", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: 2
+  }, "Yarım Kazanım", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: 3
+  }, "Sıfır Kazanım", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistanceData.resistanceResult]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protestos "), _cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
+    "class": "ui dividing header"
+  }, "Eylemler", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    "class": "ui right labeled small green icon button",
+    onClick: _cache[15] || (_cache[15] = function () {
+      return _ctx.addProtesto && _ctx.addProtesto.apply(_ctx, arguments);
+    })
+  }, _cache[38] || (_cache[38] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Eylem Ekle"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "plus icon"
+  }, null, -1 /* HOISTED */)]))], 64 /* STABLE_FRAGMENT */);
+}
+
+/***/ }),
+
 /***/ "./src/fetchWrapper.js":
 /*!*****************************!*\
   !*** ./src/fetchWrapper.js ***!
@@ -22361,10 +22436,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.mjs");
 /* harmony import */ var _components_ResistanceOverview_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/ResistanceOverview.vue */ "./src/components/ResistanceOverview.vue");
-/* harmony import */ var _components_resistance_list_resistance_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/resistance/list-resistance.vue */ "./src/components/resistance/list-resistance.vue");
-/* harmony import */ var _components_resistance_create_resistance_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/resistance/create-resistance.vue */ "./src/components/resistance/create-resistance.vue");
-/* harmony import */ var _components_resistance_edit_resistance_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/resistance/edit-resistance.vue */ "./src/components/resistance/edit-resistance.vue");
-/* harmony import */ var _components_news_list_news_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/news/list-news.vue */ "./src/components/news/list-news.vue");
+/* harmony import */ var _components_resistance_ListResistance_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/resistance/ListResistance.vue */ "./src/components/resistance/ListResistance.vue");
+/* harmony import */ var _components_resistance_CreateResistance_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/resistance/CreateResistance.vue */ "./src/components/resistance/CreateResistance.vue");
+/* harmony import */ var _components_resistance_EditResistance_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/resistance/EditResistance.vue */ "./src/components/resistance/EditResistance.vue");
+/* harmony import */ var _components_news_ListNews_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/news/ListNews.vue */ "./src/components/news/ListNews.vue");
 /* harmony import */ var _components_NotFound_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/NotFound.vue */ "./src/components/NotFound.vue");
 
 
@@ -22382,30 +22457,30 @@ var routes = [{
   // Default child for list-resistance and list-news
   components: {
     // short for LeftSidebar: LeftSidebar
-    LeftSidebar: _components_resistance_list_resistance_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
+    LeftSidebar: _components_resistance_ListResistance_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
     // they match the `name` attribute on `<router-view>`
-    RightSidebar: _components_news_list_news_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
+    RightSidebar: _components_news_ListNews_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
   }
 }, {
   path: '/list',
   // Relative child path for the list view
   components: {
-    LeftSidebar: _components_resistance_list_resistance_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
-    RightSidebar: _components_news_list_news_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
+    LeftSidebar: _components_resistance_ListResistance_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
+    RightSidebar: _components_news_ListNews_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
   }
 }, {
   path: '/edit/:id',
   // Relative path for editing resistance
   components: {
-    LeftSidebar: _components_resistance_list_resistance_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
-    RightSidebar: _components_resistance_edit_resistance_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
+    LeftSidebar: _components_resistance_ListResistance_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
+    RightSidebar: _components_resistance_EditResistance_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
   }
 }, {
   path: '/create',
   // Relative path for create-resistance
   components: {
-    LeftSidebar: _components_resistance_create_resistance_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
-    RightSidebar: _components_news_list_news_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
+    LeftSidebar: _components_resistance_CreateResistance_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
+    RightSidebar: _components_news_ListNews_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
   }
 }];
 var router = (0,vue_router__WEBPACK_IMPORTED_MODULE_6__.createRouter)({
@@ -22444,10 +22519,10 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.dp__input_wrap{position:relative;widt
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Modal.vue?vue&type=style&index=0&id=701ac82d&scoped=true&lang=css":
-/*!******************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Modal.vue?vue&type=style&index=0&id=701ac82d&scoped=true&lang=css ***!
-  \******************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css":
+/*!*************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22466,7 +22541,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add any scoped styles for the modal if needed */
-`, "",{"version":3,"sources":["webpack://./src/components/Modal.vue"],"names":[],"mappings":";AA6JA,kDAAkD","sourcesContent":["<template>\n  <div ref=\"modal\" class=\"ui modal\">\n    <div class=\"header\">\n      Şirket Formu\n    </div>\n    <div class=\"content\">\n      <form class=\"ui form\" id=\"companyForm\">\n        <!-- Hidden Input -->\n        <input type=\"hidden\" v-model=\"formData.IsMain\" />\n\n        <!-- Company Name Field -->\n        <div class=\"field\">\n          <label for=\"CompanyName\">Şirket Adı</label>\n          <input\n              type=\"text\"\n              id=\"CompanyName\"\n              v-model=\"formData.CompanyName\"\n              placeholder=\"Şirket adı giriniz\"\n          />\n        </div>\n\n        <!-- Dropdown Fields -->\n        <div class=\"three fields\">\n          <!-- TypeId Dropdown -->\n          <div class=\"field\">\n            <label for=\"TypeId\">Şirketin Niteliği</label>\n            <select\n                id=\"TypeId\"\n                v-model=\"formData.TypeId\"\n                :disabled=\"!companyTypes.length\"\n            >\n              <option value=\"\">--Seçiniz--</option>\n              <option v-for=\"type in companyTypes\" :key=\"type.value\" :value=\"type.value\">\n                {{ type.text }}\n              </option>\n            </select>\n          </div>\n\n          <!-- ScaleId Dropdown -->\n          <div class=\"field\">\n            <label for=\"ScaleId\">Şirketin Büyüklüğü</label>\n            <select\n                id=\"ScaleId\"\n                v-model=\"formData.ScaleId\"\n                :disabled=\"!companyScales.length\"\n            >\n              <option value=\"\">--Seçiniz--</option>\n              <option v-for=\"scale in companyScales\" :key=\"scale.value\" :value=\"scale.value\">\n                {{ scale.text }}\n              </option>\n            </select>\n          </div>\n\n          <!-- WorklineId Dropdown -->\n          <div class=\"field\">\n            <label for=\"WorklineId\">Şirketin İş Kolu</label>\n            <select\n                id=\"WorklineId\"\n                v-model=\"formData.WorklineId\"\n                :disabled=\"!worklines.length\"\n            >\n              <option value=\"\">--Seçiniz--</option>\n              <option v-for=\"workline in worklines\" :key=\"workline.value\" :value=\"workline.value\">\n                {{ workline.text }}\n              </option>\n            </select>\n          </div>\n        </div>\n\n        <!-- Conditional Button -->\n        <button\n            v-if=\"formData.IsMain\"\n            id=\"btnAddMainCompany\"\n            class=\"ui button primary\"\n            @click.prevent=\"addMainCompany\"\n        >\n          Ana Şirket Ekle\n        </button>\n        <button\n            v-else\n            id=\"btnAddCompany\"\n            class=\"ui button positive\"\n            @click.prevent=\"addCompany\"\n        >\n          Şirket Ekle\n        </button>\n      </form>\n    </div>\n  </div>\n</template>\n\n<script>\nexport default {\n  name: \"Modal\",\n  props: {\n    // Data passed from the parent, e.g., API dropdown options\n    companyTypes: {\n      type: Array,\n      default: () => [],\n    },\n    companyScales: {\n      type: Array,\n      default: () => [],\n    },\n    worklines: {\n      type: Array,\n      default: () => [],\n    }\n  },\n  data() {\n    return {\n      formData: {\n        IsMain: false,\n        CompanyName: \"\",\n        TypeId: \"\",\n        ScaleId: \"\",\n        WorklineId: \"\",\n      },\n    };\n  },\n  methods: {\n    openModal() {\n      console.log(this.formData);\n      $(this.$refs.modal).modal(\"show\");\n    },\n    closeModal() {\n      $(this.$refs.modal).modal(\"hide\");\n    },\n    addMainCompany() {\n      console.log(\"Adding Main Company:\", this.formData);\n      \n      this.closeModal();\n    },\n    addCompany() {\n      console.log(\"Adding Company:\", this.formData);\n      const company = {\n        isMain: true,\n        name: this.formData.CompanyName,\n        typeId: this.formData.TypeId,\n        scaleId: this.formData.ScaleId,\n        worklineId: this.formData.WorklineId,\n      }\n      const company1 = {\n        name: this.formData.CompanyName,\n        typeId: 1,\n        scaleId: 2,\n        worklineId: 3,\n        isMain: false\n      }\n      this.$emit(\"save-company\", company1);\n      this.closeModal();\n    }\n  },\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles for the modal if needed */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/CompanyModal.vue"],"names":[],"mappings":";AAyKA,kDAAkD","sourcesContent":["<template>\n  <div ref=\"modal\" class=\"ui modal\">\n    <div class=\"header\">\n      Şirket Formu\n    </div>\n    <div class=\"content\">\n      <form class=\"ui form\" id=\"companyForm\">\n        <!-- Hidden Input -->\n        <input type=\"hidden\" v-model=\"formData.isMain\" />\n        <div class=\"field\">\n          <div class=\"ui checkbox\">\n            <input\n                type=\"checkbox\"\n                v-model=\"formData.isMain\"\n            />\n            <label>Taşeron</label>\n          </div>\n        </div>\n        <div class=\"field\" v-if=\"formData.isMain\">\n          <label for=\"MainCompanyId\">Ana Şirket</label>\n          <select\n              id=\"MainCompanyId\"\n              v-model=\"formData.mainCompanyId\"\n          >\n            <option value=\"\">--Seçiniz--</option>\n            <option v-for=\"type in companies\" :key=\"type.id\" :value=\"type.id\">\n              {{ type.name }}\n            </option>\n          </select>\n        </div>\n        <!-- Company Name Field -->\n        <div class=\"field\">\n          <label for=\"CompanyName\">Şirket Adı</label>\n          <input\n              type=\"text\"\n              id=\"CompanyName\"\n              v-model=\"formData.companyName\"\n              placeholder=\"Şirket adı giriniz\"\n          />\n        </div>\n\n        <!-- Dropdown Fields -->\n        <div class=\"three fields\">\n          <!-- TypeId Dropdown -->\n          <div class=\"field\">\n            <label for=\"TypeId\">Şirketin Niteliği</label>\n            <select\n                id=\"TypeId\"\n                v-model=\"formData.typeId\"\n                :disabled=\"!companyTypes.length\"\n            >\n              <option value=\"\">--Seçiniz--</option>\n              <option v-for=\"type in companyTypes\" :key=\"type.id\" :value=\"type.id\">\n                {{ type.name }}\n              </option>\n            </select>\n          </div>\n\n          <!-- ScaleId Dropdown -->\n          <div class=\"field\">\n            <label for=\"ScaleId\">Şirketin Büyüklüğü</label>\n            <select\n                id=\"ScaleId\"\n                v-model=\"formData.scaleId\"\n                :disabled=\"!companyScales.length\"\n            >\n              <option value=\"\">--Seçiniz--</option>\n              <option v-for=\"scale in companyScales\" :key=\"scale.id\" :value=\"scale.id\">\n                {{ scale.name }}\n              </option>\n            </select>\n          </div>\n\n          <!-- WorklineId Dropdown -->\n          <div class=\"field\">\n            <label for=\"WorklineId\">Şirketin İş Kolu</label>\n            <select\n                id=\"WorklineId\"\n                v-model=\"formData.worklineId\"\n                :disabled=\"!worklines.length\"\n            >\n              <option value=\"\">--Seçiniz--</option>\n              <option v-for=\"workline in worklines\" :key=\"workline.id\" :value=\"workline.id\">\n                {{ workline.name }}\n              </option>\n            </select>\n          </div>\n        </div>\n\n        <button\n            id=\"btnAddCompany\"\n            class=\"ui button positive\"\n            @click.prevent=\"addCompany\"\n        >\n          Şirket Ekle\n        </button>\n      </form>\n    </div>\n  </div>\n</template>\n\n<script>\nexport default {\n  name: \"CompanyModal\",\n  props: {\n    isMain: {\n      type: Boolean,\n      default: false\n    },\n    // Data passed from the parent, e.g., API dropdown options\n    companyTypes: {\n      type: Array,\n      default: () => [],\n    },\n    companyScales: {\n      type: Array,\n      default: () => [],\n    },\n    worklines: {\n      type: Array,\n      default: () => [],\n    },\n    companies: {\n      type: Array,\n      default: () => [],\n    },\n  },\n  data() {\n    return {\n      formData: {\n        companyName: \"\",\n        typeId: \"\",\n        scaleId: \"\",\n        worklineId: \"\",\n        mainCompanyId: \"\",\n        isMain: this.isMain,\n      },\n    };\n  },\n  methods: {\n    openModal() {\n      console.log(this.formData);\n      $(this.$refs.modal).modal(\"show\");\n    },\n    closeModal() {\n      $(this.$refs.modal).modal(\"hide\");\n    },\n    addMainCompany() {\n      console.log(\"Adding Main Company:\", this.formData);\n      this.closeModal();\n    },\n    addCompany() {\n      console.log(\"Adding Company:\", this.formData);\n      const company = {\n        name: this.formData.companyName,\n        typeId: this.formData.typeId,\n        scaleId: this.formData.scaleId,\n        worklineId: this.formData.worklineId,\n        isMain: this.formData.isMain\n      }\n      console.log(\"Adding Company:\", company);\n      this.$emit(\"save-company\", company);\n      this.closeModal();\n    }\n  },\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles for the modal if needed */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -22495,17 +22570,17 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add your styles here */
-`, "",{"version":3,"sources":["webpack://./src/components/ResistanceOverview.vue"],"names":[],"mappings":";AAyCA,yBAAyB","sourcesContent":["<template>\n  <div class=\"ui two column divided grid\">\n    <div class=\"row\">\n      <!-- Resistance Section -->\n      <div class=\"column\">\n        <router-view name=\"LeftSidebar\" /> <!-- This renders the left components based on route -->\n      </div>\n\n      <!-- News Section -->\n      <div class=\"column\">\n        <div class=\"edit-section\">\n        </div>\n        <router-view name=\"RightSidebar\" /> <!-- This renders the right components (e.g., ListNews) -->\n      </div>\n    </div>\n  </div>\n</template>\n\n<script>\nimport ListResistance from './resistance/list-resistance.vue';\nimport ListNews from './news/list-news.vue';\nimport CreateResistance from './resistance/create-resistance.vue';\nimport EditResistance from './resistance/edit-resistance.vue';\nimport Modal from '../components/Modal.vue';\n\nexport default {\n  name: 'ResistanceOverview',\n  components: {\n    ListResistance,\n    ListNews,\n    CreateResistance,\n    EditResistance,\n    Modal,\n  },\n  mounted() {\n    \n  }\n};\n</script>\n\n<style scoped>\n/* Add your styles here */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/ResistanceOverview.vue"],"names":[],"mappings":";AAyCA,yBAAyB","sourcesContent":["<template>\n  <div class=\"ui two column divided grid\">\n    <div class=\"row\">\n      <!-- Resistance Section -->\n      <div class=\"column\">\n        <router-view name=\"LeftSidebar\" /> <!-- This renders the left components based on route -->\n      </div>\n\n      <!-- News Section -->\n      <div class=\"column\">\n        <div class=\"edit-section\">\n        </div>\n        <router-view name=\"RightSidebar\" /> <!-- This renders the right components (e.g., ListNews) -->\n      </div>\n    </div>\n  </div>\n</template>\n\n<script>\nimport ListResistance from './resistance/ListResistance.vue';\nimport ListNews from './news/ListNews.vue';\nimport CreateResistance from './resistance/CreateResistance.vue';\nimport EditResistance from './resistance/EditResistance.vue';\nimport Modal from './CompanyModal.vue';\n\nexport default {\n  name: 'ResistanceOverview',\n  components: {\n    ListResistance,\n    ListNews,\n    CreateResistance,\n    EditResistance,\n    Modal,\n  },\n  mounted() {\n    \n  }\n};\n</script>\n\n<style scoped>\n/* Add your styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/list-news.vue?vue&type=style&index=0&id=9551fd14&scoped=true&lang=css":
-/*!***************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/list-news.vue?vue&type=style&index=0&id=9551fd14&scoped=true&lang=css ***!
-  \***************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/ListNews.vue?vue&type=style&index=0&id=0046ae0d&scoped=true&lang=css":
+/*!**************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/ListNews.vue?vue&type=style&index=0&id=0046ae0d&scoped=true&lang=css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22523,29 +22598,29 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
-.item[data-v-9551fd14] {
+.item[data-v-0046ae0d] {
   padding: 1rem;
   border-bottom: 1px solid #f1f1f1;
 }
-.meta[data-v-9551fd14] {
+.meta[data-v-0046ae0d] {
   margin-top: 10px;
   display: flex;
   align-items: center;
 }
-.date[data-v-9551fd14] {
+.date[data-v-0046ae0d] {
   margin-right: 10px;
 }
-`, "",{"version":3,"sources":["webpack://./src/components/news/list-news.vue"],"names":[],"mappings":";AA+JA;EACE,aAAa;EACb,gCAAgC;AAClC;AACA;EACE,gBAAgB;EAChB,aAAa;EACb,mBAAmB;AACrB;AACA;EACE,kBAAkB;AACpB","sourcesContent":["<template>\n    <!-- Header -->\n    <h4 class=\"ui dividing header\">Haberler</h4>\n\n    <!-- Filter Section -->\n    <div class=\"ui attached secondary segment\">\n      <div class=\"ui small filter form\">\n        <div class=\"fields\">\n          <!-- Year Dropdown -->\n          <div class=\"four wide field\">\n            <select\n                v-model=\"selectedYear\"\n                class=\"ui fluid search selection dropdown\"\n            >\n              <option v-for=\"year in years\" :key=\"year\" :value=\"year\">\n                {{ year }}\n              </option>\n            </select>\n          </div>\n\n          <!-- Month Dropdown -->\n          <div class=\"five wide field\">\n            <select\n                  v-model=\"selectedMonth\"\n                class=\"ui fluid search selection dropdown\"\n            >\n              <option value=\"\">--Seçiniz--</option>\n              <option v-for=\"(month, index) in months\" :key=\"index\" :value=\"index + 1\">\n                {{ month }}\n              </option>\n            </select>\n          </div>\n\n          <!-- Filter Button -->\n          <div class=\"four wide field\">\n            <button @click=\"fetchNews\" class=\"ui left labeled icon button\">\n              <i class=\"filter icon\"></i>Filtrele\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n\n    <!-- News Section -->\n    <div style=\"overflow-y: scroll; height:700px;\">\n    <div v-for=\"item in filteredNews\" :key=\"item.id\" class=\"item\" :data-id=\"item.id\">\n      <div class=\"content\">\n        <!-- Header and Link -->\n        <a\n            v-if=\"item.added\"\n            href=\"#\"\n            :data-id=\"item.id\"\n            data-open=\"0\"\n            class=\"a\"\n            style=\"color:red\"\n        >\n          {{ item.header }}\n        </a>\n        <a\n            v-else\n            href=\"#\"\n            :data-id=\"item.id\"\n            data-open=\"0\"\n            class=\"a\"\n        >\n          {{ item.header }}\n        </a>\n\n        <!-- External Link -->\n        <a :href=\"item.link\" target=\"_blank\">\n          <i\n              class=\"arrow alternate circle right outline icon\"\n              style=\"color: red\"\n              v-if=\"item.added\"\n          ></i>\n          <i\n              class=\"arrow alternate circle right outline icon\"\n              v-else\n          ></i>\n        </a>\n\n        <!-- Meta Section (Date) -->\n        <div class=\"meta\">\n          <span class=\"date\">{{ formatDate(item.date) }}</span>\n          <button\n              @click=\"copyLink(item.id)\"\n              class=\"ui icon button green basic mini copyLink\"\n              :data-id=\"item.id\"\n          >\n            <i class=\"paperclip icon\"></i>\n          </button>\n        </div>\n\n        <!-- Description (Hidden by Default) -->\n        <div\n            class=\"description\"\n            :data-id=\"item.id\"\n            v-show=\"false\"\n        ></div>\n      </div>\n    </div>\n    \n    </div>\n  \n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\n\nexport default {\n  name: \"ListNews\",\n  data() {\n    return {\n      selectedYear: new Date().getFullYear(), // Default to current year\n      selectedMonth: \"\", // No month selected by default\n      years: Array.from({ length: new Date().getFullYear() - 2018 + 1 }, (_, i) => 2019 + i), // Generate years dynamically\n      months: [\n        \"Ocak\",\n        \"Şubat\",\n        \"Mart\",\n        \"Nisan\",\n        \"Mayıs\",\n        \"Haziran\",\n        \"Temmuz\",\n        \"Ağustos\",\n        \"Eylül\",\n        \"Ekim\",\n        \"Kasım\",\n        \"Aralık\",\n      ],\n      news: [], // Array to hold news items\n    };\n  },\n  computed: {\n    filteredNews() {\n      // Filter news based on selected year and month\n      return this.news;\n    },\n  },\n  mounted() {\n    // Fetch news data when the component is mounted\n    this.fetchNews();\n  },\n  methods: {\n    fetchNews() {\n      console.log(this.selectedYear);\n      // Simulate an API call to fetch news data\n      fetchWithToken(`/resistance/news?year=${this.selectedYear}&month=${this.selectedMonth}`)\n          .then(response => response.json())\n          .then(data => (this.news = data));\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date to a readable string\n    },\n  },\n};\n</script>\n\n<style scoped>\n.item {\n  padding: 1rem;\n  border-bottom: 1px solid #f1f1f1;\n}\n.meta {\n  margin-top: 10px;\n  display: flex;\n  align-items: center;\n}\n.date {\n  margin-right: 10px;\n}\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/news/ListNews.vue"],"names":[],"mappings":";AA+JA;EACE,aAAa;EACb,gCAAgC;AAClC;AACA;EACE,gBAAgB;EAChB,aAAa;EACb,mBAAmB;AACrB;AACA;EACE,kBAAkB;AACpB","sourcesContent":["<template>\n    <!-- Header -->\n    <h4 class=\"ui dividing header\">Haberler</h4>\n\n    <!-- Filter Section -->\n    <div class=\"ui attached secondary segment\">\n      <div class=\"ui small filter form\">\n        <div class=\"fields\">\n          <!-- Year Dropdown -->\n          <div class=\"four wide field\">\n            <select\n                v-model=\"selectedYear\"\n                class=\"ui fluid search selection dropdown\"\n            >\n              <option v-for=\"year in years\" :key=\"year\" :value=\"year\">\n                {{ year }}\n              </option>\n            </select>\n          </div>\n\n          <!-- Month Dropdown -->\n          <div class=\"five wide field\">\n            <select\n                  v-model=\"selectedMonth\"\n                class=\"ui fluid search selection dropdown\"\n            >\n              <option value=\"\">--Seçiniz--</option>\n              <option v-for=\"(month, index) in months\" :key=\"index\" :value=\"index + 1\">\n                {{ month }}\n              </option>\n            </select>\n          </div>\n\n          <!-- Filter Button -->\n          <div class=\"four wide field\">\n            <button @click=\"fetchNews\" class=\"ui left labeled icon button\">\n              <i class=\"filter icon\"></i>Filtrele\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n\n    <!-- News Section -->\n    <div style=\"overflow-y: scroll; height:700px;\">\n    <div v-for=\"item in filteredNews\" :key=\"item.id\" class=\"item\" :data-id=\"item.id\">\n      <div class=\"content\">\n        <!-- Header and Link -->\n        <a\n            v-if=\"item.added\"\n            href=\"#\"\n            :data-id=\"item.id\"\n            data-open=\"0\"\n            class=\"a\"\n            style=\"color:red\"\n        >\n          {{ item.header }}\n        </a>\n        <a\n            v-else\n            href=\"#\"\n            :data-id=\"item.id\"\n            data-open=\"0\"\n            class=\"a\"\n        >\n          {{ item.header }}\n        </a>\n\n        <!-- External Link -->\n        <a :href=\"item.link\" target=\"_blank\">\n          <i\n              class=\"arrow alternate circle right outline icon\"\n              style=\"color: red\"\n              v-if=\"item.added\"\n          ></i>\n          <i\n              class=\"arrow alternate circle right outline icon\"\n              v-else\n          ></i>\n        </a>\n\n        <!-- Meta Section (Date) -->\n        <div class=\"meta\">\n          <span class=\"date\">{{ formatDate(item.date) }}</span>\n          <button\n              @click=\"copyLink(item.id)\"\n              class=\"ui icon button green basic mini copyLink\"\n              :data-id=\"item.id\"\n          >\n            <i class=\"paperclip icon\"></i>\n          </button>\n        </div>\n\n        <!-- Description (Hidden by Default) -->\n        <div\n            class=\"description\"\n            :data-id=\"item.id\"\n            v-show=\"false\"\n        ></div>\n      </div>\n    </div>\n    \n    </div>\n  \n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\n\nexport default {\n  name: \"ListNews\",\n  data() {\n    return {\n      selectedYear: new Date().getFullYear(), // Default to current year\n      selectedMonth: \"\", // No month selected by default\n      years: Array.from({ length: new Date().getFullYear() - 2018 + 1 }, (_, i) => 2019 + i), // Generate years dynamically\n      months: [\n        \"Ocak\",\n        \"Şubat\",\n        \"Mart\",\n        \"Nisan\",\n        \"Mayıs\",\n        \"Haziran\",\n        \"Temmuz\",\n        \"Ağustos\",\n        \"Eylül\",\n        \"Ekim\",\n        \"Kasım\",\n        \"Aralık\",\n      ],\n      news: [], // Array to hold news items\n    };\n  },\n  computed: {\n    filteredNews() {\n      // Filter news based on selected year and month\n      return this.news;\n    },\n  },\n  mounted() {\n    // Fetch news data when the component is mounted\n    this.fetchNews();\n  },\n  methods: {\n    fetchNews() {\n      console.log(this.selectedYear);\n      // Simulate an API call to fetch news data\n      fetchWithToken(`/resistance/news?year=${this.selectedYear}&month=${this.selectedMonth}`)\n          .then(response => response.json())\n          .then(data => (this.news = data));\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date to a readable string\n    },\n  },\n};\n</script>\n\n<style scoped>\n.item {\n  padding: 1rem;\n  border-bottom: 1px solid #f1f1f1;\n}\n.meta {\n  margin-top: 10px;\n  display: flex;\n  align-items: center;\n}\n.date {\n  margin-right: 10px;\n}\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/edit-protesto.vue?vue&type=style&index=0&id=325c27c4&scoped=true&lang=css":
-/*!***********************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/edit-protesto.vue?vue&type=style&index=0&id=325c27c4&scoped=true&lang=css ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=style&index=0&id=322ae0ce&scoped=true&lang=css":
+/*!**********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=style&index=0&id=322ae0ce&scoped=true&lang=css ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22564,17 +22639,17 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add any scoped styles here if necessary */
-`, "",{"version":3,"sources":["webpack://./src/components/protesto/edit-protesto.vue"],"names":[],"mappings":";AA2IA,4CAA4C","sourcesContent":["<template>\n  <div class=\"ui form\">\n    <!-- Protesto Types -->\n    <div class=\"field\">\n      <label for=\"ProtestoTypeIds\">Eylem Türleri</label>\n     \n      <multiselect\n          id=\"ProtestoTypeIds\"\n          v-model=\"protesto.protestoTypeIds\"\n          :options=\"protestoTypeOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n    </div>\n\n    <!-- Start and End Dates -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"ProtestoStartDate\">Başlangıç Tarihi</label>\n        <VueDatePicker v-model=\"protesto.protestoStartDate\"></VueDatePicker>\n      </div>\n      <div class=\"field\">\n        <label for=\"ProtestoEndDate\">Bitiş Tarihi</label>\n        <VueDatePicker v-model=\"protesto.protestoEndDate\"></VueDatePicker>\n      </div>\n    </div>\n\n    <!-- Protesto Places -->\n    <div class=\"field\">\n      <label for=\"ProtestoPlaceIds\">Yerler</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"protesto.protestoPlaceIds\"\n          :options=\"protestoPlaceOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n    </div>\n\n    <!-- Gender -->\n    <div class=\"field\">\n      <label for=\"GenderId\">Cinsiyet</label>\n      <select v-model=\"protesto.genderId\" id=\"GenderId\">\n        <option value=\"\">--Seçiniz--</option>\n        <option\n            v-for=\"gender in genderOptions\"\n            :key=\"gender.id\"\n            :value=\"gender.id\"\n        >\n          {{ gender.name }}\n        </option>\n      </select>\n    </div>\n\n    <!-- Other Fields -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"CustodyCount\">Gözaltı Sayısı</label>\n        <input\n            type=\"number\"\n            id=\"CustodyCount\"\n            v-model=\"protesto.custodyCount\"\n        />\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtesto\">Eylemdeki İşçi Sayısı</label>\n        <input\n            type=\"number\"\n            id=\"EmployeeCountInProtesto\"\n            v-model=\"protesto.employeeCountInProtesto\"\n        />\n      </div>\n    </div>\n\n    <!-- Notes -->\n    <div class=\"field\">\n      <label for=\"Note\">Notlar</label>\n      <textarea id=\"Note\" v-model=\"protesto.note\" rows=\"3\"></textarea>\n    </div>\n\n    <!-- Save Button -->\n    <button\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"saveProtesto\"\n    >\n      Kaydet\n    </button>\n  </div>\n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport '@vuepic/vue-datepicker/dist/main.css'\n\nexport default {\n  name: \"EditProtesto\",\n  components: { Multiselect, VueDatePicker },\n  props: {\n    protesto: {\n      type: Object,\n      required: true,\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n  },\n  mounted() {\n    \n  },\n  methods: {\n    saveProtesto() {\n      this.$emit(\"saveProtesto\", this.protesto);\n    },\n  },\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles here if necessary */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/protesto/EditProtesto.vue"],"names":[],"mappings":";AA4DA,4CAA4C","sourcesContent":["<template>\n  <div class=\"ui form\">\n    <Protesto \n        :protesto=\"protesto\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :genderOptions=\"genderOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n    />\n    <!-- Save Button -->\n    <button\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"saveProtesto\"\n    >\n      Kaydet\n    </button>\n  </div>\n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport Protesto from \"./Protesto.vue\";\nimport '@vuepic/vue-datepicker/dist/main.css'\n\nexport default {\n  name: \"EditProtesto\",\n  components: { Protesto },\n  props: {\n    protesto: {\n      type: Object,\n      required: true,\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n    employeeCountInProtestoOptions: {\n      type: Array,\n      required: true,\n    },\n  },\n  methods: {\n    saveProtesto() {\n      this.$emit(\"saveProtesto\", this.protesto);\n    },\n  },\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles here if necessary */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/create-resistance.vue?vue&type=style&index=0&id=29942364&scoped=true&lang=css":
-/*!*****************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/create-resistance.vue?vue&type=style&index=0&id=29942364&scoped=true&lang=css ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css":
+/*!******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css ***!
+  \******************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22592,18 +22667,18 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
-/* Add custom styles if needed */
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/create-resistance.vue"],"names":[],"mappings":";AA6MA,gCAAgC","sourcesContent":["<template>\n  <form @submit.prevent=\"submitForm\" class=\"ui form\" id=\"resistanceForm\">\n    <h4 class=\"ui dividing header\">\n      <router-link to=\"/list\" class=\"item\"><i class=\"angle double left icon\"></i></router-link>\n      Vakalar\n    </h4>\n\n    <div class=\"field\">\n      <label for=\"ResistanceDescription\">Kısa Açıklama</label>\n      <textarea v-model=\"form.ResistanceDescription\" id=\"ResistanceDescription\" rows=\"3\"></textarea>\n    </div>\n\n    <div class=\"field\">\n      <label for=\"CategoryId\">Vaka Niteliği</label>\n      <select v-model=\"form.CategoryId\" class=\"ui fluid search selection dropdown\">\n        <option value=\"\">--Seçiniz--</option>\n        <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">{{ category.name }}</option>\n      </select>\n    </div>\n\n    <div class=\"fields\">\n      <div class=\"six wide field\">\n        <label for=\"IsOutsource\">Şirket Taşeron mu?</label>\n        <select v-model=\"form.IsOutsource\" class=\"ui dropdown\">\n          <option value=\"false\">Hayır</option>\n          <option value=\"true\">Evet</option>\n        </select>\n      </div>\n      <div class=\"ten wide field\">\n        <label for=\"CompanyId\">Şirket</label>\n        <div class=\"two fields\">\n          <div class=\"field\">\n            <select v-model=\"form.CompanyId\" @change=\"checkExisiting\" class=\"ui fluid search selection dropdown\">\n              <option value=\"\">--Seçiniz--</option>\n              <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n            </select>\n          </div>\n          <div class=\"field\">\n            <button type=\"button\" @click=\"openModal(false)\" class=\"ui button\">Yeni Şirket Ekle</button>\n          </div>\n        </div>\n      </div>\n    </div>\n\n    <div v-if=\"form.IsOutsource\" class=\"field\">\n      <label for=\"MainCompanyId\">Ana Şirket</label>\n      <div class=\"two fields\">\n        <div class=\"field\">\n          <select v-model=\"form.MainCompanyId\" class=\"ui fluid search selection dropdown\">\n            <option value=\"\">--Seçiniz--</option>\n            <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n          </select>\n        </div>\n        <div class=\"field\">\n          <button type=\"button\" @click=\"openModal(true)\" class=\"ui button\">Ana Şirket Ekle</button>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"field\">\n      <label for=\"ResistanceReasonIds\">Vaka Nedeni</label>\n      <select v-model=\"form.ResistanceReasonIds\" multiple class=\"ui fluid search dropdown\">\n        <option v-for=\"reason in resistanceReasons\" :key=\"reason.id\" :value=\"reason.id\">{{ reason.name }}</option>\n      </select>\n    </div>\n\n    <div class=\"field\">\n      <label for=\"DevelopRight\">Hak Geliştirme/Hak Savunma Özelliği</label>\n      <select v-model=\"form.DevelopRight\" class=\"ui dropdown\">\n        <option value=\"\">--Seçiniz--</option>\n        <option value=\"true\">Hak Geliştirme</option>\n        <option value=\"false\">Hak Savunma</option>\n      </select>\n    </div>\n\n    <!-- More Fields (Repeat for other fields like EmployeeCount, CorporationIds, etc.) -->\n\n    <div class=\"field\">\n      <button type=\"submit\" class=\"ui ok green button\">KAYDET</button>\n    </div>\n\n    <div class=\"ui modal\" id=\"addCompanyModal\">\n      <i class=\"close icon\"></i>\n      <div class=\"header\">Yeni Şirket Ekle</div>\n      <div class=\"content\" id=\"modal-content\">\n        <!-- Modal Content Here -->\n      </div>\n    </div>\n\n    <div class=\"ui modal\" id=\"addOutsourceCompanyModal\">\n      <i class=\"close icon\"></i>\n      <div class=\"header\">Yeni Taşeron Şirket Ekle</div>\n      <div class=\"content\" id=\"modalOutsource-content\">\n        <!-- Modal Content Here -->\n      </div>\n    </div>\n  </form>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      form: {\n        ResistanceDescription: '',\n        CategoryId: '',\n        IsOutsource: false,\n        CompanyId: '',\n        MainCompanyId: '',\n        ResistanceReasonIds: [],\n        DevelopRight: '',\n        EmployeeCount: '',\n        EmployeeCountId: '',\n        CorporationIds: [],\n        TradeUnionAuthorityId: '',\n        TradeUnionId: '',\n        EmploymentTypeIds: [],\n        GenderId: '',\n        FiredEmployeeCountByProtesto: '',\n        ResistanceResult: 0,\n        ProtestoTypeIds: [],\n        StrikeDuration: '',\n        SimpleProtestoDescription: '',\n        ProtestoStartDate: '',\n        ProtestoEndDate: '',\n        ProtestoPlaceIds: [],\n        EmployeeCountInProtesto: '',\n        EmployeeCountInProtestoId: '',\n        InterventionTypeIds: [],\n        CustodyCount: '',\n        Note: ''\n      },\n      categories: [],\n      companies: [],\n      resistanceReasons: [],\n      // Add other required arrays (e.g., ProtestoTypes, EmployeeCount, etc.)\n    };\n  },\n  mounted() {\n    // Fetch the lookup data (categories, companies, resistance reasons, etc.)\n    this.fetchLookupData();\n  },\n  methods: {\n    async fetchLookupData() {\n      try {\n        const [categories, companies, resistanceReasons] = await Promise.all([\n          this.fetchCategories(),\n          this.fetchCompanies(),\n          this.fetchResistanceReasons(),\n        ]);\n        this.categories = categories;\n        this.companies = companies;\n        this.resistanceReasons = resistanceReasons;\n      } catch (error) {\n        console.error('Error fetching lookup data', error);\n      }\n    },\n    async fetchCategories() {\n      const response = await fetch('/api/lookup/categories');\n      return await response.json();\n    },\n    async fetchCompanies() {\n      const response = await fetch('/api/lookup/companies');\n      return await response.json();\n    },\n    async fetchResistanceReasons() {\n      const response = await fetch('/api/lookup/resistance-reasons');\n      return await response.json();\n    },\n    openModal(isOutsource) {\n      const modalId = isOutsource ? '#addOutsourceCompanyModal' : '#addCompanyModal';\n      const modal = document.querySelector(modalId);\n      $(modal).modal('show');\n    },\n    checkExisiting() {\n      const companyId = this.form.CompanyId;\n      const categoryId = this.form.CategoryId;\n      if (companyId && categoryId) {\n        this.existingResistance(companyId, categoryId);\n      }\n    },\n    async existingResistance(companyId, categoryId) {\n      try {\n        const response = await fetch(`/Resistance/ExistingResistance?companyId=${companyId}&categoryId=${categoryId}`);\n        const data = await response.json();\n        if (data) {\n          alert('Mevcut');\n        }\n      } catch (error) {\n        console.error('Error checking existing resistance', error);\n      }\n    },\n    submitForm() {\n      // Perform form validation and submission\n      console.log(this.form);\n      // Add form submission logic here\n    },\n    goBack() {\n      this.$router.push({ name: 'list' }); // Navigate back to list view (assuming you have a router set up)\n    }\n  }\n};\n</script>\n\n<style scoped>\n/* Add custom styles if needed */\n</style>\n"],"sourceRoot":""}]);
+/* Add any scoped styles here if necessary */
+`, "",{"version":3,"sources":["webpack://./src/components/protesto/Protesto.vue"],"names":[],"mappings":";AAsJA,4CAA4C","sourcesContent":["<template>\n    <!-- Protesto Types -->\n    <div class=\"field\">\n      <label for=\"ProtestoTypeIds\">Eylem Türleri</label>\n\n      <multiselect\n          id=\"ProtestoTypeIds\"\n          v-model=\"protesto.protestoTypeIds\"\n          :options=\"protestoTypeOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n    </div>\n\n    <!-- Start and End Dates -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"ProtestoStartDate\">Başlangıç Tarihi</label>\n        <VueDatePicker v-model=\"protesto.protestoStartDate\"></VueDatePicker>\n      </div>\n      <div class=\"field\">\n        <label for=\"ProtestoEndDate\">Bitiş Tarihi</label>\n        <VueDatePicker v-model=\"protesto.protestoEndDate\"></VueDatePicker>\n      </div>\n    </div>\n\n    <!-- Protesto Places -->\n    <div class=\"field\">\n      <label for=\"ProtestoPlaceIds\">Yerler</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"protesto.protestoPlaceIds\"\n          :options=\"protestoPlaceOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n    </div>\n\n    <!-- Gender -->\n    <div class=\"field\">\n      <label for=\"GenderId\">Cinsiyet</label>\n      <select v-model=\"protesto.genderId\" id=\"GenderId\">\n        <option value=\"\">--Seçiniz--</option>\n        <option\n            v-for=\"gender in genderOptions\"\n            :key=\"gender.id\"\n            :value=\"gender.id\"\n        >\n          {{ gender.name }}\n        </option>\n      </select>\n    </div>\n\n  <div class=\"field\">\n    <label for=\"CustodyCount\">Gözaltı Sayısı</label>\n    <input\n        type=\"number\"\n        id=\"CustodyCount\"\n        v-model=\"protesto.custodyCount\"\n    />\n  </div>\n    <!-- Other Fields -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtesto\">Eylemdeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"number\"\n            id=\"EmployeeCountInProtesto\"\n            v-model=\"protesto.employeeCountInProtesto\"\n        />\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtestoId\">Eylemdeki İşçi Sayısı</label>\n        <select v-model=\"protesto.employeeCountInProtestoId\" id=\"EmployeeCountInProtestoId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"employeeCountInProtesto in employeeCountInProtestoOptions\"\n              :key=\"employeeCountInProtesto.id\"\n              :value=\"employeeCountInProtesto.id\"\n          >\n            {{ employeeCountInProtesto.name }}\n          </option>\n        </select>\n      </div>\n    </div>\n\n    <!-- Notes -->\n    <div class=\"field\">\n      <label for=\"Note\">Notlar</label>\n      <textarea id=\"Note\" v-model=\"protesto.note\" rows=\"3\"></textarea>\n    </div>\n\n    <!-- Save Button -->\n   \n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport '@vuepic/vue-datepicker/dist/main.css'\nimport {fetchWithToken} from \"../../fetchWrapper\";\n\nexport default {\n  name: \"Protesto\",\n  components: { Multiselect, VueDatePicker },\n  data() {\n    return {\n      protestoPlaceOptions: [],\n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n    };\n  },\n  props: {\n    protesto: {\n      type: Object,\n      default: () => ({})  // Prevents undefined errors\n    },\n  },\n  mounted() {\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n  }\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles here if necessary */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/edit-resistance.vue?vue&type=style&index=1&id=3b9f0dd4&scoped=true&lang=css":
-/*!***************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/edit-resistance.vue?vue&type=style&index=1&id=3b9f0dd4&scoped=true&lang=css ***!
-  \***************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/CreateResistance.vue?vue&type=style&index=1&id=ed86ebaa&scoped=true&lang=css":
+/*!****************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/CreateResistance.vue?vue&type=style&index=1&id=ed86ebaa&scoped=true&lang=css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22622,17 +22697,17 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add styles here */
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/edit-resistance.vue"],"names":[],"mappings":";AA+VA,oBAAoB","sourcesContent":["<template>\n  <div v-if=\"isLoading\" class=\"ui dimmer active\">\n    <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n  </div>\n  <form id=\"resistanceForm\" class=\"ui form\">\n    <!-- Header -->\n    <h4 class=\"ui dividing header\">\n      <router-link to=\"/list\" class=\"item\"><i class=\"angle double left icon\"></i></router-link>\n      Vaka\n    </h4>\n\n    <!-- Hidden Input for ID -->\n    <input type=\"hidden\" name=\"Id\" v-model=\"resistance.id\" />\n\n    <!-- Short Description -->\n    <div class=\"field\">\n      <label for=\"ResistanceDescription\">Kısa Açıklama</label>\n      <textarea\n          id=\"ResistanceDescription\"\n          rows=\"6\"\n          v-model=\"resistance.resistanceDescription\"\n      ></textarea>\n    </div>\n\n    <!-- Case Category -->\n    <div class=\"field\">\n      <label for=\"CategoryId\">Vaka Niteliği</label>\n      <select v-model=\"resistance.categoryId\">\n        <option value=\"\">--Seçiniz--</option>\n        <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">\n          {{ category.name }}\n        </option>\n      </select>\n      <span v-if=\"formErrors.categoryId\" class=\"text-danger\">\n        {{ formErrors.categoryId }}\n      </span>\n    </div>\n\n    <!-- Two Fields -->\n    <div class=\"two fields\">\n      <!-- Case Reasons -->\n      <div class=\"field\">\n        <label for=\"ResistanceReasonIds\">Vaka Nedeni</label>\n        <multiselect id=\"ResistanceReasonIds\" v-model=\"resistance.resistanceReasonIds\" :options=\"resistanceReasons\" \n                     :multiple=\"true\" :close-on-select=\"false\" :clear-on-select=\"false\"\n                     :preserve-search=\"true\" placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\" :preselect-first=\"true\"\n                     :taggable=\"true\" @tag=\"addTag\">\n         \n        </multiselect>\n      </div>\n\n      <!-- Develop Right -->\n      <div class=\"field\">\n        <label for=\"DevelopRight\">Hak Geliştirme/Hak Savunma Özelliği</label>\n        <select v-model=\"resistance.developRight\">\n          <option value=\"\">--Seçiniz--</option>\n          <option :value=\"true\">Hak Geliştirme</option>\n          <option :value=\"false\">Hak Savunma</option>\n        </select>\n        <span v-if=\"formErrors.developRight\" class=\"text-danger\">\n          {{ formErrors.developRight }}\n        </span>\n      </div>\n    </div>\n\n    <div class=\"sixty wide field\">\n      <label for=\"CompanyId\">Şirket</label>\n      <div class=\"two fields\">\n        <div class=\"field\">\n          <select v-model=\"resistance.companyId\">\n            <option value=\"\">--Seçiniz--</option>\n            <option\n                v-for=\"company in companies\"\n                :key=\"company.id\"\n                :value=\"company.id\"\n            >\n              {{ company.name }}\n            </option>\n          </select>\n        </div>\n        <div class=\"field\">\n          <button type=\"button\" @click=\"openCompanyModal(true)\" class=\"ui button\">\n            <i class=\"chevron circle up icon\"></i>Şirket Ekle\n          </button>\n        </div>\n      </div>\n    </div>\n    <!-- Is Outsource -->\n    <div class=\"field sixty wide\">\n      <label for=\"IsOutsource\">Şirket Taşeron mu?</label>\n      <select v-model=\"resistance.isOutsource\" @change=\"toggleOutsource\">\n        <option :value=\"false\">Hayır</option>\n        <option :value=\"true\">Evet</option>\n      </select>\n    </div>\n\n    <!-- Main Company (Conditional) -->\n    <div v-if=\"resistance.isOutsource\" id=\"outsource\" class=\"sixty wide field\">\n      <label for=\"MainCompanyId\">Ana Şirket</label>\n      <div class=\"two fields\">\n        <div class=\"field\">\n          <select v-model=\"resistance.mainCompanyId\">\n            <option value=\"\">--Seçiniz--</option>\n            <option\n                v-for=\"company in companies\"\n                :key=\"company.id\"\n                :value=\"company.id\"\n            >\n              {{ company.name }}\n            </option>\n          </select>\n        </div>\n        <div class=\"field\">\n          <button type=\"button\" @click=\"openCompanyModal(true)\" class=\"ui button\">\n            <i class=\"chevron circle up icon\"></i>Ana Şirket Ekle\n          </button>\n        </div>\n      </div>\n    </div>\n\n    <!-- Employee Count -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountId\">İş Yerindeki İşçi Sayısı</label>\n        <select v-model=\"resistance.employeeCountId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"count in employeeCounts\"\n              :key=\"count.id\"\n              :value=\"count.id\"\n          >\n            {{ count.name }}\n          </option>\n        </select>\n        <span v-if=\"formErrors.employeeCountId\" class=\"text-danger\">\n          {{ formErrors.employeeCountId }}\n        </span>\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCount\">İş Yerindeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"text\"\n            id=\"EmployeeCount\"\n            v-model=\"resistance.employeeCount\"\n        />\n      </div>\n    </div>\n    <div class=\"field\">\n      <label for=\"CorporationIds\">Kurumsallık</label>\n      <multiselect id=\"CorporationIds\" v-model=\"resistance.corporationIds\" :options=\"corporations\"\n                   :multiple=\"true\" :close-on-select=\"false\" :clear-on-select=\"false\"\n                   :preserve-search=\"true\" placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\" :preselect-first=\"true\"\n                   :taggable=\"true\" @tag=\"addTag\">\n\n      </multiselect>\n    </div>\n    <!-- Other Fields -->\n    <div class=\"field\">\n      <label for=\"ResistanceResult\">Sonuç</label>\n      <select v-model=\"resistance.resistanceResult\" class=\"ui fluid dropdown\">\n        <option :value=\"0\">Bilinmiyor</option>\n        <option :value=\"1\">Tam Kazanım</option>\n        <option :value=\"2\">Yarım Kazanım</option>\n        <option :value=\"3\">Sıfır Kazanım</option>\n      </select>\n    </div>\n\n    <!-- Protestos -->\n    <h3 class=\"ui dividing header\">Eylemler</h3>\n    <button\n        type=\"button\"\n        class=\"ui right labeled small green icon button\"\n        @click=\"addProtesto\"\n    >\n      Eylem Ekle<i class=\"plus icon\"></i>\n    </button>\n    <protesto-accordion\n        :protestoItems=\"resistance.protestoItems\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :genderOptions=\"genderOptions\"\n    />\n\n    <!-- Save and Cancel Buttons -->\n    <button id=\"btnSave\" class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" id=\"btnCancelResistanceModal\" class=\"ui negative button\">\n      SİL\n    </button>\n  </form>\n  <Modal ref=\"modalRef\"\n         :companyTypes=\"companyTypes\"\n         :companyScales=\"companyScales\"\n         :worklines=\"worklines\"\n         @save-company=\"handleSaveCompany\"/>\n\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Multiselect from 'vue-multiselect'\nimport ProtestoAccordion from \"../protesto/protesto-accordion.vue\";\nimport Modal from \"../Modal.vue\"; // Adjust the path based on your folder structure\n\n\nexport default {\n  name: \"EditResistance\",\n  components: {Modal, ProtestoAccordion, Multiselect},\n  data() {\n    return {\n      isLoading: true,\n      resistance: {\n        id: \"\",\n        resistanceDescription: \"\",\n        categoryId: \"\",\n        selectedResistanceReasons: [],\n        developRight: null,\n        isOutsource: false,\n        mainCompanyId: \"\",\n        employeeCountId: \"\",\n        employeeCount: \"\",\n        resistanceResult: 0,\n        protestos: [],\n        protestoItems: []\n      },\n      categories: [],\n      resistanceReasons: [],\n      companies: [],\n      corporations: [],\n      employeeCounts: [],\n      protestoPlaceOptions: [], \n      protestoTypeOptions: [],\n      genderOptions: [],\n      companyTypes: [\n        { value: 1, text: \"Type 1\" },\n        { value: 2, text: \"Type 2\" },\n      ],\n      companyScales: [\n        { value: 1, text: \"Small\" },\n        { value: 2, text: \"Medium\" },\n      ],\n      worklines: [\n        { value: 1, text: \"Workline 1\" },\n        { value: 2, text: \"Workline 2\" },\n      ],\n      formErrors: {},\n    };\n  },\n  props: ['id'],  // The id is passed as a prop from the router\n  mounted() {\n    this.fetchResistance();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/resistance/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n    \n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n    \n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n    \n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => (this.corporations = data));\n\n\n    this.initializeSemanticUI();\n  },\n  updated() {\n    this.initializeSemanticUI();\n  },\n  watch: {\n    // Watch for changes in the 'id' prop and reload the data\n    '$route.params.id': 'fetchResistance',\n  },\n  methods: {\n    fetchResistance() {\n      this.isLoading = true;\n      const id = this.$route.params.id;  // Accessing the id directly from $route.params\n\n      // Simulate an API call\n      fetchWithToken(`/resistance/get/${id}`)\n          .then(response => response.json())\n          .then(data => { \n            console.log(data); \n            this.resistance = data; \n            this.isLoading = false; \n          });      \n    },\n    initializeSemanticUI() {\n      // Reinitialize Semantic UI components\n      this.$nextTick(() => {\n        $('.ui.accordion').accordion();\n      });\n    },\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    openCompanyModal(isMain) {\n      this.$refs.modalRef.openModal();\n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", { \n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(companyData)})\n          .then(response => response.json())\n          .then(data => (console.log(data)));\n      this.companies.push(companyData);\n    },\n    saveForm() {\n      // Save form logic\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    addTag (newTag) {\n      const tag = {\n        name: newTag,\n        code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    }\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/CreateResistance.vue"],"names":[],"mappings":";AAgJA,oBAAoB","sourcesContent":["<template>\n  <form class=\"ui form\">\n    <Resistance\n        :resistance=\"resistance\"\n        :formErrors=\"formErrors\"\n       >\n    </Resistance>\n   \n    <Protesto\n        :protesto=\"resistance.protesto\"\n    />\n    <!-- Save and Cancel Buttons -->\n    <button class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" id=\"btnCancelResistanceModal\" class=\"ui negative button\">\n      VAZGEÇ\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n                 :companyTypes=\"companyTypes\"\n                 :companyScales=\"companyScales\"\n                 :worklines=\"worklines\"\n                 :companies=\"companies\"\n                 @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Multiselect from 'vue-multiselect'\nimport CompanyModal from \"../CompanyModal.vue\";\nimport Protesto from \"../protesto/Protesto.vue\";\nimport Resistance from \"./Resistance.vue\"; // Adjust the path based on your folder structure\n\n\nexport default {\n  name: \"CreateResistance\",\n  components: {Resistance, Protesto, CompanyModal, Multiselect},\n  data() {\n    return {\n      resistance: {\n        resistanceDescription: null,\n        categoryId: null,\n        developRight: null,\n        isOutsource: false,\n        mainCompanyId: null,\n        employeeCountId: null,\n        employeeCount: null,\n        resistanceResult: null,\n        employmentTypeIds: null,\n        corporationIds: null,\n        resistanceReasonIds: null,\n        protesto: {},\n      },\n      companies:[],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      formErrors: {},\n    };\n  },\n  props: ['id'],  // The id is passed as a prop from the router\n  mounted() {\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n    \n  },\n  methods: {\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    checkTradeUnion() {\n      const corporationIds = this.resistance?.corporationIds?.map(s => s.id);\n      const queryParams = new URLSearchParams();\n      corporationIds.forEach(id => queryParams.append('corporationIds', id));\n\n      fetchWithToken(`/corporation/checkTradeUnion?${queryParams.toString()}`)\n          .then(response => response.json())\n          .then(data => this.tradeUnionIncluded = data);\n    },\n    openCompanyModal(isMain) {\n      this.$refs.modalRef.openModal();\n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(companyData)\n      })\n          .then(response => response.json())\n          .then(data => (console.log(data)));\n      this.companies.push(companyData);\n    },\n    saveForm() {\n      const resistanceData = {\n        categoryId: this.resistance.categoryId,\n        companyId: this.resistance.companyId,\n        resistanceReasonIds: this.resistance.resistanceReasonIds,\n        mainCompanyId: this.resistance.mainCompanyId,\n        corporationIds: this.resistance.corporationIds,\n        hasTradeUnion: true,\n        tradeUnionAuthorityId: this.resistance.tradeUnionAuthorityId,\n        note: this.resistance.note,\n        resistanceDescription: this.resistance.resistanceDescription,\n        employeeCountId: this.resistance.employeeCountId,\n        employeeCount: this.resistance.employeeCount,\n        tradeUnionId: this.resistance.tradeUnionId,\n        protesto: this.resistance.protesto,\n      }\n\n      fetchWithToken(\"/Resistance/CreateResistance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(resistanceData)\n      })\n      .then(response => console.log(response))\n          .catch(error => console.log(error));\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/list-resistance.vue?vue&type=style&index=0&id=7f553c02&scoped=true&lang=css":
-/*!***************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/list-resistance.vue?vue&type=style&index=0&id=7f553c02&scoped=true&lang=css ***!
-  \***************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/EditResistance.vue?vue&type=style&index=1&id=43c43e39&scoped=true&lang=css":
+/*!**************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/EditResistance.vue?vue&type=style&index=1&id=43c43e39&scoped=true&lang=css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22650,14 +22725,72 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
-.ui.column.dimmer.active[data-v-7f553c02] {
+/* Add styles here */
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/EditResistance.vue"],"names":[],"mappings":";AAuLA,oBAAoB","sourcesContent":["<template>\n  <div v-if=\"isLoading\" class=\"ui dimmer active\">\n    <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n  </div>\n  <h4 class=\"ui dividing header\">\n    <router-link to=\"/list\" class=\"item\"><i class=\"angle double left icon\"></i></router-link>\n    Vaka\n  </h4>\n  <form class=\"ui form\">\n    <input type=\"hidden\" name=\"Id\" v-model=\"resistance.id\" />\n    <Resistance \n        :resistance=\"resistance\"\n    >\n    </Resistance>\n   \n    <!-- Protestos -->\n    <h3 class=\"ui dividing header\">Eylemler</h3>\n    <button\n        type=\"button\"\n        class=\"ui right labeled small green icon button\"\n        @click=\"addProtesto\"\n    >\n      Eylem Ekle<i class=\"plus icon\"></i>\n    </button>\n    <protesto-accordion\n        :protestoItems=\"resistance.protestoItems\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :genderOptions=\"genderOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n    />\n\n    <!-- Save and Cancel Buttons -->\n    <button id=\"btnSave\" class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" id=\"btnCancelResistanceModal\" class=\"ui negative button\">\n      SİL\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n         :companyTypes=\"companyTypes\"\n         :companyScales=\"companyScales\"\n         :worklines=\"worklines\"\n         :companies=\"companies\"\n         @save-company=\"handleSaveCompany\"/>\n\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Resistance from \"./Resistance.vue\";\nimport Multiselect from 'vue-multiselect'\nimport ProtestoAccordion from \"../protesto/ProtestoAccordion.vue\";\nimport CompanyModal from \"../CompanyModal.vue\"; // Adjust the path based on your folder structure\n\n\nexport default {\n  name: \"EditResistance\",\n  components: {CompanyModal, ProtestoAccordion, Multiselect, Resistance},\n  data() {\n    return {\n      isLoading: true,\n      resistance: {},\n      categories: [],\n      resistanceReasons: [],\n      companies: [],\n      corporations: [],\n      employeeCounts: [],\n      protestoPlaceOptions: [], \n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      formErrors: {},\n    };\n  },\n  props: ['id'],  // The id is passed as a prop from the router\n  mounted() {\n    this.fetchResistance();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/resistance/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n    \n  \n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => (this.corporations = data));\n\n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n    \n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/employeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n\n    this.initializeSemanticUI();\n  },\n  updated() {\n    this.initializeSemanticUI();\n  },\n  watch: {\n    // Watch for changes in the 'id' prop and reload the data\n    '$route.params.id': 'fetchResistance',\n  },\n  methods: {\n    fetchResistance() {\n      this.isLoading = true;\n      const id = this.$route.params.id;  // Accessing the id directly from $route.params\n\n      // Simulate an API call\n      fetchWithToken(`/resistance/get/${id}`)\n          .then(response => response.json())\n          .then(data => { \n            console.log(data); \n            this.resistance = data; \n            this.isLoading = false; \n          });      \n    },\n    initializeSemanticUI() {\n      // Reinitialize Semantic UI components\n      this.$nextTick(() => {\n        $('.ui.accordion').accordion();\n      });\n    },\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    openCompanyModal(isMain) {\n      this.$refs.modalRef.openModal();\n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", { \n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\",\n        },\n        body: JSON.stringify(companyData)})\n          .then(response => response.json())\n          .then(data => (console.log(data)));\n      this.companies.push(companyData);\n    },\n    saveForm() {\n      // Save form logic\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      console.log(tag);\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    }\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/ListResistance.vue?vue&type=style&index=0&id=06c56dcd&scoped=true&lang=css":
+/*!**************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/ListResistance.vue?vue&type=style&index=0&id=06c56dcd&scoped=true&lang=css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `
+.ui.column.dimmer.active[data-v-06c56dcd] {
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.8);
   z-index: 10;
 }
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/list-resistance.vue"],"names":[],"mappings":";AAqPA;EACE,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,oCAAoC;EACpC,WAAW;AACb","sourcesContent":["<template>\n  <div>\n    <div v-if=\"isLoading\" class=\"ui dimmer active\">\n        <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n    </div>\n\n    <div v-else>\n      <h4 class=\"ui dividing header\">\n        <router-link to=\"/create\" class=\"item\"><i class=\"plus icon\"></i></router-link>\n        Vakalar\n      </h4>\n      <a href=\"#\" @click=\"reloadList\" style=\"position:absolute; top:0; right:1em\">\n        <i class=\"redo alternate icon\"></i>\n      </a>\n\n      <div class=\"ui attached secondary segment resistanceFilter\">\n        <div class=\"ui accordion field\">\n          <div class=\"title\">\n            <i class=\"icon dropdown\"></i>\n            Filtreler\n          </div>\n          <div class=\"content ui form\">\n            <div class=\"field\">\n              <label class=\"transition visible\">Şirketler</label>\n              <select v-model=\"filter.companyId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Ana Şirket</label>\n              <select v-model=\"filter.mainCompanyId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Vaka Niteliği</label>\n              <select v-model=\"filter.categoryId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">{{\n                    category.name\n                  }}\n                </option>\n              </select>\n            </div>\n            <div class=\"fields\">\n              <div class=\"field\">\n                <label class=\"transition visible\">Eylem Yıl</label>\n                <select v-model=\"filter.yearId\" class=\"ui fluid selection dropdown\">\n                  <option value=\"\">--Seçiniz--</option>\n                  <option v-for=\"year in years\" :key=\"year\" :value=\"year\">{{ year }}</option>\n                </select>\n              </div>\n              <div class=\"field\">\n                <label class=\"transition visible\">Eylem Ay</label>\n                <select v-model=\"filter.monthId\" class=\"ui fluid search selection dropdown\">\n                  <option value=\"\">--Seçiniz--</option>\n                  <option v-for=\"(month, index) in months\" :key=\"index\" :value=\"index + 1\">{{ month }}</option>\n                </select>\n              </div>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Kişisel Notlar</label>\n              <select v-model=\"filter.personalNote\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option value=\"false\">Yok</option>\n                <option value=\"true\">Var</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <button @click=\"applyFilter\" class=\"ui button\">Filtrele</button>\n              <button @click=\"clearFilter\" class=\"ui basic button clear\">Temizle</button>\n              <button @click=\"exportData\" class=\"ui green basic button clear\">Dışa Aktar</button>\n            </div>\n          </div>\n        </div>\n      </div>\n\n      <table class=\"ui celled selectable striped table\">\n        <tbody>\n        <tr v-for=\"item in results\" :key=\"item.id\">\n          <td>\n            <router-link :to=\"`/edit/${item.id}`\">{{ item.categoryName }}</router-link>\n          </td>\n          <td>{{ item.companyName }}</td>\n          <td>{{ formatDate(item.startDate) }}</td>\n        </tr>\n        </tbody>\n        <tfoot>\n        <tr>\n          <th colspan=\"2\">\n            <p>{{ rowCount }} kayıttan {{ from }} - {{ to }} arasındakiler görüntüleniyor.</p>\n          </th>\n          <th>\n            <div class=\"field\">\n              <select v-model=\"filter.pageNumber\" class=\"ui compact small dropdown\" \n                      @change=\"reloadList\">\n                <option v-for=\"i in pageCount\" :key=\"i\" :value=\"i\">{{ i }}</option>\n              </select>\n            </div>\n          </th>\n        </tr>\n        </tfoot>\n      </table>\n    </div>\n  </div>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\n\nexport default {\n  name: \"ListResistance\",\n  data() {\n    return {\n      isLoading: true,\n      filter: {\n        companyId: \"\",\n        mainCompanyId: \"\",\n        categoryId: \"\",\n        yearId: \"\",\n        monthId: \"\",\n        personalNote: \"\",\n        pageNumber: 1,\n        pageSize: 10, // Define a default page size\n      },\n      rowCount: 0,\n      pageSize: 10,\n      companies: [],\n      categories: [],\n      results: [],\n      years: Array.from({length: new Date().getFullYear() - 2017}, (_, i) => 2018 + i),\n      months: [\n        \"Ocak\", \"Şubat\", \"Mart\", \"Nisan\", \"Mayıs\", \"Haziran\",\n        \"Temmuz\", \"Ağustos\", \"Eylül\", \"Ekim\", \"Kasım\", \"Aralık\"\n      ],\n    };\n  },\n  computed: {\n    filteredResults() {\n      return this.results.filter(item => {\n        return (\n            (!this.filter.companyId || item.companyId === this.filter.companyId) &&\n            (!this.filter.mainCompanyId || item.mainCompanyId === this.filter.mainCompanyId) &&\n            (!this.filter.categoryId || item.categoryId === this.filter.categoryId) &&\n            (!this.filter.yearId || new Date(item.startDate).getFullYear() === this.filter.yearId) &&\n            (!this.filter.monthId || new Date(item.startDate).getMonth() + 1 === this.filter.monthId) &&\n            (!this.filter.personalNote || item.personalNote === JSON.parse(this.filter.personalNote))\n        );\n      });\n    },\n    from() {\n      return Math.min((this.filter.pageNumber - 1) * this.filter.pageSize + 1, this.rowCount);\n    },\n    to() {\n      return Math.min(this.filter.pageNumber * this.filter.pageSize, this.rowCount);\n    },\n    pageCount() {\n      return Math.ceil(this.rowCount / this.filter.pageSize);\n    },\n  },\n  methods: {\n    applyFilter() {\n      this.filter.pageNumber = 1;\n      this.reloadList();\n    },\n    clearFilter() {\n      this.filter = {\n        companyId: \"\",\n        mainCompanyId: \"\",\n        categoryId: \"\",\n        yearId: \"\",\n        monthId: \"\",\n        personalNote: \"\",\n        pageNumber: 1,\n        pageSize: 10,\n      };\n      this.reloadList();\n    },\n    reloadList() {\n      this.fetchResults();\n    },\n    fetchResults() {\n      this.isLoading = true;\n      const queryParams = new URLSearchParams(this.filter).toString();\n      fetchWithToken(`/resistance/list?${queryParams}`)\n      .then(response => response.json())\n      .then(data => {\n        console.log(data);\n        this.results = data.results || [];\n        this.filter = data.filter;\n        this.rowCount = data.rowCount;\n      })\n      .catch(err => console.error(\"Error fetching results:\", err))\n      .finally(() => (this.isLoading = false));\n    },\n    exportData() {\n      console.log(\"Exporting data...\");\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString();\n    },\n    nextPage() {\n      if (this.filter.pageNumber < this.pageCount) {\n        this.filter.pageNumber++;\n        this.reloadList(); // Fetch data for the next page\n      }\n    },\n    previousPage() {\n      if (this.filter.pageNumber > 1) {\n        this.filter.pageNumber--;\n        this.reloadList(); // Fetch data for the previous page\n      }\n    },\n    initializeSemanticUI() {\n      // Reinitialize Semantic UI components\n      this.$nextTick(() => {\n        $('.ui.dropdown').dropdown({\n          clearable: true,\n          fullTextSearch: 'exact',\n        });\n        $('.ui.accordion').accordion();\n      });\n    },\n  },\n  mounted() {\n    this.reloadList();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/resistance/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n    this.initializeSemanticUI();\n  },\n  updated() {\n    // Reinitialize Semantic UI components after the DOM updates\n    this.initializeSemanticUI();\n  },\n};\n</script>\n\n<style scoped>\n.ui.column.dimmer.active {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(255, 255, 255, 0.8);\n  z-index: 10;\n}\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/ListResistance.vue"],"names":[],"mappings":";AAqPA;EACE,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,oCAAoC;EACpC,WAAW;AACb","sourcesContent":["<template>\n  <div>\n    <div v-if=\"isLoading\" class=\"ui dimmer active\">\n        <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n    </div>\n\n    <div v-else>\n      <h4 class=\"ui dividing header\">\n        <router-link to=\"/create\" class=\"item\"><i class=\"plus icon\"></i></router-link>\n        Vakalar\n      </h4>\n      <a href=\"#\" @click=\"reloadList\" style=\"position:absolute; top:0; right:1em\">\n        <i class=\"redo alternate icon\"></i>\n      </a>\n\n      <div class=\"ui attached secondary segment resistanceFilter\">\n        <div class=\"ui accordion field\">\n          <div class=\"title\">\n            <i class=\"icon dropdown\"></i>\n            Filtreler\n          </div>\n          <div class=\"content ui form\">\n            <div class=\"field\">\n              <label class=\"transition visible\">Şirketler</label>\n              <select v-model=\"filter.companyId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Ana Şirket</label>\n              <select v-model=\"filter.mainCompanyId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Vaka Niteliği</label>\n              <select v-model=\"filter.categoryId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">{{\n                    category.name\n                  }}\n                </option>\n              </select>\n            </div>\n            <div class=\"fields\">\n              <div class=\"field\">\n                <label class=\"transition visible\">Eylem Yıl</label>\n                <select v-model=\"filter.yearId\" class=\"ui fluid selection dropdown\">\n                  <option value=\"\">--Seçiniz--</option>\n                  <option v-for=\"year in years\" :key=\"year\" :value=\"year\">{{ year }}</option>\n                </select>\n              </div>\n              <div class=\"field\">\n                <label class=\"transition visible\">Eylem Ay</label>\n                <select v-model=\"filter.monthId\" class=\"ui fluid search selection dropdown\">\n                  <option value=\"\">--Seçiniz--</option>\n                  <option v-for=\"(month, index) in months\" :key=\"index\" :value=\"index + 1\">{{ month }}</option>\n                </select>\n              </div>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Kişisel Notlar</label>\n              <select v-model=\"filter.personalNote\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option value=\"false\">Yok</option>\n                <option value=\"true\">Var</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <button @click=\"applyFilter\" class=\"ui button\">Filtrele</button>\n              <button @click=\"clearFilter\" class=\"ui basic button clear\">Temizle</button>\n              <button @click=\"exportData\" class=\"ui green basic button clear\">Dışa Aktar</button>\n            </div>\n          </div>\n        </div>\n      </div>\n\n      <table class=\"ui celled selectable striped table\">\n        <tbody>\n        <tr v-for=\"item in results\" :key=\"item.id\">\n          <td>\n            <router-link :to=\"`/edit/${item.id}`\">{{ item.categoryName }}</router-link>\n          </td>\n          <td>{{ item.companyName }}</td>\n          <td>{{ formatDate(item.startDate) }}</td>\n        </tr>\n        </tbody>\n        <tfoot>\n        <tr>\n          <th colspan=\"2\">\n            <p>{{ rowCount }} kayıttan {{ from }} - {{ to }} arasındakiler görüntüleniyor.</p>\n          </th>\n          <th>\n            <div class=\"field\">\n              <select v-model=\"filter.pageNumber\" class=\"ui compact small dropdown\" \n                      @change=\"reloadList\">\n                <option v-for=\"i in pageCount\" :key=\"i\" :value=\"i\">{{ i }}</option>\n              </select>\n            </div>\n          </th>\n        </tr>\n        </tfoot>\n      </table>\n    </div>\n  </div>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\n\nexport default {\n  name: \"ListResistance\",\n  data() {\n    return {\n      isLoading: true,\n      filter: {\n        companyId: \"\",\n        mainCompanyId: \"\",\n        categoryId: \"\",\n        yearId: \"\",\n        monthId: \"\",\n        personalNote: \"\",\n        pageNumber: 1,\n        pageSize: 10, // Define a default page size\n      },\n      rowCount: 0,\n      pageSize: 10,\n      companies: [],\n      categories: [],\n      results: [],\n      years: Array.from({length: new Date().getFullYear() - 2017}, (_, i) => 2018 + i),\n      months: [\n        \"Ocak\", \"Şubat\", \"Mart\", \"Nisan\", \"Mayıs\", \"Haziran\",\n        \"Temmuz\", \"Ağustos\", \"Eylül\", \"Ekim\", \"Kasım\", \"Aralık\"\n      ],\n    };\n  },\n  computed: {\n    filteredResults() {\n      return this.results.filter(item => {\n        return (\n            (!this.filter.companyId || item.companyId === this.filter.companyId) &&\n            (!this.filter.mainCompanyId || item.mainCompanyId === this.filter.mainCompanyId) &&\n            (!this.filter.categoryId || item.categoryId === this.filter.categoryId) &&\n            (!this.filter.yearId || new Date(item.startDate).getFullYear() === this.filter.yearId) &&\n            (!this.filter.monthId || new Date(item.startDate).getMonth() + 1 === this.filter.monthId) &&\n            (!this.filter.personalNote || item.personalNote === JSON.parse(this.filter.personalNote))\n        );\n      });\n    },\n    from() {\n      return Math.min((this.filter.pageNumber - 1) * this.filter.pageSize + 1, this.rowCount);\n    },\n    to() {\n      return Math.min(this.filter.pageNumber * this.filter.pageSize, this.rowCount);\n    },\n    pageCount() {\n      return Math.ceil(this.rowCount / this.filter.pageSize);\n    },\n  },\n  methods: {\n    applyFilter() {\n      this.filter.pageNumber = 1;\n      this.reloadList();\n    },\n    clearFilter() {\n      this.filter = {\n        companyId: \"\",\n        mainCompanyId: \"\",\n        categoryId: \"\",\n        yearId: \"\",\n        monthId: \"\",\n        personalNote: \"\",\n        pageNumber: 1,\n        pageSize: 10,\n      };\n      this.reloadList();\n    },\n    reloadList() {\n      this.fetchResults();\n    },\n    fetchResults() {\n      this.isLoading = true;\n      const queryParams = new URLSearchParams(this.filter).toString();\n      fetchWithToken(`/resistance/list?${queryParams}`)\n      .then(response => response.json())\n      .then(data => {\n        console.log(data);\n        this.results = data.results || [];\n        this.filter = data.filter;\n        this.rowCount = data.rowCount;\n      })\n      .catch(err => console.error(\"Error fetching results:\", err))\n      .finally(() => (this.isLoading = false));\n    },\n    exportData() {\n      console.log(\"Exporting data...\");\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString();\n    },\n    nextPage() {\n      if (this.filter.pageNumber < this.pageCount) {\n        this.filter.pageNumber++;\n        this.reloadList(); // Fetch data for the next page\n      }\n    },\n    previousPage() {\n      if (this.filter.pageNumber > 1) {\n        this.filter.pageNumber--;\n        this.reloadList(); // Fetch data for the previous page\n      }\n    },\n    initializeSemanticUI() {\n      // Reinitialize Semantic UI components\n      this.$nextTick(() => {\n        $('.ui.dropdown').dropdown({\n          clearable: true,\n          fullTextSearch: 'exact',\n        });\n        $('.ui.accordion').accordion();\n      });\n    },\n  },\n  mounted() {\n    this.reloadList();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/resistance/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n    this.initializeSemanticUI();\n  },\n  updated() {\n    // Reinitialize Semantic UI components after the DOM updates\n    this.initializeSemanticUI();\n  },\n};\n</script>\n\n<style scoped>\n.ui.column.dimmer.active {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(255, 255, 255, 0.8);\n  z-index: 10;\n}\n</style>\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/Resistance.vue?vue&type=style&index=1&id=b2e4a6e2&scoped=true&lang=css":
+/*!**********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/Resistance.vue?vue&type=style&index=1&id=b2e4a6e2&scoped=true&lang=css ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `
+/* Add styles here */
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/Resistance.vue"],"names":[],"mappings":";AA4QA,oBAAoB","sourcesContent":["<template>\n    <!-- Header -->\n    <h4 class=\"ui dividing header\">\n      <router-link to=\"/list\" class=\"item\"><i class=\"angle double left icon\"></i></router-link>\n      Vaka\n    </h4>\n\n    <!-- Hidden Input for ID -->\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistanceData.id\" />\n\n    <!-- Short Description -->\n    <div class=\"field\">\n      <label for=\"ResistanceDescription\">Kısa Açıklama</label>\n      <textarea\n          id=\"ResistanceDescription\"\n          rows=\"6\"\n          v-model=\"this.resistanceData.resistanceDescription\"\n      ></textarea>\n    </div>\n\n    <!-- Case Category -->\n    <div class=\"field\">\n      <label for=\"CategoryId\">Vaka Niteliği</label>\n      <select v-model=\"this.resistanceData.categoryId\">\n        <option value=\"\">--Seçiniz--</option>\n        <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">\n          {{ category.name }}\n        </option>\n      </select>\n      <span v-if=\"formErrors.categoryId\" class=\"text-danger\">\n        {{ formErrors.categoryId }}\n      </span>\n    </div>\n\n    <!-- Two Fields -->\n    <div class=\"two fields\">\n      <!-- Case Reasons -->\n      <div class=\"field\">\n        <label for=\"ResistanceReasonIds\">Vaka Nedeni</label>\n        <multiselect id=\"ResistanceReasonIds\"\n                     v-model=\"this.resistanceData.resistanceReasonIds\"\n                     placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                     :preselect-first=\"true\"\n                     :options=\"resistanceReasons\"\n                     :multiple=\"true\"\n                     :close-on-select=\"false\"\n                     :clear-on-select=\"false\"\n                     :preserve-search=\"true\"\n                     :taggable=\"true\" @tag=\"addResistanceReason\">\n        </multiselect>\n      </div>\n\n      <!-- Develop Right -->\n      <div class=\"field\">\n        <label for=\"DevelopRight\">Hak Geliştirme/Hak Savunma Özelliği</label>\n        <select v-model=\"this.resistanceData.developRight\">\n          <option value=\"\">--Seçiniz--</option>\n          <option :value=\"true\">Hak Geliştirme</option>\n          <option :value=\"false\">Hak Savunma</option>\n        </select>\n        <span v-if=\"formErrors.developRight\" class=\"text-danger\">\n          {{ formErrors.developRight }}\n        </span>\n      </div>\n    </div>\n\n    <div class=\"sixty wide field\">\n      <label for=\"CompanyId\">Şirket</label>\n      <div class=\"two fields\">\n        <div class=\"field\">\n          <select v-model=\"this.resistanceData.companyId\">\n            <option value=\"\">--Seçiniz--</option>\n            <option\n                v-for=\"company in companies\"\n                :key=\"company.id\"\n                :value=\"company.id\"\n            >\n              {{ company.name }}\n            </option>\n          </select>\n        </div>\n        <div class=\"field\">\n          <button type=\"button\" @click=\"openCompanyModal(true)\" class=\"ui button\">\n            <i class=\"chevron circle up icon\"></i>Şirket Ekle\n          </button>\n        </div>\n      </div>\n    </div>\n    <!-- Is Outsource -->\n    <div class=\"field sixty wide\">\n      <label for=\"IsOutsource\">Şirket Taşeron mu?</label>\n      <select v-model=\"this.resistanceData.isOutsource\" @change=\"toggleOutsource\">\n        <option :value=\"false\">Hayır</option>\n        <option :value=\"true\">Evet</option>\n      </select>\n    </div>\n\n    <!-- Main Company (Conditional) -->\n    <div v-if=\"this.resistanceData.isOutsource\" id=\"outsource\" class=\"sixty wide field\">\n      <label for=\"MainCompanyId\">Ana Şirket</label>\n      <div class=\"two fields\">\n        <div class=\"field\">\n          <select v-model=\"resistance.mainCompanyId\">\n            <option value=\"\">--Seçiniz--</option>\n            <option\n                v-for=\"company in companies\"\n                :key=\"company.id\"\n                :value=\"company.id\"\n            >\n              {{ company.name }}\n            </option>\n          </select>\n        </div>\n        <div class=\"field\">\n          <button type=\"button\" @click=\"openCompanyModal(true)\" class=\"ui button\">\n            <i class=\"chevron circle up icon\"></i>Ana Şirket Ekle\n          </button>\n        </div>\n      </div>\n    </div>\n\n    <!-- Employee Count -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountId\">İş Yerindeki İşçi Sayısı</label>\n        <select v-model=\"this.resistanceData.employeeCountId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"count in employeeCounts\"\n              :key=\"count.id\"\n              :value=\"count.id\"\n          >\n            {{ count.name }}\n          </option>\n        </select>\n        <span v-if=\"formErrors.employeeCountId\" class=\"text-danger\">\n          {{ formErrors.employeeCountId }}\n        </span>\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCount\">İş Yerindeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"text\"\n            id=\"EmployeeCount\"\n            v-model=\"this.resistanceData.employeeCount\"\n        />\n      </div>\n    </div>\n    <div class=\"field\">\n      <label for=\"CorporationIds\">Kurumsallık</label>\n      <multiselect id=\"CorporationIds\" \n                   v-model=\"this.resistanceData.corporationIds\"\n                   placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\" :preselect-first=\"true\"\n                   :options=\"corporations\"\n                   :multiple=\"true\" \n                   :close-on-select=\"false\" \n                   :clear-on-select=\"false\"\n                   :preserve-search=\"true\" \n                   :taggable=\"true\" @tag=\"addCorporation\">\n      </multiselect>\n    </div>\n    <!-- Other Fields -->\n    <div class=\"field\">\n      <label for=\"ResistanceResult\">Sonuç</label>\n      <select v-model=\"this.resistanceData.resistanceResult\" class=\"ui fluid dropdown\">\n        <option :value=\"0\">Bilinmiyor</option>\n        <option :value=\"1\">Tam Kazanım</option>\n        <option :value=\"2\">Yarım Kazanım</option>\n        <option :value=\"3\">Sıfır Kazanım</option>\n      </select>\n    </div>\n\n    <!-- Protestos -->\n    <h3 class=\"ui dividing header\">Eylemler</h3>\n    <button\n        type=\"button\"\n        class=\"ui right labeled small green icon button\"\n        @click=\"addProtesto\"\n    >\n      Eylem Ekle<i class=\"plus icon\"></i>\n    </button>\n  \n  \n</template>\n\n<script>\nimport Multiselect from 'vue-multiselect'\nimport {fetchWithToken} from \"../../fetchWrapper\";\n\nexport default {\n  name: \"Resistance\",\n  components: { Multiselect },\n  data() {\n    return {\n      resistanceData: this.resistance,\n      categories: [],\n      resistanceReasons: [],\n      companies: [],\n      corporations: [],\n      employeeCounts: []\n    };\n  },\n  props: {\n    resistance: {\n      type: Object,\n      default: () => ({}) \n    },\n    formErrors: {\n      type:Object,\n      default: () => ({})\n    }\n  },\n  mounted() {\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/resistance/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n    \n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => (this.corporations = data));\n    \n  },\n  methods: {\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    addEmploymentType(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.employmentTypes.push(tag)\n      this.resistance.employmentTypeIds.push(tag)\n    },\n    addCorporation(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.corporations.push(newTag);\n      this.resistance.corporationIds.push(tag)\n    }\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -33561,10 +33694,10 @@ exports["default"] = (sfc, props) => {
 
 /***/ }),
 
-/***/ "./src/components/Modal.vue":
-/*!**********************************!*\
-  !*** ./src/components/Modal.vue ***!
-  \**********************************/
+/***/ "./src/components/CompanyModal.vue":
+/*!*****************************************!*\
+  !*** ./src/components/CompanyModal.vue ***!
+  \*****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -33572,9 +33705,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _Modal_vue_vue_type_template_id_701ac82d_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Modal.vue?vue&type=template&id=701ac82d&scoped=true */ "./src/components/Modal.vue?vue&type=template&id=701ac82d&scoped=true");
-/* harmony import */ var _Modal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Modal.vue?vue&type=script&lang=js */ "./src/components/Modal.vue?vue&type=script&lang=js");
-/* harmony import */ var _Modal_vue_vue_type_style_index_0_id_701ac82d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Modal.vue?vue&type=style&index=0&id=701ac82d&scoped=true&lang=css */ "./src/components/Modal.vue?vue&type=style&index=0&id=701ac82d&scoped=true&lang=css");
+/* harmony import */ var _CompanyModal_vue_vue_type_template_id_620f1060_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CompanyModal.vue?vue&type=template&id=620f1060&scoped=true */ "./src/components/CompanyModal.vue?vue&type=template&id=620f1060&scoped=true");
+/* harmony import */ var _CompanyModal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CompanyModal.vue?vue&type=script&lang=js */ "./src/components/CompanyModal.vue?vue&type=script&lang=js");
+/* harmony import */ var _CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css */ "./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css");
 /* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
@@ -33583,7 +33716,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_Modal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Modal_vue_vue_type_template_id_701ac82d_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-701ac82d"],['__file',"src/components/Modal.vue"]])
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_CompanyModal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_CompanyModal_vue_vue_type_template_id_620f1060_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-620f1060"],['__file',"src/components/CompanyModal.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -33651,10 +33784,10 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./src/components/news/list-news.vue":
-/*!*******************************************!*\
-  !*** ./src/components/news/list-news.vue ***!
-  \*******************************************/
+/***/ "./src/components/news/ListNews.vue":
+/*!******************************************!*\
+  !*** ./src/components/news/ListNews.vue ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -33662,9 +33795,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _list_news_vue_vue_type_template_id_9551fd14_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./list-news.vue?vue&type=template&id=9551fd14&scoped=true */ "./src/components/news/list-news.vue?vue&type=template&id=9551fd14&scoped=true");
-/* harmony import */ var _list_news_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./list-news.vue?vue&type=script&lang=js */ "./src/components/news/list-news.vue?vue&type=script&lang=js");
-/* harmony import */ var _list_news_vue_vue_type_style_index_0_id_9551fd14_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./list-news.vue?vue&type=style&index=0&id=9551fd14&scoped=true&lang=css */ "./src/components/news/list-news.vue?vue&type=style&index=0&id=9551fd14&scoped=true&lang=css");
+/* harmony import */ var _ListNews_vue_vue_type_template_id_0046ae0d_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ListNews.vue?vue&type=template&id=0046ae0d&scoped=true */ "./src/components/news/ListNews.vue?vue&type=template&id=0046ae0d&scoped=true");
+/* harmony import */ var _ListNews_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ListNews.vue?vue&type=script&lang=js */ "./src/components/news/ListNews.vue?vue&type=script&lang=js");
+/* harmony import */ var _ListNews_vue_vue_type_style_index_0_id_0046ae0d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ListNews.vue?vue&type=style&index=0&id=0046ae0d&scoped=true&lang=css */ "./src/components/news/ListNews.vue?vue&type=style&index=0&id=0046ae0d&scoped=true&lang=css");
 /* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
@@ -33673,7 +33806,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_list_news_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_list_news_vue_vue_type_template_id_9551fd14_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-9551fd14"],['__file',"src/components/news/list-news.vue"]])
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_ListNews_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_ListNews_vue_vue_type_template_id_0046ae0d_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-0046ae0d"],['__file',"src/components/news/ListNews.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -33682,10 +33815,10 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./src/components/protesto/edit-protesto.vue":
-/*!***************************************************!*\
-  !*** ./src/components/protesto/edit-protesto.vue ***!
-  \***************************************************/
+/***/ "./src/components/protesto/EditProtesto.vue":
+/*!**************************************************!*\
+  !*** ./src/components/protesto/EditProtesto.vue ***!
+  \**************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -33693,9 +33826,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _edit_protesto_vue_vue_type_template_id_325c27c4_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./edit-protesto.vue?vue&type=template&id=325c27c4&scoped=true */ "./src/components/protesto/edit-protesto.vue?vue&type=template&id=325c27c4&scoped=true");
-/* harmony import */ var _edit_protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./edit-protesto.vue?vue&type=script&lang=js */ "./src/components/protesto/edit-protesto.vue?vue&type=script&lang=js");
-/* harmony import */ var _edit_protesto_vue_vue_type_style_index_0_id_325c27c4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./edit-protesto.vue?vue&type=style&index=0&id=325c27c4&scoped=true&lang=css */ "./src/components/protesto/edit-protesto.vue?vue&type=style&index=0&id=325c27c4&scoped=true&lang=css");
+/* harmony import */ var _EditProtesto_vue_vue_type_template_id_322ae0ce_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EditProtesto.vue?vue&type=template&id=322ae0ce&scoped=true */ "./src/components/protesto/EditProtesto.vue?vue&type=template&id=322ae0ce&scoped=true");
+/* harmony import */ var _EditProtesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EditProtesto.vue?vue&type=script&lang=js */ "./src/components/protesto/EditProtesto.vue?vue&type=script&lang=js");
+/* harmony import */ var _EditProtesto_vue_vue_type_style_index_0_id_322ae0ce_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EditProtesto.vue?vue&type=style&index=0&id=322ae0ce&scoped=true&lang=css */ "./src/components/protesto/EditProtesto.vue?vue&type=style&index=0&id=322ae0ce&scoped=true&lang=css");
 /* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
@@ -33704,7 +33837,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_edit_protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_edit_protesto_vue_vue_type_template_id_325c27c4_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-325c27c4"],['__file',"src/components/protesto/edit-protesto.vue"]])
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_EditProtesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_EditProtesto_vue_vue_type_template_id_322ae0ce_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-322ae0ce"],['__file',"src/components/protesto/EditProtesto.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -33713,10 +33846,10 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./src/components/protesto/protesto-accordion.vue":
-/*!********************************************************!*\
-  !*** ./src/components/protesto/protesto-accordion.vue ***!
-  \********************************************************/
+/***/ "./src/components/protesto/Protesto.vue":
+/*!**********************************************!*\
+  !*** ./src/components/protesto/Protesto.vue ***!
+  \**********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -33724,37 +33857,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _protesto_accordion_vue_vue_type_template_id_5175ed4a__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./protesto-accordion.vue?vue&type=template&id=5175ed4a */ "./src/components/protesto/protesto-accordion.vue?vue&type=template&id=5175ed4a");
-/* harmony import */ var _protesto_accordion_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./protesto-accordion.vue?vue&type=script&lang=js */ "./src/components/protesto/protesto-accordion.vue?vue&type=script&lang=js");
-/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
-
-
-
-
-;
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_protesto_accordion_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_protesto_accordion_vue_vue_type_template_id_5175ed4a__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"src/components/protesto/protesto-accordion.vue"]])
-/* hot reload */
-if (false) {}
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
-
-/***/ }),
-
-/***/ "./src/components/resistance/create-resistance.vue":
-/*!*********************************************************!*\
-  !*** ./src/components/resistance/create-resistance.vue ***!
-  \*********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _create_resistance_vue_vue_type_template_id_29942364_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./create-resistance.vue?vue&type=template&id=29942364&scoped=true */ "./src/components/resistance/create-resistance.vue?vue&type=template&id=29942364&scoped=true");
-/* harmony import */ var _create_resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./create-resistance.vue?vue&type=script&lang=js */ "./src/components/resistance/create-resistance.vue?vue&type=script&lang=js");
-/* harmony import */ var _create_resistance_vue_vue_type_style_index_0_id_29942364_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./create-resistance.vue?vue&type=style&index=0&id=29942364&scoped=true&lang=css */ "./src/components/resistance/create-resistance.vue?vue&type=style&index=0&id=29942364&scoped=true&lang=css");
+/* harmony import */ var _Protesto_vue_vue_type_template_id_362e7022_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Protesto.vue?vue&type=template&id=362e7022&scoped=true */ "./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true");
+/* harmony import */ var _Protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Protesto.vue?vue&type=script&lang=js */ "./src/components/protesto/Protesto.vue?vue&type=script&lang=js");
+/* harmony import */ var _Protesto_vue_vue_type_style_index_0_id_362e7022_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css */ "./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css");
 /* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
@@ -33763,7 +33868,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_create_resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_create_resistance_vue_vue_type_template_id_29942364_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-29942364"],['__file',"src/components/resistance/create-resistance.vue"]])
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_Protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Protesto_vue_vue_type_template_id_362e7022_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-362e7022"],['__file',"src/components/protesto/Protesto.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -33772,9 +33877,9 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./src/components/resistance/edit-resistance.vue":
+/***/ "./src/components/protesto/ProtestoAccordion.vue":
 /*!*******************************************************!*\
-  !*** ./src/components/resistance/edit-resistance.vue ***!
+  !*** ./src/components/protesto/ProtestoAccordion.vue ***!
   \*******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -33783,10 +33888,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _edit_resistance_vue_vue_type_template_id_3b9f0dd4_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./edit-resistance.vue?vue&type=template&id=3b9f0dd4&scoped=true */ "./src/components/resistance/edit-resistance.vue?vue&type=template&id=3b9f0dd4&scoped=true");
-/* harmony import */ var _edit_resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./edit-resistance.vue?vue&type=script&lang=js */ "./src/components/resistance/edit-resistance.vue?vue&type=script&lang=js");
+/* harmony import */ var _ProtestoAccordion_vue_vue_type_template_id_e7507f6e__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ProtestoAccordion.vue?vue&type=template&id=e7507f6e */ "./src/components/protesto/ProtestoAccordion.vue?vue&type=template&id=e7507f6e");
+/* harmony import */ var _ProtestoAccordion_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ProtestoAccordion.vue?vue&type=script&lang=js */ "./src/components/protesto/ProtestoAccordion.vue?vue&type=script&lang=js");
+/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_ProtestoAccordion_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_ProtestoAccordion_vue_vue_type_template_id_e7507f6e__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"src/components/protesto/ProtestoAccordion.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
+/***/ "./src/components/resistance/CreateResistance.vue":
+/*!********************************************************!*\
+  !*** ./src/components/resistance/CreateResistance.vue ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _CreateResistance_vue_vue_type_template_id_ed86ebaa_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CreateResistance.vue?vue&type=template&id=ed86ebaa&scoped=true */ "./src/components/resistance/CreateResistance.vue?vue&type=template&id=ed86ebaa&scoped=true");
+/* harmony import */ var _CreateResistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CreateResistance.vue?vue&type=script&lang=js */ "./src/components/resistance/CreateResistance.vue?vue&type=script&lang=js");
 /* harmony import */ var vue_multiselect_dist_vue_multiselect_min_css_vue_type_style_index_0_lang_css_external__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css&external */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css&external");
-/* harmony import */ var _edit_resistance_vue_vue_type_style_index_1_id_3b9f0dd4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./edit-resistance.vue?vue&type=style&index=1&id=3b9f0dd4&scoped=true&lang=css */ "./src/components/resistance/edit-resistance.vue?vue&type=style&index=1&id=3b9f0dd4&scoped=true&lang=css");
+/* harmony import */ var _CreateResistance_vue_vue_type_style_index_1_id_ed86ebaa_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./CreateResistance.vue?vue&type=style&index=1&id=ed86ebaa&scoped=true&lang=css */ "./src/components/resistance/CreateResistance.vue?vue&type=style&index=1&id=ed86ebaa&scoped=true&lang=css");
 /* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
@@ -33796,7 +33929,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_4__["default"])(_edit_resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_edit_resistance_vue_vue_type_template_id_3b9f0dd4_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-3b9f0dd4"],['__file',"src/components/resistance/edit-resistance.vue"]])
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_4__["default"])(_CreateResistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_CreateResistance_vue_vue_type_template_id_ed86ebaa_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-ed86ebaa"],['__file',"src/components/resistance/CreateResistance.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -33805,10 +33938,10 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./src/components/resistance/list-resistance.vue":
-/*!*******************************************************!*\
-  !*** ./src/components/resistance/list-resistance.vue ***!
-  \*******************************************************/
+/***/ "./src/components/resistance/EditResistance.vue":
+/*!******************************************************!*\
+  !*** ./src/components/resistance/EditResistance.vue ***!
+  \******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -33816,9 +33949,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _list_resistance_vue_vue_type_template_id_7f553c02_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./list-resistance.vue?vue&type=template&id=7f553c02&scoped=true */ "./src/components/resistance/list-resistance.vue?vue&type=template&id=7f553c02&scoped=true");
-/* harmony import */ var _list_resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./list-resistance.vue?vue&type=script&lang=js */ "./src/components/resistance/list-resistance.vue?vue&type=script&lang=js");
-/* harmony import */ var _list_resistance_vue_vue_type_style_index_0_id_7f553c02_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./list-resistance.vue?vue&type=style&index=0&id=7f553c02&scoped=true&lang=css */ "./src/components/resistance/list-resistance.vue?vue&type=style&index=0&id=7f553c02&scoped=true&lang=css");
+/* harmony import */ var _EditResistance_vue_vue_type_template_id_43c43e39_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EditResistance.vue?vue&type=template&id=43c43e39&scoped=true */ "./src/components/resistance/EditResistance.vue?vue&type=template&id=43c43e39&scoped=true");
+/* harmony import */ var _EditResistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EditResistance.vue?vue&type=script&lang=js */ "./src/components/resistance/EditResistance.vue?vue&type=script&lang=js");
+/* harmony import */ var vue_multiselect_dist_vue_multiselect_min_css_vue_type_style_index_0_lang_css_external__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css&external */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css&external");
+/* harmony import */ var _EditResistance_vue_vue_type_style_index_1_id_43c43e39_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EditResistance.vue?vue&type=style&index=1&id=43c43e39&scoped=true&lang=css */ "./src/components/resistance/EditResistance.vue?vue&type=style&index=1&id=43c43e39&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+
+
+
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_4__["default"])(_EditResistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_EditResistance_vue_vue_type_template_id_43c43e39_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-43c43e39"],['__file',"src/components/resistance/EditResistance.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
+/***/ "./src/components/resistance/ListResistance.vue":
+/*!******************************************************!*\
+  !*** ./src/components/resistance/ListResistance.vue ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _ListResistance_vue_vue_type_template_id_06c56dcd_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ListResistance.vue?vue&type=template&id=06c56dcd&scoped=true */ "./src/components/resistance/ListResistance.vue?vue&type=template&id=06c56dcd&scoped=true");
+/* harmony import */ var _ListResistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ListResistance.vue?vue&type=script&lang=js */ "./src/components/resistance/ListResistance.vue?vue&type=script&lang=js");
+/* harmony import */ var _ListResistance_vue_vue_type_style_index_0_id_06c56dcd_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ListResistance.vue?vue&type=style&index=0&id=06c56dcd&scoped=true&lang=css */ "./src/components/resistance/ListResistance.vue?vue&type=style&index=0&id=06c56dcd&scoped=true&lang=css");
 /* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
@@ -33827,7 +33993,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_list_resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_list_resistance_vue_vue_type_template_id_7f553c02_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-7f553c02"],['__file',"src/components/resistance/list-resistance.vue"]])
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_ListResistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_ListResistance_vue_vue_type_template_id_06c56dcd_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-06c56dcd"],['__file',"src/components/resistance/ListResistance.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -33836,18 +34002,51 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./src/components/Modal.vue?vue&type=script&lang=js":
-/*!**********************************************************!*\
-  !*** ./src/components/Modal.vue?vue&type=script&lang=js ***!
-  \**********************************************************/
+/***/ "./src/components/resistance/Resistance.vue":
+/*!**************************************************!*\
+  !*** ./src/components/resistance/Resistance.vue ***!
+  \**************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Modal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Modal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Modal.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Modal.vue?vue&type=script&lang=js");
+/* harmony import */ var _Resistance_vue_vue_type_template_id_b2e4a6e2_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Resistance.vue?vue&type=template&id=b2e4a6e2&scoped=true */ "./src/components/resistance/Resistance.vue?vue&type=template&id=b2e4a6e2&scoped=true");
+/* harmony import */ var _Resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Resistance.vue?vue&type=script&lang=js */ "./src/components/resistance/Resistance.vue?vue&type=script&lang=js");
+/* harmony import */ var vue_multiselect_dist_vue_multiselect_min_css_vue_type_style_index_0_lang_css_external__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css&external */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css&external");
+/* harmony import */ var _Resistance_vue_vue_type_style_index_1_id_b2e4a6e2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Resistance.vue?vue&type=style&index=1&id=b2e4a6e2&scoped=true&lang=css */ "./src/components/resistance/Resistance.vue?vue&type=style&index=1&id=b2e4a6e2&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+
+
+
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_4__["default"])(_Resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Resistance_vue_vue_type_template_id_b2e4a6e2_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-b2e4a6e2"],['__file',"src/components/resistance/Resistance.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
+/***/ "./src/components/CompanyModal.vue?vue&type=script&lang=js":
+/*!*****************************************************************!*\
+  !*** ./src/components/CompanyModal.vue?vue&type=script&lang=js ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./CompanyModal.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=script&lang=js");
  
 
 /***/ }),
@@ -33884,114 +34083,146 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/components/news/list-news.vue?vue&type=script&lang=js":
-/*!*******************************************************************!*\
-  !*** ./src/components/news/list-news.vue?vue&type=script&lang=js ***!
-  \*******************************************************************/
+/***/ "./src/components/news/ListNews.vue?vue&type=script&lang=js":
+/*!******************************************************************!*\
+  !*** ./src/components/news/ListNews.vue?vue&type=script&lang=js ***!
+  \******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_news_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListNews_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_news_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./list-news.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/list-news.vue?vue&type=script&lang=js");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListNews_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ListNews.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/ListNews.vue?vue&type=script&lang=js");
  
 
 /***/ }),
 
-/***/ "./src/components/protesto/edit-protesto.vue?vue&type=script&lang=js":
-/*!***************************************************************************!*\
-  !*** ./src/components/protesto/edit-protesto.vue?vue&type=script&lang=js ***!
-  \***************************************************************************/
+/***/ "./src/components/protesto/EditProtesto.vue?vue&type=script&lang=js":
+/*!**************************************************************************!*\
+  !*** ./src/components/protesto/EditProtesto.vue?vue&type=script&lang=js ***!
+  \**************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./edit-protesto.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/edit-protesto.vue?vue&type=script&lang=js");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./EditProtesto.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=script&lang=js");
  
 
 /***/ }),
 
-/***/ "./src/components/protesto/protesto-accordion.vue?vue&type=script&lang=js":
+/***/ "./src/components/protesto/Protesto.vue?vue&type=script&lang=js":
+/*!**********************************************************************!*\
+  !*** ./src/components/protesto/Protesto.vue?vue&type=script&lang=js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Protesto.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=script&lang=js");
+ 
+
+/***/ }),
+
+/***/ "./src/components/protesto/ProtestoAccordion.vue?vue&type=script&lang=js":
+/*!*******************************************************************************!*\
+  !*** ./src/components/protesto/ProtestoAccordion.vue?vue&type=script&lang=js ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ProtestoAccordion_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ProtestoAccordion_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ProtestoAccordion.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/ProtestoAccordion.vue?vue&type=script&lang=js");
+ 
+
+/***/ }),
+
+/***/ "./src/components/resistance/CreateResistance.vue?vue&type=script&lang=js":
 /*!********************************************************************************!*\
-  !*** ./src/components/protesto/protesto-accordion.vue?vue&type=script&lang=js ***!
+  !*** ./src/components/resistance/CreateResistance.vue?vue&type=script&lang=js ***!
   \********************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_protesto_accordion_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CreateResistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_protesto_accordion_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./protesto-accordion.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/protesto-accordion.vue?vue&type=script&lang=js");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CreateResistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./CreateResistance.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/CreateResistance.vue?vue&type=script&lang=js");
  
 
 /***/ }),
 
-/***/ "./src/components/resistance/create-resistance.vue?vue&type=script&lang=js":
-/*!*********************************************************************************!*\
-  !*** ./src/components/resistance/create-resistance.vue?vue&type=script&lang=js ***!
-  \*********************************************************************************/
+/***/ "./src/components/resistance/EditResistance.vue?vue&type=script&lang=js":
+/*!******************************************************************************!*\
+  !*** ./src/components/resistance/EditResistance.vue?vue&type=script&lang=js ***!
+  \******************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_create_resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditResistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_create_resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./create-resistance.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/create-resistance.vue?vue&type=script&lang=js");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditResistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./EditResistance.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/EditResistance.vue?vue&type=script&lang=js");
  
 
 /***/ }),
 
-/***/ "./src/components/resistance/edit-resistance.vue?vue&type=script&lang=js":
-/*!*******************************************************************************!*\
-  !*** ./src/components/resistance/edit-resistance.vue?vue&type=script&lang=js ***!
-  \*******************************************************************************/
+/***/ "./src/components/resistance/ListResistance.vue?vue&type=script&lang=js":
+/*!******************************************************************************!*\
+  !*** ./src/components/resistance/ListResistance.vue?vue&type=script&lang=js ***!
+  \******************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListResistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./edit-resistance.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/edit-resistance.vue?vue&type=script&lang=js");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListResistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ListResistance.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/ListResistance.vue?vue&type=script&lang=js");
  
 
 /***/ }),
 
-/***/ "./src/components/resistance/list-resistance.vue?vue&type=script&lang=js":
-/*!*******************************************************************************!*\
-  !*** ./src/components/resistance/list-resistance.vue?vue&type=script&lang=js ***!
-  \*******************************************************************************/
+/***/ "./src/components/resistance/Resistance.vue?vue&type=script&lang=js":
+/*!**************************************************************************!*\
+  !*** ./src/components/resistance/Resistance.vue?vue&type=script&lang=js ***!
+  \**************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./list-resistance.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/list-resistance.vue?vue&type=script&lang=js");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Resistance.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/Resistance.vue?vue&type=script&lang=js");
  
 
 /***/ }),
 
-/***/ "./src/components/Modal.vue?vue&type=template&id=701ac82d&scoped=true":
-/*!****************************************************************************!*\
-  !*** ./src/components/Modal.vue?vue&type=template&id=701ac82d&scoped=true ***!
-  \****************************************************************************/
+/***/ "./src/components/CompanyModal.vue?vue&type=template&id=620f1060&scoped=true":
+/*!***********************************************************************************!*\
+  !*** ./src/components/CompanyModal.vue?vue&type=template&id=620f1060&scoped=true ***!
+  \***********************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Modal_vue_vue_type_template_id_701ac82d_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_template_id_620f1060_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Modal_vue_vue_type_template_id_701ac82d_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Modal.vue?vue&type=template&id=701ac82d&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Modal.vue?vue&type=template&id=701ac82d&scoped=true");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_template_id_620f1060_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./CompanyModal.vue?vue&type=template&id=620f1060&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=template&id=620f1060&scoped=true");
 
 
 /***/ }),
@@ -34028,114 +34259,146 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/components/news/list-news.vue?vue&type=template&id=9551fd14&scoped=true":
+/***/ "./src/components/news/ListNews.vue?vue&type=template&id=0046ae0d&scoped=true":
+/*!************************************************************************************!*\
+  !*** ./src/components/news/ListNews.vue?vue&type=template&id=0046ae0d&scoped=true ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListNews_vue_vue_type_template_id_0046ae0d_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListNews_vue_vue_type_template_id_0046ae0d_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ListNews.vue?vue&type=template&id=0046ae0d&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/ListNews.vue?vue&type=template&id=0046ae0d&scoped=true");
+
+
+/***/ }),
+
+/***/ "./src/components/protesto/EditProtesto.vue?vue&type=template&id=322ae0ce&scoped=true":
+/*!********************************************************************************************!*\
+  !*** ./src/components/protesto/EditProtesto.vue?vue&type=template&id=322ae0ce&scoped=true ***!
+  \********************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_template_id_322ae0ce_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_template_id_322ae0ce_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./EditProtesto.vue?vue&type=template&id=322ae0ce&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=template&id=322ae0ce&scoped=true");
+
+
+/***/ }),
+
+/***/ "./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true":
+/*!****************************************************************************************!*\
+  !*** ./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true ***!
+  \****************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_template_id_362e7022_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_template_id_362e7022_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Protesto.vue?vue&type=template&id=362e7022&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true");
+
+
+/***/ }),
+
+/***/ "./src/components/protesto/ProtestoAccordion.vue?vue&type=template&id=e7507f6e":
 /*!*************************************************************************************!*\
-  !*** ./src/components/news/list-news.vue?vue&type=template&id=9551fd14&scoped=true ***!
+  !*** ./src/components/protesto/ProtestoAccordion.vue?vue&type=template&id=e7507f6e ***!
   \*************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_news_vue_vue_type_template_id_9551fd14_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ProtestoAccordion_vue_vue_type_template_id_e7507f6e__WEBPACK_IMPORTED_MODULE_0__.render)
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_news_vue_vue_type_template_id_9551fd14_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./list-news.vue?vue&type=template&id=9551fd14&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/list-news.vue?vue&type=template&id=9551fd14&scoped=true");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ProtestoAccordion_vue_vue_type_template_id_e7507f6e__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ProtestoAccordion.vue?vue&type=template&id=e7507f6e */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/ProtestoAccordion.vue?vue&type=template&id=e7507f6e");
 
 
 /***/ }),
 
-/***/ "./src/components/protesto/edit-protesto.vue?vue&type=template&id=325c27c4&scoped=true":
-/*!*********************************************************************************************!*\
-  !*** ./src/components/protesto/edit-protesto.vue?vue&type=template&id=325c27c4&scoped=true ***!
-  \*********************************************************************************************/
+/***/ "./src/components/resistance/CreateResistance.vue?vue&type=template&id=ed86ebaa&scoped=true":
+/*!**************************************************************************************************!*\
+  !*** ./src/components/resistance/CreateResistance.vue?vue&type=template&id=ed86ebaa&scoped=true ***!
+  \**************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_protesto_vue_vue_type_template_id_325c27c4_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CreateResistance_vue_vue_type_template_id_ed86ebaa_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_protesto_vue_vue_type_template_id_325c27c4_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./edit-protesto.vue?vue&type=template&id=325c27c4&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/edit-protesto.vue?vue&type=template&id=325c27c4&scoped=true");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CreateResistance_vue_vue_type_template_id_ed86ebaa_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./CreateResistance.vue?vue&type=template&id=ed86ebaa&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/CreateResistance.vue?vue&type=template&id=ed86ebaa&scoped=true");
 
 
 /***/ }),
 
-/***/ "./src/components/protesto/protesto-accordion.vue?vue&type=template&id=5175ed4a":
-/*!**************************************************************************************!*\
-  !*** ./src/components/protesto/protesto-accordion.vue?vue&type=template&id=5175ed4a ***!
-  \**************************************************************************************/
+/***/ "./src/components/resistance/EditResistance.vue?vue&type=template&id=43c43e39&scoped=true":
+/*!************************************************************************************************!*\
+  !*** ./src/components/resistance/EditResistance.vue?vue&type=template&id=43c43e39&scoped=true ***!
+  \************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_protesto_accordion_vue_vue_type_template_id_5175ed4a__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditResistance_vue_vue_type_template_id_43c43e39_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_protesto_accordion_vue_vue_type_template_id_5175ed4a__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./protesto-accordion.vue?vue&type=template&id=5175ed4a */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/protesto-accordion.vue?vue&type=template&id=5175ed4a");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditResistance_vue_vue_type_template_id_43c43e39_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./EditResistance.vue?vue&type=template&id=43c43e39&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/EditResistance.vue?vue&type=template&id=43c43e39&scoped=true");
 
 
 /***/ }),
 
-/***/ "./src/components/resistance/create-resistance.vue?vue&type=template&id=29942364&scoped=true":
-/*!***************************************************************************************************!*\
-  !*** ./src/components/resistance/create-resistance.vue?vue&type=template&id=29942364&scoped=true ***!
-  \***************************************************************************************************/
+/***/ "./src/components/resistance/ListResistance.vue?vue&type=template&id=06c56dcd&scoped=true":
+/*!************************************************************************************************!*\
+  !*** ./src/components/resistance/ListResistance.vue?vue&type=template&id=06c56dcd&scoped=true ***!
+  \************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_create_resistance_vue_vue_type_template_id_29942364_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListResistance_vue_vue_type_template_id_06c56dcd_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_create_resistance_vue_vue_type_template_id_29942364_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./create-resistance.vue?vue&type=template&id=29942364&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/create-resistance.vue?vue&type=template&id=29942364&scoped=true");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListResistance_vue_vue_type_template_id_06c56dcd_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ListResistance.vue?vue&type=template&id=06c56dcd&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/ListResistance.vue?vue&type=template&id=06c56dcd&scoped=true");
 
 
 /***/ }),
 
-/***/ "./src/components/resistance/edit-resistance.vue?vue&type=template&id=3b9f0dd4&scoped=true":
+/***/ "./src/components/resistance/Resistance.vue?vue&type=template&id=b2e4a6e2&scoped=true":
+/*!********************************************************************************************!*\
+  !*** ./src/components/resistance/Resistance.vue?vue&type=template&id=b2e4a6e2&scoped=true ***!
+  \********************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_template_id_b2e4a6e2_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_template_id_b2e4a6e2_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Resistance.vue?vue&type=template&id=b2e4a6e2&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/Resistance.vue?vue&type=template&id=b2e4a6e2&scoped=true");
+
+
+/***/ }),
+
+/***/ "./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css":
 /*!*************************************************************************************************!*\
-  !*** ./src/components/resistance/edit-resistance.vue?vue&type=template&id=3b9f0dd4&scoped=true ***!
+  !*** ./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css ***!
   \*************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_resistance_vue_vue_type_template_id_3b9f0dd4_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_resistance_vue_vue_type_template_id_3b9f0dd4_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./edit-resistance.vue?vue&type=template&id=3b9f0dd4&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/edit-resistance.vue?vue&type=template&id=3b9f0dd4&scoped=true");
-
-
-/***/ }),
-
-/***/ "./src/components/resistance/list-resistance.vue?vue&type=template&id=7f553c02&scoped=true":
-/*!*************************************************************************************************!*\
-  !*** ./src/components/resistance/list-resistance.vue?vue&type=template&id=7f553c02&scoped=true ***!
-  \*************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_resistance_vue_vue_type_template_id_7f553c02_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_resistance_vue_vue_type_template_id_7f553c02_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./list-resistance.vue?vue&type=template&id=7f553c02&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/list-resistance.vue?vue&type=template&id=7f553c02&scoped=true");
-
-
-/***/ }),
-
-/***/ "./src/components/Modal.vue?vue&type=style&index=0&id=701ac82d&scoped=true&lang=css":
-/*!******************************************************************************************!*\
-  !*** ./src/components/Modal.vue?vue&type=style&index=0&id=701ac82d&scoped=true&lang=css ***!
-  \******************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Modal_vue_vue_type_style_index_0_id_701ac82d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/vue-style-loader/index.js!../../node_modules/css-loader/dist/cjs.js!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Modal.vue?vue&type=style&index=0&id=701ac82d&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Modal.vue?vue&type=style&index=0&id=701ac82d&scoped=true&lang=css");
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Modal_vue_vue_type_style_index_0_id_701ac82d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Modal_vue_vue_type_style_index_0_id_701ac82d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/vue-style-loader/index.js!../../node_modules/css-loader/dist/cjs.js!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
-/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Modal_vue_vue_type_style_index_0_id_701ac82d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Modal_vue_vue_type_style_index_0_id_701ac82d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
+/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
 /* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
 
 
@@ -34158,86 +34421,120 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/components/news/list-news.vue?vue&type=style&index=0&id=9551fd14&scoped=true&lang=css":
-/*!***************************************************************************************************!*\
-  !*** ./src/components/news/list-news.vue?vue&type=style&index=0&id=9551fd14&scoped=true&lang=css ***!
-  \***************************************************************************************************/
+/***/ "./src/components/news/ListNews.vue?vue&type=style&index=0&id=0046ae0d&scoped=true&lang=css":
+/*!**************************************************************************************************!*\
+  !*** ./src/components/news/ListNews.vue?vue&type=style&index=0&id=0046ae0d&scoped=true&lang=css ***!
+  \**************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_news_vue_vue_type_style_index_0_id_9551fd14_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./list-news.vue?vue&type=style&index=0&id=9551fd14&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/list-news.vue?vue&type=style&index=0&id=9551fd14&scoped=true&lang=css");
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_news_vue_vue_type_style_index_0_id_9551fd14_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_news_vue_vue_type_style_index_0_id_9551fd14_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListNews_vue_vue_type_style_index_0_id_0046ae0d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ListNews.vue?vue&type=style&index=0&id=0046ae0d&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/ListNews.vue?vue&type=style&index=0&id=0046ae0d&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListNews_vue_vue_type_style_index_0_id_0046ae0d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListNews_vue_vue_type_style_index_0_id_0046ae0d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
-/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_news_vue_vue_type_style_index_0_id_9551fd14_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_news_vue_vue_type_style_index_0_id_9551fd14_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
+/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListNews_vue_vue_type_style_index_0_id_0046ae0d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListNews_vue_vue_type_style_index_0_id_0046ae0d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
 /* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
 
 
 /***/ }),
 
-/***/ "./src/components/protesto/edit-protesto.vue?vue&type=style&index=0&id=325c27c4&scoped=true&lang=css":
-/*!***********************************************************************************************************!*\
-  !*** ./src/components/protesto/edit-protesto.vue?vue&type=style&index=0&id=325c27c4&scoped=true&lang=css ***!
-  \***********************************************************************************************************/
+/***/ "./src/components/protesto/EditProtesto.vue?vue&type=style&index=0&id=322ae0ce&scoped=true&lang=css":
+/*!**********************************************************************************************************!*\
+  !*** ./src/components/protesto/EditProtesto.vue?vue&type=style&index=0&id=322ae0ce&scoped=true&lang=css ***!
+  \**********************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_protesto_vue_vue_type_style_index_0_id_325c27c4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./edit-protesto.vue?vue&type=style&index=0&id=325c27c4&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/edit-protesto.vue?vue&type=style&index=0&id=325c27c4&scoped=true&lang=css");
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_protesto_vue_vue_type_style_index_0_id_325c27c4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_protesto_vue_vue_type_style_index_0_id_325c27c4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_style_index_0_id_322ae0ce_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./EditProtesto.vue?vue&type=style&index=0&id=322ae0ce&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=style&index=0&id=322ae0ce&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_style_index_0_id_322ae0ce_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_style_index_0_id_322ae0ce_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
-/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_protesto_vue_vue_type_style_index_0_id_325c27c4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_protesto_vue_vue_type_style_index_0_id_325c27c4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
+/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_style_index_0_id_322ae0ce_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_style_index_0_id_322ae0ce_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
 /* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
 
 
 /***/ }),
 
-/***/ "./src/components/resistance/create-resistance.vue?vue&type=style&index=0&id=29942364&scoped=true&lang=css":
-/*!*****************************************************************************************************************!*\
-  !*** ./src/components/resistance/create-resistance.vue?vue&type=style&index=0&id=29942364&scoped=true&lang=css ***!
-  \*****************************************************************************************************************/
+/***/ "./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css":
+/*!******************************************************************************************************!*\
+  !*** ./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css ***!
+  \******************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_create_resistance_vue_vue_type_style_index_0_id_29942364_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./create-resistance.vue?vue&type=style&index=0&id=29942364&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/create-resistance.vue?vue&type=style&index=0&id=29942364&scoped=true&lang=css");
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_create_resistance_vue_vue_type_style_index_0_id_29942364_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_create_resistance_vue_vue_type_style_index_0_id_29942364_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_style_index_0_id_362e7022_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_style_index_0_id_362e7022_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_style_index_0_id_362e7022_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
-/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_create_resistance_vue_vue_type_style_index_0_id_29942364_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_create_resistance_vue_vue_type_style_index_0_id_29942364_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
+/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_style_index_0_id_362e7022_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_style_index_0_id_362e7022_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
 /* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
 
 
 /***/ }),
 
-/***/ "./src/components/resistance/edit-resistance.vue?vue&type=style&index=1&id=3b9f0dd4&scoped=true&lang=css":
-/*!***************************************************************************************************************!*\
-  !*** ./src/components/resistance/edit-resistance.vue?vue&type=style&index=1&id=3b9f0dd4&scoped=true&lang=css ***!
-  \***************************************************************************************************************/
+/***/ "./src/components/resistance/CreateResistance.vue?vue&type=style&index=1&id=ed86ebaa&scoped=true&lang=css":
+/*!****************************************************************************************************************!*\
+  !*** ./src/components/resistance/CreateResistance.vue?vue&type=style&index=1&id=ed86ebaa&scoped=true&lang=css ***!
+  \****************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_resistance_vue_vue_type_style_index_1_id_3b9f0dd4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./edit-resistance.vue?vue&type=style&index=1&id=3b9f0dd4&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/edit-resistance.vue?vue&type=style&index=1&id=3b9f0dd4&scoped=true&lang=css");
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_resistance_vue_vue_type_style_index_1_id_3b9f0dd4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_resistance_vue_vue_type_style_index_1_id_3b9f0dd4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CreateResistance_vue_vue_type_style_index_1_id_ed86ebaa_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./CreateResistance.vue?vue&type=style&index=1&id=ed86ebaa&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/CreateResistance.vue?vue&type=style&index=1&id=ed86ebaa&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CreateResistance_vue_vue_type_style_index_1_id_ed86ebaa_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CreateResistance_vue_vue_type_style_index_1_id_ed86ebaa_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
-/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_resistance_vue_vue_type_style_index_1_id_3b9f0dd4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_edit_resistance_vue_vue_type_style_index_1_id_3b9f0dd4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
+/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CreateResistance_vue_vue_type_style_index_1_id_ed86ebaa_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CreateResistance_vue_vue_type_style_index_1_id_ed86ebaa_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
 /* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
 
 
 /***/ }),
 
-/***/ "./src/components/resistance/list-resistance.vue?vue&type=style&index=0&id=7f553c02&scoped=true&lang=css":
-/*!***************************************************************************************************************!*\
-  !*** ./src/components/resistance/list-resistance.vue?vue&type=style&index=0&id=7f553c02&scoped=true&lang=css ***!
-  \***************************************************************************************************************/
+/***/ "./src/components/resistance/EditResistance.vue?vue&type=style&index=1&id=43c43e39&scoped=true&lang=css":
+/*!**************************************************************************************************************!*\
+  !*** ./src/components/resistance/EditResistance.vue?vue&type=style&index=1&id=43c43e39&scoped=true&lang=css ***!
+  \**************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_resistance_vue_vue_type_style_index_0_id_7f553c02_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./list-resistance.vue?vue&type=style&index=0&id=7f553c02&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/list-resistance.vue?vue&type=style&index=0&id=7f553c02&scoped=true&lang=css");
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_resistance_vue_vue_type_style_index_0_id_7f553c02_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_resistance_vue_vue_type_style_index_0_id_7f553c02_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditResistance_vue_vue_type_style_index_1_id_43c43e39_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./EditResistance.vue?vue&type=style&index=1&id=43c43e39&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/EditResistance.vue?vue&type=style&index=1&id=43c43e39&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditResistance_vue_vue_type_style_index_1_id_43c43e39_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditResistance_vue_vue_type_style_index_1_id_43c43e39_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
-/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_resistance_vue_vue_type_style_index_0_id_7f553c02_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_list_resistance_vue_vue_type_style_index_0_id_7f553c02_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
+/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditResistance_vue_vue_type_style_index_1_id_43c43e39_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditResistance_vue_vue_type_style_index_1_id_43c43e39_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
+/* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
+
+
+/***/ }),
+
+/***/ "./src/components/resistance/ListResistance.vue?vue&type=style&index=0&id=06c56dcd&scoped=true&lang=css":
+/*!**************************************************************************************************************!*\
+  !*** ./src/components/resistance/ListResistance.vue?vue&type=style&index=0&id=06c56dcd&scoped=true&lang=css ***!
+  \**************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListResistance_vue_vue_type_style_index_0_id_06c56dcd_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ListResistance.vue?vue&type=style&index=0&id=06c56dcd&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/ListResistance.vue?vue&type=style&index=0&id=06c56dcd&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListResistance_vue_vue_type_style_index_0_id_06c56dcd_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListResistance_vue_vue_type_style_index_0_id_06c56dcd_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
+/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListResistance_vue_vue_type_style_index_0_id_06c56dcd_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_ListResistance_vue_vue_type_style_index_0_id_06c56dcd_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
+/* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
+
+
+/***/ }),
+
+/***/ "./src/components/resistance/Resistance.vue?vue&type=style&index=1&id=b2e4a6e2&scoped=true&lang=css":
+/*!**********************************************************************************************************!*\
+  !*** ./src/components/resistance/Resistance.vue?vue&type=style&index=1&id=b2e4a6e2&scoped=true&lang=css ***!
+  \**********************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_style_index_1_id_b2e4a6e2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Resistance.vue?vue&type=style&index=1&id=b2e4a6e2&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/Resistance.vue?vue&type=style&index=1&id=b2e4a6e2&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_style_index_1_id_b2e4a6e2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_style_index_1_id_b2e4a6e2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
+/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_style_index_1_id_b2e4a6e2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_style_index_1_id_b2e4a6e2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
 /* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
 
 
@@ -35721,22 +36018,22 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Modal.vue?vue&type=style&index=0&id=701ac82d&scoped=true&lang=css":
-/*!***********************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Modal.vue?vue&type=style&index=0&id=701ac82d&scoped=true&lang=css ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css":
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Modal.vue?vue&type=style&index=0&id=701ac82d&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Modal.vue?vue&type=style&index=0&id=701ac82d&scoped=true&lang=css");
+var content = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css");
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(/*! !../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
-var update = add("94a2a360", content, false, {});
+var update = add("44066112", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
@@ -35763,106 +36060,148 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/list-news.vue?vue&type=style&index=0&id=9551fd14&scoped=true&lang=css":
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/list-news.vue?vue&type=style&index=0&id=9551fd14&scoped=true&lang=css ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/ListNews.vue?vue&type=style&index=0&id=0046ae0d&scoped=true&lang=css":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/ListNews.vue?vue&type=style&index=0&id=0046ae0d&scoped=true&lang=css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./list-news.vue?vue&type=style&index=0&id=9551fd14&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/list-news.vue?vue&type=style&index=0&id=9551fd14&scoped=true&lang=css");
+var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ListNews.vue?vue&type=style&index=0&id=0046ae0d&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/news/ListNews.vue?vue&type=style&index=0&id=0046ae0d&scoped=true&lang=css");
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(/*! !../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
-var update = add("54e762d2", content, false, {});
+var update = add("23531c17", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
 /***/ }),
 
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/edit-protesto.vue?vue&type=style&index=0&id=325c27c4&scoped=true&lang=css":
-/*!****************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/edit-protesto.vue?vue&type=style&index=0&id=325c27c4&scoped=true&lang=css ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=style&index=0&id=322ae0ce&scoped=true&lang=css":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=style&index=0&id=322ae0ce&scoped=true&lang=css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./edit-protesto.vue?vue&type=style&index=0&id=325c27c4&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/edit-protesto.vue?vue&type=style&index=0&id=325c27c4&scoped=true&lang=css");
+var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./EditProtesto.vue?vue&type=style&index=0&id=322ae0ce&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=style&index=0&id=322ae0ce&scoped=true&lang=css");
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(/*! !../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
-var update = add("dc46dfb2", content, false, {});
+var update = add("18b14e9b", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
 /***/ }),
 
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/create-resistance.vue?vue&type=style&index=0&id=29942364&scoped=true&lang=css":
-/*!**********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/create-resistance.vue?vue&type=style&index=0&id=29942364&scoped=true&lang=css ***!
-  \**********************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./create-resistance.vue?vue&type=style&index=0&id=29942364&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/create-resistance.vue?vue&type=style&index=0&id=29942364&scoped=true&lang=css");
+var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css");
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(/*! !../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
-var update = add("818a0f00", content, false, {});
+var update = add("241987a2", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
 /***/ }),
 
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/edit-resistance.vue?vue&type=style&index=1&id=3b9f0dd4&scoped=true&lang=css":
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/edit-resistance.vue?vue&type=style&index=1&id=3b9f0dd4&scoped=true&lang=css ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/CreateResistance.vue?vue&type=style&index=1&id=ed86ebaa&scoped=true&lang=css":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/CreateResistance.vue?vue&type=style&index=1&id=ed86ebaa&scoped=true&lang=css ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./edit-resistance.vue?vue&type=style&index=1&id=3b9f0dd4&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/edit-resistance.vue?vue&type=style&index=1&id=3b9f0dd4&scoped=true&lang=css");
+var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./CreateResistance.vue?vue&type=style&index=1&id=ed86ebaa&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/CreateResistance.vue?vue&type=style&index=1&id=ed86ebaa&scoped=true&lang=css");
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(/*! !../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
-var update = add("07600524", content, false, {});
+var update = add("66c7deb2", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
 /***/ }),
 
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/list-resistance.vue?vue&type=style&index=0&id=7f553c02&scoped=true&lang=css":
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/list-resistance.vue?vue&type=style&index=0&id=7f553c02&scoped=true&lang=css ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/EditResistance.vue?vue&type=style&index=1&id=43c43e39&scoped=true&lang=css":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/EditResistance.vue?vue&type=style&index=1&id=43c43e39&scoped=true&lang=css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./list-resistance.vue?vue&type=style&index=0&id=7f553c02&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/list-resistance.vue?vue&type=style&index=0&id=7f553c02&scoped=true&lang=css");
+var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./EditResistance.vue?vue&type=style&index=1&id=43c43e39&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/EditResistance.vue?vue&type=style&index=1&id=43c43e39&scoped=true&lang=css");
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(/*! !../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
-var update = add("dcf8abc8", content, false, {});
+var update = add("9300c780", content, false, {});
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/ListResistance.vue?vue&type=style&index=0&id=06c56dcd&scoped=true&lang=css":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/ListResistance.vue?vue&type=style&index=0&id=06c56dcd&scoped=true&lang=css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./ListResistance.vue?vue&type=style&index=0&id=06c56dcd&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/ListResistance.vue?vue&type=style&index=0&id=06c56dcd&scoped=true&lang=css");
+if(content.__esModule) content = content.default;
+if(typeof content === 'string') content = [[module.id, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = (__webpack_require__(/*! !../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
+var update = add("5d366f44", content, false, {});
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/Resistance.vue?vue&type=style&index=1&id=b2e4a6e2&scoped=true&lang=css":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/Resistance.vue?vue&type=style&index=1&id=b2e4a6e2&scoped=true&lang=css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Resistance.vue?vue&type=style&index=1&id=b2e4a6e2&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/resistance/Resistance.vue?vue&type=style&index=1&id=b2e4a6e2&scoped=true&lang=css");
+if(content.__esModule) content = content.default;
+if(typeof content === 'string') content = [[module.id, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = (__webpack_require__(/*! !../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
+var update = add("a653618e", content, false, {});
 // Hot Module Replacement
 if(false) {}
 

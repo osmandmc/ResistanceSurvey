@@ -17,11 +17,11 @@
 </template>
 
 <script>
-import ListResistance from './resistance/list-resistance.vue';
-import ListNews from './news/list-news.vue';
-import CreateResistance from './resistance/create-resistance.vue';
-import EditResistance from './resistance/edit-resistance.vue';
-import Modal from '../components/Modal.vue';
+import ListResistance from './resistance/ListResistance.vue';
+import ListNews from './news/ListNews.vue';
+import CreateResistance from './resistance/CreateResistance.vue';
+import EditResistance from './resistance/EditResistance.vue';
+import Modal from './CompanyModal.vue';
 
 export default {
   name: 'ResistanceOverview',

@@ -6,15 +6,35 @@
     <div class="content">
       <form class="ui form" id="companyForm">
         <!-- Hidden Input -->
-        <input type="hidden" v-model="formData.IsMain" />
-
+        <input type="hidden" v-model="formData.isMain" />
+        <div class="field">
+          <div class="ui checkbox">
+            <input
+                type="checkbox"
+                v-model="formData.isMain"
+            />
+            <label>Taşeron</label>
+          </div>
+        </div>
+        <div class="field" v-if="formData.isMain">
+          <label for="MainCompanyId">Ana Şirket</label>
+          <select
+              id="MainCompanyId"
+              v-model="formData.mainCompanyId"
+          >
+            <option value="">--Seçiniz--</option>
+            <option v-for="type in companies" :key="type.id" :value="type.id">
+              {{ type.name }}
+            </option>
+          </select>
+        </div>
         <!-- Company Name Field -->
         <div class="field">
           <label for="CompanyName">Şirket Adı</label>
           <input
               type="text"
               id="CompanyName"
-              v-model="formData.CompanyName"
+              v-model="formData.companyName"
               placeholder="Şirket adı giriniz"
           />
         </div>
@@ -26,12 +46,12 @@
             <label for="TypeId">Şirketin Niteliği</label>
             <select
                 id="TypeId"
-                v-model="formData.TypeId"
+                v-model="formData.typeId"
                 :disabled="!companyTypes.length"
             >
               <option value="">--Seçiniz--</option>
-              <option v-for="type in companyTypes" :key="type.value" :value="type.value">
-                {{ type.text }}
+              <option v-for="type in companyTypes" :key="type.id" :value="type.id">
+                {{ type.name }}
               </option>
             </select>
           </div>
@@ -41,12 +61,12 @@
             <label for="ScaleId">Şirketin Büyüklüğü</label>
             <select
                 id="ScaleId"
-                v-model="formData.ScaleId"
+                v-model="formData.scaleId"
                 :disabled="!companyScales.length"
             >
               <option value="">--Seçiniz--</option>
-              <option v-for="scale in companyScales" :key="scale.value" :value="scale.value">
-                {{ scale.text }}
+              <option v-for="scale in companyScales" :key="scale.id" :value="scale.id">
+                {{ scale.name }}
               </option>
             </select>
           </div>
@@ -56,28 +76,18 @@
             <label for="WorklineId">Şirketin İş Kolu</label>
             <select
                 id="WorklineId"
-                v-model="formData.WorklineId"
+                v-model="formData.worklineId"
                 :disabled="!worklines.length"
             >
               <option value="">--Seçiniz--</option>
-              <option v-for="workline in worklines" :key="workline.value" :value="workline.value">
-                {{ workline.text }}
+              <option v-for="workline in worklines" :key="workline.id" :value="workline.id">
+                {{ workline.name }}
               </option>
             </select>
           </div>
         </div>
 
-        <!-- Conditional Button -->
         <button
-            v-if="formData.IsMain"
-            id="btnAddMainCompany"
-            class="ui button primary"
-            @click.prevent="addMainCompany"
-        >
-          Ana Şirket Ekle
-        </button>
-        <button
-            v-else
             id="btnAddCompany"
             class="ui button positive"
             @click.prevent="addCompany"
@@ -91,8 +101,12 @@
 
 <script>
 export default {
-  name: "Modal",
+  name: "CompanyModal",
   props: {
+    isMain: {
+      type: Boolean,
+      default: false
+    },
     // Data passed from the parent, e.g., API dropdown options
     companyTypes: {
       type: Array,
@@ -105,16 +119,21 @@ export default {
     worklines: {
       type: Array,
       default: () => [],
-    }
+    },
+    companies: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
       formData: {
-        IsMain: false,
-        CompanyName: "",
-        TypeId: "",
-        ScaleId: "",
-        WorklineId: "",
+        companyName: "",
+        typeId: "",
+        scaleId: "",
+        worklineId: "",
+        mainCompanyId: "",
+        isMain: this.isMain,
       },
     };
   },
@@ -128,26 +147,19 @@ export default {
     },
     addMainCompany() {
       console.log("Adding Main Company:", this.formData);
-      
       this.closeModal();
     },
     addCompany() {
       console.log("Adding Company:", this.formData);
       const company = {
-        isMain: true,
-        name: this.formData.CompanyName,
-        typeId: this.formData.TypeId,
-        scaleId: this.formData.ScaleId,
-        worklineId: this.formData.WorklineId,
+        name: this.formData.companyName,
+        typeId: this.formData.typeId,
+        scaleId: this.formData.scaleId,
+        worklineId: this.formData.worklineId,
+        isMain: this.formData.isMain
       }
-      const company1 = {
-        name: this.formData.CompanyName,
-        typeId: 1,
-        scaleId: 2,
-        worklineId: 3,
-        isMain: false
-      }
-      this.$emit("save-company", company1);
+      console.log("Adding Company:", company);
+      this.$emit("save-company", company);
       this.closeModal();
     }
   },

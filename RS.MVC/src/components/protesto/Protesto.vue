@@ -1,9 +1,8 @@
 <template>
-  <div class="ui form">
     <!-- Protesto Types -->
     <div class="field">
       <label for="ProtestoTypeIds">Eylem Türleri</label>
-     
+
       <multiselect
           id="ProtestoTypeIds"
           v-model="protesto.protestoTypeIds"
@@ -62,23 +61,36 @@
       </select>
     </div>
 
+  <div class="field">
+    <label for="CustodyCount">Gözaltı Sayısı</label>
+    <input
+        type="number"
+        id="CustodyCount"
+        v-model="protesto.custodyCount"
+    />
+  </div>
     <!-- Other Fields -->
     <div class="two fields">
       <div class="field">
-        <label for="CustodyCount">Gözaltı Sayısı</label>
-        <input
-            type="number"
-            id="CustodyCount"
-            v-model="protesto.custodyCount"
-        />
-      </div>
-      <div class="field">
-        <label for="EmployeeCountInProtesto">Eylemdeki İşçi Sayısı</label>
+        <label for="EmployeeCountInProtesto">Eylemdeki İşçi Sayısı (Tam)</label>
         <input
             type="number"
             id="EmployeeCountInProtesto"
             v-model="protesto.employeeCountInProtesto"
         />
+      </div>
+      <div class="field">
+        <label for="EmployeeCountInProtestoId">Eylemdeki İşçi Sayısı</label>
+        <select v-model="protesto.employeeCountInProtestoId" id="EmployeeCountInProtestoId">
+          <option value="">--Seçiniz--</option>
+          <option
+              v-for="employeeCountInProtesto in employeeCountInProtestoOptions"
+              :key="employeeCountInProtesto.id"
+              :value="employeeCountInProtesto.id"
+          >
+            {{ employeeCountInProtesto.name }}
+          </option>
+        </select>
       </div>
     </div>
 
@@ -89,50 +101,49 @@
     </div>
 
     <!-- Save Button -->
-    <button
-        class="ui primary button"
-        type="button"
-        @click="saveProtesto"
-    >
-      Kaydet
-    </button>
-  </div>
+   
 </template>
 
 <script>
 import Multiselect from "vue-multiselect";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
+import {fetchWithToken} from "../../fetchWrapper";
 
 export default {
-  name: "EditProtesto",
+  name: "Protesto",
   components: { Multiselect, VueDatePicker },
+  data() {
+    return {
+      protestoPlaceOptions: [],
+      protestoTypeOptions: [],
+      genderOptions: [],
+      employeeCountInProtestoOptions:[],
+    };
+  },
   props: {
     protesto: {
       type: Object,
-      required: true,
-    },
-    protestoTypeOptions: {
-      type: Array,
-      required: true,
-    },
-    protestoPlaceOptions: {
-      type: Array,
-      required: true,
-    },
-    genderOptions: {
-      type: Array,
-      required: true,
+      default: () => ({})  // Prevents undefined errors
     },
   },
   mounted() {
-    
-  },
-  methods: {
-    saveProtesto() {
-      this.$emit("saveProtesto", this.protesto);
-    },
-  },
+    fetchWithToken("/lookup/employeeCounts")
+        .then(response => response.json())
+        .then(data => (this.employeeCounts = data));
+
+    fetchWithToken("/ProtestoPlace/List")
+        .then(response => response.json())
+        .then(data => (this.protestoPlaceOptions = data));
+    fetchWithToken("/ProtestoType/List")
+        .then(response => response.json())
+        .then(data => (this.protestoTypeOptions = data));
+
+    fetchWithToken("/lookup/genders")
+        .then(response => response.json())
+        .then(data => (this.genderOptions = data));
+
+  }
 };
 </script>
 

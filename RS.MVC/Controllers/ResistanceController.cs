@@ -105,6 +105,20 @@ namespace ResistanceSurvey.Controllers
         }
 
         [Authorize]
+        [HttpPost]
+        public IActionResult CreateResistance([FromBody] ResistanceModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                model.UserName = UserName;
+                _rsApplication.Create(model);
+                return Ok();
+            }
+            var values = ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors).ToList();
+            return StatusCode(StatusCodes.Status500InternalServerError, values);
+        }
+        
+        [Authorize]
         public IActionResult AddCompany(bool isMain)
         {
             ViewBag.Worklines = new SelectList(_db.CompanyWorkLine.Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList(), "Id", "Name");
