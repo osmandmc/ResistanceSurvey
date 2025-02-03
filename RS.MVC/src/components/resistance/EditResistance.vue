@@ -29,6 +29,7 @@
       Eylem Ekle<i class="plus icon"></i>
     </button>
     <protesto-accordion
+        :activeProtestoIndex="this.activeProtestoIndex"
         :protestoItems="resistance.protestoItems"
         :protestoPlaceOptions="protestoPlaceOptions"
         :protestoTypeOptions="protestoTypeOptions"
@@ -95,6 +96,7 @@ export default {
       companyTypes: [],
       companyScales: [],
       worklines: [],
+      activeProtestoIndex: null,
       formErrors: {},
     };
   },
@@ -153,10 +155,10 @@ export default {
         .then(response => response.json())
         .then(data => (this.employeeCountInProtestoOptions = data));
 
-    this.initializeSemanticUI();
+    // this.initializeSemanticUI();
   },
   updated() {
-    this.initializeSemanticUI();
+    // this.initializeSemanticUI();
   },
   watch: {
     // Watch for changes in the 'id' prop and reload the data
@@ -177,18 +179,12 @@ export default {
           });      
     },
     createProtesto(){
-      // console.log(protesto);
       const protesto = {
         resistanceId: this.resistance.id,
       };
-      console.log(this.resistance.protestoItems);
+      this.activeProtestoIndex = this.resistance.protestoItems.length;  
       this.resistance.protestoItems.push(protesto);
-    },
-    initializeSemanticUI() {
-      // Reinitialize Semantic UI components
-      this.$nextTick(() => {
-        $('.ui.accordion').accordion();
-      });
+      console.log(this.activeProtestoIndex);
     },
     toggleOutsource() {
       // Show/hide outsource section

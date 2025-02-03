@@ -3,14 +3,12 @@
     <div v-for="(protesto, index) in protestoItems" :key="protesto.protestoId">
       <div class="title" @click="toggleAccordion(index)">
         <i class="dropdown icon"></i>
-        <span v-for="(protestoType, pIndex) in protesto.protestoTypeIds" :key="pIndex">
-          {{ protestoType.name }}
-        </span>
-        <span v-if="protesto.protestoStartDate != null"> 
-          {{  formatDate(protesto.protestoStartDate) }}
+        <span v-if="protesto.protestoId !== undefined">
+          {{ protesto?.protestoTypeIds[0]?.name }} | 
+          {{ formatDate(protesto?.protestoStartDate) }} 
         </span>
       </div>
-      <div :class="{ active: activeIndex === index }" class="content">
+      <div :class="['content', { active: activeIndex === index }]">
         <edit-protesto
             :protesto="protesto"
             :genderOptions="genderOptions"
@@ -30,7 +28,16 @@ import EditProtesto from "./EditProtesto.vue";
 export default {
   name: "ProtestoAccordion",
   components: { EditProtesto },
+  data() {
+    return {
+      activeIndex: { ...this.activeProtestoIndex }
+    }
+  },
   props: {
+    activeProtestoIndex: {
+      type: Number,
+      default: () => null
+    },
     protestoItems: {
       type: Array,
       required: true,
@@ -54,18 +61,12 @@ export default {
     }
   },
   mounted() {
-  },
-  data() {
-    return {
-      activeIndex: null,
-    };
+    console.log(this.activeProtestoIndex);
   },
   methods: {
     toggleAccordion(index) {
-      console.log(index);
       console.log(this.activeIndex);
-      this.activeIndex = this.activeIndex === index ? null : index;
-      console.log(this.activeIndex);
+      this.activeIndex = this.activeIndex === index ? index : null;
     },
     saveProtesto(updatedProtesto) {
       this.$emit("updateProtesto", updatedProtesto);

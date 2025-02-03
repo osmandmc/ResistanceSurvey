@@ -165,7 +165,6 @@
 
 <script>
 import Multiselect from 'vue-multiselect'
-import {fetchWithToken} from "../../fetchWrapper";
 
 export default {
   name: "Resistance",
