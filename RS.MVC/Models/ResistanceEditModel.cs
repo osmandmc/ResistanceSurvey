@@ -40,7 +40,5 @@ namespace RS.MVC.Models
         public List<ProtestoEditModel> ProtestoItems { get; set; }
         public List<News> ResistanceNews { get; set; }
         
-        
-
     }
 }

@@ -149,6 +149,18 @@ namespace ResistanceSurvey.Controllers
 
         [Authorize]
         [HttpPost]
+        public IActionResult CreateOrUpdateProtesto([FromBody] ProtestoEditModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                _rsApplication.UpsertProtesto(viewModel);
+                return Ok();
+            }
+            var values = ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors).ToList();
+            return StatusCode(StatusCodes.Status400BadRequest, values);
+        }
+        [Authorize]
+        [HttpPost]
         public IActionResult AddProtesto(ProtestoAddModel viewModel)
         {
             if (ModelState.IsValid)
@@ -176,7 +188,7 @@ namespace ResistanceSurvey.Controllers
             if (ModelState.IsValid)
             {
                 viewModel.Updater = UserName;
-                _rsApplication.UpdateProtesto(viewModel);
+                _rsApplication.UpsertProtesto(viewModel);
                 return Ok();
             }
             var errors = ModelState.Values.Where(m => m.Errors.Count > 1).Select(s => s.Errors).ToList();
@@ -191,6 +203,7 @@ namespace ResistanceSurvey.Controllers
             return Ok();
         }
         [Authorize]
+        [HttpGet]
         public IActionResult EditResistance(int id)
         {
             var resistance = _rsApplication.GetResistanceDetail(id);
@@ -222,6 +235,21 @@ namespace ResistanceSurvey.Controllers
             var values = ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors).ToList();
             return StatusCode(StatusCodes.Status500InternalServerError, values);
         }
+        
+        [Authorize]
+        [HttpPost]
+        public IActionResult UpdateResitance([FromBody] ResistanceUpdateModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                viewModel.UserName = UserName;
+                _rsApplication.UpdateResistance(viewModel);
+                return Ok();
+            }
+            var values = ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors).ToList();
+            return StatusCode(StatusCodes.Status500InternalServerError, values);
+        }
+        
         [Authorize]
         [HttpPost]
         public IActionResult DeleteResistance(ResistanceDeleteModel viewModel)

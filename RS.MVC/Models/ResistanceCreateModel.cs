@@ -199,4 +199,26 @@ namespace RS.MVC.Models
             return protesto;
         }
     }
+    public class ResistanceUpdateModel: BaseViewModel
+    {
+        public int Id { get; set; }
+        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        public int CategoryId { get; set; }
+        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        public int CompanyId { get; set; }
+        public int? MainCompanyId { get; set; }
+        public string Code { get; set; }
+        public bool HasTradeUnion { get; set; }
+        public int? TradeUnionAuthorityId { get; set; }
+        public string Note { get; set; }
+        public string ResistanceDescription { get; set; }
+        public int? EmployeeCountId { get; set; }
+        public int? EmployeeCount { get; set; }
+        public List<Corporation> CorporationIds { get; set; }
+        public int? TradeUnionId { get; set; }
+        public List<EmploymentType> EmploymentTypeIds { get; set; }
+        public List<ResistanceReason> ResistanceReasonIds { get; set; }
+        public List<ResistanceNewsModel> ResistanceNewsIds { get; set; }
+        
+    }
 }

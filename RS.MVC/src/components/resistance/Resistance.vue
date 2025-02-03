@@ -1,27 +1,19 @@
 <template>
-    <!-- Header -->
-    <h4 class="ui dividing header">
-      <router-link to="/list" class="item"><i class="angle double left icon"></i></router-link>
-      Vaka
-    </h4>
-
     <!-- Hidden Input for ID -->
-    <input type="hidden" name="Id" v-model="this.resistanceData.id" />
+    <input type="hidden" name="Id" v-model="this.resistance.id" />
 
-    <!-- Short Description -->
     <div class="field">
       <label for="ResistanceDescription">Kısa Açıklama</label>
       <textarea
           id="ResistanceDescription"
           rows="6"
-          v-model="this.resistanceData.resistanceDescription"
+          v-model="this.resistance.resistanceDescription"
       ></textarea>
     </div>
-
-    <!-- Case Category -->
+  
     <div class="field">
       <label for="CategoryId">Vaka Niteliği</label>
-      <select v-model="this.resistanceData.categoryId">
+      <select v-model="this.resistance.categoryId">
         <option value="">--Seçiniz--</option>
         <option v-for="category in categories" :key="category.id" :value="category.id">
           {{ category.name }}
@@ -38,7 +30,7 @@
       <div class="field">
         <label for="ResistanceReasonIds">Vaka Nedeni</label>
         <multiselect id="ResistanceReasonIds"
-                     v-model="this.resistanceData.resistanceReasonIds"
+                     v-model="this.resistance.resistanceReasonIds"
                      placeholder="Seçiniz" label="name" track-by="id"
                      :preselect-first="true"
                      :options="resistanceReasons"
@@ -53,7 +45,7 @@
       <!-- Develop Right -->
       <div class="field">
         <label for="DevelopRight">Hak Geliştirme/Hak Savunma Özelliği</label>
-        <select v-model="this.resistanceData.developRight">
+        <select v-model="this.resistance.developRight">
           <option value="">--Seçiniz--</option>
           <option :value="true">Hak Geliştirme</option>
           <option :value="false">Hak Savunma</option>
@@ -68,7 +60,7 @@
       <label for="CompanyId">Şirket</label>
       <div class="two fields">
         <div class="field">
-          <select v-model="this.resistanceData.companyId">
+          <select v-model="this.resistance.companyId">
             <option value="">--Seçiniz--</option>
             <option
                 v-for="company in companies"
@@ -80,7 +72,7 @@
           </select>
         </div>
         <div class="field">
-          <button type="button" @click="openCompanyModal(true)" class="ui button">
+          <button type="button" @click="openCompanyModal" class="ui button">
             <i class="chevron circle up icon"></i>Şirket Ekle
           </button>
         </div>
@@ -89,14 +81,14 @@
     <!-- Is Outsource -->
     <div class="field sixty wide">
       <label for="IsOutsource">Şirket Taşeron mu?</label>
-      <select v-model="this.resistanceData.isOutsource" @change="toggleOutsource">
+      <select v-model="this.resistance.isOutsource" @change="toggleOutsource">
         <option :value="false">Hayır</option>
         <option :value="true">Evet</option>
       </select>
     </div>
 
     <!-- Main Company (Conditional) -->
-    <div v-if="this.resistanceData.isOutsource" id="outsource" class="sixty wide field">
+    <div v-if="this.resistance.isOutsource" id="outsource" class="sixty wide field">
       <label for="MainCompanyId">Ana Şirket</label>
       <div class="two fields">
         <div class="field">
@@ -112,7 +104,7 @@
           </select>
         </div>
         <div class="field">
-          <button type="button" @click="openCompanyModal(true)" class="ui button">
+          <button type="button" @click="openCompanyModal" class="ui button">
             <i class="chevron circle up icon"></i>Ana Şirket Ekle
           </button>
         </div>
@@ -123,7 +115,7 @@
     <div class="two fields">
       <div class="field">
         <label for="EmployeeCountId">İş Yerindeki İşçi Sayısı</label>
-        <select v-model="this.resistanceData.employeeCountId">
+        <select v-model="this.resistance.employeeCountId">
           <option value="">--Seçiniz--</option>
           <option
               v-for="count in employeeCounts"
@@ -142,14 +134,14 @@
         <input
             type="text"
             id="EmployeeCount"
-            v-model="this.resistanceData.employeeCount"
+            v-model="this.resistance.employeeCount"
         />
       </div>
     </div>
     <div class="field">
       <label for="CorporationIds">Kurumsallık</label>
       <multiselect id="CorporationIds" 
-                   v-model="this.resistanceData.corporationIds"
+                   v-model="this.resistance.corporationIds"
                    placeholder="Seçiniz" label="name" track-by="id" :preselect-first="true"
                    :options="corporations"
                    :multiple="true" 
@@ -162,25 +154,13 @@
     <!-- Other Fields -->
     <div class="field">
       <label for="ResistanceResult">Sonuç</label>
-      <select v-model="this.resistanceData.resistanceResult" class="ui fluid dropdown">
+      <select v-model="this.resistance.resistanceResult" class="ui fluid dropdown">
         <option :value="0">Bilinmiyor</option>
         <option :value="1">Tam Kazanım</option>
         <option :value="2">Yarım Kazanım</option>
         <option :value="3">Sıfır Kazanım</option>
       </select>
     </div>
-
-    <!-- Protestos -->
-    <h3 class="ui dividing header">Eylemler</h3>
-    <button
-        type="button"
-        class="ui right labeled small green icon button"
-        @click="addProtesto"
-    >
-      Eylem Ekle<i class="plus icon"></i>
-    </button>
-  
-  
 </template>
 
 <script>
@@ -189,52 +169,46 @@ import {fetchWithToken} from "../../fetchWrapper";
 
 export default {
   name: "Resistance",
+  emits: ["openCompanyModal"],
   components: { Multiselect },
-  data() {
-    return {
-      resistanceData: this.resistance,
-      categories: [],
-      resistanceReasons: [],
-      companies: [],
-      corporations: [],
-      employeeCounts: []
-    };
-  },
   props: {
+    // modelValue: Object,
     resistance: {
       type: Object,
       default: () => ({}) 
+    },
+    companies: {
+      type: Array,
+      required: true,
+    },
+    resistanceReasons: {
+      type: Array,
+      required: true,
+    },
+    categories: {
+      type: Array,
+      required: true,
+    },
+    corporations: {
+      type: Array,
+      required: true,
+    },
+    employeeCounts: {
+      type: Array,
+      required: true,
     },
     formErrors: {
       type:Object,
       default: () => ({})
     }
   },
-  mounted() {
-    fetchWithToken("/company/list")
-        .then(response => response.json())
-        .then(data => (this.companies = data));
-
-    fetchWithToken("/resistance/categories")
-        .then(response => response.json())
-        .then(data => (this.categories = data));
-
-    fetchWithToken("/lookup/resistancereasons")
-        .then(response => response.json())
-        .then(data => (this.resistanceReasons = data));
-
-    fetchWithToken("/lookup/employeeCounts")
-        .then(response => response.json())
-        .then(data => (this.employeeCounts = data));
-    
-    fetchWithToken("/corporation/list")
-        .then(response => response.json())
-        .then(data => (this.corporations = data));
-    
-  },
   methods: {
     toggleOutsource() {
       // Show/hide outsource section
+    },
+    openCompanyModal() {
+      console.log('openCompanyModal');
+      this.$emit('openCompanyModal');
     },
     addResistanceReason (newTag) {
       const tag = {

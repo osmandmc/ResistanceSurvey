@@ -23,6 +23,7 @@ import Multiselect from "vue-multiselect";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import Protesto from "./Protesto.vue";
 import '@vuepic/vue-datepicker/dist/main.css'
+import {fetchWithToken} from "../../fetchWrapper";
 
 export default {
   name: "EditProtesto",
@@ -51,7 +52,20 @@ export default {
   },
   methods: {
     saveProtesto() {
-      this.$emit("saveProtesto", this.protesto);
+      console.log(this.protesto);
+      fetchWithToken("/Resistance/CreateOrUpdateProtesto", {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON is sent
+        },
+        body: JSON.stringify(this.protesto)
+      })
+          .then(response => { 
+            console.log(response);
+            this.$router.push(`/edit/${this.protesto.resistanceId}`);
+          })
+          .catch(error => console.log(error));
+      
     },
   },
 };

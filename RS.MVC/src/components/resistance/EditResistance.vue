@@ -7,18 +7,24 @@
     Vaka
   </h4>
   <form class="ui form">
-    <input type="hidden" name="Id" v-model="resistance.id" />
-    <Resistance 
-        :resistance="resistance"
-    >
-    </Resistance>
+    <input type="hidden" name="Id" v-model="this.resistance.id" />
+    <Resistance
+        :resistance="this.resistance"
+        :corporations="corporations"
+        :resistanceReasons="resistanceReasons"
+        :employeeCounts="employeeCounts"
+        :companies="companies"
+        :categories="categories"
+        :formErrors="formErrors"
+        @openCompanyModal="handleOpenCompanyModal"
+    />
    
     <!-- Protestos -->
     <h3 class="ui dividing header">Eylemler</h3>
     <button
         type="button"
         class="ui right labeled small green icon button"
-        @click="addProtesto"
+        @click="createProtesto"
     >
       Eylem Ekle<i class="plus icon"></i>
     </button>
@@ -58,10 +64,25 @@ import CompanyModal from "../CompanyModal.vue"; // Adjust the path based on your
 export default {
   name: "EditResistance",
   components: {CompanyModal, ProtestoAccordion, Multiselect, Resistance},
+  emits: ["openCompanyModal"],
   data() {
     return {
       isLoading: true,
-      resistance: {},
+      resistance: {
+        id: null, // Default value for Id (could be null or -1 based on your use case)
+        resistanceDescription: '', // Default empty string for description
+        categoryId: '', // Empty string for the category ID
+        resistanceReasonIds: [], // Default to an empty array for selected reasons
+        developRight: '', // Default empty string (you might want a boolean or string value depending on your form logic)
+        companyId: '', // Default to an empty string for the company ID
+        isOutsource: false, // Default to 'false' indicating the company is not outsourced
+        mainCompanyId: '', // Default empty string for main company, if outsourcing is selected
+        employeeCountId: '', // Default to an empty string for employee count ID
+        employeeCount: '', // Default empty string for employee count (could be a number if required)
+        corporationIds: [], // Default empty array for selected corporation IDs
+        resistanceResult: 0, // Default to "Bilinmiyor" (unknown result)
+        protestoItems: [],
+      },
       categories: [],
       resistanceReasons: [],
       companies: [],
@@ -91,8 +112,11 @@ export default {
     fetchWithToken("/lookup/resistancereasons")
         .then(response => response.json())
         .then(data => (this.resistanceReasons = data));
-    
-  
+
+    fetchWithToken("/lookup/employeeCounts")
+        .then(response => response.json())
+        .then(data => (this.employeeCounts = data));
+
     fetchWithToken("/corporation/list")
         .then(response => response.json())
         .then(data => (this.corporations = data));
@@ -104,10 +128,26 @@ export default {
     fetchWithToken("/lookup/companyScales")
         .then(response => response.json())
         .then(data => (this.companyScales = data));
-    
+
     fetchWithToken("/lookup/companyWorklines")
         .then(response => response.json())
         .then(data => (this.worklines = data));
+
+    fetchWithToken("/lookup/employeeCounts")
+        .then(response => response.json())
+        .then(data => (this.employeeCounts = data));
+
+    fetchWithToken("/ProtestoPlace/List")
+        .then(response => response.json())
+        .then(data => (this.protestoPlaceOptions = data));
+
+    fetchWithToken("/ProtestoType/List")
+        .then(response => response.json())
+        .then(data => (this.protestoTypeOptions = data));
+
+    fetchWithToken("/lookup/genders")
+        .then(response => response.json())
+        .then(data => (this.genderOptions = data));
 
     fetchWithToken("/lookup/employeeCountInProtesto")
         .then(response => response.json())
@@ -136,6 +176,14 @@ export default {
             this.isLoading = false; 
           });      
     },
+    createProtesto(){
+      // console.log(protesto);
+      const protesto = {
+        resistanceId: this.resistance.id,
+      };
+      console.log(this.resistance.protestoItems);
+      this.resistance.protestoItems.push(protesto);
+    },
     initializeSemanticUI() {
       // Reinitialize Semantic UI components
       this.$nextTick(() => {
@@ -145,8 +193,9 @@ export default {
     toggleOutsource() {
       // Show/hide outsource section
     },
-    openCompanyModal(isMain) {
-      this.$refs.modalRef.openModal();
+    handleOpenCompanyModal() {
+      console.log('openCompanyModal');
+      this.$refs.modalRef.openModal();  
     },
     handleSaveCompany(companyData) {
       console.log(companyData);
@@ -156,12 +205,28 @@ export default {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(companyData)})
-          .then(response => response.json())
-          .then(data => (console.log(data)));
-      this.companies.push(companyData);
+          .then(response => {
+            return response.json();
+          })
+          .then(data => {
+            console.log(data);
+            this.companies.push(data);
+            this.resistance.companyId = data.id;
+          });
+     
     },
     saveForm() {
       // Save form logic
+      console.log(this.resistance);
+      fetchWithToken("/Resistance/UpdateResitance", {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON is sent
+        },
+        body: JSON.stringify(this.resistance)
+      })
+          .then(response => console.log(response))
+          .catch(error => console.log(error));
     },
     formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date

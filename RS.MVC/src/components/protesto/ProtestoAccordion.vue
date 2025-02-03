@@ -6,7 +6,9 @@
         <span v-for="(protestoType, pIndex) in protesto.protestoTypeIds" :key="pIndex">
           {{ protestoType.name }}
         </span>
-        <span> {{ formatDate(protesto.protestoStartDate) }}</span>
+        <span v-if="protesto.protestoStartDate != null"> 
+          {{  formatDate(protesto.protestoStartDate) }}
+        </span>
       </div>
       <div :class="{ active: activeIndex === index }" class="content">
         <edit-protesto
@@ -32,6 +34,7 @@ export default {
     protestoItems: {
       type: Array,
       required: true,
+      default: () => []
     },
     protestoTypeOptions: {
       type: Array,

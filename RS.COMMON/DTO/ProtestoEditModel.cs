@@ -9,6 +9,7 @@ namespace RS.COMMON.DTO
 {
     public class ProtestoEditModel
     {
+        public string UserName { get; set; }
         public int ProtestoId { get; set; }
         public int ResistanceId { get; set; }
         public List<ProtestoType> ProtestoTypeIds { get; set; }
@@ -56,16 +57,29 @@ namespace RS.COMMON.DTO
                 UpdateDate = DateTime.Now,
                 Updater = Updater
             };
-           
           
-            // if(InterventionTypeIds!=null)
-            //     InterventionTypeIds.ForEach(c=> protesto.ProtestoInterventionTypes.Add(new ProtestoInterventionType{ ProtestoId = ProtestoId, InterventionTypeId = c}));
-            // if(ProtestoCityIds!=null)
-            //     ProtestoCityIds.ForEach(c=> protesto.Cities.Add(new ProtestoCity{ ProtestoId = ProtestoId, CityId = c }));
-            // if(ProtestoDistrictIds!=null)
-            //     ProtestoDistrictIds.ForEach(c=> {if(c.HasValue) protesto.Districts.Add(new ProtestoDistrict{ ProtestoId = ProtestoId, DistrictId = c.Value });});
-            // if (Locations!= null)
-            //     Locations.Where(s=>!s.Deleted).ToList().ForEach(c => { protesto.Locations.Add(new ProtestoLocation { ProtestoId = ProtestoId, CityId = c.CityId.Value, DistrictId = c.DistrictId, Place = c.Place }); });
+            if(InterventionTypeIds!=null)
+                InterventionTypeIds.ForEach(c=> 
+                    protesto.ProtestoInterventionTypes
+                        .Add(new ProtestoInterventionType
+                        {
+                            ProtestoId = ProtestoId, 
+                            InterventionTypeId = c.Id
+                        }));
+            
+            if (Locations != null)
+                Locations.Where(s=>!s.Deleted)
+                    .ToList()
+                    .ForEach(c =>
+                    {
+                        protesto.Locations.Add(new ProtestoLocation
+                        {
+                            ProtestoId = ProtestoId, 
+                            CityId = c.CityId.Value, 
+                            DistrictId = c.DistrictId, 
+                            Place = c.Place
+                        });
+                    });
             return protesto;
         }
     }

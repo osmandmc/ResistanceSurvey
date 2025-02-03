@@ -2,10 +2,9 @@
     <!-- Protesto Types -->
     <div class="field">
       <label for="ProtestoTypeIds">Eylem Türleri</label>
-
       <multiselect
           id="ProtestoTypeIds"
-          v-model="protesto.protestoTypeIds"
+          v-model="this.protesto.protestoTypeIds"
           :options="protestoTypeOptions"
           :multiple="true"
           :close-on-select="false"
@@ -21,11 +20,11 @@
     <div class="two fields">
       <div class="field">
         <label for="ProtestoStartDate">Başlangıç Tarihi</label>
-        <VueDatePicker v-model="protesto.protestoStartDate"></VueDatePicker>
+        <VueDatePicker v-model="this.protesto.protestoStartDate"></VueDatePicker>
       </div>
       <div class="field">
         <label for="ProtestoEndDate">Bitiş Tarihi</label>
-        <VueDatePicker v-model="protesto.protestoEndDate"></VueDatePicker>
+        <VueDatePicker v-model="this.protesto.protestoEndDate"></VueDatePicker>
       </div>
     </div>
 
@@ -34,7 +33,7 @@
       <label for="ProtestoPlaceIds">Yerler</label>
       <multiselect
           id="ProtestoPlaceIds"
-          v-model="protesto.protestoPlaceIds"
+          v-model="this.protesto.protestoPlaceIds"
           :options="protestoPlaceOptions"
           :multiple="true"
           :close-on-select="false"
@@ -49,7 +48,7 @@
     <!-- Gender -->
     <div class="field">
       <label for="GenderId">Cinsiyet</label>
-      <select v-model="protesto.genderId" id="GenderId">
+      <select v-model="this.protesto.genderId" id="GenderId">
         <option value="">--Seçiniz--</option>
         <option
             v-for="gender in genderOptions"
@@ -66,7 +65,7 @@
     <input
         type="number"
         id="CustodyCount"
-        v-model="protesto.custodyCount"
+        v-model="this.protesto.custodyCount"
     />
   </div>
     <!-- Other Fields -->
@@ -76,12 +75,12 @@
         <input
             type="number"
             id="EmployeeCountInProtesto"
-            v-model="protesto.employeeCountInProtesto"
+            v-model="this.protesto.employeeCountInProtesto"
         />
       </div>
       <div class="field">
         <label for="EmployeeCountInProtestoId">Eylemdeki İşçi Sayısı</label>
-        <select v-model="protesto.employeeCountInProtestoId" id="EmployeeCountInProtestoId">
+        <select v-model="this.protesto.employeeCountInProtestoId" id="EmployeeCountInProtestoId">
           <option value="">--Seçiniz--</option>
           <option
               v-for="employeeCountInProtesto in employeeCountInProtestoOptions"
@@ -97,7 +96,7 @@
     <!-- Notes -->
     <div class="field">
       <label for="Note">Notlar</label>
-      <textarea id="Note" v-model="protesto.note" rows="3"></textarea>
+      <textarea id="Note" v-model="this.protesto.note" rows="3"></textarea>
     </div>
 
     <!-- Save Button -->
@@ -113,36 +112,27 @@ import {fetchWithToken} from "../../fetchWrapper";
 export default {
   name: "Protesto",
   components: { Multiselect, VueDatePicker },
-  data() {
-    return {
-      protestoPlaceOptions: [],
-      protestoTypeOptions: [],
-      genderOptions: [],
-      employeeCountInProtestoOptions:[],
-    };
-  },
   props: {
     protesto: {
       type: Object,
       default: () => ({})  // Prevents undefined errors
     },
-  },
-  mounted() {
-    fetchWithToken("/lookup/employeeCounts")
-        .then(response => response.json())
-        .then(data => (this.employeeCounts = data));
-
-    fetchWithToken("/ProtestoPlace/List")
-        .then(response => response.json())
-        .then(data => (this.protestoPlaceOptions = data));
-    fetchWithToken("/ProtestoType/List")
-        .then(response => response.json())
-        .then(data => (this.protestoTypeOptions = data));
-
-    fetchWithToken("/lookup/genders")
-        .then(response => response.json())
-        .then(data => (this.genderOptions = data));
-
+    protestoTypeOptions: {
+      type: Array,
+      required: true,
+    },
+    protestoPlaceOptions: {
+      type: Array,
+      required: true,
+    },
+    genderOptions: {
+      type: Array,
+      required: true,
+    },
+    employeeCountInProtestoOptions: {
+      type: Array,
+      required: true,
+    }
   }
 };
 </script>

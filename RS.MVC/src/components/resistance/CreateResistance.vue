@@ -2,12 +2,20 @@
   <form class="ui form">
     <Resistance
         :resistance="resistance"
+        :corporations="corporations"
+        :resistanceReasons="resistanceReasons"
+        :employeeCounts="employeeCounts"
+        :companies="companies"
+        :categories="categories"
         :formErrors="formErrors"
-       >
-    </Resistance>
-   
+    />
+    <h3 class="ui dividing header">Eylem</h3>
     <Protesto
         :protesto="resistance.protesto"
+        :genderOptions="genderOptions"
+        :protestoTypeOptions="protestoTypeOptions"
+        :protestoPlaceOptions="protestoPlaceOptions"
+        :employeeCountInProtestoOptions="employeeCountInProtestoOptions"
     />
     <!-- Save and Cancel Buttons -->
     <button class="ui primary button" @click.prevent="saveForm">
@@ -30,12 +38,13 @@ import {fetchWithToken} from "../../fetchWrapper";
 import Multiselect from 'vue-multiselect'
 import CompanyModal from "../CompanyModal.vue";
 import Protesto from "../protesto/Protesto.vue";
-import Resistance from "./Resistance.vue"; // Adjust the path based on your folder structure
+import Resistance from "./Resistance.vue";
+import EditProtesto from "../protesto/EditProtesto.vue"; // Adjust the path based on your folder structure
 
 
 export default {
   name: "CreateResistance",
-  components: {Resistance, Protesto, CompanyModal, Multiselect},
+  components: {EditProtesto, Resistance, Protesto, CompanyModal, Multiselect},
   data() {
     return {
       resistance: {
@@ -53,9 +62,17 @@ export default {
         protesto: {},
       },
       companies:[],
+      resistanceReasons: [],
+      categories: [],
+      corporations: [],
+      employeeCounts: [],
       companyTypes: [],
       companyScales: [],
       worklines: [],
+      protestoPlaceOptions: [],
+      protestoTypeOptions: [],
+      genderOptions: [],
+      employeeCountInProtestoOptions:[],
       formErrors: {},
     };
   },
@@ -64,6 +81,23 @@ export default {
     fetchWithToken("/company/list")
         .then(response => response.json())
         .then(data => (this.companies = data));
+
+    fetchWithToken("/resistance/categories")
+        .then(response => response.json())
+        .then(data => (this.categories = data));
+
+    fetchWithToken("/lookup/resistancereasons")
+        .then(response => response.json())
+        .then(data => (this.resistanceReasons = data));
+
+    fetchWithToken("/lookup/employeeCounts")
+        .then(response => response.json())
+        .then(data => (this.employeeCounts = data));
+
+    fetchWithToken("/corporation/list")
+        .then(response => response.json())
+        .then(data => (this.corporations = data));
+    
     fetchWithToken("/lookup/companyTypes")
         .then(response => response.json())
         .then(data => (this.companyTypes = data));
@@ -75,6 +109,26 @@ export default {
     fetchWithToken("/lookup/companyWorklines")
         .then(response => response.json())
         .then(data => (this.worklines = data));
+
+    fetchWithToken("/lookup/employeeCounts")
+        .then(response => response.json())
+        .then(data => (this.employeeCounts = data));
+
+    fetchWithToken("/ProtestoPlace/List")
+        .then(response => response.json())
+        .then(data => (this.protestoPlaceOptions = data));
+    
+    fetchWithToken("/ProtestoType/List")
+        .then(response => response.json())
+        .then(data => (this.protestoTypeOptions = data));
+
+    fetchWithToken("/lookup/genders")
+        .then(response => response.json())
+        .then(data => (this.genderOptions = data));
+
+    fetchWithToken("/lookup/employeeCountInProtesto")
+        .then(response => response.json())
+        .then(data => (this.employeeCountInProtestoOptions = data));
     
   },
   methods: {
