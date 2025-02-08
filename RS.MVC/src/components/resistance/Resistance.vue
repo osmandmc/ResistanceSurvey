@@ -38,7 +38,7 @@
                      :close-on-select="false"
                      :clear-on-select="false"
                      :preserve-search="true"
-                     :taggable="true" @tag="addResistanceReason">
+                     :taggable="true"  @tag="addResistanceReason">
         </multiselect>
       </div>
 

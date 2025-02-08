@@ -80,16 +80,18 @@
       <table class="ui celled selectable striped table">
         <tbody>
         <tr v-for="item in results" :key="item.id">
-          <td>
+          <td v-if="!isEditing">
             <router-link :to="`/edit/${item.id}`">{{ item.categoryName }}</router-link>
           </td>
-          <td>{{ item.companyName }}</td>
+          <td>
+            <router-link :to="`/edit/${item.id}`">{{ item.companyName }}</router-link>
+          </td>
           <td>{{ formatDate(item.startDate) }}</td>
         </tr>
         </tbody>
         <tfoot>
         <tr>
-          <th colspan="2">
+          <th :colspan="isEditing ? 1 : 2">
             <p>{{ rowCount }} kayıttan {{ from }} - {{ to }} arasındakiler görüntüleniyor.</p>
           </th>
           <th>
@@ -158,6 +160,9 @@ export default {
     },
     pageCount() {
       return Math.ceil(this.rowCount / this.filter.pageSize);
+    },
+    isEditing() {
+      return this.$route.path.includes('/edit/');
     },
   },
   methods: {

@@ -23,7 +23,6 @@
         <VueDatePicker v-model="this.protesto.protestoStartDate" 
                        text-input 
                        locale="tr-TR"
-                       :format-locale="tr" 
                        format="dd/MM/yyyy">
         </VueDatePicker>
       </div>
@@ -32,7 +31,6 @@
         <VueDatePicker v-model="this.protesto.protestoEndDate" 
                        text-input
                        locale="tr-TR"
-                       :format-locale="tr"
                        format="dd/MM/yyyy">
         </VueDatePicker>
       </div>

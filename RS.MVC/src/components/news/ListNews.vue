@@ -49,8 +49,6 @@
         <a
             v-if="item.added"
             href="#"
-            :data-id="item.id"
-            data-open="0"
             class="a"
             style="color:red"
         >
@@ -60,7 +58,6 @@
             v-else
             href="#"
             :data-id="item.id"
-            data-open="0"
             class="a"
         >
           {{ item.header }}
@@ -83,9 +80,8 @@
         <div class="meta">
           <span class="date">{{ formatDate(item.date) }}</span>
           <button
-              @click="copyLink(item.id)"
+              @click="linkNews(item.id)"
               class="ui icon button green basic mini copyLink"
-              :data-id="item.id"
           >
             <i class="paperclip icon"></i>
           </button>
@@ -94,14 +90,11 @@
         <!-- Description (Hidden by Default) -->
         <div
             class="description"
-            :data-id="item.id"
             v-show="false"
         ></div>
       </div>
     </div>
-    
-    </div>
-  
+  </div>
 </template>
 
 <script>
@@ -109,6 +102,7 @@ import {fetchWithToken} from "../../fetchWrapper";
 
 export default {
   name: "ListNews",
+  emits: ["linkNews"],
   data() {
     return {
       selectedYear: new Date().getFullYear(), // Default to current year
@@ -133,12 +127,10 @@ export default {
   },
   computed: {
     filteredNews() {
-      // Filter news based on selected year and month
       return this.news;
     },
   },
   mounted() {
-    // Fetch news data when the component is mounted
     this.fetchNews();
   },
   methods: {
@@ -151,6 +143,11 @@ export default {
     },
     formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date to a readable string
+    },
+    linkNews(id){
+      
+      const newsItem = this.filteredNews.find(news => news.id === id);
+      this.$emit('linkNews', newsItem);
     },
   },
 };

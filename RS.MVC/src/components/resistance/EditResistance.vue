@@ -37,7 +37,8 @@
         :employeeCountInProtestoOptions="employeeCountInProtestoOptions"
         @cancelProtesto="handleCancelProtesto"
     />
-
+    <resistance-news :news="this.resistance.resistanceNews" @removeNews="handleRemoveNews"/>
+    
     <!-- Save and Cancel Buttons -->
     <button id="btnSave" class="ui primary button" @click.prevent="saveForm">
       KAYDET
@@ -52,7 +53,6 @@
          :worklines="worklines"
          :companies="companies"
          @save-company="handleSaveCompany"/>
-
 </template>
 
 <script>
@@ -60,13 +60,18 @@ import {fetchWithToken} from "../../fetchWrapper";
 import Resistance from "./Resistance.vue";
 import Multiselect from 'vue-multiselect'
 import ProtestoAccordion from "../protesto/ProtestoAccordion.vue";
-import CompanyModal from "../CompanyModal.vue"; // Adjust the path based on your folder structure
-
+import ResistanceNews from "../news/ResistanceNews.vue";
+import CompanyModal from "../CompanyModal.vue";
+import {inject, watch} from 'vue';
 
 export default {
   name: "EditResistance",
-  components: {CompanyModal, ProtestoAccordion, Multiselect, Resistance},
+  components: {CompanyModal, ProtestoAccordion, Multiselect, Resistance, ResistanceNews},
   emits: ["openCompanyModal"],
+  setup() {
+    const addedNews = inject('addedNews'); // Inject full object
+    return { addedNews };
+  },
   data() {
     return {
       isLoading: true,
@@ -84,6 +89,7 @@ export default {
         corporationIds: [], // Default empty array for selected corporation IDs
         resistanceResult: 0, // Default to "Bilinmiyor" (unknown result)
         protestoItems: [],
+        resistanceNews: [],
       },
       categories: [],
       resistanceReasons: [],
@@ -101,7 +107,11 @@ export default {
       formErrors: {},
     };
   },
-  props: ['id'],  // The id is passed as a prop from the router
+  props: {
+    id: {
+      type: String,
+    }
+  },
   mounted() {
     this.fetchResistance();
     fetchWithToken("/company/list")
@@ -158,12 +168,17 @@ export default {
 
     // this.initializeSemanticUI();
   },
-  updated() {
-    // this.initializeSemanticUI();
-  },
   watch: {
-    // Watch for changes in the 'id' prop and reload the data
     '$route.params.id': 'fetchResistance',
+    'addedNews.news': {
+      handler(newNews) {
+        if (newNews && this.resistance) {
+          this.resistance.resistanceNews.push(newNews); // Push into array
+        }
+      },
+      deep: true,
+      immediate: true,
+  }
   },
   methods: {
     fetchResistance() {
@@ -174,7 +189,6 @@ export default {
       fetchWithToken(`/resistance/get/${id}`)
           .then(response => response.json())
           .then(data => { 
-            console.log(data); 
             this.resistance = data; 
             this.isLoading = false; 
           });      
@@ -192,14 +206,12 @@ export default {
       }
       else{
         this.activeProtestoIndex = this.resistance.protestoItems.length;
-        console.log('already exists');
       }
     },
     toggleOutsource() {
       // Show/hide outsource section
     },
     handleOpenCompanyModal() {
-      console.log('openCompanyModal');
       this.$refs.modalRef.openModal();  
     },
     handleSaveCompany(companyData) {
@@ -234,7 +246,7 @@ export default {
           .catch(error => console.log(error));
     },
     handleCancelProtesto(protesto) {
-      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== protesto.protestoId);
+      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== 0);
       this.activeProtestoIndex = null;
     },
     formatDate(date) {
@@ -245,9 +257,12 @@ export default {
         name: newTag,
         id: -1
       }
-      console.log(tag);
       this.resistanceReasons.push(tag)
       this.resistance.resistanceReasonIds.push(tag)
+    },
+    handleRemoveNews(newsId){
+      console.log('remove newsId ',newsId);
+      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);
     }
   },
 };

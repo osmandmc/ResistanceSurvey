@@ -31,7 +31,7 @@ const routes = [
         path: '/edit/:id', // Relative path for editing resistance
         components: {
             LeftSidebar: ListResistance,
-            RightSidebar: EditResistance,
+            RightSidebar:  EditResistance,
         },
     },
     {
@@ -40,7 +40,7 @@ const routes = [
             LeftSidebar: CreateResistance,
             RightSidebar: ListNews,
         },
-    }
+    },
 ];
 
 const router = createRouter({
