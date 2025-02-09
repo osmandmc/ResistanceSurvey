@@ -16,6 +16,8 @@
         :protestoTypeOptions="protestoTypeOptions"
         :protestoPlaceOptions="protestoPlaceOptions"
         :employeeCountInProtestoOptions="employeeCountInProtestoOptions"
+        :cities="cities"
+        :districts="districts"
         @addLocation="handleAddLocation"
     />
     <!-- Save and Cancel Buttons -->
@@ -76,6 +78,8 @@ export default {
       protestoTypeOptions: [],
       genderOptions: [],
       employeeCountInProtestoOptions:[],
+      cities:[],
+      districts:[],
       formErrors: {},
     };
   },
@@ -132,6 +136,14 @@ export default {
     fetchWithToken("/lookup/employeeCountInProtesto")
         .then(response => response.json())
         .then(data => (this.employeeCountInProtestoOptions = data));
+
+    fetchWithToken("/lookup/cities")
+        .then(response => response.json())
+        .then(data => (this.cities = data));
+
+    fetchWithToken("/lookup/districts")
+        .then(response => response.json())
+        .then(data => (this.districts = data));
     
   },
   methods: {
