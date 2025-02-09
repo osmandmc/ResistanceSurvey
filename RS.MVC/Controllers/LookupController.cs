@@ -100,4 +100,20 @@ public class LookupController : Controller
             .ToList();
         return Json(lookup);
     }
+    [Authorize]
+    public IActionResult Cities()
+    {
+        var lookup = _db.City
+            .OrderBy(s=>s.Name)
+            .ToList();
+        return Json(lookup);
+    }
+    [Authorize]
+    public IActionResult Districts(int? cityId)
+    {
+        var lookup = _db.District
+            .OrderBy(s=>s.Name)
+            .ToList();
+        return Json(lookup);
+    }
 }

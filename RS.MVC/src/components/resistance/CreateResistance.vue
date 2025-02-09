@@ -16,6 +16,7 @@
         :protestoTypeOptions="protestoTypeOptions"
         :protestoPlaceOptions="protestoPlaceOptions"
         :employeeCountInProtestoOptions="employeeCountInProtestoOptions"
+        @addLocation="handleAddLocation"
     />
     <!-- Save and Cancel Buttons -->
     <button class="ui primary button" @click.prevent="saveForm">
@@ -59,7 +60,9 @@ export default {
         employmentTypeIds: null,
         corporationIds: null,
         resistanceReasonIds: null,
-        protesto: {},
+        protesto: {
+          locations: []
+        },
       },
       companies:[],
       resistanceReasons: [],
@@ -190,6 +193,9 @@ export default {
     formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date
     },
+    handleAddLocation(){
+      this.resistance.protesto.locations.push({});
+    }
   },
 };
 </script>

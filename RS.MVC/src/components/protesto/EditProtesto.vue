@@ -1,11 +1,14 @@
 <template>
   <div class="ui form">
     <Protesto 
-        :protesto="protesto"
+        :protesto="this.protestoData"
         :protestoTypeOptions="protestoTypeOptions"
         :protestoPlaceOptions="protestoPlaceOptions"
         :genderOptions="genderOptions"
         :employeeCountInProtestoOptions="employeeCountInProtestoOptions"
+        :cities="this.cities"
+        :districts="this.districts"
+        @addLocation="handleAddLocation"
     />
     <!-- Save Button -->
     <button
@@ -39,11 +42,19 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import Protesto from "./Protesto.vue";
 import '@vuepic/vue-datepicker/dist/main.css'
 import {fetchWithToken} from "../../fetchWrapper";
+import protesto from "./Protesto.vue";
 
 export default {
   name: "EditProtesto",
   emits: ["cancelProtesto"],
   components: { Protesto },
+  data() {
+    return {
+      protestoData: {
+        locations: []
+      }
+    }
+  },
   props: {
     protesto: {
       type: Object,
@@ -65,6 +76,19 @@ export default {
       type: Array,
       required: true,
     },
+    cities: {
+      type: Array,
+      required: true,
+    },
+    districts: {
+      type: Array,
+      required: true,
+    }
+  },
+  mounted() {
+    console.log(protesto);
+    this.protestoData = { ...this.protesto };
+    console.log(this.cities);
   },
   methods: {
     saveProtesto() {
@@ -97,8 +121,11 @@ export default {
           .catch(error => console.log(error));
     },
     cancelProtesto() {
-      console.log(this.protesto);
       this.$emit('cancelProtesto', this.protesto);
+    },
+    
+    handleAddLocation(){
+      this.protestoData.locations.push({});
     }
   },
 };

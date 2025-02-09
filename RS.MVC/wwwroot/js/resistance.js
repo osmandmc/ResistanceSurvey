@@ -20286,6 +20286,36 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=script&lang=js":
+/*!*******************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=script&lang=js ***!
+  \*******************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  props: {
+    protestoLocations: {
+      type: Array,
+      required: true
+    },
+    cities: {
+      type: Array,
+      required: true
+    },
+    districts: {
+      type: Array,
+      required: true
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/NotFound.vue?vue&type=script&lang=js":
 /*!*******************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/NotFound.vue?vue&type=script&lang=js ***!
@@ -20526,6 +20556,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @vuepic/vue-datepicker/dist/main.css */ "./node_modules/@vuepic/vue-datepicker/dist/main.css");
 /* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _fetchWrapper__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../fetchWrapper */ "./src/fetchWrapper.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
 
 
 
@@ -20536,6 +20573,13 @@ __webpack_require__.r(__webpack_exports__);
   emits: ["cancelProtesto"],
   components: {
     Protesto: _Protesto_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
+  },
+  data: function data() {
+    return {
+      protestoData: {
+        locations: []
+      }
+    };
   },
   props: {
     protesto: {
@@ -20557,7 +20601,20 @@ __webpack_require__.r(__webpack_exports__);
     employeeCountInProtestoOptions: {
       type: Array,
       required: true
+    },
+    cities: {
+      type: Array,
+      required: true
+    },
+    districts: {
+      type: Array,
+      required: true
     }
+  },
+  mounted: function mounted() {
+    console.log(_Protesto_vue__WEBPACK_IMPORTED_MODULE_2__["default"]);
+    this.protestoData = _objectSpread({}, this.protesto);
+    console.log(this.cities);
   },
   methods: {
     saveProtesto: function saveProtesto() {
@@ -20591,8 +20648,10 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     cancelProtesto: function cancelProtesto() {
-      console.log(this.protesto);
       this.$emit('cancelProtesto', this.protesto);
+    },
+    handleAddLocation: function handleAddLocation() {
+      this.protestoData.locations.push({});
     }
   }
 });
@@ -20615,15 +20674,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vuepic/vue-datepicker/dist/main.css */ "./node_modules/@vuepic/vue-datepicker/dist/main.css");
 /* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _fetchWrapper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../fetchWrapper */ "./src/fetchWrapper.js");
+/* harmony import */ var _Location_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Location.vue */ "./src/components/Location.vue");
+
 
 
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Protesto",
+  emits: "addProtesto",
   components: {
     Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_0__["default"],
-    VueDatePicker: _vuepic_vue_datepicker__WEBPACK_IMPORTED_MODULE_1__["default"]
+    VueDatePicker: _vuepic_vue_datepicker__WEBPACK_IMPORTED_MODULE_1__["default"],
+    Location: _Location_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   props: {
     protesto: {
@@ -20647,6 +20710,19 @@ __webpack_require__.r(__webpack_exports__);
     employeeCountInProtestoOptions: {
       type: Array,
       required: true
+    },
+    cities: {
+      type: Array,
+      required: true
+    },
+    districts: {
+      type: Array,
+      required: true
+    }
+  },
+  methods: {
+    addLocation: function addLocation() {
+      this.$emit('addLocation');
     }
   }
 });
@@ -20704,6 +20780,14 @@ __webpack_require__.r(__webpack_exports__);
       required: true
     },
     employeeCountInProtestoOptions: {
+      type: Array,
+      required: true
+    },
+    cities: {
+      type: Array,
+      required: true
+    },
+    districts: {
       type: Array,
       required: true
     }
@@ -20785,7 +20869,9 @@ __webpack_require__.r(__webpack_exports__);
         employmentTypeIds: null,
         corporationIds: null,
         resistanceReasonIds: null,
-        protesto: {}
+        protesto: {
+          locations: []
+        }
       },
       companies: [],
       resistanceReasons: [],
@@ -20940,6 +21026,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     formatDate: function formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date
+    },
+    handleAddLocation: function handleAddLocation() {
+      this.resistance.protesto.locations.push({});
     }
   }
 });
@@ -21030,6 +21119,8 @@ __webpack_require__.r(__webpack_exports__);
       companyTypes: [],
       companyScales: [],
       worklines: [],
+      cities: [],
+      districts: [],
       activeProtestoIndex: null,
       formErrors: {}
     };
@@ -21102,10 +21193,15 @@ __webpack_require__.r(__webpack_exports__);
     }).then(function (data) {
       return _this.genderOptions = data;
     });
-    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/employeeCountInProtesto").then(function (response) {
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/cities").then(function (response) {
       return response.json();
     }).then(function (data) {
-      return _this.employeeCountInProtestoOptions = data;
+      return _this.cities = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/districts").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.districts = data;
     });
 
     // this.initializeSemanticUI();
@@ -21143,7 +21239,8 @@ __webpack_require__.r(__webpack_exports__);
       if (created.length === 0) {
         var protesto = {
           resistanceId: this.resistance.id,
-          protestoId: 0
+          protestoId: 0,
+          locations: []
         };
         this.activeProtestoIndex = this.resistance.protestoItems.length;
         this.resistance.protestoItems.push(protesto);
@@ -21620,6 +21717,65 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=template&id=2456dd65&scoped=true":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=template&id=2456dd65&scoped=true ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+
+var _hoisted_1 = ["onUpdate:modelValue"];
+var _hoisted_2 = ["value"];
+var _hoisted_3 = ["onUpdate:modelValue"];
+var _hoisted_4 = ["value"];
+var _hoisted_5 = ["onUpdate:modelValue"];
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.protestoLocations, function (location, index) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+      key: index,
+      "class": "fields"
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" City Dropdown "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+      "onUpdate:modelValue": function onUpdateModelValue($event) {
+        return location.cityId = $event;
+      }
+    }, [_cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+      value: ""
+    }, "--İl--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.cities, function (city) {
+      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+        key: city.id,
+        value: city.id
+      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(city.name), 9 /* TEXT, PROPS */, _hoisted_2);
+    }), 128 /* KEYED_FRAGMENT */))], 8 /* PROPS */, _hoisted_1), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, location.cityId]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" District Dropdown "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+      "onUpdate:modelValue": function onUpdateModelValue($event) {
+        return location.districtId = $event;
+      }
+    }, [_cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+      value: ""
+    }, "--İlçe--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.districts.filter(function (s) {
+      return s.cityId === location.cityId;
+    }), function (district) {
+      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+        key: district.id,
+        value: district.id
+      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(district.name), 9 /* TEXT, PROPS */, _hoisted_4);
+    }), 128 /* KEYED_FRAGMENT */))], 8 /* PROPS */, _hoisted_3), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, location.districtId]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Place Input "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+      "onUpdate:modelValue": function onUpdateModelValue($event) {
+        return location.place = $event;
+      },
+      type: "text",
+      placeholder: "Enter place"
+    }, null, 8 /* PROPS */, _hoisted_5), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, location.place]])]);
+  }), 128 /* KEYED_FRAGMENT */))]);
+}
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/NotFound.vue?vue&type=template&id=3a86191f":
 /*!***********************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/NotFound.vue?vue&type=template&id=3a86191f ***!
@@ -21921,12 +22077,15 @@ var _hoisted_1 = {
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Protesto = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Protesto");
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Protesto, {
-    protesto: $props.protesto,
+    protesto: this.protestoData,
     protestoTypeOptions: $props.protestoTypeOptions,
     protestoPlaceOptions: $props.protestoPlaceOptions,
     genderOptions: $props.genderOptions,
-    employeeCountInProtestoOptions: $props.employeeCountInProtestoOptions
-  }, null, 8 /* PROPS */, ["protesto", "protestoTypeOptions", "protestoPlaceOptions", "genderOptions", "employeeCountInProtestoOptions"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save Button "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    employeeCountInProtestoOptions: $props.employeeCountInProtestoOptions,
+    cities: this.cities,
+    districts: this.districts,
+    onAddLocation: $options.handleAddLocation
+  }, null, 8 /* PROPS */, ["protesto", "protestoTypeOptions", "protestoPlaceOptions", "genderOptions", "employeeCountInProtestoOptions", "cities", "districts", "onAddLocation"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save Button "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "ui primary button",
     type: "button",
     onClick: _cache[0] || (_cache[0] = function () {
@@ -21986,23 +22145,30 @@ var _hoisted_8 = {
   "class": "field"
 };
 var _hoisted_9 = {
-  "class": "two fields"
+  "class": "field"
 };
 var _hoisted_10 = {
   "class": "field"
 };
 var _hoisted_11 = {
+  "class": "two fields"
+};
+var _hoisted_12 = {
   "class": "field"
 };
-var _hoisted_12 = ["value"];
 var _hoisted_13 = {
+  "class": "field"
+};
+var _hoisted_14 = ["value"];
+var _hoisted_15 = {
   "class": "field"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _this = this;
   var _component_multiselect = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("multiselect");
   var _component_VueDatePicker = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("VueDatePicker");
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Types "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[9] || (_cache[9] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  var _component_Location = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Location");
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Types "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoTypeIds"
   }, "Eylem Türleri", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ProtestoTypeIds",
@@ -22018,7 +22184,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     placeholder: "Seçiniz",
     label: "name",
     "track-by": "id"
-  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Start and End Dates "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Start and End Dates "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoStartDate"
   }, "Başlangıç Tarihi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_VueDatePicker, {
     modelValue: this.protesto.protestoStartDate,
@@ -22028,7 +22194,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "text-input": "",
     locale: "tr-TR",
     format: "dd/MM/yyyy"
-  }, null, 8 /* PROPS */, ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoEndDate"
   }, "Bitiş Tarihi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_VueDatePicker, {
     modelValue: this.protesto.protestoEndDate,
@@ -22038,7 +22204,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "text-input": "",
     locale: "tr-TR",
     format: "dd/MM/yyyy"
-  }, null, 8 /* PROPS */, ["modelValue"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Places "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Places "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoPlaceIds"
   }, "Yerler", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ProtestoPlaceIds",
@@ -22054,55 +22220,65 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     placeholder: "Seçiniz",
     label: "name",
     "track-by": "id"
-  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Gender "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Gender "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "GenderId"
   }, "Cinsiyet", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
       return _this.protesto.genderId = $event;
     }),
     id: "GenderId"
-  }, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.genderOptions, function (gender) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: gender.id,
       value: gender.id
     }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(gender.name), 9 /* TEXT, PROPS */, _hoisted_7);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.protesto.genderId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.protesto.genderId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    "class": "ui button",
+    onClick: _cache[5] || (_cache[5] = function () {
+      return $options.addLocation && $options.addLocation.apply($options, arguments);
+    })
+  }, "Lokasyon Ekle")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Location, {
+    cities: $props.cities,
+    districts: $props.districts,
+    "protesto-locations": this.protesto.locations
+  }, null, 8 /* PROPS */, ["cities", "districts", "protesto-locations"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [_cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CustodyCount"
   }, "Gözaltı Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
     id: "CustodyCount",
-    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
       return _this.protesto.custodyCount = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.protesto.custodyCount]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [_cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.protesto.custodyCount]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [_cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCountInProtesto"
   }, "Eylemdeki İşçi Sayısı (Tam)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
     id: "EmployeeCountInProtesto",
-    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
       return _this.protesto.employeeCountInProtesto = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.protesto.employeeCountInProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.protesto.employeeCountInProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCountInProtestoId"
   }, "Eylemdeki İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
+    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
       return _this.protesto.employeeCountInProtestoId = $event;
     }),
     id: "EmployeeCountInProtestoId"
-  }, [_cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.employeeCountInProtestoOptions, function (employeeCountInProtesto) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: employeeCountInProtesto.id,
       value: employeeCountInProtesto.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(employeeCountInProtesto.name), 9 /* TEXT, PROPS */, _hoisted_12);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.protesto.employeeCountInProtestoId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Notes "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(employeeCountInProtesto.name), 9 /* TEXT, PROPS */, _hoisted_14);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.protesto.employeeCountInProtestoId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Notes "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "Note"
   }, "Notlar", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     id: "Note",
-    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
+    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
       return _this.protesto.note = $event;
     }),
     rows: "3"
@@ -22154,8 +22330,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       protestoTypeOptions: $props.protestoTypeOptions,
       protestoPlaceOptions: $props.protestoPlaceOptions,
       employeeCountInProtestoOptions: $props.employeeCountInProtestoOptions,
+      cities: $props.cities,
+      districts: $props.districts,
       onCancelProtesto: $options.handleCancelProtesto
-    }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions", "onCancelProtesto"])], 2 /* CLASS */)]);
+    }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions", "cities", "districts", "onCancelProtesto"])], 2 /* CLASS */)]);
   }), 128 /* KEYED_FRAGMENT */))]);
 }
 
@@ -22196,8 +22374,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     genderOptions: $data.genderOptions,
     protestoTypeOptions: $data.protestoTypeOptions,
     protestoPlaceOptions: $data.protestoPlaceOptions,
-    employeeCountInProtestoOptions: $data.employeeCountInProtestoOptions
-  }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save and Cancel Buttons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    employeeCountInProtestoOptions: $data.employeeCountInProtestoOptions,
+    onAddLocation: $options.handleAddLocation
+  }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions", "onAddLocation"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save and Cancel Buttons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "ui primary button",
     onClick: _cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.saveForm && $options.saveForm.apply($options, arguments);
@@ -22292,8 +22471,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     protestoTypeOptions: $data.protestoTypeOptions,
     genderOptions: $data.genderOptions,
     employeeCountInProtestoOptions: $data.employeeCountInProtestoOptions,
+    cities: $data.cities,
+    districts: $data.districts,
     onCancelProtesto: $options.handleCancelProtesto
-  }, null, 8 /* PROPS */, ["activeProtestoIndex", "protestoItems", "protestoPlaceOptions", "protestoTypeOptions", "genderOptions", "employeeCountInProtestoOptions", "onCancelProtesto"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_resistance_news, {
+  }, null, 8 /* PROPS */, ["activeProtestoIndex", "protestoItems", "protestoPlaceOptions", "protestoTypeOptions", "genderOptions", "employeeCountInProtestoOptions", "cities", "districts", "onCancelProtesto"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_resistance_news, {
     news: this.resistance.resistanceNews,
     onRemoveNews: $options.handleRemoveNews
   }, null, 8 /* PROPS */, ["news", "onRemoveNews"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save and Cancel Buttons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
@@ -22978,6 +23159,35 @@ ___CSS_LOADER_EXPORT___.push([module.id, `
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css":
+/*!*********************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css ***!
+  \*********************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `
+/* Add styles if necessary */
+`, "",{"version":3,"sources":["webpack://./src/components/Location.vue"],"names":[],"mappings":";AA0CA,4BAA4B","sourcesContent":["<template>\n  <div>\n    <div v-for=\"(location, index) in protestoLocations\" :key=\"index\" class=\"fields\">\n      <!-- City Dropdown -->\n      <select v-model=\"location.cityId\">\n        <option value=\"\">--İl--</option>\n        <option v-for=\"city in cities\" :key=\"city.id\" :value=\"city.id\">{{ city.name }}</option>\n      </select>\n\n      <!-- District Dropdown -->\n      <select v-model=\"location.districtId\" >\n        <option value=\"\">--İlçe--</option>\n        <option v-for=\"district in districts.filter(s=>s.cityId === location.cityId)\" :key=\"district.id\" :value=\"district.id\">{{ district.name }}</option>\n      </select>\n\n      <!-- Place Input -->\n      <input v-model=\"location.place\" type=\"text\" placeholder=\"Enter place\" />\n    </div>\n  </div>\n</template>\n\n<script>\n\nexport default {\n  props: {\n    protestoLocations: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    }\n  }\n};\n</script>\n\n<style scoped>\n/* Add styles if necessary */\n</style>\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/ResistanceOverview.vue?vue&type=style&index=0&id=b726abfc&scoped=true&lang=css":
 /*!*******************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/ResistanceOverview.vue?vue&type=style&index=0&id=b726abfc&scoped=true&lang=css ***!
@@ -23107,7 +23317,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add any scoped styles here if necessary */
-`, "",{"version":3,"sources":["webpack://./src/components/protesto/EditProtesto.vue"],"names":[],"mappings":";AA2GA,4CAA4C","sourcesContent":["<template>\n  <div class=\"ui form\">\n    <Protesto \n        :protesto=\"protesto\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :genderOptions=\"genderOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n    />\n    <!-- Save Button -->\n    <button\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"saveProtesto\"\n    >\n      EYLEMİ KAYDET\n    </button>\n    <button\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"cancelProtesto\"\n    >\n      VAZGEÇ\n    </button>\n    <button \n        v-if=\"protesto.protestoId !== null\"\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"deleteProtesto\"\n    >\n      SİL\n    </button>\n  </div>\n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport Protesto from \"./Protesto.vue\";\nimport '@vuepic/vue-datepicker/dist/main.css'\nimport {fetchWithToken} from \"../../fetchWrapper\";\n\nexport default {\n  name: \"EditProtesto\",\n  emits: [\"cancelProtesto\"],\n  components: { Protesto },\n  props: {\n    protesto: {\n      type: Object,\n      required: true,\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n    employeeCountInProtestoOptions: {\n      type: Array,\n      required: true,\n    },\n  },\n  methods: {\n    saveProtesto() {\n      console.log(this.protesto);\n      fetchWithToken(\"/Resistance/CreateOrUpdateProtesto\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(this.protesto)\n      })\n          .then(response => { \n            console.log(response);\n            this.$router.push(`/edit/${this.protesto.resistanceId}`);\n          })\n          .catch(error => console.log(error));\n      \n    },\n    deleteProtesto() {\n      fetchWithToken(`/Resistance/DeleteProtesto/${this.protesto.protestoId}`, {\n        method: 'DELETE',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        }\n      })\n          .then(response => {\n            console.log(response);\n            this.$router.push(`/edit/${this.protesto.resistanceId}`);\n          })\n          .catch(error => console.log(error));\n    },\n    cancelProtesto() {\n      console.log(this.protesto);\n      this.$emit('cancelProtesto', this.protesto);\n    }\n  },\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles here if necessary */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/protesto/EditProtesto.vue"],"names":[],"mappings":";AAsIA,4CAA4C","sourcesContent":["<template>\n  <div class=\"ui form\">\n    <Protesto \n        :protesto=\"this.protestoData\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :genderOptions=\"genderOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"this.cities\"\n        :districts=\"this.districts\"\n        @addLocation=\"handleAddLocation\"\n    />\n    <!-- Save Button -->\n    <button\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"saveProtesto\"\n    >\n      EYLEMİ KAYDET\n    </button>\n    <button\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"cancelProtesto\"\n    >\n      VAZGEÇ\n    </button>\n    <button \n        v-if=\"protesto.protestoId !== null\"\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"deleteProtesto\"\n    >\n      SİL\n    </button>\n  </div>\n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport Protesto from \"./Protesto.vue\";\nimport '@vuepic/vue-datepicker/dist/main.css'\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport protesto from \"./Protesto.vue\";\n\nexport default {\n  name: \"EditProtesto\",\n  emits: [\"cancelProtesto\"],\n  components: { Protesto },\n  data() {\n    return {\n      protestoData: {\n        locations: []\n      }\n    }\n  },\n  props: {\n    protesto: {\n      type: Object,\n      required: true,\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n    employeeCountInProtestoOptions: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    }\n  },\n  mounted() {\n    console.log(protesto);\n    this.protestoData = { ...this.protesto };\n    console.log(this.cities);\n  },\n  methods: {\n    saveProtesto() {\n      console.log(this.protesto);\n      fetchWithToken(\"/Resistance/CreateOrUpdateProtesto\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(this.protesto)\n      })\n          .then(response => { \n            console.log(response);\n            this.$router.push(`/edit/${this.protesto.resistanceId}`);\n          })\n          .catch(error => console.log(error));\n      \n    },\n    deleteProtesto() {\n      fetchWithToken(`/Resistance/DeleteProtesto/${this.protesto.protestoId}`, {\n        method: 'DELETE',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        }\n      })\n          .then(response => {\n            console.log(response);\n            this.$router.push(`/edit/${this.protesto.resistanceId}`);\n          })\n          .catch(error => console.log(error));\n    },\n    cancelProtesto() {\n      this.$emit('cancelProtesto', this.protesto);\n    },\n    \n    handleAddLocation(){\n      this.protestoData.locations.push({});\n    }\n  },\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles here if necessary */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -23136,7 +23346,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add any scoped styles here if necessary */
-`, "",{"version":3,"sources":["webpack://./src/components/protesto/Protesto.vue"],"names":[],"mappings":";AAoJA,4CAA4C","sourcesContent":["<template>\n    <!-- Protesto Types -->\n    <div class=\"field\">\n      <label for=\"ProtestoTypeIds\">Eylem Türleri</label>\n      <multiselect\n          id=\"ProtestoTypeIds\"\n          v-model=\"this.protesto.protestoTypeIds\"\n          :options=\"protestoTypeOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n    </div>\n\n    <!-- Start and End Dates -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"ProtestoStartDate\">Başlangıç Tarihi</label>\n        <VueDatePicker v-model=\"this.protesto.protestoStartDate\" \n                       text-input \n                       locale=\"tr-TR\"\n                       format=\"dd/MM/yyyy\">\n        </VueDatePicker>\n      </div>\n      <div class=\"field\">\n        <label for=\"ProtestoEndDate\">Bitiş Tarihi</label>\n        <VueDatePicker v-model=\"this.protesto.protestoEndDate\" \n                       text-input\n                       locale=\"tr-TR\"\n                       format=\"dd/MM/yyyy\">\n        </VueDatePicker>\n      </div>\n    </div>\n\n    <!-- Protesto Places -->\n    <div class=\"field\">\n      <label for=\"ProtestoPlaceIds\">Yerler</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"this.protesto.protestoPlaceIds\"\n          :options=\"protestoPlaceOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n    </div>\n\n    <!-- Gender -->\n    <div class=\"field\">\n      <label for=\"GenderId\">Cinsiyet</label>\n      <select v-model=\"this.protesto.genderId\" id=\"GenderId\">\n        <option value=\"\">--Seçiniz--</option>\n        <option\n            v-for=\"gender in genderOptions\"\n            :key=\"gender.id\"\n            :value=\"gender.id\"\n        >\n          {{ gender.name }}\n        </option>\n      </select>\n    </div>\n\n  <div class=\"field\">\n    <label for=\"CustodyCount\">Gözaltı Sayısı</label>\n    <input\n        type=\"number\"\n        id=\"CustodyCount\"\n        v-model=\"this.protesto.custodyCount\"\n    />\n  </div>\n    <!-- Other Fields -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtesto\">Eylemdeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"number\"\n            id=\"EmployeeCountInProtesto\"\n            v-model=\"this.protesto.employeeCountInProtesto\"\n        />\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtestoId\">Eylemdeki İşçi Sayısı</label>\n        <select v-model=\"this.protesto.employeeCountInProtestoId\" id=\"EmployeeCountInProtestoId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"employeeCountInProtesto in employeeCountInProtestoOptions\"\n              :key=\"employeeCountInProtesto.id\"\n              :value=\"employeeCountInProtesto.id\"\n          >\n            {{ employeeCountInProtesto.name }}\n          </option>\n        </select>\n      </div>\n    </div>\n\n    <!-- Notes -->\n    <div class=\"field\">\n      <label for=\"Note\">Notlar</label>\n      <textarea id=\"Note\" v-model=\"this.protesto.note\" rows=\"3\"></textarea>\n    </div>\n\n    <!-- Save Button -->\n   \n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport '@vuepic/vue-datepicker/dist/main.css'\nimport {fetchWithToken} from \"../../fetchWrapper\";\n\nexport default {\n  name: \"Protesto\",\n  components: { Multiselect, VueDatePicker },\n  props: {\n    protesto: {\n      type: Object,\n      default: () => ({})  // Prevents undefined errors\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n    employeeCountInProtestoOptions: {\n      type: Array,\n      required: true,\n    }\n  }\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles here if necessary */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/protesto/Protesto.vue"],"names":[],"mappings":";AAwKA,4CAA4C","sourcesContent":["<template>\n    <!-- Protesto Types -->\n    <div class=\"field\">\n      <label for=\"ProtestoTypeIds\">Eylem Türleri</label>\n      <multiselect\n          id=\"ProtestoTypeIds\"\n          v-model=\"this.protesto.protestoTypeIds\"\n          :options=\"protestoTypeOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n    </div>\n\n    <!-- Start and End Dates -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"ProtestoStartDate\">Başlangıç Tarihi</label>\n        <VueDatePicker v-model=\"this.protesto.protestoStartDate\" \n                       text-input \n                       locale=\"tr-TR\"\n                       format=\"dd/MM/yyyy\">\n        </VueDatePicker>\n      </div>\n      <div class=\"field\">\n        <label for=\"ProtestoEndDate\">Bitiş Tarihi</label>\n        <VueDatePicker v-model=\"this.protesto.protestoEndDate\" \n                       text-input\n                       locale=\"tr-TR\"\n                       format=\"dd/MM/yyyy\">\n        </VueDatePicker>\n      </div>\n    </div>\n\n    <!-- Protesto Places -->\n    <div class=\"field\">\n      <label for=\"ProtestoPlaceIds\">Yerler</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"this.protesto.protestoPlaceIds\"\n          :options=\"protestoPlaceOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n    </div>\n\n    <!-- Gender -->\n    <div class=\"field\">\n      <label for=\"GenderId\">Cinsiyet</label>\n      <select v-model=\"this.protesto.genderId\" id=\"GenderId\">\n        <option value=\"\">--Seçiniz--</option>\n        <option\n            v-for=\"gender in genderOptions\"\n            :key=\"gender.id\"\n            :value=\"gender.id\"\n        >\n          {{ gender.name }}\n        </option>\n      </select>\n    </div>\n  <div class=\"field\">\n    <button type=\"button\" class=\"ui button\" @click=\"addLocation\">Lokasyon Ekle</button>\n  </div>\n  <div class=\"field\">\n    <Location :cities=\"cities\" :districts=\"districts\" :protesto-locations=\"this.protesto.locations\" />\n  </div>\n  <div class=\"field\">\n    <label for=\"CustodyCount\">Gözaltı Sayısı</label>\n    <input\n        type=\"number\"\n        id=\"CustodyCount\"\n        v-model=\"this.protesto.custodyCount\"\n    />\n  </div>\n    <!-- Other Fields -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtesto\">Eylemdeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"number\"\n            id=\"EmployeeCountInProtesto\"\n            v-model=\"this.protesto.employeeCountInProtesto\"\n        />\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtestoId\">Eylemdeki İşçi Sayısı</label>\n        <select v-model=\"this.protesto.employeeCountInProtestoId\" id=\"EmployeeCountInProtestoId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"employeeCountInProtesto in employeeCountInProtestoOptions\"\n              :key=\"employeeCountInProtesto.id\"\n              :value=\"employeeCountInProtesto.id\"\n          >\n            {{ employeeCountInProtesto.name }}\n          </option>\n        </select>\n      </div>\n    </div>\n\n    <!-- Notes -->\n    <div class=\"field\">\n      <label for=\"Note\">Notlar</label>\n      <textarea id=\"Note\" v-model=\"this.protesto.note\" rows=\"3\"></textarea>\n    </div>\n\n    <!-- Save Button -->\n   \n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport '@vuepic/vue-datepicker/dist/main.css'\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Location from \"../Location.vue\";\n\nexport default {\n  name: \"Protesto\",\n  emits: \"addProtesto\",\n  components: { Multiselect, VueDatePicker, Location },\n  props: {\n    protesto: {\n      type: Object,\n      default: () => ({})  // Prevents undefined errors\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n    employeeCountInProtestoOptions: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    }\n  },\n  methods: {\n    addLocation() {\n      this.$emit('addLocation');\n    }\n  }\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles here if necessary */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -23165,7 +23375,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add styles here */
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/CreateResistance.vue"],"names":[],"mappings":";AAsMA,oBAAoB","sourcesContent":["<template>\n  <form class=\"ui form\">\n    <Resistance\n        :resistance=\"resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :formErrors=\"formErrors\"\n    />\n    <h3 class=\"ui dividing header\">Eylem</h3>\n    <Protesto\n        :protesto=\"resistance.protesto\"\n        :genderOptions=\"genderOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n    />\n    <!-- Save and Cancel Buttons -->\n    <button class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" id=\"btnCancelResistanceModal\" class=\"ui negative button\">\n      VAZGEÇ\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n                 :companyTypes=\"companyTypes\"\n                 :companyScales=\"companyScales\"\n                 :worklines=\"worklines\"\n                 :companies=\"companies\"\n                 @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Multiselect from 'vue-multiselect'\nimport CompanyModal from \"../CompanyModal.vue\";\nimport Protesto from \"../protesto/Protesto.vue\";\nimport Resistance from \"./Resistance.vue\";\nimport EditProtesto from \"../protesto/EditProtesto.vue\"; // Adjust the path based on your folder structure\n\n\nexport default {\n  name: \"CreateResistance\",\n  components: {EditProtesto, Resistance, Protesto, CompanyModal, Multiselect},\n  data() {\n    return {\n      resistance: {\n        resistanceDescription: null,\n        categoryId: null,\n        developRight: null,\n        isOutsource: false,\n        mainCompanyId: null,\n        employeeCountId: null,\n        employeeCount: null,\n        resistanceResult: null,\n        employmentTypeIds: null,\n        corporationIds: null,\n        resistanceReasonIds: null,\n        protesto: {},\n      },\n      companies:[],\n      resistanceReasons: [],\n      categories: [],\n      corporations: [],\n      employeeCounts: [],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      protestoPlaceOptions: [],\n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      formErrors: {},\n    };\n  },\n  props: ['id'],  // The id is passed as a prop from the router\n  mounted() {\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/resistance/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => (this.corporations = data));\n    \n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n    \n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/employeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n    \n  },\n  methods: {\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    checkTradeUnion() {\n      const corporationIds = this.resistance?.corporationIds?.map(s => s.id);\n      const queryParams = new URLSearchParams();\n      corporationIds.forEach(id => queryParams.append('corporationIds', id));\n\n      fetchWithToken(`/corporation/checkTradeUnion?${queryParams.toString()}`)\n          .then(response => response.json())\n          .then(data => this.tradeUnionIncluded = data);\n    },\n    openCompanyModal(isMain) {\n      this.$refs.modalRef.openModal();\n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(companyData)\n      })\n          .then(response => response.json())\n          .then(data => (console.log(data)));\n      this.companies.push(companyData);\n    },\n    saveForm() {\n      const resistanceData = {\n        categoryId: this.resistance.categoryId,\n        companyId: this.resistance.companyId,\n        resistanceReasonIds: this.resistance.resistanceReasonIds,\n        mainCompanyId: this.resistance.mainCompanyId,\n        corporationIds: this.resistance.corporationIds,\n        hasTradeUnion: true,\n        tradeUnionAuthorityId: this.resistance.tradeUnionAuthorityId,\n        note: this.resistance.note,\n        resistanceDescription: this.resistance.resistanceDescription,\n        employeeCountId: this.resistance.employeeCountId,\n        employeeCount: this.resistance.employeeCount,\n        tradeUnionId: this.resistance.tradeUnionId,\n        protesto: this.resistance.protesto,\n      }\n\n      fetchWithToken(\"/Resistance/CreateResistance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(resistanceData)\n      })\n      .then(response => console.log(response))\n          .catch(error => console.log(error));\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/CreateResistance.vue"],"names":[],"mappings":";AA4MA,oBAAoB","sourcesContent":["<template>\n  <form class=\"ui form\">\n    <Resistance\n        :resistance=\"resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :formErrors=\"formErrors\"\n    />\n    <h3 class=\"ui dividing header\">Eylem</h3>\n    <Protesto\n        :protesto=\"resistance.protesto\"\n        :genderOptions=\"genderOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        @addLocation=\"handleAddLocation\"\n    />\n    <!-- Save and Cancel Buttons -->\n    <button class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" id=\"btnCancelResistanceModal\" class=\"ui negative button\">\n      VAZGEÇ\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n                 :companyTypes=\"companyTypes\"\n                 :companyScales=\"companyScales\"\n                 :worklines=\"worklines\"\n                 :companies=\"companies\"\n                 @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Multiselect from 'vue-multiselect'\nimport CompanyModal from \"../CompanyModal.vue\";\nimport Protesto from \"../protesto/Protesto.vue\";\nimport Resistance from \"./Resistance.vue\";\nimport EditProtesto from \"../protesto/EditProtesto.vue\"; // Adjust the path based on your folder structure\n\n\nexport default {\n  name: \"CreateResistance\",\n  components: {EditProtesto, Resistance, Protesto, CompanyModal, Multiselect},\n  data() {\n    return {\n      resistance: {\n        resistanceDescription: null,\n        categoryId: null,\n        developRight: null,\n        isOutsource: false,\n        mainCompanyId: null,\n        employeeCountId: null,\n        employeeCount: null,\n        resistanceResult: null,\n        employmentTypeIds: null,\n        corporationIds: null,\n        resistanceReasonIds: null,\n        protesto: {\n          locations: []\n        },\n      },\n      companies:[],\n      resistanceReasons: [],\n      categories: [],\n      corporations: [],\n      employeeCounts: [],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      protestoPlaceOptions: [],\n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      formErrors: {},\n    };\n  },\n  props: ['id'],  // The id is passed as a prop from the router\n  mounted() {\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/resistance/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => (this.corporations = data));\n    \n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n    \n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/employeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n    \n  },\n  methods: {\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    checkTradeUnion() {\n      const corporationIds = this.resistance?.corporationIds?.map(s => s.id);\n      const queryParams = new URLSearchParams();\n      corporationIds.forEach(id => queryParams.append('corporationIds', id));\n\n      fetchWithToken(`/corporation/checkTradeUnion?${queryParams.toString()}`)\n          .then(response => response.json())\n          .then(data => this.tradeUnionIncluded = data);\n    },\n    openCompanyModal(isMain) {\n      this.$refs.modalRef.openModal();\n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(companyData)\n      })\n          .then(response => response.json())\n          .then(data => (console.log(data)));\n      this.companies.push(companyData);\n    },\n    saveForm() {\n      const resistanceData = {\n        categoryId: this.resistance.categoryId,\n        companyId: this.resistance.companyId,\n        resistanceReasonIds: this.resistance.resistanceReasonIds,\n        mainCompanyId: this.resistance.mainCompanyId,\n        corporationIds: this.resistance.corporationIds,\n        hasTradeUnion: true,\n        tradeUnionAuthorityId: this.resistance.tradeUnionAuthorityId,\n        note: this.resistance.note,\n        resistanceDescription: this.resistance.resistanceDescription,\n        employeeCountId: this.resistance.employeeCountId,\n        employeeCount: this.resistance.employeeCount,\n        tradeUnionId: this.resistance.tradeUnionId,\n        protesto: this.resistance.protesto,\n      }\n\n      fetchWithToken(\"/Resistance/CreateResistance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(resistanceData)\n      })\n      .then(response => console.log(response))\n          .catch(error => console.log(error));\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    handleAddLocation(){\n      this.resistance.protesto.locations.push({});\n    }\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -23194,7 +23404,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add styles here */
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/EditResistance.vue"],"names":[],"mappings":";AAgRA,oBAAoB","sourcesContent":["<template>\n  <div v-if=\"isLoading\" class=\"ui dimmer active\">\n    <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n  </div>\n  <h4 class=\"ui dividing header\">\n    <router-link to=\"/list\" class=\"item\"><i class=\"angle double left icon\"></i></router-link>\n    Vaka\n  </h4>\n  <form class=\"ui form\">\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistance.id\" />\n    <Resistance\n        :resistance=\"this.resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :formErrors=\"formErrors\"\n        @openCompanyModal=\"handleOpenCompanyModal\"\n    />\n   \n    <!-- Protestos -->\n    <h3 class=\"ui dividing header\">Eylemler</h3>\n    <button\n        type=\"button\"\n        class=\"ui right labeled small green icon button\"\n        @click=\"createProtesto\"\n    >\n      Eylem Ekle<i class=\"plus icon\"></i>\n    </button>\n    <protesto-accordion\n        :activeProtestoIndex=\"this.activeProtestoIndex\"\n        :protestoItems=\"resistance.protestoItems\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :genderOptions=\"genderOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        @cancelProtesto=\"handleCancelProtesto\"\n    />\n    <resistance-news :news=\"this.resistance.resistanceNews\" @removeNews=\"handleRemoveNews\"/>\n    \n    <!-- Save and Cancel Buttons -->\n    <button id=\"btnSave\" class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" class=\"ui negative button\">\n      SİL\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n         :companyTypes=\"companyTypes\"\n         :companyScales=\"companyScales\"\n         :worklines=\"worklines\"\n         :companies=\"companies\"\n         @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Resistance from \"./Resistance.vue\";\nimport Multiselect from 'vue-multiselect'\nimport ProtestoAccordion from \"../protesto/ProtestoAccordion.vue\";\nimport ResistanceNews from \"../news/ResistanceNews.vue\";\nimport CompanyModal from \"../CompanyModal.vue\";\nimport {inject, watch} from 'vue';\n\nexport default {\n  name: \"EditResistance\",\n  components: {CompanyModal, ProtestoAccordion, Multiselect, Resistance, ResistanceNews},\n  emits: [\"openCompanyModal\"],\n  setup() {\n    const addedNews = inject('addedNews'); // Inject full object\n    return { addedNews };\n  },\n  data() {\n    return {\n      isLoading: true,\n      resistance: {\n        id: null, // Default value for Id (could be null or -1 based on your use case)\n        resistanceDescription: '', // Default empty string for description\n        categoryId: '', // Empty string for the category ID\n        resistanceReasonIds: [], // Default to an empty array for selected reasons\n        developRight: '', // Default empty string (you might want a boolean or string value depending on your form logic)\n        companyId: '', // Default to an empty string for the company ID\n        isOutsource: false, // Default to 'false' indicating the company is not outsourced\n        mainCompanyId: '', // Default empty string for main company, if outsourcing is selected\n        employeeCountId: '', // Default to an empty string for employee count ID\n        employeeCount: '', // Default empty string for employee count (could be a number if required)\n        corporationIds: [], // Default empty array for selected corporation IDs\n        resistanceResult: 0, // Default to \"Bilinmiyor\" (unknown result)\n        protestoItems: [],\n        resistanceNews: [],\n      },\n      categories: [],\n      resistanceReasons: [],\n      companies: [],\n      corporations: [],\n      employeeCounts: [],\n      protestoPlaceOptions: [], \n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      activeProtestoIndex: null,\n      formErrors: {},\n    };\n  },\n  props: {\n    id: {\n      type: String,\n    }\n  },\n  mounted() {\n    this.fetchResistance();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/resistance/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => (this.corporations = data));\n\n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n\n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/employeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n\n    // this.initializeSemanticUI();\n  },\n  watch: {\n    '$route.params.id': 'fetchResistance',\n    'addedNews.news': {\n      handler(newNews) {\n        if (newNews && this.resistance) {\n          this.resistance.resistanceNews.push(newNews); // Push into array\n        }\n      },\n      deep: true,\n      immediate: true,\n  }\n  },\n  methods: {\n    fetchResistance() {\n      this.isLoading = true;\n      const id = this.$route.params.id;  // Accessing the id directly from $route.params\n\n      // Simulate an API call\n      fetchWithToken(`/resistance/get/${id}`)\n          .then(response => response.json())\n          .then(data => { \n            this.resistance = data; \n            this.isLoading = false; \n          });      \n    },\n    createProtesto(){\n      const created = this.resistance.protestoItems.filter(s=>s.protestoId === 0);\n      if(created.length === 0){\n        const protesto = {\n          resistanceId: this.resistance.id,\n          protestoId: 0,\n        };\n        this.activeProtestoIndex = this.resistance.protestoItems.length;\n        this.resistance.protestoItems.push(protesto);\n        console.log(this.activeProtestoIndex);\n      }\n      else{\n        this.activeProtestoIndex = this.resistance.protestoItems.length;\n      }\n    },\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    handleOpenCompanyModal() {\n      this.$refs.modalRef.openModal();  \n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", { \n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\",\n        },\n        body: JSON.stringify(companyData)})\n          .then(response => {\n            return response.json();\n          })\n          .then(data => {\n            console.log(data);\n            this.companies.push(data);\n            this.resistance.companyId = data.id;\n          });\n     \n    },\n    saveForm() {\n      // Save form logic\n      console.log(this.resistance);\n      fetchWithToken(\"/Resistance/UpdateResitance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(this.resistance)\n      })\n          .then(response => console.log(response))\n          .catch(error => console.log(error));\n    },\n    handleCancelProtesto(protesto) {\n      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== 0);\n      this.activeProtestoIndex = null;\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    handleRemoveNews(newsId){\n      console.log('remove newsId ',newsId);\n      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);\n    }\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/EditResistance.vue"],"names":[],"mappings":";AA0RA,oBAAoB","sourcesContent":["<template>\n  <div v-if=\"isLoading\" class=\"ui dimmer active\">\n    <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n  </div>\n  <h4 class=\"ui dividing header\">\n    <router-link to=\"/list\" class=\"item\"><i class=\"angle double left icon\"></i></router-link>\n    Vaka\n  </h4>\n  <form class=\"ui form\">\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistance.id\" />\n    <Resistance\n        :resistance=\"this.resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :formErrors=\"formErrors\"\n        \n        @openCompanyModal=\"handleOpenCompanyModal\"\n    />\n   \n    <!-- Protestos -->\n    <h3 class=\"ui dividing header\">Eylemler</h3>\n    <button\n        type=\"button\"\n        class=\"ui right labeled small green icon button\"\n        @click=\"createProtesto\"\n    >\n      Eylem Ekle<i class=\"plus icon\"></i>\n    </button>\n    <protesto-accordion\n        :activeProtestoIndex=\"this.activeProtestoIndex\"\n        :protestoItems=\"resistance.protestoItems\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :genderOptions=\"genderOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"cities\"\n        :districts=\"districts\"\n        @cancelProtesto=\"handleCancelProtesto\"\n    />\n    <resistance-news :news=\"this.resistance.resistanceNews\" @removeNews=\"handleRemoveNews\"/>\n    \n    <!-- Save and Cancel Buttons -->\n    <button id=\"btnSave\" class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" class=\"ui negative button\">\n      SİL\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n         :companyTypes=\"companyTypes\"\n         :companyScales=\"companyScales\"\n         :worklines=\"worklines\"\n         :companies=\"companies\"\n         @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Resistance from \"./Resistance.vue\";\nimport Multiselect from 'vue-multiselect'\nimport ProtestoAccordion from \"../protesto/ProtestoAccordion.vue\";\nimport ResistanceNews from \"../news/ResistanceNews.vue\";\nimport CompanyModal from \"../CompanyModal.vue\";\nimport {inject, watch} from 'vue';\n\nexport default {\n  name: \"EditResistance\",\n  components: {CompanyModal, ProtestoAccordion, Multiselect, Resistance, ResistanceNews},\n  emits: [\"openCompanyModal\"],\n  setup() {\n    const addedNews = inject('addedNews'); // Inject full object\n    return { addedNews };\n  },\n  data() {\n    return {\n      isLoading: true,\n      resistance: {\n        id: null, // Default value for Id (could be null or -1 based on your use case)\n        resistanceDescription: '', // Default empty string for description\n        categoryId: '', // Empty string for the category ID\n        resistanceReasonIds: [], // Default to an empty array for selected reasons\n        developRight: '', // Default empty string (you might want a boolean or string value depending on your form logic)\n        companyId: '', // Default to an empty string for the company ID\n        isOutsource: false, // Default to 'false' indicating the company is not outsourced\n        mainCompanyId: '', // Default empty string for main company, if outsourcing is selected\n        employeeCountId: '', // Default to an empty string for employee count ID\n        employeeCount: '', // Default empty string for employee count (could be a number if required)\n        corporationIds: [], // Default empty array for selected corporation IDs\n        resistanceResult: 0, // Default to \"Bilinmiyor\" (unknown result)\n        protestoItems: [],\n        resistanceNews: [],\n      },\n      categories: [],\n      resistanceReasons: [],\n      companies: [],\n      corporations: [],\n      employeeCounts: [],\n      protestoPlaceOptions: [], \n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      cities: [],\n      districts: [],\n      activeProtestoIndex: null,\n      formErrors: {},\n    };\n  },\n  props: {\n    id: {\n      type: String,\n    }\n  },\n  mounted() {\n    this.fetchResistance();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/resistance/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => (this.corporations = data));\n\n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n\n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/cities\")\n        .then(response => response.json())\n        .then(data => (this.cities = data));\n\n    fetchWithToken(\"/lookup/districts\")\n        .then(response => response.json())\n        .then(data => (this.districts = data));\n\n    // this.initializeSemanticUI();\n  },\n  watch: {\n    '$route.params.id': 'fetchResistance',\n    'addedNews.news': {\n      handler(newNews) {\n        if (newNews && this.resistance) {\n          this.resistance.resistanceNews.push(newNews); // Push into array\n        }\n      },\n      deep: true,\n      immediate: true,\n  }\n  },\n  methods: {\n    fetchResistance() {\n      this.isLoading = true;\n      const id = this.$route.params.id;  // Accessing the id directly from $route.params\n\n      // Simulate an API call\n      fetchWithToken(`/resistance/get/${id}`)\n          .then(response => response.json())\n          .then(data => { \n            this.resistance = data; \n            this.isLoading = false; \n          });      \n    },\n    createProtesto(){\n      const created = this.resistance.protestoItems.filter(s=>s.protestoId === 0);\n      if(created.length === 0){\n        const protesto = {\n          resistanceId: this.resistance.id,\n          protestoId: 0,\n          locations: []\n        };\n        this.activeProtestoIndex = this.resistance.protestoItems.length;\n        this.resistance.protestoItems.push(protesto);\n        console.log(this.activeProtestoIndex);\n      }\n      else{\n        this.activeProtestoIndex = this.resistance.protestoItems.length;\n      }\n    },\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    handleOpenCompanyModal() {\n      this.$refs.modalRef.openModal();  \n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", { \n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\",\n        },\n        body: JSON.stringify(companyData)})\n          .then(response => {\n            return response.json();\n          })\n          .then(data => {\n            console.log(data);\n            this.companies.push(data);\n            this.resistance.companyId = data.id;\n          });\n     \n    },\n    saveForm() {\n      // Save form logic\n      console.log(this.resistance);\n      fetchWithToken(\"/Resistance/UpdateResitance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(this.resistance)\n      })\n          .then(response => console.log(response))\n          .catch(error => console.log(error));\n    },\n    handleCancelProtesto(protesto) {\n      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== 0);\n      this.activeProtestoIndex = null;\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    handleRemoveNews(newsId){\n      console.log('remove newsId ',newsId);\n      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);\n    }\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -34193,6 +34403,37 @@ if (false) {}
 
 /***/ }),
 
+/***/ "./src/components/Location.vue":
+/*!*************************************!*\
+  !*** ./src/components/Location.vue ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Location_vue_vue_type_template_id_2456dd65_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Location.vue?vue&type=template&id=2456dd65&scoped=true */ "./src/components/Location.vue?vue&type=template&id=2456dd65&scoped=true");
+/* harmony import */ var _Location_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Location.vue?vue&type=script&lang=js */ "./src/components/Location.vue?vue&type=script&lang=js");
+/* harmony import */ var _Location_vue_vue_type_style_index_0_id_2456dd65_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css */ "./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+
+
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_Location_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Location_vue_vue_type_template_id_2456dd65_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-2456dd65"],['__file',"src/components/Location.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
 /***/ "./src/components/NotFound.vue":
 /*!*************************************!*\
   !*** ./src/components/NotFound.vue ***!
@@ -34550,6 +34791,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/components/Location.vue?vue&type=script&lang=js":
+/*!*************************************************************!*\
+  !*** ./src/components/Location.vue?vue&type=script&lang=js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Location.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=script&lang=js");
+ 
+
+/***/ }),
+
 /***/ "./src/components/NotFound.vue?vue&type=script&lang=js":
 /*!*************************************************************!*\
   !*** ./src/components/NotFound.vue?vue&type=script&lang=js ***!
@@ -34742,6 +34999,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/components/Location.vue?vue&type=template&id=2456dd65&scoped=true":
+/*!*******************************************************************************!*\
+  !*** ./src/components/Location.vue?vue&type=template&id=2456dd65&scoped=true ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_template_id_2456dd65_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_template_id_2456dd65_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Location.vue?vue&type=template&id=2456dd65&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=template&id=2456dd65&scoped=true");
+
+
+/***/ }),
+
 /***/ "./src/components/NotFound.vue?vue&type=template&id=3a86191f":
 /*!*******************************************************************!*\
   !*** ./src/components/NotFound.vue?vue&type=template&id=3a86191f ***!
@@ -34930,6 +35203,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
 /* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
+/* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
+
+
+/***/ }),
+
+/***/ "./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css":
+/*!*********************************************************************************************!*\
+  !*** ./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css ***!
+  \*********************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_2456dd65_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/vue-style-loader/index.js!../../node_modules/css-loader/dist/cjs.js!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_2456dd65_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_2456dd65_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
+/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_2456dd65_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_2456dd65_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
 /* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
 
 
@@ -36582,6 +36872,27 @@ if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(/*! !../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
 var update = add("44066112", content, false, {});
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css":
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css");
+if(content.__esModule) content = content.default;
+if(typeof content === 'string') content = [[module.id, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = (__webpack_require__(/*! !../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
+var update = add("1cb3434a", content, false, {});
 // Hot Module Replacement
 if(false) {}
 

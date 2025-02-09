@@ -15,6 +15,8 @@
             :protestoTypeOptions="protestoTypeOptions"
             :protestoPlaceOptions="protestoPlaceOptions"
             :employeeCountInProtestoOptions="employeeCountInProtestoOptions"
+            :cities="cities"
+            :districts="districts"
             @cancelProtesto="handleCancelProtesto"
         />
       </div>
@@ -58,6 +60,14 @@ export default {
       required: true,
     },
     employeeCountInProtestoOptions: {
+      type: Array,
+      required: true,
+    },
+    cities: {
+      type: Array,
+      required: true,
+    },
+    districts: {
       type: Array,
       required: true,
     }

@@ -16,6 +16,7 @@
         :companies="companies"
         :categories="categories"
         :formErrors="formErrors"
+        
         @openCompanyModal="handleOpenCompanyModal"
     />
    
@@ -35,6 +36,8 @@
         :protestoTypeOptions="protestoTypeOptions"
         :genderOptions="genderOptions"
         :employeeCountInProtestoOptions="employeeCountInProtestoOptions"
+        :cities="cities"
+        :districts="districts"
         @cancelProtesto="handleCancelProtesto"
     />
     <resistance-news :news="this.resistance.resistanceNews" @removeNews="handleRemoveNews"/>
@@ -103,6 +106,8 @@ export default {
       companyTypes: [],
       companyScales: [],
       worklines: [],
+      cities: [],
+      districts: [],
       activeProtestoIndex: null,
       formErrors: {},
     };
@@ -162,9 +167,13 @@ export default {
         .then(response => response.json())
         .then(data => (this.genderOptions = data));
 
-    fetchWithToken("/lookup/employeeCountInProtesto")
+    fetchWithToken("/lookup/cities")
         .then(response => response.json())
-        .then(data => (this.employeeCountInProtestoOptions = data));
+        .then(data => (this.cities = data));
+
+    fetchWithToken("/lookup/districts")
+        .then(response => response.json())
+        .then(data => (this.districts = data));
 
     // this.initializeSemanticUI();
   },
@@ -199,6 +208,7 @@ export default {
         const protesto = {
           resistanceId: this.resistance.id,
           protestoId: 0,
+          locations: []
         };
         this.activeProtestoIndex = this.resistance.protestoItems.length;
         this.resistance.protestoItems.push(protesto);

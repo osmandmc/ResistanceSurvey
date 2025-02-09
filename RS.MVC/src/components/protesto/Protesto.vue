@@ -67,7 +67,12 @@
         </option>
       </select>
     </div>
-
+  <div class="field">
+    <button type="button" class="ui button" @click="addLocation">Lokasyon Ekle</button>
+  </div>
+  <div class="field">
+    <Location :cities="cities" :districts="districts" :protesto-locations="this.protesto.locations" />
+  </div>
   <div class="field">
     <label for="CustodyCount">Gözaltı Sayısı</label>
     <input
@@ -116,10 +121,12 @@ import Multiselect from "vue-multiselect";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import {fetchWithToken} from "../../fetchWrapper";
+import Location from "../Location.vue";
 
 export default {
   name: "Protesto",
-  components: { Multiselect, VueDatePicker },
+  emits: "addProtesto",
+  components: { Multiselect, VueDatePicker, Location },
   props: {
     protesto: {
       type: Object,
@@ -140,6 +147,19 @@ export default {
     employeeCountInProtestoOptions: {
       type: Array,
       required: true,
+    },
+    cities: {
+      type: Array,
+      required: true,
+    },
+    districts: {
+      type: Array,
+      required: true,
+    }
+  },
+  methods: {
+    addLocation() {
+      this.$emit('addLocation');
     }
   }
 };
