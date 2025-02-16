@@ -20,7 +20,6 @@ namespace RS.COMMON.DTO
         public List<int> CorporationIds { get; set; }
         public List<int> EmploymentTypeIds { get; set; }
         public List<int> ResistanceReasonIds { get; set; }
-        public List<int> ResistanceNewsIds { get; set; }
         public List<ProtestoListModel> Protestos { get; set; }
         public ResistanceDetailDto()
         {
@@ -28,7 +27,6 @@ namespace RS.COMMON.DTO
             EmploymentTypeIds = new List<int>();
             CorporationIds = new List<int>();
             ResistanceReasonIds = new List<int>();
-            ResistanceNewsIds = new List<int>();
         }
 
         public ResistanceDetailDto(int id, int companyId, int categoryId, bool hasTradeUnion, int? tradeUnionAuthorityId, int? tradeUnionId, int employeeCount, int employeeCountId)
@@ -46,7 +44,6 @@ namespace RS.COMMON.DTO
             EmploymentTypeIds = new List<int>();
             CorporationIds = new List<int>();
             ResistanceReasonIds = new List<int>();
-            ResistanceNewsIds = new List<int>();
         }
     }
     public class ProtestoListModel

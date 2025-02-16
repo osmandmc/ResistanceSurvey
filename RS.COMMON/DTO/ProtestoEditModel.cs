@@ -58,15 +58,7 @@ namespace RS.COMMON.DTO
                 Updater = Updater
             };
           
-            if(InterventionTypeIds!=null)
-                InterventionTypeIds.ForEach(c=> 
-                    protesto.ProtestoInterventionTypes
-                        .Add(new ProtestoInterventionType
-                        {
-                            ProtestoId = ProtestoId, 
-                            InterventionTypeId = c.Id
-                        }));
-            
+          
             if (Locations != null)
                 Locations.Where(s=>!s.Deleted)
                     .ToList()

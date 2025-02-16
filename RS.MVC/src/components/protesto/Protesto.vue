@@ -4,7 +4,7 @@
       <label for="ProtestoTypeIds">Eylem Türleri</label>
       <multiselect
           id="ProtestoTypeIds"
-          v-model="this.protesto.protestoTypeIds"
+          v-model="protesto.protestoTypeIds"
           :options="protestoTypeOptions"
           :multiple="true"
           :close-on-select="false"
@@ -14,21 +14,34 @@
           label="name"
           track-by="id"
       ></multiselect>
+      <span v-if="formErrors.protestoTypeIds" class="text-danger">
+        {{ formErrors.protestoTypeIds }}
+      </span>
     </div>
-
+  <div class="field" v-if="showStrikeDuration">
+    <label for="StrikeDuration">Eylemin Süresi</label>
+    <input v-model="protesto.strikeDuration" type="text" />
+  </div>
+  <div class="field" v-show="showSimpleProtestoDescription">
+    <label for="SimpleProtestoDescription">İş yerinde Basit Eylem Açıklama</label>
+    <input v-model="protesto.simpleProtestoDescription" type="text" />
+  </div>
     <!-- Start and End Dates -->
     <div class="two fields">
       <div class="field">
         <label for="ProtestoStartDate">Başlangıç Tarihi</label>
-        <VueDatePicker v-model="this.protesto.protestoStartDate" 
+        <VueDatePicker v-model="protesto.protestoStartDate" 
                        text-input 
                        locale="tr-TR"
                        format="dd/MM/yyyy">
         </VueDatePicker>
+        <span v-if="formErrors.protestoStartDate" class="text-danger">
+          {{ formErrors.protestoTypeIds }}
+        </span>
       </div>
       <div class="field">
         <label for="ProtestoEndDate">Bitiş Tarihi</label>
-        <VueDatePicker v-model="this.protesto.protestoEndDate" 
+        <VueDatePicker v-model="protesto.protestoEndDate" 
                        text-input
                        locale="tr-TR"
                        format="dd/MM/yyyy">
@@ -36,12 +49,13 @@
       </div>
     </div>
 
+  
     <!-- Protesto Places -->
     <div class="field">
-      <label for="ProtestoPlaceIds">Yerler</label>
+      <label for="ProtestoPlaceIds">Eylem Yerleri</label>
       <multiselect
           id="ProtestoPlaceIds"
-          v-model="this.protesto.protestoPlaceIds"
+          v-model="protesto.protestoPlaceIds"
           :options="protestoPlaceOptions"
           :multiple="true"
           :close-on-select="false"
@@ -51,12 +65,15 @@
           label="name"
           track-by="id"
       ></multiselect>
+      <span v-if="formErrors.protestoPlaceIds" class="text-danger">
+        {{ formErrors.protestoPlaceIds }}
+      </span>
     </div>
 
     <!-- Gender -->
     <div class="field">
       <label for="GenderId">Cinsiyet</label>
-      <select v-model="this.protesto.genderId" id="GenderId">
+      <select v-model="protesto.genderId" id="GenderId">
         <option value="">--Seçiniz--</option>
         <option
             v-for="gender in genderOptions"
@@ -66,21 +83,17 @@
           {{ gender.name }}
         </option>
       </select>
+      <span v-if="formErrors.genderId" class="text-danger">
+        {{ formErrors.genderId }}
+      </span>
     </div>
   <div class="field">
     <button type="button" class="ui button" @click="addLocation">Lokasyon Ekle</button>
   </div>
   <div class="field">
-    <Location :cities="cities" :districts="districts" :protesto-locations="this.protesto.locations" />
+    <Location @deleteLocation="handleDeleteLocation" :cities="cities" :districts="districts" :protesto-locations="protesto.locations" />
   </div>
-  <div class="field">
-    <label for="CustodyCount">Gözaltı Sayısı</label>
-    <input
-        type="number"
-        id="CustodyCount"
-        v-model="this.protesto.custodyCount"
-    />
-  </div>
+ 
     <!-- Other Fields -->
     <div class="two fields">
       <div class="field">
@@ -88,12 +101,13 @@
         <input
             type="number"
             id="EmployeeCountInProtesto"
-            v-model="this.protesto.employeeCountInProtesto"
+            v-model="protesto.employeeCountInProtesto"
+            @blur="updateEmployeeCountId"
         />
       </div>
       <div class="field">
         <label for="EmployeeCountInProtestoId">Eylemdeki İşçi Sayısı</label>
-        <select v-model="this.protesto.employeeCountInProtestoId" id="EmployeeCountInProtestoId">
+        <select v-model="protesto.employeeCountInProtestoId" id="EmployeeCountInProtestoId">
           <option value="">--Seçiniz--</option>
           <option
               v-for="employeeCountInProtesto in employeeCountInProtestoOptions"
@@ -104,12 +118,32 @@
           </option>
         </select>
       </div>
+      
     </div>
-
+    <div class="field">
+      <label for="InterventionTypeId">Müdahale Tipi</label>
+      <multiselect
+          id="ProtestoPlaceIds"
+          v-model="protesto.interventionTypeIds"
+          :options="interventionTypes"
+          :multiple="true"
+          :close-on-select="false"
+          :clear-on-select="false"
+          :preserve-search="true"
+          placeholder="Seçiniz"
+          label="name"
+          track-by="id"
+      ></multiselect>
+      
+    </div>
+    <div class="field" v-show="isCustodyPossible">
+      <label for="CustodyCount">Gözaltı Sayısı</label>
+      <input type="text" id="CustodyCount" v-model="this.protesto.custodyCount"/>
+    </div>
     <!-- Notes -->
     <div class="field">
-      <label for="Note">Notlar</label>
-      <textarea id="Note" v-model="this.protesto.note" rows="3"></textarea>
+      <label for="Note">Kontrol Kişisine Notlar</label>
+      <textarea id="Note" v-model="protesto.note" rows="3"></textarea>
     </div>
 
     <!-- Save Button -->
@@ -120,12 +154,11 @@
 import Multiselect from "vue-multiselect";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
-import {fetchWithToken} from "../../fetchWrapper";
-import Location from "../Location.vue";
+import Location from "./Location.vue";
 
 export default {
   name: "Protesto",
-  emits: "addProtesto",
+  emits: ["addProtesto", 'deleteLocation', 'addLocation'],
   components: { Multiselect, VueDatePicker, Location },
   props: {
     protesto: {
@@ -155,11 +188,77 @@ export default {
     districts: {
       type: Array,
       required: true,
+    },
+    interventionTypes: {
+      type: Array,
+      required: true,
+    },
+    formErrors: {
+      type:Object,
+      default: () => ({})
+    }
+  },
+  computed: {
+    isCustodyPossible() {
+      return this.protesto.interventionTypeIds &&
+        !this.protesto.interventionTypeIds.some(type => type.id === 7)
+    },
+    showSimpleProtestoDescription() {
+      return (
+          this.protesto.protestoTypeIds &&
+          this.protesto.protestoTypeIds.some(type => type.id === 35)
+      );
+    },
+    showStrikeDuration() {
+      return (
+          this.protesto.protestoTypeIds &&
+          this.protesto.protestoTypeIds.some(type => [5, 6].includes(type.id))
+      );
     }
   },
   methods: {
     addLocation() {
       this.$emit('addLocation');
+    },
+    handleDeleteLocation(index) {
+      console.log(index);
+      this.$emit('deleteLocation', index);
+    },
+    updateEmployeeCountId() {
+      const employeecount = this.protesto.employeeCountInProtesto;
+      if (employeecount == null) return;
+
+      if (employeecount >= 1 && employeecount <= 5) {
+        this.protesto.employeeCountInProtestoId = 1;
+      } else if (employeecount >= 6 && employeecount <= 25) {
+        this.protesto.employeeCountInProtestoId = 2;
+      } else if (employeecount >= 26 && employeecount <= 50) {
+        this.protesto.employeeCountInProtestoId = 3;
+      } else if (employeecount >= 51 && employeecount <= 100) {
+        this.protesto.employeeCountInProtestoId = 4;
+      } else if (employeecount >= 101 && employeecount <= 250) {
+        this.protesto.employeeCountInProtestoId = 5;
+      } else if (employeecount >= 251 && employeecount <= 500) {
+        this.protesto.employeeCountInProtestoId = 6;
+      } else if (employeecount >= 501 && employeecount <= 1000) {
+        this.protesto.employeeCountInProtestoId = 7;
+      } else if (employeecount >= 1001 && employeecount <= 2500) {
+        this.protesto.employeeCountInProtestoId = 8;
+      } else if (employeecount >= 2501 && employeecount <= 5000) {
+        this.protesto.employeeCountInProtestoId = 9;
+      } else if (employeecount >= 5001 && employeecount <= 10000) {
+        this.protesto.employeeCountInProtestoId = 10;
+      } else if (employeecount >= 10001 && employeecount <= 25000) {
+        this.protesto.employeeCountInProtestoId = 11;
+      } else if (employeecount >= 25001 && employeecount <= 50000) {
+        this.protesto.employeeCountInProtestoId = 12;
+      } else if (employeecount >= 50001 && employeecount <= 100000) {
+        this.protesto.employeeCountInProtestoId = 13;
+      } else if (employeecount >= 100001) {
+        this.protesto.employeeCountInProtestoId = 14;
+      } else {
+        this.protesto.employeeCountInProtestoId = ""; // Reset if out of range
+      }
     }
   }
 };

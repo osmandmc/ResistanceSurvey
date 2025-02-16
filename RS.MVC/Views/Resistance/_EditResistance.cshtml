@@ -167,8 +167,7 @@
                             <button type="button" class="ui icon button red basic mini btnRemove" data-id="@Model.ResistanceNews[i].Id"><i class="trash icon"></i></button>
                         </div>
                         <div class="description" data-id="@Model.ResistanceNews[i].Id" style="display:none"></div>
-                        @Html.HiddenFor(model => Model.ResistanceNewsIds[i].Id)
-                        @Html.HiddenFor(model => Model.ResistanceNewsIds[i].IsDeleted)
+                       
                         @* <input name='ResistanceNewsIds[@i].Id' type='hidden' value="@Model.ResistanceNews[i].Id">
                         <input name='ResistanceNewsIds[@i].IsDeleted' type='hidden' value="0"> *@
                     </div>

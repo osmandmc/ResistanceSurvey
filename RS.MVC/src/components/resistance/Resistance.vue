@@ -9,6 +9,9 @@
           rows="6"
           v-model="this.resistance.resistanceDescription"
       ></textarea>
+      <span v-if="formErrors.resistanceDescription" class="text-danger">
+        {{ formErrors.resistanceDescription }}
+      </span>
     </div>
   
     <div class="field">
@@ -24,7 +27,66 @@
       </span>
     </div>
 
-    <!-- Two Fields -->
+  <div class="fields">
+    <div class="six wide field">
+      <label for="IsOutsource">Şirket Taşeron mu?</label>
+      <select v-model="this.resistance.isOutsource">
+        <option :value="false">Hayır</option>
+        <option :value="true">Evet</option>
+      </select>
+    </div>
+    <div class="ten wide field">
+      <label for="CompanyId">Şirket</label>
+      <div class="two fields">
+        <div class="field">
+          <select v-model="this.resistance.companyId">
+            <option value="">--Seçiniz--</option>
+            <option
+                v-for="company in companies"
+                :key="company.id"
+                :value="company.id"
+            >
+              {{ company.name }}
+            </option>
+          </select>
+          <span v-if="formErrors.companyId" class="text-danger">
+            {{ formErrors.companyId }}
+          </span>
+        </div>
+        <div class="field">
+          <button type="button" @click="openCompanyModal" class="ui button">
+            <i class="chevron circle up icon"></i>Şirket Ekle
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Company (Conditional) -->
+  <div v-if="this.resistance.isOutsource" id="outsource" class="six wide field">
+    <label for="MainCompanyId">Ana Şirket</label>
+    <div class="two fields">
+      <div class="field">
+        <select v-model="resistance.mainCompanyId">
+          <option value="">--Seçiniz--</option>
+          <option
+              v-for="company in companies"
+              :key="company.id"
+              :value="company.id"
+          >
+            {{ company.name }}
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <button type="button" @click="openCompanyModal" class="ui button">
+          <i class="chevron circle up icon"></i>Ana Şirket Ekle
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two Fields -->
     <div class="two fields">
       <!-- Case Reasons -->
       <div class="field">
@@ -56,61 +118,7 @@
       </div>
     </div>
 
-    <div class="sixty wide field">
-      <label for="CompanyId">Şirket</label>
-      <div class="two fields">
-        <div class="field">
-          <select v-model="this.resistance.companyId">
-            <option value="">--Seçiniz--</option>
-            <option
-                v-for="company in companies"
-                :key="company.id"
-                :value="company.id"
-            >
-              {{ company.name }}
-            </option>
-          </select>
-        </div>
-        <div class="field">
-          <button type="button" @click="openCompanyModal" class="ui button">
-            <i class="chevron circle up icon"></i>Şirket Ekle
-          </button>
-        </div>
-      </div>
-    </div>
-    <!-- Is Outsource -->
-    <div class="field sixty wide">
-      <label for="IsOutsource">Şirket Taşeron mu?</label>
-      <select v-model="this.resistance.isOutsource" @change="toggleOutsource">
-        <option :value="false">Hayır</option>
-        <option :value="true">Evet</option>
-      </select>
-    </div>
-
-    <!-- Main Company (Conditional) -->
-    <div v-if="this.resistance.isOutsource" id="outsource" class="sixty wide field">
-      <label for="MainCompanyId">Ana Şirket</label>
-      <div class="two fields">
-        <div class="field">
-          <select v-model="resistance.mainCompanyId">
-            <option value="">--Seçiniz--</option>
-            <option
-                v-for="company in companies"
-                :key="company.id"
-                :value="company.id"
-            >
-              {{ company.name }}
-            </option>
-          </select>
-        </div>
-        <div class="field">
-          <button type="button" @click="openCompanyModal" class="ui button">
-            <i class="chevron circle up icon"></i>Ana Şirket Ekle
-          </button>
-        </div>
-      </div>
-    </div>
-
+   
     <!-- Employee Count -->
     <div class="two fields">
       <div class="field">
@@ -152,6 +160,55 @@
                    :taggable="true" @tag="addCorporation">
       </multiselect>
     </div>
+  <div class="field">
+    <label for="TradeUnionAuthorityId">Sendikanın Yetki Durumu</label>
+    <select v-model="this.resistance.tradeUnionAuthorityId">
+      <option value="">--Seçiniz--</option>
+      <option
+          v-for="ta in this.tradeUnionAuthorities"
+          :key="ta.id"
+          :value="ta.id"
+      >
+        {{ ta.name }}
+      </option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="TradeUnionId">Tepki Gösterilen Sendika</label>
+    <select v-model="this.resistance.tradeUnionId">
+      <option value="">--Seçiniz--</option>
+      <option
+          v-for="ta in this.tradeUnions"
+          :key="ta.id"
+          :value="ta.id"
+      >
+        {{ ta.name }}
+      </option>
+    </select>
+  </div>
+  <div class="two fields">
+    <div class="field">
+      <label for="EmploymentTypeIds">İstihdam Türü</label>
+      <multiselect id="CorporationIds"
+                   v-model="this.resistance.employmentTypeIds"
+                   placeholder="Seçiniz" label="name" track-by="id"
+                   :preselect-first="true"
+                   :options="employmentTypes"
+                   :multiple="true"
+                   :close-on-select="false"
+                   :clear-on-select="false"
+                   :preserve-search="true"
+                   :taggable="true">
+      </multiselect>
+      <span v-if="formErrors.corporationIds" class="text-danger">
+        {{ formErrors.employmentTypeIds }}
+      </span>
+    </div>
+  </div>
+  <div class="field">
+    <label for="FiredEmployeeCountByProtesto">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>
+    <input type="number" v-model="this.resistance.firedEmployeeCountByProtesto">
+  </div>
     <!-- Other Fields -->
     <div class="field">
       <label for="ResistanceResult">Sonuç</label>
@@ -193,6 +250,18 @@ export default {
       type: Array,
       required: true,
     },
+    tradeUnionAuthorities: {
+      type: Array,
+      required: true,
+    },
+    tradeUnions: {
+      type: Array,
+      required: true,
+    },
+    employmentTypes: {
+      type: Array,
+      required: true,
+    },
     employeeCounts: {
       type: Array,
       required: true,
@@ -207,7 +276,6 @@ export default {
       // Show/hide outsource section
     },
     openCompanyModal() {
-      console.log('openCompanyModal');
       this.$emit('openCompanyModal');
     },
     addResistanceReason (newTag) {

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isLoading" class="ui dimmer active">
+  <div v-if="this.isLoading" class="ui dimmer active">
     <div class="ui text loader">İşlem Yapılıyor...</div>
   </div>
   <h4 class="ui dividing header">
@@ -15,8 +15,10 @@
         :employeeCounts="employeeCounts"
         :companies="companies"
         :categories="categories"
+        :tradeUnions="tradeUnions"
+        :tradeUnionAuthorities="tradeUnionAuthorities"
+        :employmentTypes="employmentTypes"
         :formErrors="formErrors"
-        
         @openCompanyModal="handleOpenCompanyModal"
     />
    
@@ -38,7 +40,10 @@
         :employeeCountInProtestoOptions="employeeCountInProtestoOptions"
         :cities="cities"
         :districts="districts"
+        :intervention-types="interventionTypes"
         @cancelProtesto="handleCancelProtesto"
+        @saveProtesto="handleSaveProtesto"
+        @deleteProtesto="handleDeleteProtesto"
     />
     <resistance-news :news="this.resistance.resistanceNews" @removeNews="handleRemoveNews"/>
     
@@ -108,6 +113,10 @@ export default {
       worklines: [],
       cities: [],
       districts: [],
+      tradeUnionAuthorities:[],
+      tradeUnions: [],
+      employmentTypes: [],
+      interventionTypes:[],
       activeProtestoIndex: null,
       formErrors: {},
     };
@@ -123,7 +132,7 @@ export default {
         .then(response => response.json())
         .then(data => (this.companies = data));
 
-    fetchWithToken("/resistance/categories")
+    fetchWithToken("/lookup/categories")
         .then(response => response.json())
         .then(data => (this.categories = data));
 
@@ -137,7 +146,14 @@ export default {
 
     fetchWithToken("/corporation/list")
         .then(response => response.json())
-        .then(data => (this.corporations = data));
+        .then(data => {
+          this.corporations = data;
+          this.tradeUnions = data.filter(s=>s.CorporationTypeId = 1)
+        });
+    
+    fetchWithToken("/lookup/tradeUnionAuthorities")
+        .then(response => response.json())
+        .then(data => (this.tradeUnionAuthorities = data));
 
     fetchWithToken("/lookup/companyTypes")
         .then(response => response.json())
@@ -151,9 +167,9 @@ export default {
         .then(response => response.json())
         .then(data => (this.worklines = data));
 
-    fetchWithToken("/lookup/employeeCounts")
+    fetchWithToken("/lookup/EmployeeCountInProtesto")
         .then(response => response.json())
-        .then(data => (this.employeeCounts = data));
+        .then(data => (this.employeeCountInProtestoOptions = data));
 
     fetchWithToken("/ProtestoPlace/List")
         .then(response => response.json())
@@ -174,7 +190,13 @@ export default {
     fetchWithToken("/lookup/districts")
         .then(response => response.json())
         .then(data => (this.districts = data));
-
+    
+    fetchWithToken("/lookup/employmentTypes")
+        .then(response => response.json())
+        .then(data => (this.employmentTypes = data));
+    fetchWithToken("/lookup/interventionTypes")
+        .then(response => response.json())
+        .then(data => (this.interventionTypes = data));
     // this.initializeSemanticUI();
   },
   watch: {
@@ -182,12 +204,12 @@ export default {
     'addedNews.news': {
       handler(newNews) {
         if (newNews && this.resistance) {
+          console.log(newNews);
           this.resistance.resistanceNews.push(newNews); // Push into array
         }
       },
       deep: true,
-      immediate: true,
-  }
+    }
   },
   methods: {
     fetchResistance() {
@@ -195,7 +217,7 @@ export default {
       const id = this.$route.params.id;  // Accessing the id directly from $route.params
 
       // Simulate an API call
-      fetchWithToken(`/resistance/get/${id}`)
+      fetchWithToken(`/resistanceapi/get/${id}`)
           .then(response => response.json())
           .then(data => { 
             this.resistance = data; 
@@ -203,13 +225,31 @@ export default {
           });      
     },
     createProtesto(){
+      console.log('created');
       const created = this.resistance.protestoItems.filter(s=>s.protestoId === 0);
       if(created.length === 0){
         const protesto = {
           resistanceId: this.resistance.id,
           protestoId: 0,
-          locations: []
-        };
+          protestoTypeIds: [],
+          isAgainstProduction: false,
+          protestoStartDate: null,
+          protestoEndDate: null,
+          protestoPlaceIds: [],
+          genderId: 0,
+          interventionTypeIds: [],
+          protestoCityIds: [],
+          protestoDistrictIds: [],
+          locations: [],
+          custodyCount: null,
+          employeeCountInProtesto: null,
+          employeeCountInProtestoId: null,
+          resistanceName: "",
+          note: "",
+          simpleProtestoDescription: "",
+          strikeDuration: 0
+        }
+
         this.activeProtestoIndex = this.resistance.protestoItems.length;
         this.resistance.protestoItems.push(protesto);
         console.log(this.activeProtestoIndex);
@@ -245,18 +285,64 @@ export default {
     saveForm() {
       // Save form logic
       console.log(this.resistance);
-      fetchWithToken("/Resistance/UpdateResitance", {
+      const errors = this.validateForm();
+      console.log(errors);
+      // If there are errors, display them and stop submission
+      if (Object.keys(errors).length > 0) {
+        this.formErrors = errors; // Update formErrors to display validation messages
+        return;
+      }
+
+      this.isLoading = true;
+      fetchWithToken("/Resistanceapi/UpdateResitance", {
         method: 'POST',
         headers: {
           "Content-Type": "application/json", // Ensure JSON is sent
         },
         body: JSON.stringify(this.resistance)
       })
-          .then(response => console.log(response))
-          .catch(error => console.log(error));
+      .then(response => { 
+        console.log(response);
+        this.isLoading = false;
+        this.$swal('Vaka kaydedildi');
+        this.$router.push({ path: `/` });      
+      })
+      .catch(error =>
+      {
+        this.isLoading = false;
+        this.$swal({
+          icon: "error",
+          title: "Bir hata olustu",
+          text: "Bir hata olustu!",
+        });
+        console.log(error)
+      });
     },
     handleCancelProtesto(protesto) {
       this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== 0);
+      this.activeProtestoIndex = null;
+    },
+    handleSaveProtesto(obj) {
+      const { id, protesto } = obj; // Destructure the object for easier access
+      protesto.protestoId = id;
+      // Check if the protestoId already exists in protestoItems
+      const existingIndex = this.resistance.protestoItems.findIndex(item => item.protestoId === id);
+
+      if (existingIndex !== -1) {
+        console.log('update');
+        // Update the existing protesto item
+        this.resistance.protestoItems[existingIndex] = { ...this.resistance.protestoItems[existingIndex], ...protesto };
+      } else {
+        console.log('insert');
+        const createdIndex = this.resistance.protestoItems.findIndex(item => item.protestoId === 0);
+        this.resistance.protestoItems[createdIndex] = { ...this.resistance.protestoItems[existingIndex], ...protesto };
+      }
+      this.activeProtestoIndex = null;
+      // Optionally, you can emit an event or perform other actions here
+      console.log("Protesto saved:", this.resistance.protestoItems);
+    },
+    handleDeleteProtesto(id) {
+      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== id);
       this.activeProtestoIndex = null;
     },
     formatDate(date) {
@@ -273,7 +359,65 @@ export default {
     handleRemoveNews(newsId){
       console.log('remove newsId ',newsId);
       this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);
-    }
+    },
+    validateForm() {
+      const errors = {};
+
+      if (!this.resistance.resistanceDescription) {
+        errors.resistanceDescription = "Lütfen bir kısa açıklama seçiniz.";
+      }
+      // CategoryId: Required
+      if (!this.resistance.categoryId) {
+        errors.categoryId = "Lütfen bir kategori giriniz.";
+      }
+
+      // CompanyId: At least one company selected
+      if (!this.resistance.companyId) {
+        errors.companyId = "Lütfen bir şirket seçiniz.";
+      }
+
+      // CorporationIds: At least one corporation selected
+      if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {
+        errors.corporationIds = "Lütfen en az bir kurumsallık seçiniz.";
+      }
+
+      // EmploymentTypeIds: At least one employment type selected
+      if (!this.resistance.employmentTypeIds || this.resistance.employmentTypeIds.length === 0) {
+        errors.employmentTypeIds = "Lütfen en az bir istihdam türü seçiniz.";
+      }
+
+      // GenderId: Required
+      if (!this.resistance.genderId) {
+        errors.genderId = "Lütfen bir cinsiyet giriniz.";
+      }
+
+      // ProtestoTypeIds: At least one protest type selected
+      if (!this.resistance.protestoTypeIds || this.resistance.protestoTypeIds.length === 0) {
+        errors.protestoTypeIds = "Lütfen en az bir eylem türü seçiniz.";
+      }
+
+      // ProtestoPlaceIds: At least one protest place selected
+      if (!this.resistance.protestoPlaceIds || this.resistance.protestoPlaceIds.length === 0) {
+        errors.protestoPlaceIds = "Lütfen en az bir eylem mekanı seçiniz.";
+      }
+      
+      // ProtestoStartDate: Required
+      if (!this.resistance.protestoStartDate) {
+        errors.protestoStartDate = "Lütfen başlangıç tarihi seçiniz.";
+      }
+
+      // AnyLegalIntervention: Required
+      if (this.resistance.anyLegalIntervention === null || this.resistance.anyLegalIntervention === undefined) {
+        errors.anyLegalIntervention = "Hukuki girişim var mı?";
+      }
+
+      // DevelopRight: Required
+      if (this.resistance.developRight === null || this.resistance.developRight === undefined) {
+        errors.developRight = "Hak Geliştirmeye/Savunma Özelliği";
+      }
+
+      return errors;
+    },
   },
 };
 </script>

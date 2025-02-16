@@ -20286,36 +20286,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=script&lang=js":
-/*!*******************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=script&lang=js ***!
-  \*******************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: {
-    protestoLocations: {
-      type: Array,
-      required: true
-    },
-    cities: {
-      type: Array,
-      required: true
-    },
-    districts: {
-      type: Array,
-      required: true
-    }
-  }
-});
-
-/***/ }),
-
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/NotFound.vue?vue&type=script&lang=js":
 /*!*******************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/NotFound.vue?vue&type=script&lang=js ***!
@@ -20570,15 +20540,15 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "EditProtesto",
-  emits: ["cancelProtesto"],
+  emits: ["cancelProtesto", 'onProtestoAdded', "onProtestoDeleted"],
   components: {
     Protesto: _Protesto_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: function data() {
     return {
-      protestoData: {
-        locations: []
-      }
+      isLoading: false,
+      protestoData: _objectSpread({}, this.protesto),
+      formErrors: {}
     };
   },
   props: {
@@ -20609,49 +20579,200 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     districts: {
       type: Array,
       required: true
+    },
+    interventionTypes: {
+      type: Array,
+      required: true
     }
-  },
-  mounted: function mounted() {
-    console.log(_Protesto_vue__WEBPACK_IMPORTED_MODULE_2__["default"]);
-    this.protestoData = _objectSpread({}, this.protesto);
-    console.log(this.cities);
   },
   methods: {
     saveProtesto: function saveProtesto() {
       var _this = this;
-      console.log(this.protesto);
-      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_4__.fetchWithToken)("/Resistance/CreateOrUpdateProtesto", {
+      // Save form logic
+      var errors = this.validateProtesto();
+      console.log(errors);
+      // If there are errors, display them and stop submission
+      if (Object.keys(errors).length > 0) {
+        this.formErrors = errors; // Update formErrors to display validation messages
+        return;
+      }
+      this.isLoading = true;
+      console.log(this.protestoData);
+      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_4__.fetchWithToken)("/ResistanceApi/CreateOrUpdateProtesto", {
         method: 'POST',
         headers: {
           "Content-Type": "application/json" // Ensure JSON is sent
         },
-        body: JSON.stringify(this.protesto)
+        body: JSON.stringify(this.protestoData)
       }).then(function (response) {
-        console.log(response);
-        _this.$router.push("/edit/".concat(_this.protesto.resistanceId));
+        _this.isLoading = false;
+        // Handle HTTP errors
+        if (response.status === 400) {
+          _this.$swal.fire({
+            icon: "error",
+            title: "Bir hata olustu",
+            text: response.statusText
+          });
+          return Promise.reject(response.statusText); // Stop further processing
+        } else if (response.status === 500) {
+          _this.$swal.fire({
+            icon: "error",
+            title: "Bir hata olustu",
+            text: 'Yazilim destek: ' + response.statusText
+          });
+          return Promise.reject(response.statusText); // Stop further processing
+        }
+        return response.json(); // Return the parsed JSON for the next .then()
+      }).then(function (data) {
+        console.log(data); // Log the parsed response data
+        var id = data; // Assuming the response is the ID (integer)
+        _this.$swal('Eylem kaydedildi');
+        _this.$emit('onProtestoAdded', {
+          protesto: _this.protestoData,
+          id: id
+        });
       })["catch"](function (error) {
-        return console.log(error);
+        _this.isLoading = false;
+        _this.$swal.fire({
+          icon: "error",
+          title: "Bir hata olustu"
+        });
+        console.log(error);
       });
     },
     deleteProtesto: function deleteProtesto() {
       var _this2 = this;
-      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_4__.fetchWithToken)("/Resistance/DeleteProtesto/".concat(this.protesto.protestoId), {
+      this.isLoading = true;
+      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_4__.fetchWithToken)("/ResistanceApi/DeleteProtesto/".concat(this.protesto.protestoId), {
         method: 'DELETE',
         headers: {
           "Content-Type": "application/json" // Ensure JSON is sent
         }
       }).then(function (response) {
-        console.log(response);
-        _this2.$router.push("/edit/".concat(_this2.protesto.resistanceId));
+        _this2.isLoading = false;
+        // Handle HTTP errors
+        if (response.status === 400) {
+          _this2.$swal.fire({
+            icon: "error",
+            title: "Bir hata olustu",
+            text: response.statusText
+          });
+          return Promise.reject(response.statusText); // Stop further processing
+        } else if (response.status === 500) {
+          _this2.$swal.fire({
+            icon: "error",
+            title: "Bir hata olustu",
+            text: 'Yazilim destek: ' + response.statusText
+          });
+          return Promise.reject(response.statusText); // Stop further processing
+        }
+        _this2.$swal('Eylem silindi');
+        _this2.$emit('onProtestoDeleted', _this2.protestoData.protestoId);
       })["catch"](function (error) {
-        return console.log(error);
+        _this2.isLoading = false;
+        _this2.$swal.fire({
+          icon: "error",
+          title: "Bir hata olustu"
+        });
+        console.log(error);
       });
     },
     cancelProtesto: function cancelProtesto() {
       this.$emit('cancelProtesto', this.protesto);
     },
     handleAddLocation: function handleAddLocation() {
-      this.protestoData.locations.push({});
+      this.protestoData.locations.push({
+        id: 0,
+        protestoId: this.protesto.protestoId,
+        cityId: null,
+        districtId: null,
+        place: null,
+        deleted: false
+      });
+    },
+    handleDeleteLocation: function handleDeleteLocation(index) {
+      var location = this.protestoData.locations[index];
+      location.deleted = true;
+    },
+    validateProtesto: function validateProtesto() {
+      var errors = {};
+
+      // ProtestoTypeIds: At least one protest type selected
+      if (!this.protestoData.protestoTypeIds || this.protestoData.protestoTypeIds.length === 0) {
+        errors.protestoTypeIds = "Lütfen en az bir eylem türü seçiniz.";
+      }
+
+      // ProtestoPlaceIds: At least one protest place selected
+      if (!this.protestoData.protestoPlaceIds || this.protestoData.protestoPlaceIds.length === 0) {
+        errors.protestoPlaceIds = "Lütfen en az bir eylem mekanı seçiniz.";
+      }
+
+      // GenderId: Required
+      if (!this.protestoData.genderId) {
+        errors.genderId = "Lütfen bir cinsiyet giriniz.";
+      }
+
+      // ProtestoStartDate: Required
+      if (!this.protestoData.protestoStartDate) {
+        errors.protestoStartDate = "Lütfen başlangıç tarihi seçiniz.";
+      }
+
+      // EmployeeCountInProtesto: Required if EmployeeCountInProtestoId is not provided
+      if (!this.protestoData.employeeCountInProtesto && !this.protestoData.employeeCountInProtestoId) {
+        errors.employeeCountInProtesto = "Lütfen eylemdeki işçi sayısını giriniz.";
+      }
+
+      // InterventionTypeIds: At least one intervention type selected
+      if (!this.protestoData.interventionTypeIds || this.protestoData.interventionTypeIds.length === 0) {
+        errors.interventionTypeIds = "Lütfen en az bir müdahale tipi seçiniz.";
+      }
+
+      // CustodyCount: Required if custody is possible
+      if (this.isCustodyPossible && !this.protestoData.custodyCount) {
+        errors.custodyCount = "Lütfen gözaltı sayısını giriniz.";
+      }
+      return errors;
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Location.vue?vue&type=script&lang=js":
+/*!****************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Location.vue?vue&type=script&lang=js ***!
+  \****************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  emits: ['deleteLocation'],
+  props: {
+    protestoLocations: {
+      type: Array,
+      required: true
+    },
+    cities: {
+      type: Array,
+      required: true
+    },
+    districts: {
+      type: Array,
+      required: true
+    }
+  },
+  data: function data() {
+    return {
+      filteredDistricts: []
+    };
+  },
+  methods: {
+    deleteLocation: function deleteLocation(index) {
+      this.$emit('deleteLocation', index);
     }
   }
 });
@@ -20673,20 +20794,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vuepic_vue_datepicker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vuepic/vue-datepicker */ "./node_modules/@vuepic/vue-datepicker/dist/vue-datepicker.js");
 /* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vuepic/vue-datepicker/dist/main.css */ "./node_modules/@vuepic/vue-datepicker/dist/main.css");
 /* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _fetchWrapper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../fetchWrapper */ "./src/fetchWrapper.js");
-/* harmony import */ var _Location_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Location.vue */ "./src/components/Location.vue");
-
+/* harmony import */ var _Location_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Location.vue */ "./src/components/protesto/Location.vue");
 
 
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Protesto",
-  emits: "addProtesto",
+  emits: ["addProtesto", 'deleteLocation', 'addLocation'],
   components: {
     Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_0__["default"],
     VueDatePicker: _vuepic_vue_datepicker__WEBPACK_IMPORTED_MODULE_1__["default"],
-    Location: _Location_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
+    Location: _Location_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
   props: {
     protesto: {
@@ -20718,11 +20837,77 @@ __webpack_require__.r(__webpack_exports__);
     districts: {
       type: Array,
       required: true
+    },
+    interventionTypes: {
+      type: Array,
+      required: true
+    },
+    formErrors: {
+      type: Object,
+      "default": function _default() {
+        return {};
+      }
+    }
+  },
+  computed: {
+    isCustodyPossible: function isCustodyPossible() {
+      return this.protesto.interventionTypeIds && !this.protesto.interventionTypeIds.some(function (type) {
+        return type.id === 7;
+      });
+    },
+    showSimpleProtestoDescription: function showSimpleProtestoDescription() {
+      return this.protesto.protestoTypeIds && this.protesto.protestoTypeIds.some(function (type) {
+        return type.id === 35;
+      });
+    },
+    showStrikeDuration: function showStrikeDuration() {
+      return this.protesto.protestoTypeIds && this.protesto.protestoTypeIds.some(function (type) {
+        return [5, 6].includes(type.id);
+      });
     }
   },
   methods: {
     addLocation: function addLocation() {
       this.$emit('addLocation');
+    },
+    handleDeleteLocation: function handleDeleteLocation(index) {
+      console.log(index);
+      this.$emit('deleteLocation', index);
+    },
+    updateEmployeeCountId: function updateEmployeeCountId() {
+      var employeecount = this.protesto.employeeCountInProtesto;
+      if (employeecount == null) return;
+      if (employeecount >= 1 && employeecount <= 5) {
+        this.protesto.employeeCountInProtestoId = 1;
+      } else if (employeecount >= 6 && employeecount <= 25) {
+        this.protesto.employeeCountInProtestoId = 2;
+      } else if (employeecount >= 26 && employeecount <= 50) {
+        this.protesto.employeeCountInProtestoId = 3;
+      } else if (employeecount >= 51 && employeecount <= 100) {
+        this.protesto.employeeCountInProtestoId = 4;
+      } else if (employeecount >= 101 && employeecount <= 250) {
+        this.protesto.employeeCountInProtestoId = 5;
+      } else if (employeecount >= 251 && employeecount <= 500) {
+        this.protesto.employeeCountInProtestoId = 6;
+      } else if (employeecount >= 501 && employeecount <= 1000) {
+        this.protesto.employeeCountInProtestoId = 7;
+      } else if (employeecount >= 1001 && employeecount <= 2500) {
+        this.protesto.employeeCountInProtestoId = 8;
+      } else if (employeecount >= 2501 && employeecount <= 5000) {
+        this.protesto.employeeCountInProtestoId = 9;
+      } else if (employeecount >= 5001 && employeecount <= 10000) {
+        this.protesto.employeeCountInProtestoId = 10;
+      } else if (employeecount >= 10001 && employeecount <= 25000) {
+        this.protesto.employeeCountInProtestoId = 11;
+      } else if (employeecount >= 25001 && employeecount <= 50000) {
+        this.protesto.employeeCountInProtestoId = 12;
+      } else if (employeecount >= 50001 && employeecount <= 100000) {
+        this.protesto.employeeCountInProtestoId = 13;
+      } else if (employeecount >= 100001) {
+        this.protesto.employeeCountInProtestoId = 14;
+      } else {
+        this.protesto.employeeCountInProtestoId = ""; // Reset if out of range
+      }
     }
   }
 });
@@ -20744,7 +20929,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "ProtestoAccordion",
-  emits: ["cancelProtesto"],
+  emits: ["cancelProtesto", "saveProtesto", "deleteProtesto"],
   components: {
     EditProtesto: _EditProtesto_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
@@ -20762,10 +20947,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     protestoItems: {
       type: Array,
-      required: true,
-      "default": function _default() {
-        return [];
-      }
+      required: true
     },
     protestoTypeOptions: {
       type: Array,
@@ -20790,6 +20972,10 @@ __webpack_require__.r(__webpack_exports__);
     districts: {
       type: Array,
       required: true
+    },
+    interventionTypes: {
+      type: Array,
+      required: true
     }
   },
   watch: {
@@ -20798,21 +20984,20 @@ __webpack_require__.r(__webpack_exports__);
       this.activeIndex = newVal;
     }
   },
-  mounted: function mounted() {
-    console.log(this.activeProtestoIndex);
-  },
   methods: {
     toggleAccordion: function toggleAccordion(index) {
-      console.log("activeIndex", this.activeIndex);
-      console.log("activeProtestoIndex", this.activeProtestoIndex);
       this.activeIndex = this.activeIndex === index ? index : null;
-    },
-    saveProtesto: function saveProtesto(updatedProtesto) {
-      this.$emit("updateProtesto", updatedProtesto);
     },
     handleCancelProtesto: function handleCancelProtesto(protesto) {
       console.log("cancel", protesto);
       this.$emit('cancelProtesto', protesto);
+    },
+    handleSaveProtesto: function handleSaveProtesto(protesto) {
+      this.$emit('saveProtesto', protesto);
+    },
+    handleDeleteProtesto: function handleDeleteProtesto(id) {
+      console.log('delete', id);
+      this.$emit('deleteProtesto', id);
     },
     formatDate: function formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date to a readable string
@@ -20839,6 +21024,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _protesto_Protesto_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../protesto/Protesto.vue */ "./src/components/protesto/Protesto.vue");
 /* harmony import */ var _Resistance_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Resistance.vue */ "./src/components/resistance/Resistance.vue");
 /* harmony import */ var _protesto_EditProtesto_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../protesto/EditProtesto.vue */ "./src/components/protesto/EditProtesto.vue");
+/* harmony import */ var _news_ResistanceNews_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../news/ResistanceNews.vue */ "./src/components/news/ResistanceNews.vue");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+
+
 
 
 
@@ -20849,6 +21038,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "CreateResistance",
   components: {
+    ResistanceNews: _news_ResistanceNews_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
     EditProtesto: _protesto_EditProtesto_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
     Resistance: _Resistance_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
     Protesto: _protesto_Protesto_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
@@ -20869,7 +21059,9 @@ __webpack_require__.r(__webpack_exports__);
         employmentTypeIds: null,
         corporationIds: null,
         resistanceReasonIds: null,
+        resistanceNews: [],
         protesto: {
+          interventionTypeIds: [],
           locations: []
         }
       },
@@ -20887,11 +21079,34 @@ __webpack_require__.r(__webpack_exports__);
       employeeCountInProtestoOptions: [],
       cities: [],
       districts: [],
+      tradeUnionAuthorities: [],
+      tradeUnions: [],
+      employmentTypes: [],
+      interventionTypes: [],
       formErrors: {}
+    };
+  },
+  setup: function setup() {
+    var addedNews = (0,vue__WEBPACK_IMPORTED_MODULE_7__.inject)('addedNews'); // Inject full object
+    return {
+      addedNews: addedNews
     };
   },
   props: ['id'],
   // The id is passed as a prop from the router
+  watch: {
+    'addedNews.news': {
+      handler: function handler(newNews) {
+        console.log(newNews);
+        // if (newNews && newNews.id && this.resistance) {
+        console.log(newNews);
+        this.resistance.resistanceNews.push(newNews); // Push into array
+        // }
+      },
+      deep: true
+      // immediate: true,
+    }
+  },
   mounted: function mounted() {
     var _this = this;
     (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/company/list").then(function (response) {
@@ -20899,7 +21114,7 @@ __webpack_require__.r(__webpack_exports__);
     }).then(function (data) {
       return _this.companies = data;
     });
-    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/resistance/categories").then(function (response) {
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/categories").then(function (response) {
       return response.json();
     }).then(function (data) {
       return _this.categories = data;
@@ -20914,10 +21129,23 @@ __webpack_require__.r(__webpack_exports__);
     }).then(function (data) {
       return _this.employeeCounts = data;
     });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/employmentTypes").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.employmentTypes = data;
+    });
     (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/corporation/list").then(function (response) {
       return response.json();
     }).then(function (data) {
-      return _this.corporations = data;
+      _this.corporations = data;
+      _this.tradeUnions = data.filter(function (s) {
+        return s.CorporationTypeId = 1;
+      });
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/tradeUnionAuthorities").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.tradeUnionAuthorities = data;
     });
     (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/companyTypes").then(function (response) {
       return response.json();
@@ -20969,11 +21197,13 @@ __webpack_require__.r(__webpack_exports__);
     }).then(function (data) {
       return _this.districts = data;
     });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/interventionTypes").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.interventionTypes = data;
+    });
   },
   methods: {
-    toggleOutsource: function toggleOutsource() {
-      // Show/hide outsource section
-    },
     checkTradeUnion: function checkTradeUnion() {
       var _this$resistance,
         _this2 = this;
@@ -21009,6 +21239,16 @@ __webpack_require__.r(__webpack_exports__);
       this.companies.push(companyData);
     },
     saveForm: function saveForm() {
+      var _this3 = this;
+      // Save form logic
+      console.log(this.resistance);
+      var errors = this.validateForm();
+      console.log(errors);
+      // If there are errors, display them and stop submission
+      if (Object.keys(errors).length > 0) {
+        this.formErrors = errors; // Update formErrors to display validation messages
+        return;
+      }
       var resistanceData = {
         categoryId: this.resistance.categoryId,
         companyId: this.resistance.companyId,
@@ -21022,25 +21262,125 @@ __webpack_require__.r(__webpack_exports__);
         employeeCountId: this.resistance.employeeCountId,
         employeeCount: this.resistance.employeeCount,
         tradeUnionId: this.resistance.tradeUnionId,
-        protesto: this.resistance.protesto
+        protesto: this.resistance.protesto,
+        resistanceNews: this.resistance.resistanceNews
       };
-      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/Resistance/CreateResistance", {
+      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/ResistanceApi/CreateResistance", {
         method: 'POST',
         headers: {
           "Content-Type": "application/json" // Ensure JSON is sent
         },
         body: JSON.stringify(resistanceData)
       }).then(function (response) {
-        return console.log(response);
+        _this3.isLoading = false;
+        if (response.status === 400) {
+          _this3.$swal.fire({
+            icon: "error",
+            title: "Bir hata olustu",
+            text: response.statusText
+          });
+        } else if (response.status === 500) {
+          _this3.$swal.fire({
+            icon: "error",
+            title: "Bir hata olustu",
+            text: 'Yazilim destek: ' + response.statusText
+          });
+        } else {
+          _this3.$swal('Vaka kaydedildi');
+          _this3.$router.push({
+            path: "/"
+          });
+        }
       })["catch"](function (error) {
-        return console.log(error);
+        _this3.isLoading = false;
+        _this3.$swal.fire({
+          icon: "error",
+          title: "Bir hata olustu"
+        });
+        console.log(error);
       });
     },
     formatDate: function formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date
     },
+    handleRemoveNews: function handleRemoveNews(newsId) {
+      console.log('remove newsId ', newsId);
+      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(function (s) {
+        return s.id !== newsId;
+      });
+    },
+    handleOpenCompanyModal: function handleOpenCompanyModal() {
+      this.$refs.modalRef.openModal();
+    },
     handleAddLocation: function handleAddLocation() {
-      this.resistance.protesto.locations.push({});
+      this.resistance.protesto.locations.push({
+        id: 0,
+        protestoId: 0,
+        cityId: null,
+        districtId: null,
+        place: null,
+        deleted: false
+      });
+    },
+    handleDeleteLocation: function handleDeleteLocation(index) {
+      var location = this.resistance.protesto.locations[index];
+      location.deleted = true;
+    },
+    validateForm: function validateForm() {
+      var errors = {};
+      if (!this.resistance.resistanceDescription) {
+        errors.resistanceDescription = "Lütfen bir kısa açıklama seçiniz.";
+      }
+      // CategoryId: Required
+      if (!this.resistance.categoryId) {
+        errors.categoryId = "Lütfen bir kategori giriniz.";
+      }
+
+      // CompanyId: At least one company selected
+      if (!this.resistance.companyId) {
+        errors.companyId = "Lütfen bir şirket seçiniz.";
+      }
+
+      // CorporationIds: At least one corporation selected
+      if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {
+        errors.corporationIds = "Lütfen en az bir kurumsallık seçiniz.";
+      }
+
+      // EmploymentTypeIds: At least one employment type selected
+      if (!this.resistance.employmentTypeIds || this.resistance.employmentTypeIds.length === 0) {
+        errors.employmentTypeIds = "Lütfen en az bir istihdam türü seçiniz.";
+      }
+
+      // GenderId: Required
+      if (!this.resistance.genderId) {
+        errors.genderId = "Lütfen bir cinsiyet giriniz.";
+      }
+
+      // ProtestoTypeIds: At least one protest type selected
+      if (!this.resistance.protestoTypeIds || this.resistance.protestoTypeIds.length === 0) {
+        errors.protestoTypeIds = "Lütfen en az bir eylem türü seçiniz.";
+      }
+
+      // ProtestoPlaceIds: At least one protest place selected
+      if (!this.resistance.protestoPlaceIds || this.resistance.protestoPlaceIds.length === 0) {
+        errors.protestoPlaceIds = "Lütfen en az bir eylem mekanı seçiniz.";
+      }
+
+      // ProtestoStartDate: Required
+      if (!this.resistance.protestoStartDate) {
+        errors.protestoStartDate = "Lütfen başlangıç tarihi seçiniz.";
+      }
+
+      // AnyLegalIntervention: Required
+      if (this.resistance.anyLegalIntervention === null || this.resistance.anyLegalIntervention === undefined) {
+        errors.anyLegalIntervention = "Hukuki girişim var mı?";
+      }
+
+      // DevelopRight: Required
+      if (this.resistance.developRight === null || this.resistance.developRight === undefined) {
+        errors.developRight = "Hak Geliştirmeye/Savunma Özelliği";
+      }
+      return errors;
     }
   }
 });
@@ -21065,6 +21405,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _news_ResistanceNews_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../news/ResistanceNews.vue */ "./src/components/news/ResistanceNews.vue");
 /* harmony import */ var _CompanyModal_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../CompanyModal.vue */ "./src/components/CompanyModal.vue");
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
 
 
@@ -21133,6 +21479,10 @@ __webpack_require__.r(__webpack_exports__);
       worklines: [],
       cities: [],
       districts: [],
+      tradeUnionAuthorities: [],
+      tradeUnions: [],
+      employmentTypes: [],
+      interventionTypes: [],
       activeProtestoIndex: null,
       formErrors: {}
     };
@@ -21150,7 +21500,7 @@ __webpack_require__.r(__webpack_exports__);
     }).then(function (data) {
       return _this.companies = data;
     });
-    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/resistance/categories").then(function (response) {
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/categories").then(function (response) {
       return response.json();
     }).then(function (data) {
       return _this.categories = data;
@@ -21168,7 +21518,15 @@ __webpack_require__.r(__webpack_exports__);
     (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/corporation/list").then(function (response) {
       return response.json();
     }).then(function (data) {
-      return _this.corporations = data;
+      _this.corporations = data;
+      _this.tradeUnions = data.filter(function (s) {
+        return s.CorporationTypeId = 1;
+      });
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/tradeUnionAuthorities").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.tradeUnionAuthorities = data;
     });
     (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/companyTypes").then(function (response) {
       return response.json();
@@ -21185,10 +21543,10 @@ __webpack_require__.r(__webpack_exports__);
     }).then(function (data) {
       return _this.worklines = data;
     });
-    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/employeeCounts").then(function (response) {
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/EmployeeCountInProtesto").then(function (response) {
       return response.json();
     }).then(function (data) {
-      return _this.employeeCounts = data;
+      return _this.employeeCountInProtestoOptions = data;
     });
     (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/ProtestoPlace/List").then(function (response) {
       return response.json();
@@ -21215,7 +21573,16 @@ __webpack_require__.r(__webpack_exports__);
     }).then(function (data) {
       return _this.districts = data;
     });
-
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/employmentTypes").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.employmentTypes = data;
+    });
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/interventionTypes").then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      return _this.interventionTypes = data;
+    });
     // this.initializeSemanticUI();
   },
   watch: {
@@ -21223,11 +21590,11 @@ __webpack_require__.r(__webpack_exports__);
     'addedNews.news': {
       handler: function handler(newNews) {
         if (newNews && this.resistance) {
+          console.log(newNews);
           this.resistance.resistanceNews.push(newNews); // Push into array
         }
       },
-      deep: true,
-      immediate: true
+      deep: true
     }
   },
   methods: {
@@ -21237,7 +21604,7 @@ __webpack_require__.r(__webpack_exports__);
       var id = this.$route.params.id; // Accessing the id directly from $route.params
 
       // Simulate an API call
-      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/resistance/get/".concat(id)).then(function (response) {
+      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/resistanceapi/get/".concat(id)).then(function (response) {
         return response.json();
       }).then(function (data) {
         _this2.resistance = data;
@@ -21245,6 +21612,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     createProtesto: function createProtesto() {
+      console.log('created');
       var created = this.resistance.protestoItems.filter(function (s) {
         return s.protestoId === 0;
       });
@@ -21252,7 +21620,23 @@ __webpack_require__.r(__webpack_exports__);
         var protesto = {
           resistanceId: this.resistance.id,
           protestoId: 0,
-          locations: []
+          protestoTypeIds: [],
+          isAgainstProduction: false,
+          protestoStartDate: null,
+          protestoEndDate: null,
+          protestoPlaceIds: [],
+          genderId: 0,
+          interventionTypeIds: [],
+          protestoCityIds: [],
+          protestoDistrictIds: [],
+          locations: [],
+          custodyCount: null,
+          employeeCountInProtesto: null,
+          employeeCountInProtestoId: null,
+          resistanceName: "",
+          note: "",
+          simpleProtestoDescription: "",
+          strikeDuration: 0
         };
         this.activeProtestoIndex = this.resistance.protestoItems.length;
         this.resistance.protestoItems.push(protesto);
@@ -21285,23 +21669,72 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     saveForm: function saveForm() {
+      var _this4 = this;
       // Save form logic
       console.log(this.resistance);
-      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/Resistance/UpdateResitance", {
+      var errors = this.validateForm();
+      console.log(errors);
+      // If there are errors, display them and stop submission
+      if (Object.keys(errors).length > 0) {
+        this.formErrors = errors; // Update formErrors to display validation messages
+        return;
+      }
+      this.isLoading = true;
+      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/Resistanceapi/UpdateResitance", {
         method: 'POST',
         headers: {
           "Content-Type": "application/json" // Ensure JSON is sent
         },
         body: JSON.stringify(this.resistance)
       }).then(function (response) {
-        return console.log(response);
+        console.log(response);
+        _this4.isLoading = false;
+        _this4.$swal('Vaka kaydedildi');
+        _this4.$router.push({
+          path: "/"
+        });
       })["catch"](function (error) {
-        return console.log(error);
+        _this4.isLoading = false;
+        _this4.$swal({
+          icon: "error",
+          title: "Bir hata olustu",
+          text: "Bir hata olustu!"
+        });
+        console.log(error);
       });
     },
     handleCancelProtesto: function handleCancelProtesto(protesto) {
       this.resistance.protestoItems = this.resistance.protestoItems.filter(function (s) {
         return s.protestoId !== 0;
+      });
+      this.activeProtestoIndex = null;
+    },
+    handleSaveProtesto: function handleSaveProtesto(obj) {
+      var id = obj.id,
+        protesto = obj.protesto; // Destructure the object for easier access
+      protesto.protestoId = id;
+      // Check if the protestoId already exists in protestoItems
+      var existingIndex = this.resistance.protestoItems.findIndex(function (item) {
+        return item.protestoId === id;
+      });
+      if (existingIndex !== -1) {
+        console.log('update');
+        // Update the existing protesto item
+        this.resistance.protestoItems[existingIndex] = _objectSpread(_objectSpread({}, this.resistance.protestoItems[existingIndex]), protesto);
+      } else {
+        console.log('insert');
+        var createdIndex = this.resistance.protestoItems.findIndex(function (item) {
+          return item.protestoId === 0;
+        });
+        this.resistance.protestoItems[createdIndex] = _objectSpread(_objectSpread({}, this.resistance.protestoItems[existingIndex]), protesto);
+      }
+      this.activeProtestoIndex = null;
+      // Optionally, you can emit an event or perform other actions here
+      console.log("Protesto saved:", this.resistance.protestoItems);
+    },
+    handleDeleteProtesto: function handleDeleteProtesto(id) {
+      this.resistance.protestoItems = this.resistance.protestoItems.filter(function (s) {
+        return s.protestoId !== id;
       });
       this.activeProtestoIndex = null;
     },
@@ -21321,6 +21754,62 @@ __webpack_require__.r(__webpack_exports__);
       this.resistance.resistanceNews = this.resistance.resistanceNews.filter(function (s) {
         return s.id !== newsId;
       });
+    },
+    validateForm: function validateForm() {
+      var errors = {};
+      if (!this.resistance.resistanceDescription) {
+        errors.resistanceDescription = "Lütfen bir kısa açıklama seçiniz.";
+      }
+      // CategoryId: Required
+      if (!this.resistance.categoryId) {
+        errors.categoryId = "Lütfen bir kategori giriniz.";
+      }
+
+      // CompanyId: At least one company selected
+      if (!this.resistance.companyId) {
+        errors.companyId = "Lütfen bir şirket seçiniz.";
+      }
+
+      // CorporationIds: At least one corporation selected
+      if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {
+        errors.corporationIds = "Lütfen en az bir kurumsallık seçiniz.";
+      }
+
+      // EmploymentTypeIds: At least one employment type selected
+      if (!this.resistance.employmentTypeIds || this.resistance.employmentTypeIds.length === 0) {
+        errors.employmentTypeIds = "Lütfen en az bir istihdam türü seçiniz.";
+      }
+
+      // GenderId: Required
+      if (!this.resistance.genderId) {
+        errors.genderId = "Lütfen bir cinsiyet giriniz.";
+      }
+
+      // ProtestoTypeIds: At least one protest type selected
+      if (!this.resistance.protestoTypeIds || this.resistance.protestoTypeIds.length === 0) {
+        errors.protestoTypeIds = "Lütfen en az bir eylem türü seçiniz.";
+      }
+
+      // ProtestoPlaceIds: At least one protest place selected
+      if (!this.resistance.protestoPlaceIds || this.resistance.protestoPlaceIds.length === 0) {
+        errors.protestoPlaceIds = "Lütfen en az bir eylem mekanı seçiniz.";
+      }
+
+      // ProtestoStartDate: Required
+      if (!this.resistance.protestoStartDate) {
+        errors.protestoStartDate = "Lütfen başlangıç tarihi seçiniz.";
+      }
+
+      // AnyLegalIntervention: Required
+      if (this.resistance.anyLegalIntervention === null || this.resistance.anyLegalIntervention === undefined) {
+        errors.anyLegalIntervention = "Hukuki girişim var mı?";
+      }
+
+      // DevelopRight: Required
+      if (this.resistance.developRight === null || this.resistance.developRight === undefined) {
+        errors.developRight = "Hak Geliştirmeye/Savunma Özelliği";
+      }
+      return errors;
     }
   }
 });
@@ -21463,7 +21952,7 @@ __webpack_require__.r(__webpack_exports__);
     }).then(function (data) {
       return _this3.companies = data;
     });
-    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/resistance/categories").then(function (response) {
+    (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/lookup/categories").then(function (response) {
       return response.json();
     }).then(function (data) {
       return _this3.categories = data;
@@ -21521,6 +22010,18 @@ __webpack_require__.r(__webpack_exports__);
       type: Array,
       required: true
     },
+    tradeUnionAuthorities: {
+      type: Array,
+      required: true
+    },
+    tradeUnions: {
+      type: Array,
+      required: true
+    },
+    employmentTypes: {
+      type: Array,
+      required: true
+    },
     employeeCounts: {
       type: Array,
       required: true
@@ -21537,7 +22038,6 @@ __webpack_require__.r(__webpack_exports__);
       // Show/hide outsource section
     },
     openCompanyModal: function openCompanyModal() {
-      console.log('openCompanyModal');
       this.$emit('openCompanyModal');
     },
     addResistanceReason: function addResistanceReason(newTag) {
@@ -21725,65 +22225,6 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       return $options.addCompany && $options.addCompany.apply($options, arguments);
     }, ["prevent"]))
   }, " Şirket Ekle ")])])], 512 /* NEED_PATCH */);
-}
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=template&id=2456dd65&scoped=true":
-/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=template&id=2456dd65&scoped=true ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* binding */ render)
-/* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
-
-var _hoisted_1 = ["onUpdate:modelValue"];
-var _hoisted_2 = ["value"];
-var _hoisted_3 = ["onUpdate:modelValue"];
-var _hoisted_4 = ["value"];
-var _hoisted_5 = ["onUpdate:modelValue"];
-function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.protestoLocations, function (location, index) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
-      key: index,
-      "class": "fields"
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" City Dropdown "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-      "onUpdate:modelValue": function onUpdateModelValue($event) {
-        return location.cityId = $event;
-      }
-    }, [_cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-      value: ""
-    }, "--İl--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.cities, function (city) {
-      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-        key: city.id,
-        value: city.id
-      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(city.name), 9 /* TEXT, PROPS */, _hoisted_2);
-    }), 128 /* KEYED_FRAGMENT */))], 8 /* PROPS */, _hoisted_1), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, location.cityId]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" District Dropdown "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-      "onUpdate:modelValue": function onUpdateModelValue($event) {
-        return location.districtId = $event;
-      }
-    }, [_cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-      value: ""
-    }, "--İlçe--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.districts.filter(function (s) {
-      return s.cityId === location.cityId;
-    }), function (district) {
-      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-        key: district.id,
-        value: district.id
-      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(district.name), 9 /* TEXT, PROPS */, _hoisted_4);
-    }), 128 /* KEYED_FRAGMENT */))], 8 /* PROPS */, _hoisted_3), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, location.districtId]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Place Input "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-      "onUpdate:modelValue": function onUpdateModelValue($event) {
-        return location.place = $event;
-      },
-      type: "text",
-      placeholder: "Enter place"
-    }, null, 8 /* PROPS */, _hoisted_5), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, location.place]])]);
-  }), 128 /* KEYED_FRAGMENT */))]);
 }
 
 /***/ }),
@@ -22084,11 +22525,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
 
 var _hoisted_1 = {
+  key: 0,
+  "class": "ui dimmer active"
+};
+var _hoisted_2 = {
   "class": "ui form"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Protesto = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Protesto");
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Protesto, {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [this.isLoading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, _cache[3] || (_cache[3] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    "class": "ui text loader"
+  }, "İşlem Yapılıyor...", -1 /* HOISTED */)]))) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Protesto, {
     protesto: this.protestoData,
     protestoTypeOptions: $props.protestoTypeOptions,
     protestoPlaceOptions: $props.protestoPlaceOptions,
@@ -22096,8 +22543,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     employeeCountInProtestoOptions: $props.employeeCountInProtestoOptions,
     cities: this.cities,
     districts: this.districts,
-    onAddLocation: $options.handleAddLocation
-  }, null, 8 /* PROPS */, ["protesto", "protestoTypeOptions", "protestoPlaceOptions", "genderOptions", "employeeCountInProtestoOptions", "cities", "districts", "onAddLocation"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save Button "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    "intervention-types": this.interventionTypes,
+    onAddLocation: $options.handleAddLocation,
+    onDeleteLocation: $options.handleDeleteLocation
+  }, null, 8 /* PROPS */, ["protesto", "protestoTypeOptions", "protestoPlaceOptions", "genderOptions", "employeeCountInProtestoOptions", "cities", "districts", "intervention-types", "onAddLocation", "onDeleteLocation"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save Button "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "ui primary button",
     type: "button",
     onClick: _cache[0] || (_cache[0] = function () {
@@ -22116,7 +22565,93 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[2] || (_cache[2] = function () {
       return $options.deleteProtesto && $options.deleteProtesto.apply($options, arguments);
     })
-  }, " SİL ")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]);
+  }, " SİL ")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])], 64 /* STABLE_FRAGMENT */);
+}
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Location.vue?vue&type=template&id=e0e8e4d8&scoped=true":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Location.vue?vue&type=template&id=e0e8e4d8&scoped=true ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+
+var _hoisted_1 = {
+  "class": "four field"
+};
+var _hoisted_2 = ["onUpdate:modelValue"];
+var _hoisted_3 = ["value"];
+var _hoisted_4 = {
+  "class": "four field"
+};
+var _hoisted_5 = ["onUpdate:modelValue"];
+var _hoisted_6 = ["value"];
+var _hoisted_7 = {
+  "class": "four field"
+};
+var _hoisted_8 = ["onUpdate:modelValue"];
+var _hoisted_9 = {
+  "class": "four field"
+};
+var _hoisted_10 = ["onClick"];
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  var _this = this;
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.protestoLocations, function (location, index) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)(((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+      key: index,
+      "class": "fields"
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" City Dropdown "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+      "onUpdate:modelValue": function onUpdateModelValue($event) {
+        return location.cityId = $event;
+      }
+    }, [_cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+      value: ""
+    }, "--İl--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.cities, function (city) {
+      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+        key: city.id,
+        value: city.id
+      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(city.name), 9 /* TEXT, PROPS */, _hoisted_3);
+    }), 128 /* KEYED_FRAGMENT */))], 8 /* PROPS */, _hoisted_2), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, location.cityId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" District Dropdown "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+      "onUpdate:modelValue": function onUpdateModelValue($event) {
+        return location.districtId = $event;
+      }
+    }, [_cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+      value: ""
+    }, "--İlçe--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_this.districts.filter(function (s) {
+      return s.cityId === location.cityId;
+    }), function (district) {
+      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+        key: district.id,
+        value: district.id
+      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(district.name), 9 /* TEXT, PROPS */, _hoisted_6);
+    }), 128 /* KEYED_FRAGMENT */))], 8 /* PROPS */, _hoisted_5), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, location.districtId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Place Input "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+      "onUpdate:modelValue": function onUpdateModelValue($event) {
+        return location.place = $event;
+      },
+      type: "text"
+    }, null, 8 /* PROPS */, _hoisted_8), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, location.place]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+      type: "button",
+      onClick: function onClick($event) {
+        return $options.deleteLocation(index);
+      },
+      "class": "ui icon button red basic"
+    }, _toConsumableArray(_cache[2] || (_cache[2] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      "class": "trash icon"
+    }, null, -1 /* HOISTED */)])), 8 /* PROPS */, _hoisted_10)])])), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, !location.deleted]]);
+  }), 128 /* KEYED_FRAGMENT */);
 }
 
 /***/ }),
@@ -22138,21 +22673,26 @@ var _hoisted_1 = {
   "class": "field"
 };
 var _hoisted_2 = {
-  "class": "two fields"
+  key: 0,
+  "class": "text-danger"
 };
 var _hoisted_3 = {
+  key: 0,
   "class": "field"
 };
 var _hoisted_4 = {
   "class": "field"
 };
 var _hoisted_5 = {
-  "class": "field"
+  "class": "two fields"
 };
 var _hoisted_6 = {
   "class": "field"
 };
-var _hoisted_7 = ["value"];
+var _hoisted_7 = {
+  key: 0,
+  "class": "text-danger"
+};
 var _hoisted_8 = {
   "class": "field"
 };
@@ -22160,19 +22700,40 @@ var _hoisted_9 = {
   "class": "field"
 };
 var _hoisted_10 = {
-  "class": "field"
+  key: 0,
+  "class": "text-danger"
 };
 var _hoisted_11 = {
+  "class": "field"
+};
+var _hoisted_12 = ["value"];
+var _hoisted_13 = {
+  key: 0,
+  "class": "text-danger"
+};
+var _hoisted_14 = {
+  "class": "field"
+};
+var _hoisted_15 = {
+  "class": "field"
+};
+var _hoisted_16 = {
   "class": "two fields"
 };
-var _hoisted_12 = {
+var _hoisted_17 = {
   "class": "field"
 };
-var _hoisted_13 = {
+var _hoisted_18 = {
   "class": "field"
 };
-var _hoisted_14 = ["value"];
-var _hoisted_15 = {
+var _hoisted_19 = ["value"];
+var _hoisted_20 = {
+  "class": "field"
+};
+var _hoisted_21 = {
+  "class": "field"
+};
+var _hoisted_22 = {
   "class": "field"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -22180,13 +22741,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_multiselect = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("multiselect");
   var _component_VueDatePicker = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("VueDatePicker");
   var _component_Location = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Location");
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Types "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Types "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoTypeIds"
   }, "Eylem Türleri", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ProtestoTypeIds",
-    modelValue: this.protesto.protestoTypeIds,
+    modelValue: $props.protesto.protestoTypeIds,
     "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
-      return _this.protesto.protestoTypeIds = $event;
+      return $props.protesto.protestoTypeIds = $event;
     }),
     options: $props.protestoTypeOptions,
     multiple: true,
@@ -22196,33 +22757,47 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     placeholder: "Seçiniz",
     label: "name",
     "track-by": "id"
-  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Start and End Dates "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.protestoTypeIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoTypeIds), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), $options.showStrikeDuration ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "StrikeDuration"
+  }, "Eylemin Süresi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
+      return $props.protesto.strikeDuration = $event;
+    }),
+    type: "text"
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.strikeDuration]])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "SimpleProtestoDescription"
+  }, "İş yerinde Basit Eylem Açıklama", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+      return $props.protesto.simpleProtestoDescription = $event;
+    }),
+    type: "text"
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.simpleProtestoDescription]])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.showSimpleProtestoDescription]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Start and End Dates "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoStartDate"
   }, "Başlangıç Tarihi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_VueDatePicker, {
-    modelValue: this.protesto.protestoStartDate,
-    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
-      return _this.protesto.protestoStartDate = $event;
+    modelValue: $props.protesto.protestoStartDate,
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+      return $props.protesto.protestoStartDate = $event;
     }),
     "text-input": "",
     locale: "tr-TR",
     format: "dd/MM/yyyy"
-  }, null, 8 /* PROPS */, ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue"]), $props.formErrors.protestoStartDate ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_7, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoTypeIds), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoEndDate"
   }, "Bitiş Tarihi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_VueDatePicker, {
-    modelValue: this.protesto.protestoEndDate,
-    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
-      return _this.protesto.protestoEndDate = $event;
+    modelValue: $props.protesto.protestoEndDate,
+    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+      return $props.protesto.protestoEndDate = $event;
     }),
     "text-input": "",
     locale: "tr-TR",
     format: "dd/MM/yyyy"
-  }, null, 8 /* PROPS */, ["modelValue"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Places "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Places "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoPlaceIds"
-  }, "Yerler", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
+  }, "Eylem Yerleri", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ProtestoPlaceIds",
-    modelValue: this.protesto.protestoPlaceIds,
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
-      return _this.protesto.protestoPlaceIds = $event;
+    modelValue: $props.protesto.protestoPlaceIds,
+    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
+      return $props.protesto.protestoPlaceIds = $event;
     }),
     options: $props.protestoPlaceOptions,
     multiple: true,
@@ -22232,69 +22807,89 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     placeholder: "Seçiniz",
     label: "name",
     "track-by": "id"
-  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Gender "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.protestoPlaceIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_10, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoPlaceIds), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Gender "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [_cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "GenderId"
   }, "Cinsiyet", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
-      return _this.protesto.genderId = $event;
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+      return $props.protesto.genderId = $event;
     }),
     id: "GenderId"
-  }, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.genderOptions, function (gender) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: gender.id,
       value: gender.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(gender.name), 9 /* TEXT, PROPS */, _hoisted_7);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.protesto.genderId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(gender.name), 9 /* TEXT, PROPS */, _hoisted_12);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.genderId]]), $props.formErrors.genderId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.genderId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "ui button",
-    onClick: _cache[5] || (_cache[5] = function () {
+    onClick: _cache[7] || (_cache[7] = function () {
       return $options.addLocation && $options.addLocation.apply($options, arguments);
     })
-  }, "Lokasyon Ekle")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Location, {
+  }, "Lokasyon Ekle")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Location, {
+    onDeleteLocation: $options.handleDeleteLocation,
     cities: $props.cities,
     districts: $props.districts,
-    "protesto-locations": this.protesto.locations
-  }, null, 8 /* PROPS */, ["cities", "districts", "protesto-locations"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [_cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "CustodyCount"
-  }, "Gözaltı Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    type: "number",
-    id: "CustodyCount",
-    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
-      return _this.protesto.custodyCount = $event;
-    })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.protesto.custodyCount]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [_cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "protesto-locations": $props.protesto.locations
+  }, null, 8 /* PROPS */, ["onDeleteLocation", "cities", "districts", "protesto-locations"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCountInProtesto"
   }, "Eylemdeki İşçi Sayısı (Tam)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
     id: "EmployeeCountInProtesto",
-    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
-      return _this.protesto.employeeCountInProtesto = $event;
+    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
+      return $props.protesto.employeeCountInProtesto = $event;
+    }),
+    onBlur: _cache[9] || (_cache[9] = function () {
+      return $options.updateEmployeeCountId && $options.updateEmployeeCountId.apply($options, arguments);
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.protesto.employeeCountInProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.employeeCountInProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [_cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCountInProtestoId"
   }, "Eylemdeki İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
-      return _this.protesto.employeeCountInProtestoId = $event;
+    "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
+      return $props.protesto.employeeCountInProtestoId = $event;
     }),
     id: "EmployeeCountInProtestoId"
-  }, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.employeeCountInProtestoOptions, function (employeeCountInProtesto) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: employeeCountInProtesto.id,
       value: employeeCountInProtesto.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(employeeCountInProtesto.name), 9 /* TEXT, PROPS */, _hoisted_14);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.protesto.employeeCountInProtestoId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Notes "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(employeeCountInProtesto.name), 9 /* TEXT, PROPS */, _hoisted_19);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.employeeCountInProtestoId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "InterventionTypeId"
+  }, "Müdahale Tipi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
+    id: "ProtestoPlaceIds",
+    modelValue: $props.protesto.interventionTypeIds,
+    "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
+      return $props.protesto.interventionTypeIds = $event;
+    }),
+    options: $props.interventionTypes,
+    multiple: true,
+    "close-on-select": false,
+    "clear-on-select": false,
+    "preserve-search": true,
+    placeholder: "Seçiniz",
+    label: "name",
+    "track-by": "id"
+  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [_cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "CustodyCount"
+  }, "Gözaltı Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    id: "CustodyCount",
+    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
+      return _this.protesto.custodyCount = $event;
+    })
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.protesto.custodyCount]])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.isCustodyPossible]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Notes "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [_cache[27] || (_cache[27] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "Note"
-  }, "Notlar", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
+  }, "Kontrol Kişisine Notlar", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     id: "Note",
-    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
-      return _this.protesto.note = $event;
+    "onUpdate:modelValue": _cache[13] || (_cache[13] = function ($event) {
+      return $props.protesto.note = $event;
     }),
     rows: "3"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.protesto.note]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save Button ")], 64 /* STABLE_FRAGMENT */);
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.note]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save Button ")], 64 /* STABLE_FRAGMENT */);
 }
 
 /***/ }),
@@ -22344,8 +22939,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       employeeCountInProtestoOptions: $props.employeeCountInProtestoOptions,
       cities: $props.cities,
       districts: $props.districts,
-      onCancelProtesto: $options.handleCancelProtesto
-    }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions", "cities", "districts", "onCancelProtesto"])], 2 /* CLASS */)]);
+      "intervention-types": $props.interventionTypes,
+      onCancelProtesto: $options.handleCancelProtesto,
+      onOnProtestoAdded: $options.handleSaveProtesto,
+      onOnProtestoDeleted: $options.handleDeleteProtesto
+    }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions", "cities", "districts", "intervention-types", "onCancelProtesto", "onOnProtestoAdded", "onOnProtestoDeleted"])], 2 /* CLASS */)]);
   }), 128 /* KEYED_FRAGMENT */))]);
 }
 
@@ -22370,6 +22968,7 @@ var _hoisted_1 = {
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Resistance = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Resistance");
   var _component_Protesto = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Protesto");
+  var _component_resistance_news = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("resistance-news");
   var _component_company_modal = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("company-modal");
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Resistance, {
     resistance: $data.resistance,
@@ -22378,8 +22977,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     employeeCounts: $data.employeeCounts,
     companies: $data.companies,
     categories: $data.categories,
-    formErrors: $data.formErrors
-  }, null, 8 /* PROPS */, ["resistance", "corporations", "resistanceReasons", "employeeCounts", "companies", "categories", "formErrors"]), _cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
+    tradeUnions: $data.tradeUnions,
+    tradeUnionAuthorities: $data.tradeUnionAuthorities,
+    employmentTypes: $data.employmentTypes,
+    formErrors: $data.formErrors,
+    onOpenCompanyModal: $options.handleOpenCompanyModal
+  }, null, 8 /* PROPS */, ["resistance", "corporations", "resistanceReasons", "employeeCounts", "companies", "categories", "tradeUnions", "tradeUnionAuthorities", "employmentTypes", "formErrors", "onOpenCompanyModal"]), _cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
     "class": "ui dividing header"
   }, "Eylem", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Protesto, {
     protesto: $data.resistance.protesto,
@@ -22389,8 +22992,14 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     employeeCountInProtestoOptions: $data.employeeCountInProtestoOptions,
     cities: $data.cities,
     districts: $data.districts,
-    onAddLocation: $options.handleAddLocation
-  }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions", "cities", "districts", "onAddLocation"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save and Cancel Buttons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    "intervention-types": $data.interventionTypes,
+    formErrors: $data.formErrors,
+    onAddLocation: $options.handleAddLocation,
+    onDeleteLocation: $options.handleDeleteLocation
+  }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions", "cities", "districts", "intervention-types", "formErrors", "onAddLocation", "onDeleteLocation"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_resistance_news, {
+    news: this.resistance.resistanceNews,
+    onRemoveNews: $options.handleRemoveNews
+  }, null, 8 /* PROPS */, ["news", "onRemoveNews"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save and Cancel Buttons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "ui primary button",
     onClick: _cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.saveForm && $options.saveForm.apply($options, arguments);
@@ -22441,7 +23050,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_protesto_accordion = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("protesto-accordion");
   var _component_resistance_news = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("resistance-news");
   var _component_company_modal = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("company-modal");
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [$data.isLoading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, _cache[3] || (_cache[3] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [this.isLoading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, _cache[3] || (_cache[3] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "ui text loader"
   }, "İşlem Yapılıyor...", -1 /* HOISTED */)]))) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
     to: "/list",
@@ -22466,9 +23075,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     employeeCounts: $data.employeeCounts,
     companies: $data.companies,
     categories: $data.categories,
+    tradeUnions: $data.tradeUnions,
+    tradeUnionAuthorities: $data.tradeUnionAuthorities,
+    employmentTypes: $data.employmentTypes,
     formErrors: $data.formErrors,
     onOpenCompanyModal: $options.handleOpenCompanyModal
-  }, null, 8 /* PROPS */, ["resistance", "corporations", "resistanceReasons", "employeeCounts", "companies", "categories", "formErrors", "onOpenCompanyModal"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protestos "), _cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
+  }, null, 8 /* PROPS */, ["resistance", "corporations", "resistanceReasons", "employeeCounts", "companies", "categories", "tradeUnions", "tradeUnionAuthorities", "employmentTypes", "formErrors", "onOpenCompanyModal"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protestos "), _cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
     "class": "ui dividing header"
   }, "Eylemler", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
@@ -22487,8 +23099,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     employeeCountInProtestoOptions: $data.employeeCountInProtestoOptions,
     cities: $data.cities,
     districts: $data.districts,
-    onCancelProtesto: $options.handleCancelProtesto
-  }, null, 8 /* PROPS */, ["activeProtestoIndex", "protestoItems", "protestoPlaceOptions", "protestoTypeOptions", "genderOptions", "employeeCountInProtestoOptions", "cities", "districts", "onCancelProtesto"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_resistance_news, {
+    "intervention-types": $data.interventionTypes,
+    onCancelProtesto: $options.handleCancelProtesto,
+    onSaveProtesto: $options.handleSaveProtesto,
+    onDeleteProtesto: $options.handleDeleteProtesto
+  }, null, 8 /* PROPS */, ["activeProtestoIndex", "protestoItems", "protestoPlaceOptions", "protestoTypeOptions", "genderOptions", "employeeCountInProtestoOptions", "cities", "districts", "intervention-types", "onCancelProtesto", "onSaveProtesto", "onDeleteProtesto"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_resistance_news, {
     news: this.resistance.resistanceNews,
     onRemoveNews: $options.handleRemoveNews
   }, null, 8 /* PROPS */, ["news", "onRemoveNews"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save and Cancel Buttons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
@@ -22767,75 +23382,107 @@ var _hoisted_1 = {
   "class": "field"
 };
 var _hoisted_2 = {
-  "class": "field"
-};
-var _hoisted_3 = ["value"];
-var _hoisted_4 = {
   key: 0,
   "class": "text-danger"
 };
+var _hoisted_3 = {
+  "class": "field"
+};
+var _hoisted_4 = ["value"];
 var _hoisted_5 = {
-  "class": "two fields"
+  key: 0,
+  "class": "text-danger"
 };
 var _hoisted_6 = {
-  "class": "field"
+  "class": "fields"
 };
 var _hoisted_7 = {
-  "class": "field"
+  "class": "six wide field"
 };
 var _hoisted_8 = {
+  "class": "ten wide field"
+};
+var _hoisted_9 = {
+  "class": "two fields"
+};
+var _hoisted_10 = {
+  "class": "field"
+};
+var _hoisted_11 = ["value"];
+var _hoisted_12 = {
   key: 0,
   "class": "text-danger"
 };
-var _hoisted_9 = {
-  "class": "sixty wide field"
-};
-var _hoisted_10 = {
-  "class": "two fields"
-};
-var _hoisted_11 = {
-  "class": "field"
-};
-var _hoisted_12 = ["value"];
 var _hoisted_13 = {
   "class": "field"
 };
 var _hoisted_14 = {
-  "class": "field sixty wide"
-};
-var _hoisted_15 = {
   key: 0,
   id: "outsource",
-  "class": "sixty wide field"
+  "class": "six wide field"
+};
+var _hoisted_15 = {
+  "class": "two fields"
 };
 var _hoisted_16 = {
-  "class": "two fields"
-};
-var _hoisted_17 = {
   "class": "field"
 };
-var _hoisted_18 = ["value"];
+var _hoisted_17 = ["value"];
+var _hoisted_18 = {
+  "class": "field"
+};
 var _hoisted_19 = {
-  "class": "field"
+  "class": "two fields"
 };
 var _hoisted_20 = {
-  "class": "two fields"
+  "class": "field"
 };
 var _hoisted_21 = {
   "class": "field"
 };
-var _hoisted_22 = ["value"];
-var _hoisted_23 = {
+var _hoisted_22 = {
   key: 0,
   "class": "text-danger"
+};
+var _hoisted_23 = {
+  "class": "two fields"
 };
 var _hoisted_24 = {
   "class": "field"
 };
-var _hoisted_25 = {
+var _hoisted_25 = ["value"];
+var _hoisted_26 = {
+  key: 0,
+  "class": "text-danger"
+};
+var _hoisted_27 = {
   "class": "field"
 };
-var _hoisted_26 = {
+var _hoisted_28 = {
+  "class": "field"
+};
+var _hoisted_29 = {
+  "class": "field"
+};
+var _hoisted_30 = ["value"];
+var _hoisted_31 = {
+  "class": "field"
+};
+var _hoisted_32 = ["value"];
+var _hoisted_33 = {
+  "class": "two fields"
+};
+var _hoisted_34 = {
+  "class": "field"
+};
+var _hoisted_35 = {
+  key: 0,
+  "class": "text-danger"
+};
+var _hoisted_36 = {
+  "class": "field"
+};
+var _hoisted_37 = {
   "class": "field"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -22847,7 +23494,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
       return _this.resistance.id = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.id]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.id]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ResistanceDescription"
   }, "Kısa Açıklama", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     id: "ResistanceDescription",
@@ -22855,25 +23502,77 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
       return _this.resistance.resistanceDescription = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.resistanceDescription]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [_cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.resistanceDescription]]), $props.formErrors.resistanceDescription ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.resistanceDescription), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CategoryId"
   }, "Vaka Niteliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
       return _this.resistance.categoryId = $event;
     })
-  }, [_cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.categories, function (category) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: category.id,
       value: category.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(category.name), 9 /* TEXT, PROPS */, _hoisted_3);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.categoryId]]), $props.formErrors.categoryId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.categoryId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Two Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Case Reasons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(category.name), 9 /* TEXT, PROPS */, _hoisted_4);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.categoryId]]), $props.formErrors.categoryId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.categoryId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "IsOutsource"
+  }, "Şirket Taşeron mu?", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+      return _this.resistance.isOutsource = $event;
+    })
+  }, _cache[21] || (_cache[21] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: false
+  }, "Hayır", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: true
+  }, "Evet", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.isOutsource]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "CompanyId"
+  }, "Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+      return _this.resistance.companyId = $event;
+    })
+  }, [_cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.companies, function (company) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: company.id,
+      value: company.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(company.name), 9 /* TEXT, PROPS */, _hoisted_11);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.companyId]]), $props.formErrors.companyId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_12, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.companyId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    onClick: _cache[5] || (_cache[5] = function () {
+      return $options.openCompanyModal && $options.openCompanyModal.apply($options, arguments);
+    }),
+    "class": "ui button"
+  }, _cache[24] || (_cache[24] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "chevron circle up icon"
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Şirket Ekle ")]))])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Main Company (Conditional) "), this.resistance.isOutsource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_14, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "MainCompanyId"
+  }, "Ana Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+      return $props.resistance.mainCompanyId = $event;
+    })
+  }, [_cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.companies, function (company) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: company.id,
+      value: company.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(company.name), 9 /* TEXT, PROPS */, _hoisted_17);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.resistance.mainCompanyId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    onClick: _cache[7] || (_cache[7] = function () {
+      return $options.openCompanyModal && $options.openCompanyModal.apply($options, arguments);
+    }),
+    "class": "ui button"
+  }, _cache[27] || (_cache[27] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "chevron circle up icon"
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Ana Şirket Ekle ")]))])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Two Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Case Reasons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [_cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ResistanceReasonIds"
   }, "Vaka Nedeni", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ResistanceReasonIds",
     modelValue: this.resistance.resistanceReasonIds,
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
       return _this.resistance.resistanceReasonIds = $event;
     }),
     placeholder: "Seçiniz",
@@ -22887,100 +23586,45 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "preserve-search": true,
     taggable: true,
     onTag: $options.addResistanceReason
-  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Develop Right "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Develop Right "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "DevelopRight"
   }, "Hak Geliştirme/Hak Savunma Özelliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
       return _this.resistance.developRight = $event;
     })
-  }, _cache[19] || (_cache[19] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, _cache[30] || (_cache[30] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: true
   }, "Hak Geliştirme", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: false
-  }, "Hak Savunma", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.developRight]]), $props.formErrors.developRight ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.developRight), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [_cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "CompanyId"
-  }, "Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
-      return _this.resistance.companyId = $event;
-    })
-  }, [_cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: ""
-  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.companies, function (company) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: company.id,
-      value: company.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(company.name), 9 /* TEXT, PROPS */, _hoisted_12);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.companyId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    type: "button",
-    onClick: _cache[6] || (_cache[6] = function () {
-      return $options.openCompanyModal && $options.openCompanyModal.apply($options, arguments);
-    }),
-    "class": "ui button"
-  }, _cache[22] || (_cache[22] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
-    "class": "chevron circle up icon"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Şirket Ekle ")]))])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Is Outsource "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "IsOutsource"
-  }, "Şirket Taşeron mu?", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
-      return _this.resistance.isOutsource = $event;
-    }),
-    onChange: _cache[8] || (_cache[8] = function () {
-      return $options.toggleOutsource && $options.toggleOutsource.apply($options, arguments);
-    })
-  }, _cache[24] || (_cache[24] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: false
-  }, "Hayır", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: true
-  }, "Evet", -1 /* HOISTED */)]), 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.isOutsource]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Main Company (Conditional) "), this.resistance.isOutsource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_15, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "MainCompanyId"
-  }, "Ana Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
-      return $props.resistance.mainCompanyId = $event;
-    })
-  }, [_cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: ""
-  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.companies, function (company) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: company.id,
-      value: company.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(company.name), 9 /* TEXT, PROPS */, _hoisted_18);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.resistance.mainCompanyId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    type: "button",
-    onClick: _cache[10] || (_cache[10] = function () {
-      return $options.openCompanyModal && $options.openCompanyModal.apply($options, arguments);
-    }),
-    "class": "ui button"
-  }, _cache[27] || (_cache[27] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
-    "class": "chevron circle up icon"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Ana Şirket Ekle ")]))])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Employee Count "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, "Hak Savunma", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.developRight]]), $props.formErrors.developRight ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.developRight), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Employee Count "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [_cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCountId"
   }, "İş Yerindeki İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
+    "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
       return _this.resistance.employeeCountId = $event;
     })
-  }, [_cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.employeeCounts, function (count) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: count.id,
       value: count.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(count.name), 9 /* TEXT, PROPS */, _hoisted_22);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.employeeCountId]]), $props.formErrors.employeeCountId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.employeeCountId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(count.name), 9 /* TEXT, PROPS */, _hoisted_25);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.employeeCountId]]), $props.formErrors.employeeCountId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.employeeCountId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCount"
   }, "İş Yerindeki İşçi Sayısı (Tam)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     id: "EmployeeCount",
-    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
+    "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
       return _this.resistance.employeeCount = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.employeeCount]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [_cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.employeeCount]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [_cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CorporationIds"
   }, "Kurumsallık", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "CorporationIds",
     modelValue: this.resistance.corporationIds,
-    "onUpdate:modelValue": _cache[13] || (_cache[13] = function ($event) {
+    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
       return _this.resistance.corporationIds = $event;
     }),
     placeholder: "Seçiniz",
@@ -22994,14 +23638,65 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "preserve-search": true,
     taggable: true,
     onTag: $options.addCorporation
-  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [_cache[37] || (_cache[37] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "TradeUnionAuthorityId"
+  }, "Sendikanın Yetki Durumu", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[13] || (_cache[13] = function ($event) {
+      return _this.resistance.tradeUnionAuthorityId = $event;
+    })
+  }, [_cache[36] || (_cache[36] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(this.tradeUnionAuthorities, function (ta) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: ta.id,
+      value: ta.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(ta.name), 9 /* TEXT, PROPS */, _hoisted_30);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.tradeUnionAuthorityId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_31, [_cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "TradeUnionId"
+  }, "Tepki Gösterilen Sendika", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
+      return _this.resistance.tradeUnionId = $event;
+    })
+  }, [_cache[38] || (_cache[38] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(this.tradeUnions, function (ta) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: ta.id,
+      value: ta.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(ta.name), 9 /* TEXT, PROPS */, _hoisted_32);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.tradeUnionId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [_cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "EmploymentTypeIds"
+  }, "İstihdam Türü", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
+    id: "CorporationIds",
+    modelValue: this.resistance.employmentTypeIds,
+    "onUpdate:modelValue": _cache[15] || (_cache[15] = function ($event) {
+      return _this.resistance.employmentTypeIds = $event;
+    }),
+    placeholder: "Seçiniz",
+    label: "name",
+    "track-by": "id",
+    "preselect-first": true,
+    options: $props.employmentTypes,
+    multiple: true,
+    "close-on-select": false,
+    "clear-on-select": false,
+    "preserve-search": true,
+    taggable: true
+  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.corporationIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.employmentTypeIds), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_36, [_cache[41] || (_cache[41] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "FiredEmployeeCountByProtesto"
+  }, "Mücadele Ettiği için İşten Atılan İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "number",
+    "onUpdate:modelValue": _cache[16] || (_cache[16] = function ($event) {
+      return _this.resistance.firedEmployeeCountByProtesto = $event;
+    })
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.firedEmployeeCountByProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_37, [_cache[43] || (_cache[43] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ResistanceResult"
   }, "Sonuç", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
+    "onUpdate:modelValue": _cache[17] || (_cache[17] = function ($event) {
       return _this.resistance.resistanceResult = $event;
     }),
     "class": "ui fluid dropdown"
-  }, _cache[33] || (_cache[33] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, _cache[42] || (_cache[42] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 0
   }, "Bilinmiyor", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 1
@@ -23144,6 +23839,33 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.dp__input_wrap{position:relative;widt
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sweetalert2/dist/sweetalert2.min.css":
+/*!*************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sweetalert2/dist/sweetalert2.min.css ***!
+  \*************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `.swal2-popup.swal2-toast{box-sizing:border-box;grid-column:1/4!important;grid-row:1/4!important;grid-template-columns:1fr 99fr 1fr;padding:1em;overflow-y:hidden;background:#fff;box-shadow:0 0 1px rgba(0,0,0,.075),0 1px 2px rgba(0,0,0,.075),1px 2px 4px rgba(0,0,0,.075),1px 3px 8px rgba(0,0,0,.075),2px 4px 16px rgba(0,0,0,.075);pointer-events:all}.swal2-popup.swal2-toast>*{grid-column:2}.swal2-popup.swal2-toast .swal2-title{margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-loading{justify-content:center}.swal2-popup.swal2-toast .swal2-input{height:2em;margin:.5em;font-size:1em}.swal2-popup.swal2-toast .swal2-validation-message{font-size:1em}.swal2-popup.swal2-toast .swal2-footer{margin:.5em 0 0;padding:.5em 0 0;font-size:.8em}.swal2-popup.swal2-toast .swal2-close{grid-column:3/3;grid-row:1/99;align-self:center;width:.8em;height:.8em;margin:0;font-size:2em}.swal2-popup.swal2-toast .swal2-html-container{margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-html-container:empty{padding:0}.swal2-popup.swal2-toast .swal2-loader{grid-column:1;grid-row:1/99;align-self:center;width:2em;height:2em;margin:.25em}.swal2-popup.swal2-toast .swal2-icon{grid-column:1;grid-row:1/99;align-self:center;width:2em;min-width:2em;height:2em;margin:0 .5em 0 0}.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:1.8em;font-weight:700}.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class\$=left]{left:.3125em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class\$=right]{right:.3125em}.swal2-popup.swal2-toast .swal2-actions{justify-content:flex-start;height:auto;margin:0;margin-top:.5em;padding:0 .5em}.swal2-popup.swal2-toast .swal2-styled{margin:.25em .5em;padding:.4em .6em;font-size:1em}.swal2-popup.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:1.6em;height:3em;transform:rotate(45deg);border-radius:50%}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class\$=left]{top:-.8em;left:-.5em;transform:rotate(-45deg);transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class\$=right]{top:-.25em;left:.9375em;transform-origin:0 1.5em;border-radius:0 4em 4em 0}.swal2-popup.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class\$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class\$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip{-webkit-animation:swal2-toast-animate-success-line-tip .75s;animation:swal2-toast-animate-success-line-tip .75s}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long{-webkit-animation:swal2-toast-animate-success-line-long .75s;animation:swal2-toast-animate-success-line-long .75s}.swal2-popup.swal2-toast.swal2-show{-webkit-animation:swal2-toast-show .5s;animation:swal2-toast-show .5s}.swal2-popup.swal2-toast.swal2-hide{-webkit-animation:swal2-toast-hide .1s forwards;animation:swal2-toast-hide .1s forwards}.swal2-container{display:grid;position:fixed;z-index:1060;top:0;right:0;bottom:0;left:0;box-sizing:border-box;grid-template-areas:"top-start     top            top-end" "center-start  center         center-end" "bottom-start  bottom-center  bottom-end";grid-template-rows:minmax(-webkit-min-content,auto) minmax(-webkit-min-content,auto) minmax(-webkit-min-content,auto);grid-template-rows:minmax(min-content,auto) minmax(min-content,auto) minmax(min-content,auto);height:100%;padding:.625em;overflow-x:hidden;transition:background-color .1s;-webkit-overflow-scrolling:touch}.swal2-container.swal2-backdrop-show,.swal2-container.swal2-noanimation{background:rgba(0,0,0,.4)}.swal2-container.swal2-backdrop-hide{background:0 0!important}.swal2-container.swal2-bottom-start,.swal2-container.swal2-center-start,.swal2-container.swal2-top-start{grid-template-columns:minmax(0,1fr) auto auto}.swal2-container.swal2-bottom,.swal2-container.swal2-center,.swal2-container.swal2-top{grid-template-columns:auto minmax(0,1fr) auto}.swal2-container.swal2-bottom-end,.swal2-container.swal2-center-end,.swal2-container.swal2-top-end{grid-template-columns:auto auto minmax(0,1fr)}.swal2-container.swal2-top-start>.swal2-popup{align-self:start}.swal2-container.swal2-top>.swal2-popup{grid-column:2;align-self:start;justify-self:center}.swal2-container.swal2-top-end>.swal2-popup,.swal2-container.swal2-top-right>.swal2-popup{grid-column:3;align-self:start;justify-self:end}.swal2-container.swal2-center-left>.swal2-popup,.swal2-container.swal2-center-start>.swal2-popup{grid-row:2;align-self:center}.swal2-container.swal2-center>.swal2-popup{grid-column:2;grid-row:2;align-self:center;justify-self:center}.swal2-container.swal2-center-end>.swal2-popup,.swal2-container.swal2-center-right>.swal2-popup{grid-column:3;grid-row:2;align-self:center;justify-self:end}.swal2-container.swal2-bottom-left>.swal2-popup,.swal2-container.swal2-bottom-start>.swal2-popup{grid-column:1;grid-row:3;align-self:end}.swal2-container.swal2-bottom>.swal2-popup{grid-column:2;grid-row:3;justify-self:center;align-self:end}.swal2-container.swal2-bottom-end>.swal2-popup,.swal2-container.swal2-bottom-right>.swal2-popup{grid-column:3;grid-row:3;align-self:end;justify-self:end}.swal2-container.swal2-grow-fullscreen>.swal2-popup,.swal2-container.swal2-grow-row>.swal2-popup{grid-column:1/4;width:100%}.swal2-container.swal2-grow-column>.swal2-popup,.swal2-container.swal2-grow-fullscreen>.swal2-popup{grid-row:1/4;align-self:stretch}.swal2-container.swal2-no-transition{transition:none!important}.swal2-popup{display:none;position:relative;box-sizing:border-box;grid-template-columns:minmax(0,100%);width:32em;max-width:100%;padding:0 0 1.25em;border:none;border-radius:5px;background:#fff;color:#545454;font-family:inherit;font-size:1rem}.swal2-popup:focus{outline:0}.swal2-popup.swal2-loading{overflow-y:hidden}.swal2-title{position:relative;max-width:100%;margin:0;padding:.8em 1em 0;color:inherit;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word}.swal2-actions{display:flex;z-index:1;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:center;width:auto;margin:1.25em auto 0;padding:0}.swal2-actions:not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}.swal2-actions:not(.swal2-loading) .swal2-styled:hover{background-image:linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1))}.swal2-actions:not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2))}.swal2-loader{display:none;align-items:center;justify-content:center;width:2.2em;height:2.2em;margin:0 1.875em;-webkit-animation:swal2-rotate-loading 1.5s linear 0s infinite normal;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;border-width:.25em;border-style:solid;border-radius:100%;border-color:#2778c4 transparent #2778c4 transparent}.swal2-styled{margin:.3125em;padding:.625em 1.1em;transition:box-shadow .1s;box-shadow:0 0 0 3px transparent;font-weight:500}.swal2-styled:not([disabled]){cursor:pointer}.swal2-styled.swal2-confirm{border:0;border-radius:.25em;background:initial;background-color:#7066e0;color:#fff;font-size:1em}.swal2-styled.swal2-confirm:focus{box-shadow:0 0 0 3px rgba(112,102,224,.5)}.swal2-styled.swal2-deny{border:0;border-radius:.25em;background:initial;background-color:#dc3741;color:#fff;font-size:1em}.swal2-styled.swal2-deny:focus{box-shadow:0 0 0 3px rgba(220,55,65,.5)}.swal2-styled.swal2-cancel{border:0;border-radius:.25em;background:initial;background-color:#6e7881;color:#fff;font-size:1em}.swal2-styled.swal2-cancel:focus{box-shadow:0 0 0 3px rgba(110,120,129,.5)}.swal2-styled.swal2-default-outline:focus{box-shadow:0 0 0 3px rgba(100,150,200,.5)}.swal2-styled:focus{outline:0}.swal2-styled::-moz-focus-inner{border:0}.swal2-footer{justify-content:center;margin:1em 0 0;padding:1em 1em 0;border-top:1px solid #eee;color:inherit;font-size:1em}.swal2-timer-progress-bar-container{position:absolute;right:0;bottom:0;left:0;grid-column:auto!important;overflow:hidden;border-bottom-right-radius:5px;border-bottom-left-radius:5px}.swal2-timer-progress-bar{width:100%;height:.25em;background:rgba(0,0,0,.2)}.swal2-image{max-width:100%;margin:2em auto 1em}.swal2-close{z-index:2;align-items:center;justify-content:center;width:1.2em;height:1.2em;margin-top:0;margin-right:0;margin-bottom:-1.2em;padding:0;overflow:hidden;transition:color .1s,box-shadow .1s;border:none;border-radius:5px;background:0 0;color:#ccc;font-family:serif;font-family:monospace;font-size:2.5em;cursor:pointer;justify-self:end}.swal2-close:hover{transform:none;background:0 0;color:#f27474}.swal2-close:focus{outline:0;box-shadow:inset 0 0 0 3px rgba(100,150,200,.5)}.swal2-close::-moz-focus-inner{border:0}.swal2-html-container{z-index:1;justify-content:center;margin:1em 1.6em .3em;padding:0;overflow:auto;color:inherit;font-size:1.125em;font-weight:400;line-height:normal;text-align:center;word-wrap:break-word;word-break:break-word}.swal2-checkbox,.swal2-file,.swal2-input,.swal2-radio,.swal2-select,.swal2-textarea{margin:1em 2em 3px}.swal2-file,.swal2-input,.swal2-textarea{box-sizing:border-box;width:auto;transition:border-color .1s,box-shadow .1s;border:1px solid #d9d9d9;border-radius:.1875em;background:inherit;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px transparent;color:inherit;font-size:1.125em}.swal2-file.swal2-inputerror,.swal2-input.swal2-inputerror,.swal2-textarea.swal2-inputerror{border-color:#f27474!important;box-shadow:0 0 2px #f27474!important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{border:1px solid #b4dbed;outline:0;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(100,150,200,.5)}.swal2-file::-moz-placeholder,.swal2-input::-moz-placeholder,.swal2-textarea::-moz-placeholder{color:#ccc}.swal2-file:-ms-input-placeholder,.swal2-input:-ms-input-placeholder,.swal2-textarea:-ms-input-placeholder{color:#ccc}.swal2-file::placeholder,.swal2-input::placeholder,.swal2-textarea::placeholder{color:#ccc}.swal2-range{margin:1em 2em 3px;background:#fff}.swal2-range input{width:80%}.swal2-range output{width:20%;color:inherit;font-weight:600;text-align:center}.swal2-range input,.swal2-range output{height:2.625em;padding:0;font-size:1.125em;line-height:2.625em}.swal2-input{height:2.625em;padding:0 .75em}.swal2-file{width:75%;margin-right:auto;margin-left:auto;background:inherit;font-size:1.125em}.swal2-textarea{height:6.75em;padding:.75em}.swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;background:inherit;color:inherit;font-size:1.125em}.swal2-checkbox,.swal2-radio{align-items:center;justify-content:center;background:#fff;color:inherit}.swal2-checkbox label,.swal2-radio label{margin:0 .6em;font-size:1.125em}.swal2-checkbox input,.swal2-radio input{flex-shrink:0;margin:0 .4em}.swal2-input-label{display:flex;justify-content:center;margin:1em auto 0}.swal2-validation-message{align-items:center;justify-content:center;margin:1em 0 0;padding:.625em;overflow:hidden;background:#f0f0f0;color:#666;font-size:1em;font-weight:300}.swal2-validation-message::before{content:"!";display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center}.swal2-icon{position:relative;box-sizing:content-box;justify-content:center;width:5em;height:5em;margin:2.5em auto .6em;border:.25em solid transparent;border-radius:50%;border-color:#000;font-family:inherit;line-height:5em;cursor:default;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:3.75em}.swal2-icon.swal2-error{border-color:#f27474;color:#f27474}.swal2-icon.swal2-error .swal2-x-mark{position:relative;flex-grow:1}.swal2-icon.swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class\$=left]{left:1.0625em;transform:rotate(45deg)}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class\$=right]{right:1em;transform:rotate(-45deg)}.swal2-icon.swal2-error.swal2-icon-show{-webkit-animation:swal2-animate-error-icon .5s;animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-error.swal2-icon-show .swal2-x-mark{-webkit-animation:swal2-animate-error-x-mark .5s;animation:swal2-animate-error-x-mark .5s}.swal2-icon.swal2-warning{border-color:#facea8;color:#f8bb86}.swal2-icon.swal2-warning.swal2-icon-show{-webkit-animation:swal2-animate-error-icon .5s;animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-warning.swal2-icon-show .swal2-icon-content{-webkit-animation:swal2-animate-i-mark .5s;animation:swal2-animate-i-mark .5s}.swal2-icon.swal2-info{border-color:#9de0f6;color:#3fc3ee}.swal2-icon.swal2-info.swal2-icon-show{-webkit-animation:swal2-animate-error-icon .5s;animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-info.swal2-icon-show .swal2-icon-content{-webkit-animation:swal2-animate-i-mark .8s;animation:swal2-animate-i-mark .8s}.swal2-icon.swal2-question{border-color:#c9dae1;color:#87adbd}.swal2-icon.swal2-question.swal2-icon-show{-webkit-animation:swal2-animate-error-icon .5s;animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-question.swal2-icon-show .swal2-icon-content{-webkit-animation:swal2-animate-question-mark .8s;animation:swal2-animate-question-mark .8s}.swal2-icon.swal2-success{border-color:#a5dc86;color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;transform:rotate(45deg);border-radius:50%}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class\$=left]{top:-.4375em;left:-2.0635em;transform:rotate(-45deg);transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class\$=right]{top:-.6875em;left:1.875em;transform:rotate(-45deg);transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}.swal2-icon.swal2-success .swal2-success-ring{position:absolute;z-index:2;top:-.25em;left:-.25em;box-sizing:content-box;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%}.swal2-icon.swal2-success .swal2-success-fix{position:absolute;z-index:1;top:.5em;left:1.625em;width:.4375em;height:5.625em;transform:rotate(-45deg)}.swal2-icon.swal2-success [class^=swal2-success-line]{display:block;position:absolute;z-index:2;height:.3125em;border-radius:.125em;background-color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-line][class\$=tip]{top:2.875em;left:.8125em;width:1.5625em;transform:rotate(45deg)}.swal2-icon.swal2-success [class^=swal2-success-line][class\$=long]{top:2.375em;right:.5em;width:2.9375em;transform:rotate(-45deg)}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-tip{-webkit-animation:swal2-animate-success-line-tip .75s;animation:swal2-animate-success-line-tip .75s}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-long{-webkit-animation:swal2-animate-success-line-long .75s;animation:swal2-animate-success-line-long .75s}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-circular-line-right{-webkit-animation:swal2-rotate-success-circular-line 4.25s ease-in;animation:swal2-rotate-success-circular-line 4.25s ease-in}.swal2-progress-steps{flex-wrap:wrap;align-items:center;max-width:100%;margin:1.25em auto;padding:0;background:inherit;font-weight:600}.swal2-progress-steps li{display:inline-block;position:relative}.swal2-progress-steps .swal2-progress-step{z-index:20;flex-shrink:0;width:2em;height:2em;border-radius:2em;background:#2778c4;color:#fff;line-height:2em;text-align:center}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step{background:#2778c4}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step{background:#add8e6;color:#fff}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line{background:#add8e6}.swal2-progress-steps .swal2-progress-step-line{z-index:10;flex-shrink:0;width:2.5em;height:.4em;margin:0 -1px;background:#2778c4}[class^=swal2]{-webkit-tap-highlight-color:transparent}.swal2-show{-webkit-animation:swal2-show .3s;animation:swal2-show .3s}.swal2-hide{-webkit-animation:swal2-hide .15s forwards;animation:swal2-hide .15s forwards}.swal2-noanimation{transition:none}.swal2-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.swal2-rtl .swal2-close{margin-right:initial;margin-left:0}.swal2-rtl .swal2-timer-progress-bar{right:0;left:auto}@-webkit-keyframes swal2-toast-show{0%{transform:translateY(-.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0)}}@keyframes swal2-toast-show{0%{transform:translateY(-.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0)}}@-webkit-keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@-webkit-keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@-webkit-keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@-webkit-keyframes swal2-show{0%{transform:scale(.7)}45%{transform:scale(1.05)}80%{transform:scale(.95)}100%{transform:scale(1)}}@keyframes swal2-show{0%{transform:scale(.7)}45%{transform:scale(1.05)}80%{transform:scale(.95)}100%{transform:scale(1)}}@-webkit-keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}@keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}@-webkit-keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@-webkit-keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@-webkit-keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@-webkit-keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(.4);opacity:0}50%{margin-top:1.625em;transform:scale(.4);opacity:0}80%{margin-top:-.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(.4);opacity:0}50%{margin-top:1.625em;transform:scale(.4);opacity:0}80%{margin-top:-.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@-webkit-keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0);opacity:1}}@keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0);opacity:1}}@-webkit-keyframes swal2-rotate-loading{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}@keyframes swal2-rotate-loading{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}@-webkit-keyframes swal2-animate-question-mark{0%{transform:rotateY(-360deg)}100%{transform:rotateY(0)}}@keyframes swal2-animate-question-mark{0%{transform:rotateY(-360deg)}100%{transform:rotateY(0)}}@-webkit-keyframes swal2-animate-i-mark{0%{transform:rotateZ(45deg);opacity:0}25%{transform:rotateZ(-25deg);opacity:.4}50%{transform:rotateZ(15deg);opacity:.8}75%{transform:rotateZ(-5deg);opacity:1}100%{transform:rotateX(0);opacity:1}}@keyframes swal2-animate-i-mark{0%{transform:rotateZ(45deg);opacity:0}25%{transform:rotateZ(-25deg);opacity:.4}50%{transform:rotateZ(15deg);opacity:.8}75%{transform:rotateZ(-5deg);opacity:1}100%{transform:rotateX(0);opacity:1}}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow:hidden}body.swal2-height-auto{height:auto!important}body.swal2-no-backdrop .swal2-container{background-color:transparent!important;pointer-events:none}body.swal2-no-backdrop .swal2-container .swal2-popup{pointer-events:all}body.swal2-no-backdrop .swal2-container .swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}@media print{body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow-y:scroll!important}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown)>[aria-hidden=true]{display:none}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) .swal2-container{position:static!important}}body.swal2-toast-shown .swal2-container{box-sizing:border-box;width:360px;max-width:100%;background-color:transparent;pointer-events:none}body.swal2-toast-shown .swal2-container.swal2-top{top:0;right:auto;bottom:auto;left:50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-top-end,body.swal2-toast-shown .swal2-container.swal2-top-right{top:0;right:0;bottom:auto;left:auto}body.swal2-toast-shown .swal2-container.swal2-top-left,body.swal2-toast-shown .swal2-container.swal2-top-start{top:0;right:auto;bottom:auto;left:0}body.swal2-toast-shown .swal2-container.swal2-center-left,body.swal2-toast-shown .swal2-container.swal2-center-start{top:50%;right:auto;bottom:auto;left:0;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-center{top:50%;right:auto;bottom:auto;left:50%;transform:translate(-50%,-50%)}body.swal2-toast-shown .swal2-container.swal2-center-end,body.swal2-toast-shown .swal2-container.swal2-center-right{top:50%;right:0;bottom:auto;left:auto;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-left,body.swal2-toast-shown .swal2-container.swal2-bottom-start{top:auto;right:auto;bottom:0;left:0}body.swal2-toast-shown .swal2-container.swal2-bottom{top:auto;right:auto;bottom:0;left:50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-end,body.swal2-toast-shown .swal2-container.swal2-bottom-right{top:auto;right:0;bottom:0;left:auto}`, "",{"version":3,"sources":["webpack://./node_modules/sweetalert2/dist/sweetalert2.min.css"],"names":[],"mappings":"AAAA,yBAAyB,qBAAqB,CAAC,yBAAyB,CAAC,sBAAsB,CAAC,kCAAkC,CAAC,WAAW,CAAC,iBAAiB,CAAC,eAAe,CAAC,sJAAsJ,CAAC,kBAAkB,CAAC,2BAA2B,aAAa,CAAC,sCAAsC,eAAe,CAAC,SAAS,CAAC,aAAa,CAAC,kBAAkB,CAAC,wCAAwC,sBAAsB,CAAC,sCAAsC,UAAU,CAAC,WAAW,CAAC,aAAa,CAAC,mDAAmD,aAAa,CAAC,uCAAuC,eAAe,CAAC,gBAAgB,CAAC,cAAc,CAAC,sCAAsC,eAAe,CAAC,aAAa,CAAC,iBAAiB,CAAC,UAAU,CAAC,WAAW,CAAC,QAAQ,CAAC,aAAa,CAAC,+CAA+C,eAAe,CAAC,SAAS,CAAC,aAAa,CAAC,kBAAkB,CAAC,qDAAqD,SAAS,CAAC,uCAAuC,aAAa,CAAC,aAAa,CAAC,iBAAiB,CAAC,SAAS,CAAC,UAAU,CAAC,YAAY,CAAC,qCAAqC,aAAa,CAAC,aAAa,CAAC,iBAAiB,CAAC,SAAS,CAAC,aAAa,CAAC,UAAU,CAAC,iBAAiB,CAAC,yDAAyD,YAAY,CAAC,kBAAkB,CAAC,eAAe,CAAC,eAAe,CAAC,uEAAuE,SAAS,CAAC,UAAU,CAAC,4EAA4E,UAAU,CAAC,aAAa,CAAC,yFAAyF,YAAY,CAAC,0FAA0F,aAAa,CAAC,wCAAwC,0BAA0B,CAAC,WAAW,CAAC,QAAQ,CAAC,eAAe,CAAC,cAAc,CAAC,uCAAuC,iBAAiB,CAAC,iBAAiB,CAAC,aAAa,CAAC,wCAAwC,oBAAoB,CAAC,6EAA6E,iBAAiB,CAAC,WAAW,CAAC,UAAU,CAAC,uBAAuB,CAAC,iBAAiB,CAAC,0FAA0F,SAAS,CAAC,UAAU,CAAC,wBAAwB,CAAC,wBAAwB,CAAC,yBAAyB,CAAC,2FAA2F,UAAU,CAAC,YAAY,CAAC,wBAAwB,CAAC,yBAAyB,CAAC,4DAA4D,SAAS,CAAC,UAAU,CAAC,2DAA2D,KAAK,CAAC,YAAY,CAAC,aAAa,CAAC,eAAe,CAAC,oEAAoE,cAAc,CAAC,gFAAgF,WAAW,CAAC,YAAY,CAAC,WAAW,CAAC,iFAAiF,WAAW,CAAC,aAAa,CAAC,aAAa,CAAC,gFAAgF,2DAA2D,CAAC,mDAAmD,CAAC,iFAAiF,4DAA4D,CAAC,oDAAoD,CAAC,oCAAoC,sCAAsC,CAAC,8BAA8B,CAAC,oCAAoC,+CAA+C,CAAC,uCAAuC,CAAC,iBAAiB,YAAY,CAAC,cAAc,CAAC,YAAY,CAAC,KAAK,CAAC,OAAO,CAAC,QAAQ,CAAC,MAAM,CAAC,qBAAqB,CAAC,8IAA8I,CAAC,qHAAqH,CAAC,6FAA6F,CAAC,WAAW,CAAC,cAAc,CAAC,iBAAiB,CAAC,+BAA+B,CAAC,gCAAgC,CAAC,wEAAwE,yBAAyB,CAAC,qCAAqC,wBAAwB,CAAC,yGAAyG,6CAA6C,CAAC,uFAAuF,6CAA6C,CAAC,mGAAmG,6CAA6C,CAAC,8CAA8C,gBAAgB,CAAC,wCAAwC,aAAa,CAAC,gBAAgB,CAAC,mBAAmB,CAAC,0FAA0F,aAAa,CAAC,gBAAgB,CAAC,gBAAgB,CAAC,iGAAiG,UAAU,CAAC,iBAAiB,CAAC,2CAA2C,aAAa,CAAC,UAAU,CAAC,iBAAiB,CAAC,mBAAmB,CAAC,gGAAgG,aAAa,CAAC,UAAU,CAAC,iBAAiB,CAAC,gBAAgB,CAAC,iGAAiG,aAAa,CAAC,UAAU,CAAC,cAAc,CAAC,2CAA2C,aAAa,CAAC,UAAU,CAAC,mBAAmB,CAAC,cAAc,CAAC,gGAAgG,aAAa,CAAC,UAAU,CAAC,cAAc,CAAC,gBAAgB,CAAC,iGAAiG,eAAe,CAAC,UAAU,CAAC,oGAAoG,YAAY,CAAC,kBAAkB,CAAC,qCAAqC,yBAAyB,CAAC,aAAa,YAAY,CAAC,iBAAiB,CAAC,qBAAqB,CAAC,oCAAoC,CAAC,UAAU,CAAC,cAAc,CAAC,kBAAkB,CAAC,WAAW,CAAC,iBAAiB,CAAC,eAAe,CAAC,aAAa,CAAC,mBAAmB,CAAC,cAAc,CAAC,mBAAmB,SAAS,CAAC,2BAA2B,iBAAiB,CAAC,aAAa,iBAAiB,CAAC,cAAc,CAAC,QAAQ,CAAC,kBAAkB,CAAC,aAAa,CAAC,iBAAiB,CAAC,eAAe,CAAC,iBAAiB,CAAC,mBAAmB,CAAC,oBAAoB,CAAC,eAAe,YAAY,CAAC,SAAS,CAAC,qBAAqB,CAAC,cAAc,CAAC,kBAAkB,CAAC,sBAAsB,CAAC,UAAU,CAAC,oBAAoB,CAAC,SAAS,CAAC,2DAA2D,UAAU,CAAC,uDAAuD,+DAA+D,CAAC,wDAAwD,+DAA+D,CAAC,cAAc,YAAY,CAAC,kBAAkB,CAAC,sBAAsB,CAAC,WAAW,CAAC,YAAY,CAAC,gBAAgB,CAAC,qEAAqE,CAAC,6DAA6D,CAAC,kBAAkB,CAAC,kBAAkB,CAAC,kBAAkB,CAAC,oDAAoD,CAAC,cAAc,cAAc,CAAC,oBAAoB,CAAC,yBAAyB,CAAC,gCAAgC,CAAC,eAAe,CAAC,8BAA8B,cAAc,CAAC,4BAA4B,QAAQ,CAAC,mBAAmB,CAAC,kBAAkB,CAAC,wBAAwB,CAAC,UAAU,CAAC,aAAa,CAAC,kCAAkC,yCAAyC,CAAC,yBAAyB,QAAQ,CAAC,mBAAmB,CAAC,kBAAkB,CAAC,wBAAwB,CAAC,UAAU,CAAC,aAAa,CAAC,+BAA+B,uCAAuC,CAAC,2BAA2B,QAAQ,CAAC,mBAAmB,CAAC,kBAAkB,CAAC,wBAAwB,CAAC,UAAU,CAAC,aAAa,CAAC,iCAAiC,yCAAyC,CAAC,0CAA0C,yCAAyC,CAAC,oBAAoB,SAAS,CAAC,gCAAgC,QAAQ,CAAC,cAAc,sBAAsB,CAAC,cAAc,CAAC,iBAAiB,CAAC,yBAAyB,CAAC,aAAa,CAAC,aAAa,CAAC,oCAAoC,iBAAiB,CAAC,OAAO,CAAC,QAAQ,CAAC,MAAM,CAAC,0BAA0B,CAAC,eAAe,CAAC,8BAA8B,CAAC,6BAA6B,CAAC,0BAA0B,UAAU,CAAC,YAAY,CAAC,yBAAyB,CAAC,aAAa,cAAc,CAAC,mBAAmB,CAAC,aAAa,SAAS,CAAC,kBAAkB,CAAC,sBAAsB,CAAC,WAAW,CAAC,YAAY,CAAC,YAAY,CAAC,cAAc,CAAC,oBAAoB,CAAC,SAAS,CAAC,eAAe,CAAC,mCAAmC,CAAC,WAAW,CAAC,iBAAiB,CAAC,cAAc,CAAC,UAAU,CAAC,iBAAiB,CAAC,qBAAqB,CAAC,eAAe,CAAC,cAAc,CAAC,gBAAgB,CAAC,mBAAmB,cAAc,CAAC,cAAc,CAAC,aAAa,CAAC,mBAAmB,SAAS,CAAC,+CAA+C,CAAC,+BAA+B,QAAQ,CAAC,sBAAsB,SAAS,CAAC,sBAAsB,CAAC,qBAAqB,CAAC,SAAS,CAAC,aAAa,CAAC,aAAa,CAAC,iBAAiB,CAAC,eAAe,CAAC,kBAAkB,CAAC,iBAAiB,CAAC,oBAAoB,CAAC,qBAAqB,CAAC,oFAAoF,kBAAkB,CAAC,yCAAyC,qBAAqB,CAAC,UAAU,CAAC,0CAA0C,CAAC,wBAAwB,CAAC,qBAAqB,CAAC,kBAAkB,CAAC,gEAAgE,CAAC,aAAa,CAAC,iBAAiB,CAAC,4FAA4F,8BAA8B,CAAC,oCAAoC,CAAC,2DAA2D,wBAAwB,CAAC,SAAS,CAAC,yEAAyE,CAAC,+FAA+F,UAAU,CAAC,2GAA2G,UAAU,CAAC,gFAAgF,UAAU,CAAC,aAAa,kBAAkB,CAAC,eAAe,CAAC,mBAAmB,SAAS,CAAC,oBAAoB,SAAS,CAAC,aAAa,CAAC,eAAe,CAAC,iBAAiB,CAAC,uCAAuC,cAAc,CAAC,SAAS,CAAC,iBAAiB,CAAC,mBAAmB,CAAC,aAAa,cAAc,CAAC,eAAe,CAAC,YAAY,SAAS,CAAC,iBAAiB,CAAC,gBAAgB,CAAC,kBAAkB,CAAC,iBAAiB,CAAC,gBAAgB,aAAa,CAAC,aAAa,CAAC,cAAc,aAAa,CAAC,cAAc,CAAC,qBAAqB,CAAC,kBAAkB,CAAC,aAAa,CAAC,iBAAiB,CAAC,6BAA6B,kBAAkB,CAAC,sBAAsB,CAAC,eAAe,CAAC,aAAa,CAAC,yCAAyC,aAAa,CAAC,iBAAiB,CAAC,yCAAyC,aAAa,CAAC,aAAa,CAAC,mBAAmB,YAAY,CAAC,sBAAsB,CAAC,iBAAiB,CAAC,0BAA0B,kBAAkB,CAAC,sBAAsB,CAAC,cAAc,CAAC,cAAc,CAAC,eAAe,CAAC,kBAAkB,CAAC,UAAU,CAAC,aAAa,CAAC,eAAe,CAAC,kCAAkC,WAAW,CAAC,oBAAoB,CAAC,WAAW,CAAC,eAAe,CAAC,YAAY,CAAC,eAAe,CAAC,iBAAiB,CAAC,wBAAwB,CAAC,UAAU,CAAC,eAAe,CAAC,iBAAiB,CAAC,iBAAiB,CAAC,YAAY,iBAAiB,CAAC,sBAAsB,CAAC,sBAAsB,CAAC,SAAS,CAAC,UAAU,CAAC,sBAAsB,CAAC,8BAA8B,CAAC,iBAAiB,CAAC,iBAAiB,CAAC,mBAAmB,CAAC,eAAe,CAAC,cAAc,CAAC,wBAAwB,CAAC,qBAAqB,CAAC,oBAAoB,CAAC,gBAAgB,CAAC,gCAAgC,YAAY,CAAC,kBAAkB,CAAC,gBAAgB,CAAC,wBAAwB,oBAAoB,CAAC,aAAa,CAAC,sCAAsC,iBAAiB,CAAC,WAAW,CAAC,mDAAmD,aAAa,CAAC,iBAAiB,CAAC,YAAY,CAAC,cAAc,CAAC,cAAc,CAAC,oBAAoB,CAAC,wBAAwB,CAAC,gEAAgE,aAAa,CAAC,uBAAuB,CAAC,iEAAiE,SAAS,CAAC,wBAAwB,CAAC,wCAAwC,8CAA8C,CAAC,sCAAsC,CAAC,sDAAsD,gDAAgD,CAAC,wCAAwC,CAAC,0BAA0B,oBAAoB,CAAC,aAAa,CAAC,0CAA0C,8CAA8C,CAAC,sCAAsC,CAAC,8DAA8D,0CAA0C,CAAC,kCAAkC,CAAC,uBAAuB,oBAAoB,CAAC,aAAa,CAAC,uCAAuC,8CAA8C,CAAC,sCAAsC,CAAC,2DAA2D,0CAA0C,CAAC,kCAAkC,CAAC,2BAA2B,oBAAoB,CAAC,aAAa,CAAC,2CAA2C,8CAA8C,CAAC,sCAAsC,CAAC,+DAA+D,iDAAiD,CAAC,yCAAyC,CAAC,0BAA0B,oBAAoB,CAAC,aAAa,CAAC,+DAA+D,iBAAiB,CAAC,YAAY,CAAC,YAAY,CAAC,uBAAuB,CAAC,iBAAiB,CAAC,4EAA4E,YAAY,CAAC,cAAc,CAAC,wBAAwB,CAAC,8BAA8B,CAAC,6BAA6B,CAAC,6EAA6E,YAAY,CAAC,YAAY,CAAC,wBAAwB,CAAC,yBAAyB,CAAC,6BAA6B,CAAC,8CAA8C,iBAAiB,CAAC,SAAS,CAAC,UAAU,CAAC,WAAW,CAAC,sBAAsB,CAAC,UAAU,CAAC,WAAW,CAAC,uCAAuC,CAAC,iBAAiB,CAAC,6CAA6C,iBAAiB,CAAC,SAAS,CAAC,QAAQ,CAAC,YAAY,CAAC,aAAa,CAAC,cAAc,CAAC,wBAAwB,CAAC,sDAAsD,aAAa,CAAC,iBAAiB,CAAC,SAAS,CAAC,cAAc,CAAC,oBAAoB,CAAC,wBAAwB,CAAC,kEAAkE,WAAW,CAAC,YAAY,CAAC,cAAc,CAAC,uBAAuB,CAAC,mEAAmE,WAAW,CAAC,UAAU,CAAC,cAAc,CAAC,wBAAwB,CAAC,kEAAkE,qDAAqD,CAAC,6CAA6C,CAAC,mEAAmE,sDAAsD,CAAC,8CAA8C,CAAC,6EAA6E,kEAAkE,CAAC,0DAA0D,CAAC,sBAAsB,cAAc,CAAC,kBAAkB,CAAC,cAAc,CAAC,kBAAkB,CAAC,SAAS,CAAC,kBAAkB,CAAC,eAAe,CAAC,yBAAyB,oBAAoB,CAAC,iBAAiB,CAAC,2CAA2C,UAAU,CAAC,aAAa,CAAC,SAAS,CAAC,UAAU,CAAC,iBAAiB,CAAC,kBAAkB,CAAC,UAAU,CAAC,eAAe,CAAC,iBAAiB,CAAC,sEAAsE,kBAAkB,CAAC,2FAA2F,kBAAkB,CAAC,UAAU,CAAC,gGAAgG,kBAAkB,CAAC,gDAAgD,UAAU,CAAC,aAAa,CAAC,WAAW,CAAC,WAAW,CAAC,aAAa,CAAC,kBAAkB,CAAC,eAAe,uCAAuC,CAAC,YAAY,gCAAgC,CAAC,wBAAwB,CAAC,YAAY,0CAA0C,CAAC,kCAAkC,CAAC,mBAAmB,eAAe,CAAC,yBAAyB,iBAAiB,CAAC,WAAW,CAAC,UAAU,CAAC,WAAW,CAAC,eAAe,CAAC,wBAAwB,oBAAoB,CAAC,aAAa,CAAC,qCAAqC,OAAO,CAAC,SAAS,CAAC,oCAAoC,GAAG,2CAA2C,CAAC,IAAI,sCAAsC,CAAC,IAAI,2CAA2C,CAAC,KAAK,kCAAkC,CAAC,CAAC,4BAA4B,GAAG,2CAA2C,CAAC,IAAI,sCAAsC,CAAC,IAAI,2CAA2C,CAAC,KAAK,kCAAkC,CAAC,CAAC,oCAAoC,KAAK,uBAAuB,CAAC,SAAS,CAAC,CAAC,4BAA4B,KAAK,uBAAuB,CAAC,SAAS,CAAC,CAAC,wDAAwD,GAAG,WAAW,CAAC,YAAY,CAAC,OAAO,CAAC,IAAI,UAAU,CAAC,WAAW,CAAC,OAAO,CAAC,IAAI,UAAU,CAAC,WAAW,CAAC,aAAa,CAAC,IAAI,YAAY,CAAC,UAAU,CAAC,UAAU,CAAC,KAAK,WAAW,CAAC,YAAY,CAAC,WAAW,CAAC,CAAC,gDAAgD,GAAG,WAAW,CAAC,YAAY,CAAC,OAAO,CAAC,IAAI,UAAU,CAAC,WAAW,CAAC,OAAO,CAAC,IAAI,UAAU,CAAC,WAAW,CAAC,aAAa,CAAC,IAAI,YAAY,CAAC,UAAU,CAAC,UAAU,CAAC,KAAK,WAAW,CAAC,YAAY,CAAC,WAAW,CAAC,CAAC,yDAAyD,GAAG,WAAW,CAAC,aAAa,CAAC,OAAO,CAAC,IAAI,UAAU,CAAC,aAAa,CAAC,OAAO,CAAC,IAAI,WAAW,CAAC,OAAO,CAAC,aAAa,CAAC,KAAK,WAAW,CAAC,aAAa,CAAC,aAAa,CAAC,CAAC,iDAAiD,GAAG,WAAW,CAAC,aAAa,CAAC,OAAO,CAAC,IAAI,UAAU,CAAC,aAAa,CAAC,OAAO,CAAC,IAAI,WAAW,CAAC,OAAO,CAAC,aAAa,CAAC,KAAK,WAAW,CAAC,aAAa,CAAC,aAAa,CAAC,CAAC,8BAA8B,GAAG,mBAAmB,CAAC,IAAI,qBAAqB,CAAC,IAAI,oBAAoB,CAAC,KAAK,kBAAkB,CAAC,CAAC,sBAAsB,GAAG,mBAAmB,CAAC,IAAI,qBAAqB,CAAC,IAAI,oBAAoB,CAAC,KAAK,kBAAkB,CAAC,CAAC,8BAA8B,GAAG,kBAAkB,CAAC,SAAS,CAAC,KAAK,mBAAmB,CAAC,SAAS,CAAC,CAAC,sBAAsB,GAAG,kBAAkB,CAAC,SAAS,CAAC,KAAK,mBAAmB,CAAC,SAAS,CAAC,CAAC,kDAAkD,GAAG,YAAY,CAAC,YAAY,CAAC,OAAO,CAAC,IAAI,YAAY,CAAC,WAAW,CAAC,OAAO,CAAC,IAAI,YAAY,CAAC,YAAY,CAAC,aAAa,CAAC,IAAI,OAAO,CAAC,aAAa,CAAC,cAAc,CAAC,KAAK,YAAY,CAAC,YAAY,CAAC,cAAc,CAAC,CAAC,0CAA0C,GAAG,YAAY,CAAC,YAAY,CAAC,OAAO,CAAC,IAAI,YAAY,CAAC,WAAW,CAAC,OAAO,CAAC,IAAI,YAAY,CAAC,YAAY,CAAC,aAAa,CAAC,IAAI,OAAO,CAAC,aAAa,CAAC,cAAc,CAAC,KAAK,YAAY,CAAC,YAAY,CAAC,cAAc,CAAC,CAAC,mDAAmD,GAAG,WAAW,CAAC,aAAa,CAAC,OAAO,CAAC,IAAI,WAAW,CAAC,aAAa,CAAC,OAAO,CAAC,IAAI,YAAY,CAAC,OAAO,CAAC,cAAc,CAAC,KAAK,WAAW,CAAC,UAAU,CAAC,cAAc,CAAC,CAAC,2CAA2C,GAAG,WAAW,CAAC,aAAa,CAAC,OAAO,CAAC,IAAI,WAAW,CAAC,aAAa,CAAC,OAAO,CAAC,IAAI,YAAY,CAAC,OAAO,CAAC,cAAc,CAAC,KAAK,WAAW,CAAC,UAAU,CAAC,cAAc,CAAC,CAAC,sDAAsD,GAAG,wBAAwB,CAAC,GAAG,wBAAwB,CAAC,IAAI,yBAAyB,CAAC,KAAK,yBAAyB,CAAC,CAAC,8CAA8C,GAAG,wBAAwB,CAAC,GAAG,wBAAwB,CAAC,IAAI,yBAAyB,CAAC,KAAK,yBAAyB,CAAC,CAAC,8CAA8C,GAAG,kBAAkB,CAAC,mBAAmB,CAAC,SAAS,CAAC,IAAI,kBAAkB,CAAC,mBAAmB,CAAC,SAAS,CAAC,IAAI,kBAAkB,CAAC,qBAAqB,CAAC,KAAK,YAAY,CAAC,kBAAkB,CAAC,SAAS,CAAC,CAAC,sCAAsC,GAAG,kBAAkB,CAAC,mBAAmB,CAAC,SAAS,CAAC,IAAI,kBAAkB,CAAC,mBAAmB,CAAC,SAAS,CAAC,IAAI,kBAAkB,CAAC,qBAAqB,CAAC,KAAK,YAAY,CAAC,kBAAkB,CAAC,SAAS,CAAC,CAAC,4CAA4C,GAAG,yBAAyB,CAAC,SAAS,CAAC,KAAK,oBAAoB,CAAC,SAAS,CAAC,CAAC,oCAAoC,GAAG,yBAAyB,CAAC,SAAS,CAAC,KAAK,oBAAoB,CAAC,SAAS,CAAC,CAAC,wCAAwC,GAAG,mBAAmB,CAAC,KAAK,wBAAwB,CAAC,CAAC,gCAAgC,GAAG,mBAAmB,CAAC,KAAK,wBAAwB,CAAC,CAAC,+CAA+C,GAAG,0BAA0B,CAAC,KAAK,oBAAoB,CAAC,CAAC,uCAAuC,GAAG,0BAA0B,CAAC,KAAK,oBAAoB,CAAC,CAAC,wCAAwC,GAAG,wBAAwB,CAAC,SAAS,CAAC,IAAI,yBAAyB,CAAC,UAAU,CAAC,IAAI,wBAAwB,CAAC,UAAU,CAAC,IAAI,wBAAwB,CAAC,SAAS,CAAC,KAAK,oBAAoB,CAAC,SAAS,CAAC,CAAC,gCAAgC,GAAG,wBAAwB,CAAC,SAAS,CAAC,IAAI,yBAAyB,CAAC,UAAU,CAAC,IAAI,wBAAwB,CAAC,UAAU,CAAC,IAAI,wBAAwB,CAAC,SAAS,CAAC,KAAK,oBAAoB,CAAC,SAAS,CAAC,CAAC,iEAAiE,eAAe,CAAC,uBAAuB,qBAAqB,CAAC,wCAAwC,sCAAsC,CAAC,mBAAmB,CAAC,qDAAqD,kBAAkB,CAAC,qDAAqD,kCAAkC,CAAC,aAAa,iEAAiE,2BAA2B,CAAC,oFAAoF,YAAY,CAAC,kFAAkF,yBAAyB,CAAC,CAAC,wCAAwC,qBAAqB,CAAC,WAAW,CAAC,cAAc,CAAC,4BAA4B,CAAC,mBAAmB,CAAC,kDAAkD,KAAK,CAAC,UAAU,CAAC,WAAW,CAAC,QAAQ,CAAC,0BAA0B,CAAC,8GAA8G,KAAK,CAAC,OAAO,CAAC,WAAW,CAAC,SAAS,CAAC,+GAA+G,KAAK,CAAC,UAAU,CAAC,WAAW,CAAC,MAAM,CAAC,qHAAqH,OAAO,CAAC,UAAU,CAAC,WAAW,CAAC,MAAM,CAAC,0BAA0B,CAAC,qDAAqD,OAAO,CAAC,UAAU,CAAC,WAAW,CAAC,QAAQ,CAAC,8BAA8B,CAAC,oHAAoH,OAAO,CAAC,OAAO,CAAC,WAAW,CAAC,SAAS,CAAC,0BAA0B,CAAC,qHAAqH,QAAQ,CAAC,UAAU,CAAC,QAAQ,CAAC,MAAM,CAAC,qDAAqD,QAAQ,CAAC,UAAU,CAAC,QAAQ,CAAC,QAAQ,CAAC,0BAA0B,CAAC,oHAAoH,QAAQ,CAAC,OAAO,CAAC,QAAQ,CAAC,SAAS","sourcesContent":[".swal2-popup.swal2-toast{box-sizing:border-box;grid-column:1/4!important;grid-row:1/4!important;grid-template-columns:1fr 99fr 1fr;padding:1em;overflow-y:hidden;background:#fff;box-shadow:0 0 1px rgba(0,0,0,.075),0 1px 2px rgba(0,0,0,.075),1px 2px 4px rgba(0,0,0,.075),1px 3px 8px rgba(0,0,0,.075),2px 4px 16px rgba(0,0,0,.075);pointer-events:all}.swal2-popup.swal2-toast>*{grid-column:2}.swal2-popup.swal2-toast .swal2-title{margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-loading{justify-content:center}.swal2-popup.swal2-toast .swal2-input{height:2em;margin:.5em;font-size:1em}.swal2-popup.swal2-toast .swal2-validation-message{font-size:1em}.swal2-popup.swal2-toast .swal2-footer{margin:.5em 0 0;padding:.5em 0 0;font-size:.8em}.swal2-popup.swal2-toast .swal2-close{grid-column:3/3;grid-row:1/99;align-self:center;width:.8em;height:.8em;margin:0;font-size:2em}.swal2-popup.swal2-toast .swal2-html-container{margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-html-container:empty{padding:0}.swal2-popup.swal2-toast .swal2-loader{grid-column:1;grid-row:1/99;align-self:center;width:2em;height:2em;margin:.25em}.swal2-popup.swal2-toast .swal2-icon{grid-column:1;grid-row:1/99;align-self:center;width:2em;min-width:2em;height:2em;margin:0 .5em 0 0}.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:1.8em;font-weight:700}.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-popup.swal2-toast .swal2-actions{justify-content:flex-start;height:auto;margin:0;margin-top:.5em;padding:0 .5em}.swal2-popup.swal2-toast .swal2-styled{margin:.25em .5em;padding:.4em .6em;font-size:1em}.swal2-popup.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:1.6em;height:3em;transform:rotate(45deg);border-radius:50%}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-.8em;left:-.5em;transform:rotate(-45deg);transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-.25em;left:.9375em;transform-origin:0 1.5em;border-radius:0 4em 4em 0}.swal2-popup.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip{-webkit-animation:swal2-toast-animate-success-line-tip .75s;animation:swal2-toast-animate-success-line-tip .75s}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long{-webkit-animation:swal2-toast-animate-success-line-long .75s;animation:swal2-toast-animate-success-line-long .75s}.swal2-popup.swal2-toast.swal2-show{-webkit-animation:swal2-toast-show .5s;animation:swal2-toast-show .5s}.swal2-popup.swal2-toast.swal2-hide{-webkit-animation:swal2-toast-hide .1s forwards;animation:swal2-toast-hide .1s forwards}.swal2-container{display:grid;position:fixed;z-index:1060;top:0;right:0;bottom:0;left:0;box-sizing:border-box;grid-template-areas:\"top-start     top            top-end\" \"center-start  center         center-end\" \"bottom-start  bottom-center  bottom-end\";grid-template-rows:minmax(-webkit-min-content,auto) minmax(-webkit-min-content,auto) minmax(-webkit-min-content,auto);grid-template-rows:minmax(min-content,auto) minmax(min-content,auto) minmax(min-content,auto);height:100%;padding:.625em;overflow-x:hidden;transition:background-color .1s;-webkit-overflow-scrolling:touch}.swal2-container.swal2-backdrop-show,.swal2-container.swal2-noanimation{background:rgba(0,0,0,.4)}.swal2-container.swal2-backdrop-hide{background:0 0!important}.swal2-container.swal2-bottom-start,.swal2-container.swal2-center-start,.swal2-container.swal2-top-start{grid-template-columns:minmax(0,1fr) auto auto}.swal2-container.swal2-bottom,.swal2-container.swal2-center,.swal2-container.swal2-top{grid-template-columns:auto minmax(0,1fr) auto}.swal2-container.swal2-bottom-end,.swal2-container.swal2-center-end,.swal2-container.swal2-top-end{grid-template-columns:auto auto minmax(0,1fr)}.swal2-container.swal2-top-start>.swal2-popup{align-self:start}.swal2-container.swal2-top>.swal2-popup{grid-column:2;align-self:start;justify-self:center}.swal2-container.swal2-top-end>.swal2-popup,.swal2-container.swal2-top-right>.swal2-popup{grid-column:3;align-self:start;justify-self:end}.swal2-container.swal2-center-left>.swal2-popup,.swal2-container.swal2-center-start>.swal2-popup{grid-row:2;align-self:center}.swal2-container.swal2-center>.swal2-popup{grid-column:2;grid-row:2;align-self:center;justify-self:center}.swal2-container.swal2-center-end>.swal2-popup,.swal2-container.swal2-center-right>.swal2-popup{grid-column:3;grid-row:2;align-self:center;justify-self:end}.swal2-container.swal2-bottom-left>.swal2-popup,.swal2-container.swal2-bottom-start>.swal2-popup{grid-column:1;grid-row:3;align-self:end}.swal2-container.swal2-bottom>.swal2-popup{grid-column:2;grid-row:3;justify-self:center;align-self:end}.swal2-container.swal2-bottom-end>.swal2-popup,.swal2-container.swal2-bottom-right>.swal2-popup{grid-column:3;grid-row:3;align-self:end;justify-self:end}.swal2-container.swal2-grow-fullscreen>.swal2-popup,.swal2-container.swal2-grow-row>.swal2-popup{grid-column:1/4;width:100%}.swal2-container.swal2-grow-column>.swal2-popup,.swal2-container.swal2-grow-fullscreen>.swal2-popup{grid-row:1/4;align-self:stretch}.swal2-container.swal2-no-transition{transition:none!important}.swal2-popup{display:none;position:relative;box-sizing:border-box;grid-template-columns:minmax(0,100%);width:32em;max-width:100%;padding:0 0 1.25em;border:none;border-radius:5px;background:#fff;color:#545454;font-family:inherit;font-size:1rem}.swal2-popup:focus{outline:0}.swal2-popup.swal2-loading{overflow-y:hidden}.swal2-title{position:relative;max-width:100%;margin:0;padding:.8em 1em 0;color:inherit;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word}.swal2-actions{display:flex;z-index:1;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:center;width:auto;margin:1.25em auto 0;padding:0}.swal2-actions:not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}.swal2-actions:not(.swal2-loading) .swal2-styled:hover{background-image:linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1))}.swal2-actions:not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2))}.swal2-loader{display:none;align-items:center;justify-content:center;width:2.2em;height:2.2em;margin:0 1.875em;-webkit-animation:swal2-rotate-loading 1.5s linear 0s infinite normal;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;border-width:.25em;border-style:solid;border-radius:100%;border-color:#2778c4 transparent #2778c4 transparent}.swal2-styled{margin:.3125em;padding:.625em 1.1em;transition:box-shadow .1s;box-shadow:0 0 0 3px transparent;font-weight:500}.swal2-styled:not([disabled]){cursor:pointer}.swal2-styled.swal2-confirm{border:0;border-radius:.25em;background:initial;background-color:#7066e0;color:#fff;font-size:1em}.swal2-styled.swal2-confirm:focus{box-shadow:0 0 0 3px rgba(112,102,224,.5)}.swal2-styled.swal2-deny{border:0;border-radius:.25em;background:initial;background-color:#dc3741;color:#fff;font-size:1em}.swal2-styled.swal2-deny:focus{box-shadow:0 0 0 3px rgba(220,55,65,.5)}.swal2-styled.swal2-cancel{border:0;border-radius:.25em;background:initial;background-color:#6e7881;color:#fff;font-size:1em}.swal2-styled.swal2-cancel:focus{box-shadow:0 0 0 3px rgba(110,120,129,.5)}.swal2-styled.swal2-default-outline:focus{box-shadow:0 0 0 3px rgba(100,150,200,.5)}.swal2-styled:focus{outline:0}.swal2-styled::-moz-focus-inner{border:0}.swal2-footer{justify-content:center;margin:1em 0 0;padding:1em 1em 0;border-top:1px solid #eee;color:inherit;font-size:1em}.swal2-timer-progress-bar-container{position:absolute;right:0;bottom:0;left:0;grid-column:auto!important;overflow:hidden;border-bottom-right-radius:5px;border-bottom-left-radius:5px}.swal2-timer-progress-bar{width:100%;height:.25em;background:rgba(0,0,0,.2)}.swal2-image{max-width:100%;margin:2em auto 1em}.swal2-close{z-index:2;align-items:center;justify-content:center;width:1.2em;height:1.2em;margin-top:0;margin-right:0;margin-bottom:-1.2em;padding:0;overflow:hidden;transition:color .1s,box-shadow .1s;border:none;border-radius:5px;background:0 0;color:#ccc;font-family:serif;font-family:monospace;font-size:2.5em;cursor:pointer;justify-self:end}.swal2-close:hover{transform:none;background:0 0;color:#f27474}.swal2-close:focus{outline:0;box-shadow:inset 0 0 0 3px rgba(100,150,200,.5)}.swal2-close::-moz-focus-inner{border:0}.swal2-html-container{z-index:1;justify-content:center;margin:1em 1.6em .3em;padding:0;overflow:auto;color:inherit;font-size:1.125em;font-weight:400;line-height:normal;text-align:center;word-wrap:break-word;word-break:break-word}.swal2-checkbox,.swal2-file,.swal2-input,.swal2-radio,.swal2-select,.swal2-textarea{margin:1em 2em 3px}.swal2-file,.swal2-input,.swal2-textarea{box-sizing:border-box;width:auto;transition:border-color .1s,box-shadow .1s;border:1px solid #d9d9d9;border-radius:.1875em;background:inherit;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px transparent;color:inherit;font-size:1.125em}.swal2-file.swal2-inputerror,.swal2-input.swal2-inputerror,.swal2-textarea.swal2-inputerror{border-color:#f27474!important;box-shadow:0 0 2px #f27474!important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{border:1px solid #b4dbed;outline:0;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(100,150,200,.5)}.swal2-file::-moz-placeholder,.swal2-input::-moz-placeholder,.swal2-textarea::-moz-placeholder{color:#ccc}.swal2-file:-ms-input-placeholder,.swal2-input:-ms-input-placeholder,.swal2-textarea:-ms-input-placeholder{color:#ccc}.swal2-file::placeholder,.swal2-input::placeholder,.swal2-textarea::placeholder{color:#ccc}.swal2-range{margin:1em 2em 3px;background:#fff}.swal2-range input{width:80%}.swal2-range output{width:20%;color:inherit;font-weight:600;text-align:center}.swal2-range input,.swal2-range output{height:2.625em;padding:0;font-size:1.125em;line-height:2.625em}.swal2-input{height:2.625em;padding:0 .75em}.swal2-file{width:75%;margin-right:auto;margin-left:auto;background:inherit;font-size:1.125em}.swal2-textarea{height:6.75em;padding:.75em}.swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;background:inherit;color:inherit;font-size:1.125em}.swal2-checkbox,.swal2-radio{align-items:center;justify-content:center;background:#fff;color:inherit}.swal2-checkbox label,.swal2-radio label{margin:0 .6em;font-size:1.125em}.swal2-checkbox input,.swal2-radio input{flex-shrink:0;margin:0 .4em}.swal2-input-label{display:flex;justify-content:center;margin:1em auto 0}.swal2-validation-message{align-items:center;justify-content:center;margin:1em 0 0;padding:.625em;overflow:hidden;background:#f0f0f0;color:#666;font-size:1em;font-weight:300}.swal2-validation-message::before{content:\"!\";display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center}.swal2-icon{position:relative;box-sizing:content-box;justify-content:center;width:5em;height:5em;margin:2.5em auto .6em;border:.25em solid transparent;border-radius:50%;border-color:#000;font-family:inherit;line-height:5em;cursor:default;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:3.75em}.swal2-icon.swal2-error{border-color:#f27474;color:#f27474}.swal2-icon.swal2-error .swal2-x-mark{position:relative;flex-grow:1}.swal2-icon.swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;transform:rotate(45deg)}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;transform:rotate(-45deg)}.swal2-icon.swal2-error.swal2-icon-show{-webkit-animation:swal2-animate-error-icon .5s;animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-error.swal2-icon-show .swal2-x-mark{-webkit-animation:swal2-animate-error-x-mark .5s;animation:swal2-animate-error-x-mark .5s}.swal2-icon.swal2-warning{border-color:#facea8;color:#f8bb86}.swal2-icon.swal2-warning.swal2-icon-show{-webkit-animation:swal2-animate-error-icon .5s;animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-warning.swal2-icon-show .swal2-icon-content{-webkit-animation:swal2-animate-i-mark .5s;animation:swal2-animate-i-mark .5s}.swal2-icon.swal2-info{border-color:#9de0f6;color:#3fc3ee}.swal2-icon.swal2-info.swal2-icon-show{-webkit-animation:swal2-animate-error-icon .5s;animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-info.swal2-icon-show .swal2-icon-content{-webkit-animation:swal2-animate-i-mark .8s;animation:swal2-animate-i-mark .8s}.swal2-icon.swal2-question{border-color:#c9dae1;color:#87adbd}.swal2-icon.swal2-question.swal2-icon-show{-webkit-animation:swal2-animate-error-icon .5s;animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-question.swal2-icon-show .swal2-icon-content{-webkit-animation:swal2-animate-question-mark .8s;animation:swal2-animate-question-mark .8s}.swal2-icon.swal2-success{border-color:#a5dc86;color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;transform:rotate(45deg);border-radius:50%}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=left]{top:-.4375em;left:-2.0635em;transform:rotate(-45deg);transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=right]{top:-.6875em;left:1.875em;transform:rotate(-45deg);transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}.swal2-icon.swal2-success .swal2-success-ring{position:absolute;z-index:2;top:-.25em;left:-.25em;box-sizing:content-box;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%}.swal2-icon.swal2-success .swal2-success-fix{position:absolute;z-index:1;top:.5em;left:1.625em;width:.4375em;height:5.625em;transform:rotate(-45deg)}.swal2-icon.swal2-success [class^=swal2-success-line]{display:block;position:absolute;z-index:2;height:.3125em;border-radius:.125em;background-color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.8125em;width:1.5625em;transform:rotate(45deg)}.swal2-icon.swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;transform:rotate(-45deg)}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-tip{-webkit-animation:swal2-animate-success-line-tip .75s;animation:swal2-animate-success-line-tip .75s}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-long{-webkit-animation:swal2-animate-success-line-long .75s;animation:swal2-animate-success-line-long .75s}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-circular-line-right{-webkit-animation:swal2-rotate-success-circular-line 4.25s ease-in;animation:swal2-rotate-success-circular-line 4.25s ease-in}.swal2-progress-steps{flex-wrap:wrap;align-items:center;max-width:100%;margin:1.25em auto;padding:0;background:inherit;font-weight:600}.swal2-progress-steps li{display:inline-block;position:relative}.swal2-progress-steps .swal2-progress-step{z-index:20;flex-shrink:0;width:2em;height:2em;border-radius:2em;background:#2778c4;color:#fff;line-height:2em;text-align:center}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step{background:#2778c4}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step{background:#add8e6;color:#fff}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line{background:#add8e6}.swal2-progress-steps .swal2-progress-step-line{z-index:10;flex-shrink:0;width:2.5em;height:.4em;margin:0 -1px;background:#2778c4}[class^=swal2]{-webkit-tap-highlight-color:transparent}.swal2-show{-webkit-animation:swal2-show .3s;animation:swal2-show .3s}.swal2-hide{-webkit-animation:swal2-hide .15s forwards;animation:swal2-hide .15s forwards}.swal2-noanimation{transition:none}.swal2-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.swal2-rtl .swal2-close{margin-right:initial;margin-left:0}.swal2-rtl .swal2-timer-progress-bar{right:0;left:auto}@-webkit-keyframes swal2-toast-show{0%{transform:translateY(-.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0)}}@keyframes swal2-toast-show{0%{transform:translateY(-.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0)}}@-webkit-keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@-webkit-keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@-webkit-keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@-webkit-keyframes swal2-show{0%{transform:scale(.7)}45%{transform:scale(1.05)}80%{transform:scale(.95)}100%{transform:scale(1)}}@keyframes swal2-show{0%{transform:scale(.7)}45%{transform:scale(1.05)}80%{transform:scale(.95)}100%{transform:scale(1)}}@-webkit-keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}@keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}@-webkit-keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@-webkit-keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@-webkit-keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@-webkit-keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(.4);opacity:0}50%{margin-top:1.625em;transform:scale(.4);opacity:0}80%{margin-top:-.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(.4);opacity:0}50%{margin-top:1.625em;transform:scale(.4);opacity:0}80%{margin-top:-.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@-webkit-keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0);opacity:1}}@keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0);opacity:1}}@-webkit-keyframes swal2-rotate-loading{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}@keyframes swal2-rotate-loading{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}@-webkit-keyframes swal2-animate-question-mark{0%{transform:rotateY(-360deg)}100%{transform:rotateY(0)}}@keyframes swal2-animate-question-mark{0%{transform:rotateY(-360deg)}100%{transform:rotateY(0)}}@-webkit-keyframes swal2-animate-i-mark{0%{transform:rotateZ(45deg);opacity:0}25%{transform:rotateZ(-25deg);opacity:.4}50%{transform:rotateZ(15deg);opacity:.8}75%{transform:rotateZ(-5deg);opacity:1}100%{transform:rotateX(0);opacity:1}}@keyframes swal2-animate-i-mark{0%{transform:rotateZ(45deg);opacity:0}25%{transform:rotateZ(-25deg);opacity:.4}50%{transform:rotateZ(15deg);opacity:.8}75%{transform:rotateZ(-5deg);opacity:1}100%{transform:rotateX(0);opacity:1}}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow:hidden}body.swal2-height-auto{height:auto!important}body.swal2-no-backdrop .swal2-container{background-color:transparent!important;pointer-events:none}body.swal2-no-backdrop .swal2-container .swal2-popup{pointer-events:all}body.swal2-no-backdrop .swal2-container .swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}@media print{body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow-y:scroll!important}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown)>[aria-hidden=true]{display:none}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) .swal2-container{position:static!important}}body.swal2-toast-shown .swal2-container{box-sizing:border-box;width:360px;max-width:100%;background-color:transparent;pointer-events:none}body.swal2-toast-shown .swal2-container.swal2-top{top:0;right:auto;bottom:auto;left:50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-top-end,body.swal2-toast-shown .swal2-container.swal2-top-right{top:0;right:0;bottom:auto;left:auto}body.swal2-toast-shown .swal2-container.swal2-top-left,body.swal2-toast-shown .swal2-container.swal2-top-start{top:0;right:auto;bottom:auto;left:0}body.swal2-toast-shown .swal2-container.swal2-center-left,body.swal2-toast-shown .swal2-container.swal2-center-start{top:50%;right:auto;bottom:auto;left:0;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-center{top:50%;right:auto;bottom:auto;left:50%;transform:translate(-50%,-50%)}body.swal2-toast-shown .swal2-container.swal2-center-end,body.swal2-toast-shown .swal2-container.swal2-center-right{top:50%;right:0;bottom:auto;left:auto;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-left,body.swal2-toast-shown .swal2-container.swal2-bottom-start{top:auto;right:auto;bottom:0;left:0}body.swal2-toast-shown .swal2-container.swal2-bottom{top:auto;right:auto;bottom:0;left:50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-end,body.swal2-toast-shown .swal2-container.swal2-bottom-right{top:auto;right:0;bottom:0;left:auto}"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css":
 /*!*************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css ***!
@@ -23167,35 +23889,6 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add any scoped styles for the modal if needed */
 `, "",{"version":3,"sources":["webpack://./src/components/CompanyModal.vue"],"names":[],"mappings":";AAyKA,kDAAkD","sourcesContent":["<template>\n  <div ref=\"modal\" class=\"ui modal\">\n    <div class=\"header\">\n      Şirket Formu\n    </div>\n    <div class=\"content\">\n      <form class=\"ui form\" id=\"companyForm\">\n        <!-- Hidden Input -->\n        <input type=\"hidden\" v-model=\"formData.isMain\" />\n        <div class=\"field\">\n          <div class=\"ui checkbox\">\n            <input\n                type=\"checkbox\"\n                v-model=\"formData.isMain\"\n            />\n            <label>Taşeron</label>\n          </div>\n        </div>\n        <div class=\"field\" v-if=\"formData.isMain\">\n          <label for=\"MainCompanyId\">Ana Şirket</label>\n          <select\n              id=\"MainCompanyId\"\n              v-model=\"formData.mainCompanyId\"\n          >\n            <option value=\"\">--Seçiniz--</option>\n            <option v-for=\"type in companies\" :key=\"type.id\" :value=\"type.id\">\n              {{ type.name }}\n            </option>\n          </select>\n        </div>\n        <!-- Company Name Field -->\n        <div class=\"field\">\n          <label for=\"CompanyName\">Şirket Adı</label>\n          <input\n              type=\"text\"\n              id=\"CompanyName\"\n              v-model=\"formData.companyName\"\n              placeholder=\"Şirket adı giriniz\"\n          />\n        </div>\n\n        <!-- Dropdown Fields -->\n        <div class=\"three fields\">\n          <!-- TypeId Dropdown -->\n          <div class=\"field\">\n            <label for=\"TypeId\">Şirketin Niteliği</label>\n            <select\n                id=\"TypeId\"\n                v-model=\"formData.typeId\"\n                :disabled=\"!companyTypes.length\"\n            >\n              <option value=\"\">--Seçiniz--</option>\n              <option v-for=\"type in companyTypes\" :key=\"type.id\" :value=\"type.id\">\n                {{ type.name }}\n              </option>\n            </select>\n          </div>\n\n          <!-- ScaleId Dropdown -->\n          <div class=\"field\">\n            <label for=\"ScaleId\">Şirketin Büyüklüğü</label>\n            <select\n                id=\"ScaleId\"\n                v-model=\"formData.scaleId\"\n                :disabled=\"!companyScales.length\"\n            >\n              <option value=\"\">--Seçiniz--</option>\n              <option v-for=\"scale in companyScales\" :key=\"scale.id\" :value=\"scale.id\">\n                {{ scale.name }}\n              </option>\n            </select>\n          </div>\n\n          <!-- WorklineId Dropdown -->\n          <div class=\"field\">\n            <label for=\"WorklineId\">Şirketin İş Kolu</label>\n            <select\n                id=\"WorklineId\"\n                v-model=\"formData.worklineId\"\n                :disabled=\"!worklines.length\"\n            >\n              <option value=\"\">--Seçiniz--</option>\n              <option v-for=\"workline in worklines\" :key=\"workline.id\" :value=\"workline.id\">\n                {{ workline.name }}\n              </option>\n            </select>\n          </div>\n        </div>\n\n        <button\n            id=\"btnAddCompany\"\n            class=\"ui button positive\"\n            @click.prevent=\"addCompany\"\n        >\n          Şirket Ekle\n        </button>\n      </form>\n    </div>\n  </div>\n</template>\n\n<script>\nexport default {\n  name: \"CompanyModal\",\n  props: {\n    isMain: {\n      type: Boolean,\n      default: false\n    },\n    // Data passed from the parent, e.g., API dropdown options\n    companyTypes: {\n      type: Array,\n      default: () => [],\n    },\n    companyScales: {\n      type: Array,\n      default: () => [],\n    },\n    worklines: {\n      type: Array,\n      default: () => [],\n    },\n    companies: {\n      type: Array,\n      default: () => [],\n    },\n  },\n  data() {\n    return {\n      formData: {\n        companyName: \"\",\n        typeId: \"\",\n        scaleId: \"\",\n        worklineId: \"\",\n        mainCompanyId: \"\",\n        isMain: this.isMain,\n      },\n    };\n  },\n  methods: {\n    openModal() {\n      console.log(this.formData);\n      $(this.$refs.modal).modal(\"show\");\n    },\n    closeModal() {\n      $(this.$refs.modal).modal(\"hide\");\n    },\n    addMainCompany() {\n      console.log(\"Adding Main Company:\", this.formData);\n      this.closeModal();\n    },\n    addCompany() {\n      console.log(\"Adding Company:\", this.formData);\n      const company = {\n        name: this.formData.companyName,\n        typeId: this.formData.typeId,\n        scaleId: this.formData.scaleId,\n        worklineId: this.formData.worklineId,\n        isMain: this.formData.isMain\n      }\n      console.log(\"Adding Company:\", company);\n      this.$emit(\"save-company\", company);\n      this.closeModal();\n    }\n  },\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles for the modal if needed */\n</style>\n"],"sourceRoot":""}]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css":
-/*!*********************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css ***!
-  \*********************************************************************************************************************************************************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-// Imports
-
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, `
-/* Add styles if necessary */
-`, "",{"version":3,"sources":["webpack://./src/components/Location.vue"],"names":[],"mappings":";AA0CA,4BAA4B","sourcesContent":["<template>\n  <div>\n    <div v-for=\"(location, index) in protestoLocations\" :key=\"index\" class=\"fields\">\n      <!-- City Dropdown -->\n      <select v-model=\"location.cityId\">\n        <option value=\"\">--İl--</option>\n        <option v-for=\"city in cities\" :key=\"city.id\" :value=\"city.id\">{{ city.name }}</option>\n      </select>\n\n      <!-- District Dropdown -->\n      <select v-model=\"location.districtId\" >\n        <option value=\"\">--İlçe--</option>\n        <option v-for=\"district in districts.filter(s=>s.cityId === location.cityId)\" :key=\"district.id\" :value=\"district.id\">{{ district.name }}</option>\n      </select>\n\n      <!-- Place Input -->\n      <input v-model=\"location.place\" type=\"text\" placeholder=\"Enter place\" />\n    </div>\n  </div>\n</template>\n\n<script>\n\nexport default {\n  props: {\n    protestoLocations: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    }\n  }\n};\n</script>\n\n<style scoped>\n/* Add styles if necessary */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -23331,7 +24024,36 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add any scoped styles here if necessary */
-`, "",{"version":3,"sources":["webpack://./src/components/protesto/EditProtesto.vue"],"names":[],"mappings":";AAsIA,4CAA4C","sourcesContent":["<template>\n  <div class=\"ui form\">\n    <Protesto \n        :protesto=\"this.protestoData\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :genderOptions=\"genderOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"this.cities\"\n        :districts=\"this.districts\"\n        @addLocation=\"handleAddLocation\"\n    />\n    <!-- Save Button -->\n    <button\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"saveProtesto\"\n    >\n      EYLEMİ KAYDET\n    </button>\n    <button\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"cancelProtesto\"\n    >\n      VAZGEÇ\n    </button>\n    <button \n        v-if=\"protesto.protestoId !== null\"\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"deleteProtesto\"\n    >\n      SİL\n    </button>\n  </div>\n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport Protesto from \"./Protesto.vue\";\nimport '@vuepic/vue-datepicker/dist/main.css'\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport protesto from \"./Protesto.vue\";\n\nexport default {\n  name: \"EditProtesto\",\n  emits: [\"cancelProtesto\"],\n  components: { Protesto },\n  data() {\n    return {\n      protestoData: {\n        locations: []\n      }\n    }\n  },\n  props: {\n    protesto: {\n      type: Object,\n      required: true,\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n    employeeCountInProtestoOptions: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    }\n  },\n  mounted() {\n    console.log(protesto);\n    this.protestoData = { ...this.protesto };\n    console.log(this.cities);\n  },\n  methods: {\n    saveProtesto() {\n      console.log(this.protesto);\n      fetchWithToken(\"/Resistance/CreateOrUpdateProtesto\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(this.protesto)\n      })\n          .then(response => { \n            console.log(response);\n            this.$router.push(`/edit/${this.protesto.resistanceId}`);\n          })\n          .catch(error => console.log(error));\n      \n    },\n    deleteProtesto() {\n      fetchWithToken(`/Resistance/DeleteProtesto/${this.protesto.protestoId}`, {\n        method: 'DELETE',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        }\n      })\n          .then(response => {\n            console.log(response);\n            this.$router.push(`/edit/${this.protesto.resistanceId}`);\n          })\n          .catch(error => console.log(error));\n    },\n    cancelProtesto() {\n      this.$emit('cancelProtesto', this.protesto);\n    },\n    \n    handleAddLocation(){\n      this.protestoData.locations.push({});\n    }\n  },\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles here if necessary */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/protesto/EditProtesto.vue"],"names":[],"mappings":";AAuPA,4CAA4C","sourcesContent":["<template>\n  <div v-if=\"this.isLoading\" class=\"ui dimmer active\">\n    <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n  </div>\n  <div class=\"ui form\">\n    <Protesto \n        :protesto=\"this.protestoData\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :genderOptions=\"genderOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"this.cities\"\n        :districts=\"this.districts\"\n        :intervention-types=\"this.interventionTypes\"\n        @addLocation=\"handleAddLocation\"\n        @deleteLocation=\"handleDeleteLocation\"\n    />\n    <!-- Save Button -->\n    <button\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"saveProtesto\"\n    >\n      EYLEMİ KAYDET\n    </button>\n    <button\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"cancelProtesto\"\n    >\n      VAZGEÇ\n    </button>\n    <button \n        v-if=\"protesto.protestoId !== null\"\n        class=\"ui primary button\"\n        type=\"button\"\n        @click=\"deleteProtesto\"\n    >\n      SİL\n    </button>\n  </div>\n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport Protesto from \"./Protesto.vue\";\nimport '@vuepic/vue-datepicker/dist/main.css'\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport protesto from \"./Protesto.vue\";\n\nexport default {\n  name: \"EditProtesto\",\n  emits: [\"cancelProtesto\", 'onProtestoAdded', \"onProtestoDeleted\"],\n  components: { Protesto },\n  data() {\n    return {\n      isLoading: false,\n      protestoData: {\n        ...this.protesto,\n      },\n      formErrors: {},\n    }\n  },\n  props: {\n    protesto: {\n      type: Object,\n      required: true,\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n    employeeCountInProtestoOptions: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    },\n    interventionTypes: {\n      type: Array,\n      required: true,\n    }\n  },\n  methods: {\n    saveProtesto() {\n      // Save form logic\n      const errors = this.validateProtesto();\n      console.log(errors);\n      // If there are errors, display them and stop submission\n      if (Object.keys(errors).length > 0) {\n        this.formErrors = errors; // Update formErrors to display validation messages\n        return;\n      }\n\n      this.isLoading = true;\n      console.log(this.protestoData);\n      fetchWithToken(\"/ResistanceApi/CreateOrUpdateProtesto\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(this.protestoData)\n      })\n          .then(response => {\n            this.isLoading = false;\n            // Handle HTTP errors\n            if (response.status === 400) {\n              this.$swal.fire({\n                icon: \"error\",\n                title: \"Bir hata olustu\",\n                text: response.statusText,\n              });\n              return Promise.reject(response.statusText); // Stop further processing\n            } else if (response.status === 500) {\n              this.$swal.fire({\n                icon: \"error\",\n                title: \"Bir hata olustu\",\n                text: 'Yazilim destek: ' + response.statusText,\n              });\n              return Promise.reject(response.statusText); // Stop further processing\n            }\n            return response.json(); // Return the parsed JSON for the next .then()\n          })\n          .then(data => {\n            console.log(data); // Log the parsed response data\n            const id = data; // Assuming the response is the ID (integer)\n            this.$swal('Eylem kaydedildi');\n            this.$emit('onProtestoAdded', { protesto: this.protestoData, id });\n          })\n          .catch(error => {\n            this.isLoading = false;\n            this.$swal.fire({\n              icon: \"error\",\n              title: \"Bir hata olustu\",\n            });\n            console.log(error);\n          });\n  \n    },\n    deleteProtesto() {\n      this.isLoading = true;\n      fetchWithToken(`/ResistanceApi/DeleteProtesto/${this.protesto.protestoId}`, {\n        method: 'DELETE',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        }\n      })\n          .then(response => {\n            this.isLoading = false;\n            // Handle HTTP errors\n            if (response.status === 400) {\n              this.$swal.fire({\n                icon: \"error\",\n                title: \"Bir hata olustu\",\n                text: response.statusText,\n              });\n              return Promise.reject(response.statusText); // Stop further processing\n            } else if (response.status === 500) {\n              this.$swal.fire({\n                icon: \"error\",\n                title: \"Bir hata olustu\",\n                text: 'Yazilim destek: ' + response.statusText,\n              });\n              return Promise.reject(response.statusText); // Stop further processing\n            }\n            this.$swal('Eylem silindi');\n            this.$emit('onProtestoDeleted', this.protestoData.protestoId );\n          })\n          .catch(error => {\n            this.isLoading = false;\n            this.$swal.fire({\n              icon: \"error\",\n              title: \"Bir hata olustu\",\n            });\n            console.log(error);\n          });\n    },\n    cancelProtesto() {\n      this.$emit('cancelProtesto', this.protesto);\n    },\n    handleAddLocation(){\n      this.protestoData.locations.push({id:0, protestoId: this.protesto.protestoId, cityId:null, districtId: null, place: null, deleted: false});\n    },\n    handleDeleteLocation(index) {\n      const location = this.protestoData.locations[index];\n      location.deleted = true;\n    },\n    validateProtesto() {\n      const errors = {};\n\n      // ProtestoTypeIds: At least one protest type selected\n      if (!this.protestoData.protestoTypeIds || this.protestoData.protestoTypeIds.length === 0) {\n        errors.protestoTypeIds = \"Lütfen en az bir eylem türü seçiniz.\";\n      }\n\n      // ProtestoPlaceIds: At least one protest place selected\n      if (!this.protestoData.protestoPlaceIds || this.protestoData.protestoPlaceIds.length === 0) {\n        errors.protestoPlaceIds = \"Lütfen en az bir eylem mekanı seçiniz.\";\n      }\n\n      // GenderId: Required\n      if (!this.protestoData.genderId) {\n        errors.genderId = \"Lütfen bir cinsiyet giriniz.\";\n      }\n\n      // ProtestoStartDate: Required\n      if (!this.protestoData.protestoStartDate) {\n        errors.protestoStartDate = \"Lütfen başlangıç tarihi seçiniz.\";\n      }\n\n      // EmployeeCountInProtesto: Required if EmployeeCountInProtestoId is not provided\n      if (!this.protestoData.employeeCountInProtesto && !this.protestoData.employeeCountInProtestoId) {\n        errors.employeeCountInProtesto = \"Lütfen eylemdeki işçi sayısını giriniz.\";\n      }\n\n      // InterventionTypeIds: At least one intervention type selected\n      if (!this.protestoData.interventionTypeIds || this.protestoData.interventionTypeIds.length === 0) {\n        errors.interventionTypeIds = \"Lütfen en az bir müdahale tipi seçiniz.\";\n      }\n\n      // CustodyCount: Required if custody is possible\n      if (this.isCustodyPossible && !this.protestoData.custodyCount) {\n        errors.custodyCount = \"Lütfen gözaltı sayısını giriniz.\";\n      }\n\n      return errors;\n    },\n  },\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles here if necessary */\n</style>\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Location.vue?vue&type=style&index=0&id=e0e8e4d8&scoped=true&lang=css":
+/*!******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Location.vue?vue&type=style&index=0&id=e0e8e4d8&scoped=true&lang=css ***!
+  \******************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `
+/* Add styles if necessary */
+`, "",{"version":3,"sources":["webpack://./src/components/protesto/Location.vue"],"names":[],"mappings":";AA2DA,4BAA4B","sourcesContent":["<template>\n    <div  v-for=\"(location, index) in protestoLocations\" :key=\"index\" class=\"fields\" v-show=\"!location.deleted\">\n      <!-- City Dropdown -->\n      <div class=\"four field\">\n          <select v-model=\"location.cityId\">\n            <option value=\"\">--İl--</option>\n            <option v-for=\"city in cities\" :key=\"city.id\" :value=\"city.id\">{{ city.name }}</option>\n          </select>\n        </div>\n  \n        <div class=\"four field\">\n        <!-- District Dropdown -->\n          <select v-model=\"location.districtId\" >\n            <option value=\"\">--İlçe--</option>\n            <option v-for=\"district in this.districts.filter(s=>s.cityId === location.cityId)\" :key=\"district.id\" :value=\"district.id\">{{ district.name }}</option>\n          </select>\n        </div>\n        <div class=\"four field\">\n          <!-- Place Input -->\n          <input v-model=\"location.place\" type=\"text\" />  \n        </div>\n        <div class=\"four field\">\n          <button type=\"button\" @click=\"deleteLocation(index)\" class=\"ui icon button red basic\"><i class=\"trash icon\"></i></button>\n        </div>\n    </div>\n</template>\n\n<script>\n\nexport default {\n  emits: ['deleteLocation'],\n  props: {\n    protestoLocations: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    }\n  },\n  data() {\n    return {\n      filteredDistricts : []\n    }\n  },\n  methods: {\n    deleteLocation(index) {\n      this.$emit('deleteLocation', index);\n    },\n  }\n};\n</script>\n\n<style scoped>\n/* Add styles if necessary */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -23360,7 +24082,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add any scoped styles here if necessary */
-`, "",{"version":3,"sources":["webpack://./src/components/protesto/Protesto.vue"],"names":[],"mappings":";AAwKA,4CAA4C","sourcesContent":["<template>\n    <!-- Protesto Types -->\n    <div class=\"field\">\n      <label for=\"ProtestoTypeIds\">Eylem Türleri</label>\n      <multiselect\n          id=\"ProtestoTypeIds\"\n          v-model=\"this.protesto.protestoTypeIds\"\n          :options=\"protestoTypeOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n    </div>\n\n    <!-- Start and End Dates -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"ProtestoStartDate\">Başlangıç Tarihi</label>\n        <VueDatePicker v-model=\"this.protesto.protestoStartDate\" \n                       text-input \n                       locale=\"tr-TR\"\n                       format=\"dd/MM/yyyy\">\n        </VueDatePicker>\n      </div>\n      <div class=\"field\">\n        <label for=\"ProtestoEndDate\">Bitiş Tarihi</label>\n        <VueDatePicker v-model=\"this.protesto.protestoEndDate\" \n                       text-input\n                       locale=\"tr-TR\"\n                       format=\"dd/MM/yyyy\">\n        </VueDatePicker>\n      </div>\n    </div>\n\n    <!-- Protesto Places -->\n    <div class=\"field\">\n      <label for=\"ProtestoPlaceIds\">Yerler</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"this.protesto.protestoPlaceIds\"\n          :options=\"protestoPlaceOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n    </div>\n\n    <!-- Gender -->\n    <div class=\"field\">\n      <label for=\"GenderId\">Cinsiyet</label>\n      <select v-model=\"this.protesto.genderId\" id=\"GenderId\">\n        <option value=\"\">--Seçiniz--</option>\n        <option\n            v-for=\"gender in genderOptions\"\n            :key=\"gender.id\"\n            :value=\"gender.id\"\n        >\n          {{ gender.name }}\n        </option>\n      </select>\n    </div>\n  <div class=\"field\">\n    <button type=\"button\" class=\"ui button\" @click=\"addLocation\">Lokasyon Ekle</button>\n  </div>\n  <div class=\"field\">\n    <Location :cities=\"cities\" :districts=\"districts\" :protesto-locations=\"this.protesto.locations\" />\n  </div>\n  <div class=\"field\">\n    <label for=\"CustodyCount\">Gözaltı Sayısı</label>\n    <input\n        type=\"number\"\n        id=\"CustodyCount\"\n        v-model=\"this.protesto.custodyCount\"\n    />\n  </div>\n    <!-- Other Fields -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtesto\">Eylemdeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"number\"\n            id=\"EmployeeCountInProtesto\"\n            v-model=\"this.protesto.employeeCountInProtesto\"\n        />\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtestoId\">Eylemdeki İşçi Sayısı</label>\n        <select v-model=\"this.protesto.employeeCountInProtestoId\" id=\"EmployeeCountInProtestoId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"employeeCountInProtesto in employeeCountInProtestoOptions\"\n              :key=\"employeeCountInProtesto.id\"\n              :value=\"employeeCountInProtesto.id\"\n          >\n            {{ employeeCountInProtesto.name }}\n          </option>\n        </select>\n      </div>\n    </div>\n\n    <!-- Notes -->\n    <div class=\"field\">\n      <label for=\"Note\">Notlar</label>\n      <textarea id=\"Note\" v-model=\"this.protesto.note\" rows=\"3\"></textarea>\n    </div>\n\n    <!-- Save Button -->\n   \n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport '@vuepic/vue-datepicker/dist/main.css'\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Location from \"../Location.vue\";\n\nexport default {\n  name: \"Protesto\",\n  emits: \"addProtesto\",\n  components: { Multiselect, VueDatePicker, Location },\n  props: {\n    protesto: {\n      type: Object,\n      default: () => ({})  // Prevents undefined errors\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n    employeeCountInProtestoOptions: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    }\n  },\n  methods: {\n    addLocation() {\n      this.$emit('addLocation');\n    }\n  }\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles here if necessary */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/protesto/Protesto.vue"],"names":[],"mappings":";AA2QA,4CAA4C","sourcesContent":["<template>\n    <!-- Protesto Types -->\n    <div class=\"field\">\n      <label for=\"ProtestoTypeIds\">Eylem Türleri</label>\n      <multiselect\n          id=\"ProtestoTypeIds\"\n          v-model=\"protesto.protestoTypeIds\"\n          :options=\"protestoTypeOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n      <span v-if=\"formErrors.protestoTypeIds\" class=\"text-danger\">\n        {{ formErrors.protestoTypeIds }}\n      </span>\n    </div>\n  <div class=\"field\" v-if=\"showStrikeDuration\">\n    <label for=\"StrikeDuration\">Eylemin Süresi</label>\n    <input v-model=\"protesto.strikeDuration\" type=\"text\" />\n  </div>\n  <div class=\"field\" v-show=\"showSimpleProtestoDescription\">\n    <label for=\"SimpleProtestoDescription\">İş yerinde Basit Eylem Açıklama</label>\n    <input v-model=\"protesto.simpleProtestoDescription\" type=\"text\" />\n  </div>\n    <!-- Start and End Dates -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"ProtestoStartDate\">Başlangıç Tarihi</label>\n        <VueDatePicker v-model=\"protesto.protestoStartDate\" \n                       text-input \n                       locale=\"tr-TR\"\n                       format=\"dd/MM/yyyy\">\n        </VueDatePicker>\n        <span v-if=\"formErrors.protestoStartDate\" class=\"text-danger\">\n          {{ formErrors.protestoTypeIds }}\n        </span>\n      </div>\n      <div class=\"field\">\n        <label for=\"ProtestoEndDate\">Bitiş Tarihi</label>\n        <VueDatePicker v-model=\"protesto.protestoEndDate\" \n                       text-input\n                       locale=\"tr-TR\"\n                       format=\"dd/MM/yyyy\">\n        </VueDatePicker>\n      </div>\n    </div>\n\n  \n    <!-- Protesto Places -->\n    <div class=\"field\">\n      <label for=\"ProtestoPlaceIds\">Eylem Yerleri</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"protesto.protestoPlaceIds\"\n          :options=\"protestoPlaceOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n      <span v-if=\"formErrors.protestoPlaceIds\" class=\"text-danger\">\n        {{ formErrors.protestoPlaceIds }}\n      </span>\n    </div>\n\n    <!-- Gender -->\n    <div class=\"field\">\n      <label for=\"GenderId\">Cinsiyet</label>\n      <select v-model=\"protesto.genderId\" id=\"GenderId\">\n        <option value=\"\">--Seçiniz--</option>\n        <option\n            v-for=\"gender in genderOptions\"\n            :key=\"gender.id\"\n            :value=\"gender.id\"\n        >\n          {{ gender.name }}\n        </option>\n      </select>\n      <span v-if=\"formErrors.genderId\" class=\"text-danger\">\n        {{ formErrors.genderId }}\n      </span>\n    </div>\n  <div class=\"field\">\n    <button type=\"button\" class=\"ui button\" @click=\"addLocation\">Lokasyon Ekle</button>\n  </div>\n  <div class=\"field\">\n    <Location @deleteLocation=\"handleDeleteLocation\" :cities=\"cities\" :districts=\"districts\" :protesto-locations=\"protesto.locations\" />\n  </div>\n \n    <!-- Other Fields -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtesto\">Eylemdeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"number\"\n            id=\"EmployeeCountInProtesto\"\n            v-model=\"protesto.employeeCountInProtesto\"\n            @blur=\"updateEmployeeCountId\"\n        />\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtestoId\">Eylemdeki İşçi Sayısı</label>\n        <select v-model=\"protesto.employeeCountInProtestoId\" id=\"EmployeeCountInProtestoId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"employeeCountInProtesto in employeeCountInProtestoOptions\"\n              :key=\"employeeCountInProtesto.id\"\n              :value=\"employeeCountInProtesto.id\"\n          >\n            {{ employeeCountInProtesto.name }}\n          </option>\n        </select>\n      </div>\n      \n    </div>\n    <div class=\"field\">\n      <label for=\"InterventionTypeId\">Müdahale Tipi</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"protesto.interventionTypeIds\"\n          :options=\"interventionTypes\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n      ></multiselect>\n      \n    </div>\n    <div class=\"field\" v-show=\"isCustodyPossible\">\n      <label for=\"CustodyCount\">Gözaltı Sayısı</label>\n      <input type=\"text\" id=\"CustodyCount\" v-model=\"this.protesto.custodyCount\"/>\n    </div>\n    <!-- Notes -->\n    <div class=\"field\">\n      <label for=\"Note\">Kontrol Kişisine Notlar</label>\n      <textarea id=\"Note\" v-model=\"protesto.note\" rows=\"3\"></textarea>\n    </div>\n\n    <!-- Save Button -->\n   \n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport '@vuepic/vue-datepicker/dist/main.css'\nimport Location from \"./Location.vue\";\n\nexport default {\n  name: \"Protesto\",\n  emits: [\"addProtesto\", 'deleteLocation', 'addLocation'],\n  components: { Multiselect, VueDatePicker, Location },\n  props: {\n    protesto: {\n      type: Object,\n      default: () => ({})  // Prevents undefined errors\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n    employeeCountInProtestoOptions: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    },\n    interventionTypes: {\n      type: Array,\n      required: true,\n    },\n    formErrors: {\n      type:Object,\n      default: () => ({})\n    }\n  },\n  computed: {\n    isCustodyPossible() {\n      return this.protesto.interventionTypeIds &&\n        !this.protesto.interventionTypeIds.some(type => type.id === 7)\n    },\n    showSimpleProtestoDescription() {\n      return (\n          this.protesto.protestoTypeIds &&\n          this.protesto.protestoTypeIds.some(type => type.id === 35)\n      );\n    },\n    showStrikeDuration() {\n      return (\n          this.protesto.protestoTypeIds &&\n          this.protesto.protestoTypeIds.some(type => [5, 6].includes(type.id))\n      );\n    }\n  },\n  methods: {\n    addLocation() {\n      this.$emit('addLocation');\n    },\n    handleDeleteLocation(index) {\n      console.log(index);\n      this.$emit('deleteLocation', index);\n    },\n    updateEmployeeCountId() {\n      const employeecount = this.protesto.employeeCountInProtesto;\n      if (employeecount == null) return;\n\n      if (employeecount >= 1 && employeecount <= 5) {\n        this.protesto.employeeCountInProtestoId = 1;\n      } else if (employeecount >= 6 && employeecount <= 25) {\n        this.protesto.employeeCountInProtestoId = 2;\n      } else if (employeecount >= 26 && employeecount <= 50) {\n        this.protesto.employeeCountInProtestoId = 3;\n      } else if (employeecount >= 51 && employeecount <= 100) {\n        this.protesto.employeeCountInProtestoId = 4;\n      } else if (employeecount >= 101 && employeecount <= 250) {\n        this.protesto.employeeCountInProtestoId = 5;\n      } else if (employeecount >= 251 && employeecount <= 500) {\n        this.protesto.employeeCountInProtestoId = 6;\n      } else if (employeecount >= 501 && employeecount <= 1000) {\n        this.protesto.employeeCountInProtestoId = 7;\n      } else if (employeecount >= 1001 && employeecount <= 2500) {\n        this.protesto.employeeCountInProtestoId = 8;\n      } else if (employeecount >= 2501 && employeecount <= 5000) {\n        this.protesto.employeeCountInProtestoId = 9;\n      } else if (employeecount >= 5001 && employeecount <= 10000) {\n        this.protesto.employeeCountInProtestoId = 10;\n      } else if (employeecount >= 10001 && employeecount <= 25000) {\n        this.protesto.employeeCountInProtestoId = 11;\n      } else if (employeecount >= 25001 && employeecount <= 50000) {\n        this.protesto.employeeCountInProtestoId = 12;\n      } else if (employeecount >= 50001 && employeecount <= 100000) {\n        this.protesto.employeeCountInProtestoId = 13;\n      } else if (employeecount >= 100001) {\n        this.protesto.employeeCountInProtestoId = 14;\n      } else {\n        this.protesto.employeeCountInProtestoId = \"\"; // Reset if out of range\n      }\n    }\n  }\n};\n</script>\n\n<style scoped>\n/* Add any scoped styles here if necessary */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -23389,7 +24111,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add styles here */
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/CreateResistance.vue"],"names":[],"mappings":";AAwNA,oBAAoB","sourcesContent":["<template>\n  <form class=\"ui form\">\n    <Resistance\n        :resistance=\"resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :formErrors=\"formErrors\"\n    />\n    <h3 class=\"ui dividing header\">Eylem</h3>\n    <Protesto\n        :protesto=\"resistance.protesto\"\n        :genderOptions=\"genderOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"cities\"\n        :districts=\"districts\"\n        @addLocation=\"handleAddLocation\"\n    />\n    <!-- Save and Cancel Buttons -->\n    <button class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" id=\"btnCancelResistanceModal\" class=\"ui negative button\">\n      VAZGEÇ\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n                 :companyTypes=\"companyTypes\"\n                 :companyScales=\"companyScales\"\n                 :worklines=\"worklines\"\n                 :companies=\"companies\"\n                 @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Multiselect from 'vue-multiselect'\nimport CompanyModal from \"../CompanyModal.vue\";\nimport Protesto from \"../protesto/Protesto.vue\";\nimport Resistance from \"./Resistance.vue\";\nimport EditProtesto from \"../protesto/EditProtesto.vue\"; // Adjust the path based on your folder structure\n\n\nexport default {\n  name: \"CreateResistance\",\n  components: {EditProtesto, Resistance, Protesto, CompanyModal, Multiselect},\n  data() {\n    return {\n      resistance: {\n        resistanceDescription: null,\n        categoryId: null,\n        developRight: null,\n        isOutsource: false,\n        mainCompanyId: null,\n        employeeCountId: null,\n        employeeCount: null,\n        resistanceResult: null,\n        employmentTypeIds: null,\n        corporationIds: null,\n        resistanceReasonIds: null,\n        protesto: {\n          locations: []\n        },\n      },\n      companies:[],\n      resistanceReasons: [],\n      categories: [],\n      corporations: [],\n      employeeCounts: [],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      protestoPlaceOptions: [],\n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      cities:[],\n      districts:[],\n      formErrors: {},\n    };\n  },\n  props: ['id'],  // The id is passed as a prop from the router\n  mounted() {\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/resistance/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => (this.corporations = data));\n    \n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n    \n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/employeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n\n    fetchWithToken(\"/lookup/cities\")\n        .then(response => response.json())\n        .then(data => (this.cities = data));\n\n    fetchWithToken(\"/lookup/districts\")\n        .then(response => response.json())\n        .then(data => (this.districts = data));\n    \n  },\n  methods: {\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    checkTradeUnion() {\n      const corporationIds = this.resistance?.corporationIds?.map(s => s.id);\n      const queryParams = new URLSearchParams();\n      corporationIds.forEach(id => queryParams.append('corporationIds', id));\n\n      fetchWithToken(`/corporation/checkTradeUnion?${queryParams.toString()}`)\n          .then(response => response.json())\n          .then(data => this.tradeUnionIncluded = data);\n    },\n    openCompanyModal(isMain) {\n      this.$refs.modalRef.openModal();\n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(companyData)\n      })\n          .then(response => response.json())\n          .then(data => (console.log(data)));\n      this.companies.push(companyData);\n    },\n    saveForm() {\n      const resistanceData = {\n        categoryId: this.resistance.categoryId,\n        companyId: this.resistance.companyId,\n        resistanceReasonIds: this.resistance.resistanceReasonIds,\n        mainCompanyId: this.resistance.mainCompanyId,\n        corporationIds: this.resistance.corporationIds,\n        hasTradeUnion: true,\n        tradeUnionAuthorityId: this.resistance.tradeUnionAuthorityId,\n        note: this.resistance.note,\n        resistanceDescription: this.resistance.resistanceDescription,\n        employeeCountId: this.resistance.employeeCountId,\n        employeeCount: this.resistance.employeeCount,\n        tradeUnionId: this.resistance.tradeUnionId,\n        protesto: this.resistance.protesto,\n      }\n\n      fetchWithToken(\"/Resistance/CreateResistance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(resistanceData)\n      })\n      .then(response => console.log(response))\n          .catch(error => console.log(error));\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    handleAddLocation(){\n      this.resistance.protesto.locations.push({});\n    }\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/CreateResistance.vue"],"names":[],"mappings":";AAmXA,oBAAoB","sourcesContent":["<template>\n  <form class=\"ui form\">\n    <Resistance\n        :resistance=\"resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :tradeUnions=\"tradeUnions\"\n        :tradeUnionAuthorities=\"tradeUnionAuthorities\"\n        :employmentTypes=\"employmentTypes\"\n        :formErrors=\"formErrors\"\n        @openCompanyModal=\"handleOpenCompanyModal\"\n    />\n    <h3 class=\"ui dividing header\">Eylem</h3>\n    <Protesto\n        :protesto=\"resistance.protesto\"\n        :genderOptions=\"genderOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"cities\"\n        :districts=\"districts\"\n        :intervention-types=\"interventionTypes\"\n        :formErrors=\"formErrors\"\n        @addLocation=\"handleAddLocation\"\n        @deleteLocation=\"handleDeleteLocation\"\n    />\n\n    <resistance-news :news=\"this.resistance.resistanceNews\" @removeNews=\"handleRemoveNews\"/>\n\n    <!-- Save and Cancel Buttons -->\n    <button class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" id=\"btnCancelResistanceModal\" class=\"ui negative button\">\n      VAZGEÇ\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n                 :companyTypes=\"companyTypes\"\n                 :companyScales=\"companyScales\"\n                 :worklines=\"worklines\"\n                 :companies=\"companies\"\n                 @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Multiselect from 'vue-multiselect'\nimport CompanyModal from \"../CompanyModal.vue\";\nimport Protesto from \"../protesto/Protesto.vue\";\nimport Resistance from \"./Resistance.vue\";\nimport EditProtesto from \"../protesto/EditProtesto.vue\";\nimport ResistanceNews from \"../news/ResistanceNews.vue\";\nimport {inject} from \"vue\"; // Adjust the path based on your folder structure\n\nexport default {\n  name: \"CreateResistance\",\n  components: {ResistanceNews, EditProtesto, Resistance, Protesto, CompanyModal, Multiselect},\n  data() {\n    return {\n      resistance: {\n        resistanceDescription: null,\n        categoryId: null,\n        developRight: null,\n        isOutsource: false,\n        mainCompanyId: null,\n        employeeCountId: null,\n        employeeCount: null,\n        resistanceResult: null,\n        employmentTypeIds: null,\n        corporationIds: null,\n        resistanceReasonIds: null,\n        resistanceNews: [],\n        protesto: {\n          interventionTypeIds: [],\n          locations: []\n        },\n      },\n      companies:[],\n      resistanceReasons: [],\n      categories: [],\n      corporations: [],\n      employeeCounts: [],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      protestoPlaceOptions: [],\n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      cities:[],\n      districts:[],\n      tradeUnionAuthorities:[],\n      tradeUnions: [],\n      employmentTypes: [],\n      interventionTypes: [],\n      formErrors: {},\n    };\n  },\n  setup() {\n    const addedNews = inject('addedNews'); // Inject full object\n    return { addedNews };\n  },\n  props: ['id'],  // The id is passed as a prop from the router\n  watch: {\n    'addedNews.news': {\n      handler(newNews) {\n        console.log(newNews);\n        // if (newNews && newNews.id && this.resistance) {\n          console.log(newNews);\n          this.resistance.resistanceNews.push(newNews); // Push into array\n        // }\n      },\n      deep: true,\n      // immediate: true,\n    }\n  },\n  mounted() {\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/lookup/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/lookup/employmentTypes\")\n        .then(response => response.json())\n        .then(data => (this.employmentTypes = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => {\n          this.corporations = data;\n          this.tradeUnions = data.filter(s=>s.CorporationTypeId = 1)\n        });\n\n    fetchWithToken(\"/lookup/tradeUnionAuthorities\")\n        .then(response => response.json())\n        .then(data => (this.tradeUnionAuthorities = data));\n    \n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n    \n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/employeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n\n    fetchWithToken(\"/lookup/cities\")\n        .then(response => response.json())\n        .then(data => (this.cities = data));\n\n    fetchWithToken(\"/lookup/districts\")\n        .then(response => response.json())\n        .then(data => (this.districts = data));\n\n    fetchWithToken(\"/lookup/interventionTypes\")\n        .then(response => response.json())\n        .then(data => (this.interventionTypes = data));\n  },\n  methods: {\n    checkTradeUnion() {\n      const corporationIds = this.resistance?.corporationIds?.map(s => s.id);\n      const queryParams = new URLSearchParams();\n      corporationIds.forEach(id => queryParams.append('corporationIds', id));\n\n      fetchWithToken(`/corporation/checkTradeUnion?${queryParams.toString()}`)\n          .then(response => response.json())\n          .then(data => this.tradeUnionIncluded = data);\n    },\n    openCompanyModal(isMain) {\n      this.$refs.modalRef.openModal();\n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(companyData)\n      })\n          .then(response => response.json())\n          .then(data => (console.log(data)));\n      this.companies.push(companyData);\n    },\n    saveForm() {\n      // Save form logic\n      console.log(this.resistance);\n      const errors = this.validateForm();\n      console.log(errors);\n      // If there are errors, display them and stop submission\n      if (Object.keys(errors).length > 0) {\n        this.formErrors = errors; // Update formErrors to display validation messages\n        return;\n      }\n\n      const resistanceData = {\n        categoryId: this.resistance.categoryId,\n        companyId: this.resistance.companyId,\n        resistanceReasonIds: this.resistance.resistanceReasonIds,\n        mainCompanyId: this.resistance.mainCompanyId,\n        corporationIds: this.resistance.corporationIds,\n        hasTradeUnion: true,\n        tradeUnionAuthorityId: this.resistance.tradeUnionAuthorityId,\n        note: this.resistance.note,\n        resistanceDescription: this.resistance.resistanceDescription,\n        employeeCountId: this.resistance.employeeCountId,\n        employeeCount: this.resistance.employeeCount,\n        tradeUnionId: this.resistance.tradeUnionId,\n        protesto: this.resistance.protesto,\n        resistanceNews: this.resistance.resistanceNews,\n      }\n\n      fetchWithToken(\"/ResistanceApi/CreateResistance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(resistanceData)\n      })\n          .then(response =>\n              {\n                this.isLoading = false;\n                if(response.status === 400) {\n                  this.$swal.fire({\n                    icon: \"error\",\n                    title: \"Bir hata olustu\",\n                    text: response.statusText,\n                  });\n                }\n                else if(response.status === 500) {\n                  this.$swal.fire({\n                    icon: \"error\",\n                    title: \"Bir hata olustu\",\n                    text: 'Yazilim destek: ' + response.statusText,\n                  });\n                }\n                else {\n                  this.$swal('Vaka kaydedildi');\n                  this.$router.push({ path: `/` });\n                }\n              }\n          )\n          .catch(error =>\n          {\n            this.isLoading = false;\n            this.$swal.fire({\n              icon: \"error\",\n              title: \"Bir hata olustu\",\n            });\n            console.log(error)\n          });\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    handleRemoveNews(newsId){\n      console.log('remove newsId ',newsId);\n      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);\n    },\n    handleOpenCompanyModal() {\n      this.$refs.modalRef.openModal();\n    },\n    handleAddLocation(){\n      this.resistance.protesto.locations.push({id:0, protestoId: 0, cityId:null, districtId: null, place: null, deleted: false});\n    },\n    handleDeleteLocation(index) {\n      const location = this.resistance.protesto.locations[index];\n      location.deleted = true;\n    },\n    validateForm() {\n      const errors = {};\n\n      if (!this.resistance.resistanceDescription) {\n        errors.resistanceDescription = \"Lütfen bir kısa açıklama seçiniz.\";\n      }\n      // CategoryId: Required\n      if (!this.resistance.categoryId) {\n        errors.categoryId = \"Lütfen bir kategori giriniz.\";\n      }\n\n      // CompanyId: At least one company selected\n      if (!this.resistance.companyId) {\n        errors.companyId = \"Lütfen bir şirket seçiniz.\";\n      }\n\n      // CorporationIds: At least one corporation selected\n      if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {\n        errors.corporationIds = \"Lütfen en az bir kurumsallık seçiniz.\";\n      }\n\n      // EmploymentTypeIds: At least one employment type selected\n      if (!this.resistance.employmentTypeIds || this.resistance.employmentTypeIds.length === 0) {\n        errors.employmentTypeIds = \"Lütfen en az bir istihdam türü seçiniz.\";\n      }\n\n      // GenderId: Required\n      if (!this.resistance.genderId) {\n        errors.genderId = \"Lütfen bir cinsiyet giriniz.\";\n      }\n\n      // ProtestoTypeIds: At least one protest type selected\n      if (!this.resistance.protestoTypeIds || this.resistance.protestoTypeIds.length === 0) {\n        errors.protestoTypeIds = \"Lütfen en az bir eylem türü seçiniz.\";\n      }\n\n      // ProtestoPlaceIds: At least one protest place selected\n      if (!this.resistance.protestoPlaceIds || this.resistance.protestoPlaceIds.length === 0) {\n        errors.protestoPlaceIds = \"Lütfen en az bir eylem mekanı seçiniz.\";\n      }\n\n      // ProtestoStartDate: Required\n      if (!this.resistance.protestoStartDate) {\n        errors.protestoStartDate = \"Lütfen başlangıç tarihi seçiniz.\";\n      }\n\n      // AnyLegalIntervention: Required\n      if (this.resistance.anyLegalIntervention === null || this.resistance.anyLegalIntervention === undefined) {\n        errors.anyLegalIntervention = \"Hukuki girişim var mı?\";\n      }\n\n      // DevelopRight: Required\n      if (this.resistance.developRight === null || this.resistance.developRight === undefined) {\n        errors.developRight = \"Hak Geliştirmeye/Savunma Özelliği\";\n      }\n\n      return errors;\n    },\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -23418,7 +24140,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add styles here */
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/EditResistance.vue"],"names":[],"mappings":";AA0RA,oBAAoB","sourcesContent":["<template>\n  <div v-if=\"isLoading\" class=\"ui dimmer active\">\n    <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n  </div>\n  <h4 class=\"ui dividing header\">\n    <router-link to=\"/list\" class=\"item\"><i class=\"angle double left icon\"></i></router-link>\n    Vaka\n  </h4>\n  <form class=\"ui form\">\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistance.id\" />\n    <Resistance\n        :resistance=\"this.resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :formErrors=\"formErrors\"\n        \n        @openCompanyModal=\"handleOpenCompanyModal\"\n    />\n   \n    <!-- Protestos -->\n    <h3 class=\"ui dividing header\">Eylemler</h3>\n    <button\n        type=\"button\"\n        class=\"ui right labeled small green icon button\"\n        @click=\"createProtesto\"\n    >\n      Eylem Ekle<i class=\"plus icon\"></i>\n    </button>\n    <protesto-accordion\n        :activeProtestoIndex=\"this.activeProtestoIndex\"\n        :protestoItems=\"resistance.protestoItems\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :genderOptions=\"genderOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"cities\"\n        :districts=\"districts\"\n        @cancelProtesto=\"handleCancelProtesto\"\n    />\n    <resistance-news :news=\"this.resistance.resistanceNews\" @removeNews=\"handleRemoveNews\"/>\n    \n    <!-- Save and Cancel Buttons -->\n    <button id=\"btnSave\" class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" class=\"ui negative button\">\n      SİL\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n         :companyTypes=\"companyTypes\"\n         :companyScales=\"companyScales\"\n         :worklines=\"worklines\"\n         :companies=\"companies\"\n         @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Resistance from \"./Resistance.vue\";\nimport Multiselect from 'vue-multiselect'\nimport ProtestoAccordion from \"../protesto/ProtestoAccordion.vue\";\nimport ResistanceNews from \"../news/ResistanceNews.vue\";\nimport CompanyModal from \"../CompanyModal.vue\";\nimport {inject, watch} from 'vue';\n\nexport default {\n  name: \"EditResistance\",\n  components: {CompanyModal, ProtestoAccordion, Multiselect, Resistance, ResistanceNews},\n  emits: [\"openCompanyModal\"],\n  setup() {\n    const addedNews = inject('addedNews'); // Inject full object\n    return { addedNews };\n  },\n  data() {\n    return {\n      isLoading: true,\n      resistance: {\n        id: null, // Default value for Id (could be null or -1 based on your use case)\n        resistanceDescription: '', // Default empty string for description\n        categoryId: '', // Empty string for the category ID\n        resistanceReasonIds: [], // Default to an empty array for selected reasons\n        developRight: '', // Default empty string (you might want a boolean or string value depending on your form logic)\n        companyId: '', // Default to an empty string for the company ID\n        isOutsource: false, // Default to 'false' indicating the company is not outsourced\n        mainCompanyId: '', // Default empty string for main company, if outsourcing is selected\n        employeeCountId: '', // Default to an empty string for employee count ID\n        employeeCount: '', // Default empty string for employee count (could be a number if required)\n        corporationIds: [], // Default empty array for selected corporation IDs\n        resistanceResult: 0, // Default to \"Bilinmiyor\" (unknown result)\n        protestoItems: [],\n        resistanceNews: [],\n      },\n      categories: [],\n      resistanceReasons: [],\n      companies: [],\n      corporations: [],\n      employeeCounts: [],\n      protestoPlaceOptions: [], \n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      cities: [],\n      districts: [],\n      activeProtestoIndex: null,\n      formErrors: {},\n    };\n  },\n  props: {\n    id: {\n      type: String,\n    }\n  },\n  mounted() {\n    this.fetchResistance();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/resistance/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => (this.corporations = data));\n\n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n\n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/cities\")\n        .then(response => response.json())\n        .then(data => (this.cities = data));\n\n    fetchWithToken(\"/lookup/districts\")\n        .then(response => response.json())\n        .then(data => (this.districts = data));\n\n    // this.initializeSemanticUI();\n  },\n  watch: {\n    '$route.params.id': 'fetchResistance',\n    'addedNews.news': {\n      handler(newNews) {\n        if (newNews && this.resistance) {\n          this.resistance.resistanceNews.push(newNews); // Push into array\n        }\n      },\n      deep: true,\n      immediate: true,\n  }\n  },\n  methods: {\n    fetchResistance() {\n      this.isLoading = true;\n      const id = this.$route.params.id;  // Accessing the id directly from $route.params\n\n      // Simulate an API call\n      fetchWithToken(`/resistance/get/${id}`)\n          .then(response => response.json())\n          .then(data => { \n            this.resistance = data; \n            this.isLoading = false; \n          });      \n    },\n    createProtesto(){\n      const created = this.resistance.protestoItems.filter(s=>s.protestoId === 0);\n      if(created.length === 0){\n        const protesto = {\n          resistanceId: this.resistance.id,\n          protestoId: 0,\n          locations: []\n        };\n        this.activeProtestoIndex = this.resistance.protestoItems.length;\n        this.resistance.protestoItems.push(protesto);\n        console.log(this.activeProtestoIndex);\n      }\n      else{\n        this.activeProtestoIndex = this.resistance.protestoItems.length;\n      }\n    },\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    handleOpenCompanyModal() {\n      this.$refs.modalRef.openModal();  \n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", { \n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\",\n        },\n        body: JSON.stringify(companyData)})\n          .then(response => {\n            return response.json();\n          })\n          .then(data => {\n            console.log(data);\n            this.companies.push(data);\n            this.resistance.companyId = data.id;\n          });\n     \n    },\n    saveForm() {\n      // Save form logic\n      console.log(this.resistance);\n      fetchWithToken(\"/Resistance/UpdateResitance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(this.resistance)\n      })\n          .then(response => console.log(response))\n          .catch(error => console.log(error));\n    },\n    handleCancelProtesto(protesto) {\n      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== 0);\n      this.activeProtestoIndex = null;\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    handleRemoveNews(newsId){\n      console.log('remove newsId ',newsId);\n      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);\n    }\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/EditResistance.vue"],"names":[],"mappings":";AA0aA,oBAAoB","sourcesContent":["<template>\n  <div v-if=\"this.isLoading\" class=\"ui dimmer active\">\n    <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n  </div>\n  <h4 class=\"ui dividing header\">\n    <router-link to=\"/list\" class=\"item\"><i class=\"angle double left icon\"></i></router-link>\n    Vaka\n  </h4>\n  <form class=\"ui form\">\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistance.id\" />\n    <Resistance\n        :resistance=\"this.resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :tradeUnions=\"tradeUnions\"\n        :tradeUnionAuthorities=\"tradeUnionAuthorities\"\n        :employmentTypes=\"employmentTypes\"\n        :formErrors=\"formErrors\"\n        @openCompanyModal=\"handleOpenCompanyModal\"\n    />\n   \n    <!-- Protestos -->\n    <h3 class=\"ui dividing header\">Eylemler</h3>\n    <button\n        type=\"button\"\n        class=\"ui right labeled small green icon button\"\n        @click=\"createProtesto\"\n    >\n      Eylem Ekle<i class=\"plus icon\"></i>\n    </button>\n    <protesto-accordion\n        :activeProtestoIndex=\"this.activeProtestoIndex\"\n        :protestoItems=\"resistance.protestoItems\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :genderOptions=\"genderOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"cities\"\n        :districts=\"districts\"\n        :intervention-types=\"interventionTypes\"\n        @cancelProtesto=\"handleCancelProtesto\"\n        @saveProtesto=\"handleSaveProtesto\"\n        @deleteProtesto=\"handleDeleteProtesto\"\n    />\n    <resistance-news :news=\"this.resistance.resistanceNews\" @removeNews=\"handleRemoveNews\"/>\n    \n    <!-- Save and Cancel Buttons -->\n    <button id=\"btnSave\" class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" class=\"ui negative button\">\n      SİL\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n         :companyTypes=\"companyTypes\"\n         :companyScales=\"companyScales\"\n         :worklines=\"worklines\"\n         :companies=\"companies\"\n         @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Resistance from \"./Resistance.vue\";\nimport Multiselect from 'vue-multiselect'\nimport ProtestoAccordion from \"../protesto/ProtestoAccordion.vue\";\nimport ResistanceNews from \"../news/ResistanceNews.vue\";\nimport CompanyModal from \"../CompanyModal.vue\";\nimport {inject, watch} from 'vue';\n\nexport default {\n  name: \"EditResistance\",\n  components: {CompanyModal, ProtestoAccordion, Multiselect, Resistance, ResistanceNews},\n  emits: [\"openCompanyModal\"],\n  setup() {\n    const addedNews = inject('addedNews'); // Inject full object\n    return { addedNews };\n  },\n  data() {\n    return {\n      isLoading: true,\n      resistance: {\n        id: null, // Default value for Id (could be null or -1 based on your use case)\n        resistanceDescription: '', // Default empty string for description\n        categoryId: '', // Empty string for the category ID\n        resistanceReasonIds: [], // Default to an empty array for selected reasons\n        developRight: '', // Default empty string (you might want a boolean or string value depending on your form logic)\n        companyId: '', // Default to an empty string for the company ID\n        isOutsource: false, // Default to 'false' indicating the company is not outsourced\n        mainCompanyId: '', // Default empty string for main company, if outsourcing is selected\n        employeeCountId: '', // Default to an empty string for employee count ID\n        employeeCount: '', // Default empty string for employee count (could be a number if required)\n        corporationIds: [], // Default empty array for selected corporation IDs\n        resistanceResult: 0, // Default to \"Bilinmiyor\" (unknown result)\n        protestoItems: [],\n        resistanceNews: [],\n      },\n      categories: [],\n      resistanceReasons: [],\n      companies: [],\n      corporations: [],\n      employeeCounts: [],\n      protestoPlaceOptions: [], \n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      cities: [],\n      districts: [],\n      tradeUnionAuthorities:[],\n      tradeUnions: [],\n      employmentTypes: [],\n      interventionTypes:[],\n      activeProtestoIndex: null,\n      formErrors: {},\n    };\n  },\n  props: {\n    id: {\n      type: String,\n    }\n  },\n  mounted() {\n    this.fetchResistance();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/lookup/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => {\n          this.corporations = data;\n          this.tradeUnions = data.filter(s=>s.CorporationTypeId = 1)\n        });\n    \n    fetchWithToken(\"/lookup/tradeUnionAuthorities\")\n        .then(response => response.json())\n        .then(data => (this.tradeUnionAuthorities = data));\n\n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/EmployeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n\n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/cities\")\n        .then(response => response.json())\n        .then(data => (this.cities = data));\n\n    fetchWithToken(\"/lookup/districts\")\n        .then(response => response.json())\n        .then(data => (this.districts = data));\n    \n    fetchWithToken(\"/lookup/employmentTypes\")\n        .then(response => response.json())\n        .then(data => (this.employmentTypes = data));\n    fetchWithToken(\"/lookup/interventionTypes\")\n        .then(response => response.json())\n        .then(data => (this.interventionTypes = data));\n    // this.initializeSemanticUI();\n  },\n  watch: {\n    '$route.params.id': 'fetchResistance',\n    'addedNews.news': {\n      handler(newNews) {\n        if (newNews && this.resistance) {\n          console.log(newNews);\n          this.resistance.resistanceNews.push(newNews); // Push into array\n        }\n      },\n      deep: true,\n    }\n  },\n  methods: {\n    fetchResistance() {\n      this.isLoading = true;\n      const id = this.$route.params.id;  // Accessing the id directly from $route.params\n\n      // Simulate an API call\n      fetchWithToken(`/resistanceapi/get/${id}`)\n          .then(response => response.json())\n          .then(data => { \n            this.resistance = data; \n            this.isLoading = false; \n          });      \n    },\n    createProtesto(){\n      console.log('created');\n      const created = this.resistance.protestoItems.filter(s=>s.protestoId === 0);\n      if(created.length === 0){\n        const protesto = {\n          resistanceId: this.resistance.id,\n          protestoId: 0,\n          protestoTypeIds: [],\n          isAgainstProduction: false,\n          protestoStartDate: null,\n          protestoEndDate: null,\n          protestoPlaceIds: [],\n          genderId: 0,\n          interventionTypeIds: [],\n          protestoCityIds: [],\n          protestoDistrictIds: [],\n          locations: [],\n          custodyCount: null,\n          employeeCountInProtesto: null,\n          employeeCountInProtestoId: null,\n          resistanceName: \"\",\n          note: \"\",\n          simpleProtestoDescription: \"\",\n          strikeDuration: 0\n        }\n\n        this.activeProtestoIndex = this.resistance.protestoItems.length;\n        this.resistance.protestoItems.push(protesto);\n        console.log(this.activeProtestoIndex);\n      }\n      else{\n        this.activeProtestoIndex = this.resistance.protestoItems.length;\n      }\n    },\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    handleOpenCompanyModal() {\n      this.$refs.modalRef.openModal();  \n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", { \n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\",\n        },\n        body: JSON.stringify(companyData)})\n          .then(response => {\n            return response.json();\n          })\n          .then(data => {\n            console.log(data);\n            this.companies.push(data);\n            this.resistance.companyId = data.id;\n          });\n     \n    },\n    saveForm() {\n      // Save form logic\n      console.log(this.resistance);\n      const errors = this.validateForm();\n      console.log(errors);\n      // If there are errors, display them and stop submission\n      if (Object.keys(errors).length > 0) {\n        this.formErrors = errors; // Update formErrors to display validation messages\n        return;\n      }\n\n      this.isLoading = true;\n      fetchWithToken(\"/Resistanceapi/UpdateResitance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(this.resistance)\n      })\n      .then(response => { \n        console.log(response);\n        this.isLoading = false;\n        this.$swal('Vaka kaydedildi');\n        this.$router.push({ path: `/` });      \n      })\n      .catch(error =>\n      {\n        this.isLoading = false;\n        this.$swal({\n          icon: \"error\",\n          title: \"Bir hata olustu\",\n          text: \"Bir hata olustu!\",\n        });\n        console.log(error)\n      });\n    },\n    handleCancelProtesto(protesto) {\n      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== 0);\n      this.activeProtestoIndex = null;\n    },\n    handleSaveProtesto(obj) {\n      const { id, protesto } = obj; // Destructure the object for easier access\n      protesto.protestoId = id;\n      // Check if the protestoId already exists in protestoItems\n      const existingIndex = this.resistance.protestoItems.findIndex(item => item.protestoId === id);\n\n      if (existingIndex !== -1) {\n        console.log('update');\n        // Update the existing protesto item\n        this.resistance.protestoItems[existingIndex] = { ...this.resistance.protestoItems[existingIndex], ...protesto };\n      } else {\n        console.log('insert');\n        const createdIndex = this.resistance.protestoItems.findIndex(item => item.protestoId === 0);\n        this.resistance.protestoItems[createdIndex] = { ...this.resistance.protestoItems[existingIndex], ...protesto };\n      }\n      this.activeProtestoIndex = null;\n      // Optionally, you can emit an event or perform other actions here\n      console.log(\"Protesto saved:\", this.resistance.protestoItems);\n    },\n    handleDeleteProtesto(id) {\n      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== id);\n      this.activeProtestoIndex = null;\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    handleRemoveNews(newsId){\n      console.log('remove newsId ',newsId);\n      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);\n    },\n    validateForm() {\n      const errors = {};\n\n      if (!this.resistance.resistanceDescription) {\n        errors.resistanceDescription = \"Lütfen bir kısa açıklama seçiniz.\";\n      }\n      // CategoryId: Required\n      if (!this.resistance.categoryId) {\n        errors.categoryId = \"Lütfen bir kategori giriniz.\";\n      }\n\n      // CompanyId: At least one company selected\n      if (!this.resistance.companyId) {\n        errors.companyId = \"Lütfen bir şirket seçiniz.\";\n      }\n\n      // CorporationIds: At least one corporation selected\n      if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {\n        errors.corporationIds = \"Lütfen en az bir kurumsallık seçiniz.\";\n      }\n\n      // EmploymentTypeIds: At least one employment type selected\n      if (!this.resistance.employmentTypeIds || this.resistance.employmentTypeIds.length === 0) {\n        errors.employmentTypeIds = \"Lütfen en az bir istihdam türü seçiniz.\";\n      }\n\n      // GenderId: Required\n      if (!this.resistance.genderId) {\n        errors.genderId = \"Lütfen bir cinsiyet giriniz.\";\n      }\n\n      // ProtestoTypeIds: At least one protest type selected\n      if (!this.resistance.protestoTypeIds || this.resistance.protestoTypeIds.length === 0) {\n        errors.protestoTypeIds = \"Lütfen en az bir eylem türü seçiniz.\";\n      }\n\n      // ProtestoPlaceIds: At least one protest place selected\n      if (!this.resistance.protestoPlaceIds || this.resistance.protestoPlaceIds.length === 0) {\n        errors.protestoPlaceIds = \"Lütfen en az bir eylem mekanı seçiniz.\";\n      }\n      \n      // ProtestoStartDate: Required\n      if (!this.resistance.protestoStartDate) {\n        errors.protestoStartDate = \"Lütfen başlangıç tarihi seçiniz.\";\n      }\n\n      // AnyLegalIntervention: Required\n      if (this.resistance.anyLegalIntervention === null || this.resistance.anyLegalIntervention === undefined) {\n        errors.anyLegalIntervention = \"Hukuki girişim var mı?\";\n      }\n\n      // DevelopRight: Required\n      if (this.resistance.developRight === null || this.resistance.developRight === undefined) {\n        errors.developRight = \"Hak Geliştirmeye/Savunma Özelliği\";\n      }\n\n      return errors;\n    },\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -23453,7 +24175,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `
   background: rgba(255, 255, 255, 0.8);
   z-index: 10;
 }
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/ListResistance.vue"],"names":[],"mappings":";AA0PA;EACE,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,oCAAoC;EACpC,WAAW;AACb","sourcesContent":["<template>\n  <div>\n    <div v-if=\"isLoading\" class=\"ui dimmer active\">\n        <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n    </div>\n\n    <div v-else>\n      <h4 class=\"ui dividing header\">\n        <router-link to=\"/create\" class=\"item\"><i class=\"plus icon\"></i></router-link>\n        Vakalar\n      </h4>\n      <a href=\"#\" @click=\"reloadList\" style=\"position:absolute; top:0; right:1em\">\n        <i class=\"redo alternate icon\"></i>\n      </a>\n\n      <div class=\"ui attached secondary segment resistanceFilter\">\n        <div class=\"ui accordion field\">\n          <div class=\"title\">\n            <i class=\"icon dropdown\"></i>\n            Filtreler\n          </div>\n          <div class=\"content ui form\">\n            <div class=\"field\">\n              <label class=\"transition visible\">Şirketler</label>\n              <select v-model=\"filter.companyId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Ana Şirket</label>\n              <select v-model=\"filter.mainCompanyId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Vaka Niteliği</label>\n              <select v-model=\"filter.categoryId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">{{\n                    category.name\n                  }}\n                </option>\n              </select>\n            </div>\n            <div class=\"fields\">\n              <div class=\"field\">\n                <label class=\"transition visible\">Eylem Yıl</label>\n                <select v-model=\"filter.yearId\" class=\"ui fluid selection dropdown\">\n                  <option value=\"\">--Seçiniz--</option>\n                  <option v-for=\"year in years\" :key=\"year\" :value=\"year\">{{ year }}</option>\n                </select>\n              </div>\n              <div class=\"field\">\n                <label class=\"transition visible\">Eylem Ay</label>\n                <select v-model=\"filter.monthId\" class=\"ui fluid search selection dropdown\">\n                  <option value=\"\">--Seçiniz--</option>\n                  <option v-for=\"(month, index) in months\" :key=\"index\" :value=\"index + 1\">{{ month }}</option>\n                </select>\n              </div>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Kişisel Notlar</label>\n              <select v-model=\"filter.personalNote\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option value=\"false\">Yok</option>\n                <option value=\"true\">Var</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <button @click=\"applyFilter\" class=\"ui button\">Filtrele</button>\n              <button @click=\"clearFilter\" class=\"ui basic button clear\">Temizle</button>\n              <button @click=\"exportData\" class=\"ui green basic button clear\">Dışa Aktar</button>\n            </div>\n          </div>\n        </div>\n      </div>\n\n      <table class=\"ui celled selectable striped table\">\n        <tbody>\n        <tr v-for=\"item in results\" :key=\"item.id\">\n          <td v-if=\"!isEditing\">\n            <router-link :to=\"`/edit/${item.id}`\">{{ item.categoryName }}</router-link>\n          </td>\n          <td>\n            <router-link :to=\"`/edit/${item.id}`\">{{ item.companyName }}</router-link>\n          </td>\n          <td>{{ formatDate(item.startDate) }}</td>\n        </tr>\n        </tbody>\n        <tfoot>\n        <tr>\n          <th :colspan=\"isEditing ? 1 : 2\">\n            <p>{{ rowCount }} kayıttan {{ from }} - {{ to }} arasındakiler görüntüleniyor.</p>\n          </th>\n          <th>\n            <div class=\"field\">\n              <select v-model=\"filter.pageNumber\" class=\"ui compact small dropdown\" \n                      @change=\"reloadList\">\n                <option v-for=\"i in pageCount\" :key=\"i\" :value=\"i\">{{ i }}</option>\n              </select>\n            </div>\n          </th>\n        </tr>\n        </tfoot>\n      </table>\n    </div>\n  </div>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\n\nexport default {\n  name: \"ListResistance\",\n  data() {\n    return {\n      isLoading: true,\n      filter: {\n        companyId: \"\",\n        mainCompanyId: \"\",\n        categoryId: \"\",\n        yearId: \"\",\n        monthId: \"\",\n        personalNote: \"\",\n        pageNumber: 1,\n        pageSize: 10, // Define a default page size\n      },\n      rowCount: 0,\n      pageSize: 10,\n      companies: [],\n      categories: [],\n      results: [],\n      years: Array.from({length: new Date().getFullYear() - 2017}, (_, i) => 2018 + i),\n      months: [\n        \"Ocak\", \"Şubat\", \"Mart\", \"Nisan\", \"Mayıs\", \"Haziran\",\n        \"Temmuz\", \"Ağustos\", \"Eylül\", \"Ekim\", \"Kasım\", \"Aralık\"\n      ],\n    };\n  },\n  computed: {\n    filteredResults() {\n      return this.results.filter(item => {\n        return (\n            (!this.filter.companyId || item.companyId === this.filter.companyId) &&\n            (!this.filter.mainCompanyId || item.mainCompanyId === this.filter.mainCompanyId) &&\n            (!this.filter.categoryId || item.categoryId === this.filter.categoryId) &&\n            (!this.filter.yearId || new Date(item.startDate).getFullYear() === this.filter.yearId) &&\n            (!this.filter.monthId || new Date(item.startDate).getMonth() + 1 === this.filter.monthId) &&\n            (!this.filter.personalNote || item.personalNote === JSON.parse(this.filter.personalNote))\n        );\n      });\n    },\n    from() {\n      return Math.min((this.filter.pageNumber - 1) * this.filter.pageSize + 1, this.rowCount);\n    },\n    to() {\n      return Math.min(this.filter.pageNumber * this.filter.pageSize, this.rowCount);\n    },\n    pageCount() {\n      return Math.ceil(this.rowCount / this.filter.pageSize);\n    },\n    isEditing() {\n      return this.$route.path.includes('/edit/');\n    },\n  },\n  methods: {\n    applyFilter() {\n      this.filter.pageNumber = 1;\n      this.reloadList();\n    },\n    clearFilter() {\n      this.filter = {\n        companyId: \"\",\n        mainCompanyId: \"\",\n        categoryId: \"\",\n        yearId: \"\",\n        monthId: \"\",\n        personalNote: \"\",\n        pageNumber: 1,\n        pageSize: 10,\n      };\n      this.reloadList();\n    },\n    reloadList() {\n      this.fetchResults();\n    },\n    fetchResults() {\n      this.isLoading = true;\n      const queryParams = new URLSearchParams(this.filter).toString();\n      fetchWithToken(`/resistance/list?${queryParams}`)\n      .then(response => response.json())\n      .then(data => {\n        console.log(data);\n        this.results = data.results || [];\n        this.filter = data.filter;\n        this.rowCount = data.rowCount;\n      })\n      .catch(err => console.error(\"Error fetching results:\", err))\n      .finally(() => (this.isLoading = false));\n    },\n    exportData() {\n      console.log(\"Exporting data...\");\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString();\n    },\n    nextPage() {\n      if (this.filter.pageNumber < this.pageCount) {\n        this.filter.pageNumber++;\n        this.reloadList(); // Fetch data for the next page\n      }\n    },\n    previousPage() {\n      if (this.filter.pageNumber > 1) {\n        this.filter.pageNumber--;\n        this.reloadList(); // Fetch data for the previous page\n      }\n    },\n    initializeSemanticUI() {\n      // Reinitialize Semantic UI components\n      this.$nextTick(() => {\n        $('.ui.dropdown').dropdown({\n          clearable: true,\n          fullTextSearch: 'exact',\n        });\n        $('.ui.accordion').accordion();\n      });\n    },\n  },\n  mounted() {\n    this.reloadList();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/resistance/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n    this.initializeSemanticUI();\n  },\n  updated() {\n    // Reinitialize Semantic UI components after the DOM updates\n    this.initializeSemanticUI();\n  },\n};\n</script>\n\n<style scoped>\n.ui.column.dimmer.active {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(255, 255, 255, 0.8);\n  z-index: 10;\n}\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/ListResistance.vue"],"names":[],"mappings":";AA0PA;EACE,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,oCAAoC;EACpC,WAAW;AACb","sourcesContent":["<template>\n  <div>\n    <div v-if=\"isLoading\" class=\"ui dimmer active\">\n        <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n    </div>\n\n    <div v-else>\n      <h4 class=\"ui dividing header\">\n        <router-link to=\"/create\" class=\"item\"><i class=\"plus icon\"></i></router-link>\n        Vakalar\n      </h4>\n      <a href=\"#\" @click=\"reloadList\" style=\"position:absolute; top:0; right:1em\">\n        <i class=\"redo alternate icon\"></i>\n      </a>\n\n      <div class=\"ui attached secondary segment resistanceFilter\">\n        <div class=\"ui accordion field\">\n          <div class=\"title\">\n            <i class=\"icon dropdown\"></i>\n            Filtreler\n          </div>\n          <div class=\"content ui form\">\n            <div class=\"field\">\n              <label class=\"transition visible\">Şirketler</label>\n              <select v-model=\"filter.companyId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Ana Şirket</label>\n              <select v-model=\"filter.mainCompanyId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Vaka Niteliği</label>\n              <select v-model=\"filter.categoryId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">{{\n                    category.name\n                  }}\n                </option>\n              </select>\n            </div>\n            <div class=\"fields\">\n              <div class=\"field\">\n                <label class=\"transition visible\">Eylem Yıl</label>\n                <select v-model=\"filter.yearId\" class=\"ui fluid selection dropdown\">\n                  <option value=\"\">--Seçiniz--</option>\n                  <option v-for=\"year in years\" :key=\"year\" :value=\"year\">{{ year }}</option>\n                </select>\n              </div>\n              <div class=\"field\">\n                <label class=\"transition visible\">Eylem Ay</label>\n                <select v-model=\"filter.monthId\" class=\"ui fluid search selection dropdown\">\n                  <option value=\"\">--Seçiniz--</option>\n                  <option v-for=\"(month, index) in months\" :key=\"index\" :value=\"index + 1\">{{ month }}</option>\n                </select>\n              </div>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Kişisel Notlar</label>\n              <select v-model=\"filter.personalNote\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option value=\"false\">Yok</option>\n                <option value=\"true\">Var</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <button @click=\"applyFilter\" class=\"ui button\">Filtrele</button>\n              <button @click=\"clearFilter\" class=\"ui basic button clear\">Temizle</button>\n              <button @click=\"exportData\" class=\"ui green basic button clear\">Dışa Aktar</button>\n            </div>\n          </div>\n        </div>\n      </div>\n\n      <table class=\"ui celled selectable striped table\">\n        <tbody>\n        <tr v-for=\"item in results\" :key=\"item.id\">\n          <td v-if=\"!isEditing\">\n            <router-link :to=\"`/edit/${item.id}`\">{{ item.categoryName }}</router-link>\n          </td>\n          <td>\n            <router-link :to=\"`/edit/${item.id}`\">{{ item.companyName }}</router-link>\n          </td>\n          <td>{{ formatDate(item.startDate) }}</td>\n        </tr>\n        </tbody>\n        <tfoot>\n        <tr>\n          <th :colspan=\"isEditing ? 1 : 2\">\n            <p>{{ rowCount }} kayıttan {{ from }} - {{ to }} arasındakiler görüntüleniyor.</p>\n          </th>\n          <th>\n            <div class=\"field\">\n              <select v-model=\"filter.pageNumber\" class=\"ui compact small dropdown\" \n                      @change=\"reloadList\">\n                <option v-for=\"i in pageCount\" :key=\"i\" :value=\"i\">{{ i }}</option>\n              </select>\n            </div>\n          </th>\n        </tr>\n        </tfoot>\n      </table>\n    </div>\n  </div>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\n\nexport default {\n  name: \"ListResistance\",\n  data() {\n    return {\n      isLoading: true,\n      filter: {\n        companyId: \"\",\n        mainCompanyId: \"\",\n        categoryId: \"\",\n        yearId: \"\",\n        monthId: \"\",\n        personalNote: \"\",\n        pageNumber: 1,\n        pageSize: 10, // Define a default page size\n      },\n      rowCount: 0,\n      pageSize: 10,\n      companies: [],\n      categories: [],\n      results: [],\n      years: Array.from({length: new Date().getFullYear() - 2017}, (_, i) => 2018 + i),\n      months: [\n        \"Ocak\", \"Şubat\", \"Mart\", \"Nisan\", \"Mayıs\", \"Haziran\",\n        \"Temmuz\", \"Ağustos\", \"Eylül\", \"Ekim\", \"Kasım\", \"Aralık\"\n      ],\n    };\n  },\n  computed: {\n    filteredResults() {\n      return this.results.filter(item => {\n        return (\n            (!this.filter.companyId || item.companyId === this.filter.companyId) &&\n            (!this.filter.mainCompanyId || item.mainCompanyId === this.filter.mainCompanyId) &&\n            (!this.filter.categoryId || item.categoryId === this.filter.categoryId) &&\n            (!this.filter.yearId || new Date(item.startDate).getFullYear() === this.filter.yearId) &&\n            (!this.filter.monthId || new Date(item.startDate).getMonth() + 1 === this.filter.monthId) &&\n            (!this.filter.personalNote || item.personalNote === JSON.parse(this.filter.personalNote))\n        );\n      });\n    },\n    from() {\n      return Math.min((this.filter.pageNumber - 1) * this.filter.pageSize + 1, this.rowCount);\n    },\n    to() {\n      return Math.min(this.filter.pageNumber * this.filter.pageSize, this.rowCount);\n    },\n    pageCount() {\n      return Math.ceil(this.rowCount / this.filter.pageSize);\n    },\n    isEditing() {\n      return this.$route.path.includes('/edit/');\n    },\n  },\n  methods: {\n    applyFilter() {\n      this.filter.pageNumber = 1;\n      this.reloadList();\n    },\n    clearFilter() {\n      this.filter = {\n        companyId: \"\",\n        mainCompanyId: \"\",\n        categoryId: \"\",\n        yearId: \"\",\n        monthId: \"\",\n        personalNote: \"\",\n        pageNumber: 1,\n        pageSize: 10,\n      };\n      this.reloadList();\n    },\n    reloadList() {\n      this.fetchResults();\n    },\n    fetchResults() {\n      this.isLoading = true;\n      const queryParams = new URLSearchParams(this.filter).toString();\n      fetchWithToken(`/resistance/list?${queryParams}`)\n      .then(response => response.json())\n      .then(data => {\n        console.log(data);\n        this.results = data.results || [];\n        this.filter = data.filter;\n        this.rowCount = data.rowCount;\n      })\n      .catch(err => console.error(\"Error fetching results:\", err))\n      .finally(() => (this.isLoading = false));\n    },\n    exportData() {\n      console.log(\"Exporting data...\");\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString();\n    },\n    nextPage() {\n      if (this.filter.pageNumber < this.pageCount) {\n        this.filter.pageNumber++;\n        this.reloadList(); // Fetch data for the next page\n      }\n    },\n    previousPage() {\n      if (this.filter.pageNumber > 1) {\n        this.filter.pageNumber--;\n        this.reloadList(); // Fetch data for the previous page\n      }\n    },\n    initializeSemanticUI() {\n      // Reinitialize Semantic UI components\n      this.$nextTick(() => {\n        $('.ui.dropdown').dropdown({\n          clearable: true,\n          fullTextSearch: 'exact',\n        });\n        $('.ui.accordion').accordion();\n      });\n    },\n  },\n  mounted() {\n    this.reloadList();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/lookup/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n    this.initializeSemanticUI();\n  },\n  updated() {\n    // Reinitialize Semantic UI components after the DOM updates\n    this.initializeSemanticUI();\n  },\n};\n</script>\n\n<style scoped>\n.ui.column.dimmer.active {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(255, 255, 255, 0.8);\n  z-index: 10;\n}\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -23482,7 +24204,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add styles here */
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/Resistance.vue"],"names":[],"mappings":";AAoQA,oBAAoB","sourcesContent":["<template>\n    <!-- Hidden Input for ID -->\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistance.id\" />\n\n    <div class=\"field\">\n      <label for=\"ResistanceDescription\">Kısa Açıklama</label>\n      <textarea\n          id=\"ResistanceDescription\"\n          rows=\"6\"\n          v-model=\"this.resistance.resistanceDescription\"\n      ></textarea>\n    </div>\n  \n    <div class=\"field\">\n      <label for=\"CategoryId\">Vaka Niteliği</label>\n      <select v-model=\"this.resistance.categoryId\">\n        <option value=\"\">--Seçiniz--</option>\n        <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">\n          {{ category.name }}\n        </option>\n      </select>\n      <span v-if=\"formErrors.categoryId\" class=\"text-danger\">\n        {{ formErrors.categoryId }}\n      </span>\n    </div>\n\n    <!-- Two Fields -->\n    <div class=\"two fields\">\n      <!-- Case Reasons -->\n      <div class=\"field\">\n        <label for=\"ResistanceReasonIds\">Vaka Nedeni</label>\n        <multiselect id=\"ResistanceReasonIds\"\n                     v-model=\"this.resistance.resistanceReasonIds\"\n                     placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                     :preselect-first=\"true\"\n                     :options=\"resistanceReasons\"\n                     :multiple=\"true\"\n                     :close-on-select=\"false\"\n                     :clear-on-select=\"false\"\n                     :preserve-search=\"true\"\n                     :taggable=\"true\"  @tag=\"addResistanceReason\">\n        </multiselect>\n      </div>\n\n      <!-- Develop Right -->\n      <div class=\"field\">\n        <label for=\"DevelopRight\">Hak Geliştirme/Hak Savunma Özelliği</label>\n        <select v-model=\"this.resistance.developRight\">\n          <option value=\"\">--Seçiniz--</option>\n          <option :value=\"true\">Hak Geliştirme</option>\n          <option :value=\"false\">Hak Savunma</option>\n        </select>\n        <span v-if=\"formErrors.developRight\" class=\"text-danger\">\n          {{ formErrors.developRight }}\n        </span>\n      </div>\n    </div>\n\n    <div class=\"sixty wide field\">\n      <label for=\"CompanyId\">Şirket</label>\n      <div class=\"two fields\">\n        <div class=\"field\">\n          <select v-model=\"this.resistance.companyId\">\n            <option value=\"\">--Seçiniz--</option>\n            <option\n                v-for=\"company in companies\"\n                :key=\"company.id\"\n                :value=\"company.id\"\n            >\n              {{ company.name }}\n            </option>\n          </select>\n        </div>\n        <div class=\"field\">\n          <button type=\"button\" @click=\"openCompanyModal\" class=\"ui button\">\n            <i class=\"chevron circle up icon\"></i>Şirket Ekle\n          </button>\n        </div>\n      </div>\n    </div>\n    <!-- Is Outsource -->\n    <div class=\"field sixty wide\">\n      <label for=\"IsOutsource\">Şirket Taşeron mu?</label>\n      <select v-model=\"this.resistance.isOutsource\" @change=\"toggleOutsource\">\n        <option :value=\"false\">Hayır</option>\n        <option :value=\"true\">Evet</option>\n      </select>\n    </div>\n\n    <!-- Main Company (Conditional) -->\n    <div v-if=\"this.resistance.isOutsource\" id=\"outsource\" class=\"sixty wide field\">\n      <label for=\"MainCompanyId\">Ana Şirket</label>\n      <div class=\"two fields\">\n        <div class=\"field\">\n          <select v-model=\"resistance.mainCompanyId\">\n            <option value=\"\">--Seçiniz--</option>\n            <option\n                v-for=\"company in companies\"\n                :key=\"company.id\"\n                :value=\"company.id\"\n            >\n              {{ company.name }}\n            </option>\n          </select>\n        </div>\n        <div class=\"field\">\n          <button type=\"button\" @click=\"openCompanyModal\" class=\"ui button\">\n            <i class=\"chevron circle up icon\"></i>Ana Şirket Ekle\n          </button>\n        </div>\n      </div>\n    </div>\n\n    <!-- Employee Count -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountId\">İş Yerindeki İşçi Sayısı</label>\n        <select v-model=\"this.resistance.employeeCountId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"count in employeeCounts\"\n              :key=\"count.id\"\n              :value=\"count.id\"\n          >\n            {{ count.name }}\n          </option>\n        </select>\n        <span v-if=\"formErrors.employeeCountId\" class=\"text-danger\">\n          {{ formErrors.employeeCountId }}\n        </span>\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCount\">İş Yerindeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"text\"\n            id=\"EmployeeCount\"\n            v-model=\"this.resistance.employeeCount\"\n        />\n      </div>\n    </div>\n    <div class=\"field\">\n      <label for=\"CorporationIds\">Kurumsallık</label>\n      <multiselect id=\"CorporationIds\" \n                   v-model=\"this.resistance.corporationIds\"\n                   placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                   :preselect-first=\"true\"\n                   :options=\"corporations\"\n                   :multiple=\"true\" \n                   :close-on-select=\"false\" \n                   :clear-on-select=\"false\"\n                   :preserve-search=\"true\" \n                   :taggable=\"true\" @tag=\"addCorporation\">\n      </multiselect>\n    </div>\n    <!-- Other Fields -->\n    <div class=\"field\">\n      <label for=\"ResistanceResult\">Sonuç</label>\n      <select v-model=\"this.resistance.resistanceResult\" class=\"ui fluid dropdown\">\n        <option :value=\"0\">Bilinmiyor</option>\n        <option :value=\"1\">Tam Kazanım</option>\n        <option :value=\"2\">Yarım Kazanım</option>\n        <option :value=\"3\">Sıfır Kazanım</option>\n      </select>\n    </div>\n</template>\n\n<script>\nimport Multiselect from 'vue-multiselect'\n\nexport default {\n  name: \"Resistance\",\n  emits: [\"openCompanyModal\"],\n  components: { Multiselect },\n  props: {\n    // modelValue: Object,\n    resistance: {\n      type: Object,\n      default: () => ({}) \n    },\n    companies: {\n      type: Array,\n      required: true,\n    },\n    resistanceReasons: {\n      type: Array,\n      required: true,\n    },\n    categories: {\n      type: Array,\n      required: true,\n    },\n    corporations: {\n      type: Array,\n      required: true,\n    },\n    employeeCounts: {\n      type: Array,\n      required: true,\n    },\n    formErrors: {\n      type:Object,\n      default: () => ({})\n    }\n  },\n  methods: {\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    openCompanyModal() {\n      console.log('openCompanyModal');\n      this.$emit('openCompanyModal');\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    addEmploymentType(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.employmentTypes.push(tag)\n      this.resistance.employmentTypeIds.push(tag)\n    },\n    addCorporation(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.corporations.push(newTag);\n      this.resistance.corporationIds.push(tag)\n    },\n    customFilter(search, id) {\n      console.log(id);\n      console.log(search);\n      const normalize = (str) =>\n          str\n              .toLowerCase()\n              .normalize(\"NFD\") // Decompose characters\n              .replace(/[\\u0300-\\u036f]/g, \"\") // Remove diacritics\n              .replace(/ı/g, \"i\")\n              .replace(/ğ/g, \"g\")\n              .replace(/ü/g, \"u\")\n              .replace(/ş/g, \"s\")\n              .replace(/ö/g, \"o\")\n              .replace(/ç/g, \"c\");\n      const result = normalize(search);\n      console.log(result);\n      return result;\n    },\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/Resistance.vue"],"names":[],"mappings":";AAwUA,oBAAoB","sourcesContent":["<template>\n    <!-- Hidden Input for ID -->\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistance.id\" />\n\n    <div class=\"field\">\n      <label for=\"ResistanceDescription\">Kısa Açıklama</label>\n      <textarea\n          id=\"ResistanceDescription\"\n          rows=\"6\"\n          v-model=\"this.resistance.resistanceDescription\"\n      ></textarea>\n      <span v-if=\"formErrors.resistanceDescription\" class=\"text-danger\">\n        {{ formErrors.resistanceDescription }}\n      </span>\n    </div>\n  \n    <div class=\"field\">\n      <label for=\"CategoryId\">Vaka Niteliği</label>\n      <select v-model=\"this.resistance.categoryId\">\n        <option value=\"\">--Seçiniz--</option>\n        <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">\n          {{ category.name }}\n        </option>\n      </select>\n      <span v-if=\"formErrors.categoryId\" class=\"text-danger\">\n        {{ formErrors.categoryId }}\n      </span>\n    </div>\n\n  <div class=\"fields\">\n    <div class=\"six wide field\">\n      <label for=\"IsOutsource\">Şirket Taşeron mu?</label>\n      <select v-model=\"this.resistance.isOutsource\">\n        <option :value=\"false\">Hayır</option>\n        <option :value=\"true\">Evet</option>\n      </select>\n    </div>\n    <div class=\"ten wide field\">\n      <label for=\"CompanyId\">Şirket</label>\n      <div class=\"two fields\">\n        <div class=\"field\">\n          <select v-model=\"this.resistance.companyId\">\n            <option value=\"\">--Seçiniz--</option>\n            <option\n                v-for=\"company in companies\"\n                :key=\"company.id\"\n                :value=\"company.id\"\n            >\n              {{ company.name }}\n            </option>\n          </select>\n          <span v-if=\"formErrors.companyId\" class=\"text-danger\">\n            {{ formErrors.companyId }}\n          </span>\n        </div>\n        <div class=\"field\">\n          <button type=\"button\" @click=\"openCompanyModal\" class=\"ui button\">\n            <i class=\"chevron circle up icon\"></i>Şirket Ekle\n          </button>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <!-- Main Company (Conditional) -->\n  <div v-if=\"this.resistance.isOutsource\" id=\"outsource\" class=\"six wide field\">\n    <label for=\"MainCompanyId\">Ana Şirket</label>\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <select v-model=\"resistance.mainCompanyId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"company in companies\"\n              :key=\"company.id\"\n              :value=\"company.id\"\n          >\n            {{ company.name }}\n          </option>\n        </select>\n      </div>\n      <div class=\"field\">\n        <button type=\"button\" @click=\"openCompanyModal\" class=\"ui button\">\n          <i class=\"chevron circle up icon\"></i>Ana Şirket Ekle\n        </button>\n      </div>\n    </div>\n  </div>\n\n  <!-- Two Fields -->\n    <div class=\"two fields\">\n      <!-- Case Reasons -->\n      <div class=\"field\">\n        <label for=\"ResistanceReasonIds\">Vaka Nedeni</label>\n        <multiselect id=\"ResistanceReasonIds\"\n                     v-model=\"this.resistance.resistanceReasonIds\"\n                     placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                     :preselect-first=\"true\"\n                     :options=\"resistanceReasons\"\n                     :multiple=\"true\"\n                     :close-on-select=\"false\"\n                     :clear-on-select=\"false\"\n                     :preserve-search=\"true\"\n                     :taggable=\"true\"  @tag=\"addResistanceReason\">\n        </multiselect>\n      </div>\n\n      <!-- Develop Right -->\n      <div class=\"field\">\n        <label for=\"DevelopRight\">Hak Geliştirme/Hak Savunma Özelliği</label>\n        <select v-model=\"this.resistance.developRight\">\n          <option value=\"\">--Seçiniz--</option>\n          <option :value=\"true\">Hak Geliştirme</option>\n          <option :value=\"false\">Hak Savunma</option>\n        </select>\n        <span v-if=\"formErrors.developRight\" class=\"text-danger\">\n          {{ formErrors.developRight }}\n        </span>\n      </div>\n    </div>\n\n   \n    <!-- Employee Count -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountId\">İş Yerindeki İşçi Sayısı</label>\n        <select v-model=\"this.resistance.employeeCountId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"count in employeeCounts\"\n              :key=\"count.id\"\n              :value=\"count.id\"\n          >\n            {{ count.name }}\n          </option>\n        </select>\n        <span v-if=\"formErrors.employeeCountId\" class=\"text-danger\">\n          {{ formErrors.employeeCountId }}\n        </span>\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCount\">İş Yerindeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"text\"\n            id=\"EmployeeCount\"\n            v-model=\"this.resistance.employeeCount\"\n        />\n      </div>\n    </div>\n    <div class=\"field\">\n      <label for=\"CorporationIds\">Kurumsallık</label>\n      <multiselect id=\"CorporationIds\" \n                   v-model=\"this.resistance.corporationIds\"\n                   placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                   :preselect-first=\"true\"\n                   :options=\"corporations\"\n                   :multiple=\"true\" \n                   :close-on-select=\"false\" \n                   :clear-on-select=\"false\"\n                   :preserve-search=\"true\" \n                   :taggable=\"true\" @tag=\"addCorporation\">\n      </multiselect>\n    </div>\n  <div class=\"field\">\n    <label for=\"TradeUnionAuthorityId\">Sendikanın Yetki Durumu</label>\n    <select v-model=\"this.resistance.tradeUnionAuthorityId\">\n      <option value=\"\">--Seçiniz--</option>\n      <option\n          v-for=\"ta in this.tradeUnionAuthorities\"\n          :key=\"ta.id\"\n          :value=\"ta.id\"\n      >\n        {{ ta.name }}\n      </option>\n    </select>\n  </div>\n  <div class=\"field\">\n    <label for=\"TradeUnionId\">Tepki Gösterilen Sendika</label>\n    <select v-model=\"this.resistance.tradeUnionId\">\n      <option value=\"\">--Seçiniz--</option>\n      <option\n          v-for=\"ta in this.tradeUnions\"\n          :key=\"ta.id\"\n          :value=\"ta.id\"\n      >\n        {{ ta.name }}\n      </option>\n    </select>\n  </div>\n  <div class=\"two fields\">\n    <div class=\"field\">\n      <label for=\"EmploymentTypeIds\">İstihdam Türü</label>\n      <multiselect id=\"CorporationIds\"\n                   v-model=\"this.resistance.employmentTypeIds\"\n                   placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                   :preselect-first=\"true\"\n                   :options=\"employmentTypes\"\n                   :multiple=\"true\"\n                   :close-on-select=\"false\"\n                   :clear-on-select=\"false\"\n                   :preserve-search=\"true\"\n                   :taggable=\"true\">\n      </multiselect>\n      <span v-if=\"formErrors.corporationIds\" class=\"text-danger\">\n        {{ formErrors.employmentTypeIds }}\n      </span>\n    </div>\n  </div>\n  <div class=\"field\">\n    <label for=\"FiredEmployeeCountByProtesto\">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>\n    <input type=\"number\" v-model=\"this.resistance.firedEmployeeCountByProtesto\">\n  </div>\n    <!-- Other Fields -->\n    <div class=\"field\">\n      <label for=\"ResistanceResult\">Sonuç</label>\n      <select v-model=\"this.resistance.resistanceResult\" class=\"ui fluid dropdown\">\n        <option :value=\"0\">Bilinmiyor</option>\n        <option :value=\"1\">Tam Kazanım</option>\n        <option :value=\"2\">Yarım Kazanım</option>\n        <option :value=\"3\">Sıfır Kazanım</option>\n      </select>\n    </div>\n</template>\n\n<script>\nimport Multiselect from 'vue-multiselect'\n\nexport default {\n  name: \"Resistance\",\n  emits: [\"openCompanyModal\"],\n  components: { Multiselect },\n  props: {\n    // modelValue: Object,\n    resistance: {\n      type: Object,\n      default: () => ({}) \n    },\n    companies: {\n      type: Array,\n      required: true,\n    },\n    resistanceReasons: {\n      type: Array,\n      required: true,\n    },\n    categories: {\n      type: Array,\n      required: true,\n    },\n    corporations: {\n      type: Array,\n      required: true,\n    },\n    tradeUnionAuthorities: {\n      type: Array,\n      required: true,\n    },\n    tradeUnions: {\n      type: Array,\n      required: true,\n    },\n    employmentTypes: {\n      type: Array,\n      required: true,\n    },\n    employeeCounts: {\n      type: Array,\n      required: true,\n    },\n    formErrors: {\n      type:Object,\n      default: () => ({})\n    }\n  },\n  methods: {\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    openCompanyModal() {\n      this.$emit('openCompanyModal');\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    addEmploymentType(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.employmentTypes.push(tag)\n      this.resistance.employmentTypeIds.push(tag)\n    },\n    addCorporation(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.corporations.push(newTag);\n      this.resistance.corporationIds.push(tag)\n    },\n    customFilter(search, id) {\n      console.log(id);\n      console.log(search);\n      const normalize = (str) =>\n          str\n              .toLowerCase()\n              .normalize(\"NFD\") // Decompose characters\n              .replace(/[\\u0300-\\u036f]/g, \"\") // Remove diacritics\n              .replace(/ı/g, \"i\")\n              .replace(/ğ/g, \"g\")\n              .replace(/ü/g, \"u\")\n              .replace(/ş/g, \"s\")\n              .replace(/ö/g, \"o\")\n              .replace(/ç/g, \"c\");\n      const result = normalize(search);\n      console.log(result);\n      return result;\n    },\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -34417,37 +35139,6 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./src/components/Location.vue":
-/*!*************************************!*\
-  !*** ./src/components/Location.vue ***!
-  \*************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _Location_vue_vue_type_template_id_2456dd65_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Location.vue?vue&type=template&id=2456dd65&scoped=true */ "./src/components/Location.vue?vue&type=template&id=2456dd65&scoped=true");
-/* harmony import */ var _Location_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Location.vue?vue&type=script&lang=js */ "./src/components/Location.vue?vue&type=script&lang=js");
-/* harmony import */ var _Location_vue_vue_type_style_index_0_id_2456dd65_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css */ "./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css");
-/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
-
-
-
-
-;
-
-
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_Location_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Location_vue_vue_type_template_id_2456dd65_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-2456dd65"],['__file',"src/components/Location.vue"]])
-/* hot reload */
-if (false) {}
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
-
-/***/ }),
-
 /***/ "./src/components/NotFound.vue":
 /*!*************************************!*\
   !*** ./src/components/NotFound.vue ***!
@@ -34592,6 +35283,37 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_EditProtesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_EditProtesto_vue_vue_type_template_id_322ae0ce_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-322ae0ce"],['__file',"src/components/protesto/EditProtesto.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
+/***/ "./src/components/protesto/Location.vue":
+/*!**********************************************!*\
+  !*** ./src/components/protesto/Location.vue ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Location_vue_vue_type_template_id_e0e8e4d8_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Location.vue?vue&type=template&id=e0e8e4d8&scoped=true */ "./src/components/protesto/Location.vue?vue&type=template&id=e0e8e4d8&scoped=true");
+/* harmony import */ var _Location_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Location.vue?vue&type=script&lang=js */ "./src/components/protesto/Location.vue?vue&type=script&lang=js");
+/* harmony import */ var _Location_vue_vue_type_style_index_0_id_e0e8e4d8_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Location.vue?vue&type=style&index=0&id=e0e8e4d8&scoped=true&lang=css */ "./src/components/protesto/Location.vue?vue&type=style&index=0&id=e0e8e4d8&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+
+
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_Location_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Location_vue_vue_type_template_id_e0e8e4d8_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-e0e8e4d8"],['__file',"src/components/protesto/Location.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -34805,22 +35527,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/components/Location.vue?vue&type=script&lang=js":
-/*!*************************************************************!*\
-  !*** ./src/components/Location.vue?vue&type=script&lang=js ***!
-  \*************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Location.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=script&lang=js");
- 
-
-/***/ }),
-
 /***/ "./src/components/NotFound.vue?vue&type=script&lang=js":
 /*!*************************************************************!*\
   !*** ./src/components/NotFound.vue?vue&type=script&lang=js ***!
@@ -34897,6 +35603,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./EditProtesto.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=script&lang=js");
+ 
+
+/***/ }),
+
+/***/ "./src/components/protesto/Location.vue?vue&type=script&lang=js":
+/*!**********************************************************************!*\
+  !*** ./src/components/protesto/Location.vue?vue&type=script&lang=js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Location.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Location.vue?vue&type=script&lang=js");
  
 
 /***/ }),
@@ -35013,22 +35735,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/components/Location.vue?vue&type=template&id=2456dd65&scoped=true":
-/*!*******************************************************************************!*\
-  !*** ./src/components/Location.vue?vue&type=template&id=2456dd65&scoped=true ***!
-  \*******************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_template_id_2456dd65_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_template_id_2456dd65_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Location.vue?vue&type=template&id=2456dd65&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=template&id=2456dd65&scoped=true");
-
-
-/***/ }),
-
 /***/ "./src/components/NotFound.vue?vue&type=template&id=3a86191f":
 /*!*******************************************************************!*\
   !*** ./src/components/NotFound.vue?vue&type=template&id=3a86191f ***!
@@ -35105,6 +35811,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_template_id_322ae0ce_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
 /* harmony export */ });
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_template_id_322ae0ce_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./EditProtesto.vue?vue&type=template&id=322ae0ce&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/EditProtesto.vue?vue&type=template&id=322ae0ce&scoped=true");
+
+
+/***/ }),
+
+/***/ "./src/components/protesto/Location.vue?vue&type=template&id=e0e8e4d8&scoped=true":
+/*!****************************************************************************************!*\
+  !*** ./src/components/protesto/Location.vue?vue&type=template&id=e0e8e4d8&scoped=true ***!
+  \****************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_template_id_e0e8e4d8_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_template_id_e0e8e4d8_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Location.vue?vue&type=template&id=e0e8e4d8&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Location.vue?vue&type=template&id=e0e8e4d8&scoped=true");
 
 
 /***/ }),
@@ -35222,23 +35944,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css":
-/*!*********************************************************************************************!*\
-  !*** ./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css ***!
-  \*********************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_2456dd65_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/vue-style-loader/index.js!../../node_modules/css-loader/dist/cjs.js!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css");
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_2456dd65_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_2456dd65_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
-/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_2456dd65_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_2456dd65_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
-/* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
-
-
-/***/ }),
-
 /***/ "./src/components/ResistanceOverview.vue?vue&type=style&index=0&id=b726abfc&scoped=true&lang=css":
 /*!*******************************************************************************************************!*\
   !*** ./src/components/ResistanceOverview.vue?vue&type=style&index=0&id=b726abfc&scoped=true&lang=css ***!
@@ -35302,6 +36007,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_style_index_0_id_322ae0ce_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_style_index_0_id_322ae0ce_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
 /* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_style_index_0_id_322ae0ce_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_EditProtesto_vue_vue_type_style_index_0_id_322ae0ce_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
+/* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
+
+
+/***/ }),
+
+/***/ "./src/components/protesto/Location.vue?vue&type=style&index=0&id=e0e8e4d8&scoped=true&lang=css":
+/*!******************************************************************************************************!*\
+  !*** ./src/components/protesto/Location.vue?vue&type=style&index=0&id=e0e8e4d8&scoped=true&lang=css ***!
+  \******************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_e0e8e4d8_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Location.vue?vue&type=style&index=0&id=e0e8e4d8&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Location.vue?vue&type=style&index=0&id=e0e8e4d8&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_e0e8e4d8_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_e0e8e4d8_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
+/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_e0e8e4d8_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_e0e8e4d8_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
 /* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
 
 
@@ -36870,6 +37592,27 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/sweetalert2/dist/sweetalert2.min.css":
+/*!***********************************************************!*\
+  !*** ./node_modules/sweetalert2/dist/sweetalert2.min.css ***!
+  \***********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !!../../css-loader/dist/cjs.js!./sweetalert2.min.css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sweetalert2/dist/sweetalert2.min.css");
+if(content.__esModule) content = content.default;
+if(typeof content === 'string') content = [[module.id, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = (__webpack_require__(/*! !../../vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
+var update = add("5c41d637", content, false, {});
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css":
 /*!******************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/CompanyModal.vue?vue&type=style&index=0&id=620f1060&scoped=true&lang=css ***!
@@ -36886,27 +37629,6 @@ if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(/*! !../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
 var update = add("44066112", content, false, {});
-// Hot Module Replacement
-if(false) {}
-
-/***/ }),
-
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css":
-/*!**************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css ***!
-  \**************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/Location.vue?vue&type=style&index=0&id=2456dd65&scoped=true&lang=css");
-if(content.__esModule) content = content.default;
-if(typeof content === 'string') content = [[module.id, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var add = (__webpack_require__(/*! !../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
-var update = add("1cb3434a", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
@@ -36991,6 +37713,27 @@ if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(/*! !../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
 var update = add("18b14e9b", content, false, {});
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Location.vue?vue&type=style&index=0&id=e0e8e4d8&scoped=true&lang=css":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Location.vue?vue&type=style&index=0&id=e0e8e4d8&scoped=true&lang=css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Location.vue?vue&type=style&index=0&id=e0e8e4d8&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Location.vue?vue&type=style&index=0&id=e0e8e4d8&scoped=true&lang=css");
+if(content.__esModule) content = content.default;
+if(typeof content === 'string') content = [[module.id, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = (__webpack_require__(/*! !../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
+var update = add("5e1c237e", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
@@ -56426,6 +57169,1274 @@ function useRoute(_name) {
 
 
 
+/***/ }),
+
+/***/ "./node_modules/vue-sweetalert2/dist/vue-sweetalert.mjs":
+/*!**************************************************************!*\
+  !*** ./node_modules/vue-sweetalert2/dist/vue-sweetalert.mjs ***!
+  \**************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ di)
+/* harmony export */ });
+var M = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {};
+function ai(x) {
+  return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x.default : x;
+}
+var yt = { exports: {} };
+/*!
+* sweetalert2 v11.4.4
+* Released under the MIT License.
+*/
+(function(x, T) {
+  (function(K, O) {
+    x.exports = O();
+  })(M, function() {
+    const K = "SweetAlert2:", O = (e) => {
+      const t = [];
+      for (let n = 0; n < e.length; n++)
+        t.indexOf(e[n]) === -1 && t.push(e[n]);
+      return t;
+    }, B = (e) => e.charAt(0).toUpperCase() + e.slice(1), g = (e) => Array.prototype.slice.call(e), d = (e) => {
+      console.warn("".concat(K, " ").concat(typeof e == "object" ? e.join(" ") : e));
+    }, H = (e) => {
+      console.error("".concat(K, " ").concat(e));
+    }, Ie = [], wt = (e) => {
+      Ie.includes(e) || (Ie.push(e), d(e));
+    }, Ct = (e, t) => {
+      wt('"'.concat(e, '" is deprecated and will be removed in the next major release. Please use "').concat(t, '" instead.'));
+    }, ne = (e) => typeof e == "function" ? e() : e, fe = (e) => e && typeof e.toPromise == "function", _ = (e) => fe(e) ? e.toPromise() : Promise.resolve(e), pe = (e) => e && Promise.resolve(e) === e, q = {
+      title: "",
+      titleText: "",
+      text: "",
+      html: "",
+      footer: "",
+      icon: void 0,
+      iconColor: void 0,
+      iconHtml: void 0,
+      template: void 0,
+      toast: !1,
+      showClass: {
+        popup: "swal2-show",
+        backdrop: "swal2-backdrop-show",
+        icon: "swal2-icon-show"
+      },
+      hideClass: {
+        popup: "swal2-hide",
+        backdrop: "swal2-backdrop-hide",
+        icon: "swal2-icon-hide"
+      },
+      customClass: {},
+      target: "body",
+      color: void 0,
+      backdrop: !0,
+      heightAuto: !0,
+      allowOutsideClick: !0,
+      allowEscapeKey: !0,
+      allowEnterKey: !0,
+      stopKeydownPropagation: !0,
+      keydownListenerCapture: !1,
+      showConfirmButton: !0,
+      showDenyButton: !1,
+      showCancelButton: !1,
+      preConfirm: void 0,
+      preDeny: void 0,
+      confirmButtonText: "OK",
+      confirmButtonAriaLabel: "",
+      confirmButtonColor: void 0,
+      denyButtonText: "No",
+      denyButtonAriaLabel: "",
+      denyButtonColor: void 0,
+      cancelButtonText: "Cancel",
+      cancelButtonAriaLabel: "",
+      cancelButtonColor: void 0,
+      buttonsStyling: !0,
+      reverseButtons: !1,
+      focusConfirm: !0,
+      focusDeny: !1,
+      focusCancel: !1,
+      returnFocus: !0,
+      showCloseButton: !1,
+      closeButtonHtml: "&times;",
+      closeButtonAriaLabel: "Close this dialog",
+      loaderHtml: "",
+      showLoaderOnConfirm: !1,
+      showLoaderOnDeny: !1,
+      imageUrl: void 0,
+      imageWidth: void 0,
+      imageHeight: void 0,
+      imageAlt: "",
+      timer: void 0,
+      timerProgressBar: !1,
+      width: void 0,
+      padding: void 0,
+      background: void 0,
+      input: void 0,
+      inputPlaceholder: "",
+      inputLabel: "",
+      inputValue: "",
+      inputOptions: {},
+      inputAutoTrim: !0,
+      inputAttributes: {},
+      inputValidator: void 0,
+      returnInputValueOnDeny: !1,
+      validationMessage: void 0,
+      grow: !1,
+      position: "center",
+      progressSteps: [],
+      currentProgressStep: void 0,
+      progressStepsDistance: void 0,
+      willOpen: void 0,
+      didOpen: void 0,
+      didRender: void 0,
+      willClose: void 0,
+      didClose: void 0,
+      didDestroy: void 0,
+      scrollbarPadding: !0
+    }, vt = ["allowEscapeKey", "allowOutsideClick", "background", "buttonsStyling", "cancelButtonAriaLabel", "cancelButtonColor", "cancelButtonText", "closeButtonAriaLabel", "closeButtonHtml", "color", "confirmButtonAriaLabel", "confirmButtonColor", "confirmButtonText", "currentProgressStep", "customClass", "denyButtonAriaLabel", "denyButtonColor", "denyButtonText", "didClose", "didDestroy", "footer", "hideClass", "html", "icon", "iconColor", "iconHtml", "imageAlt", "imageHeight", "imageUrl", "imageWidth", "preConfirm", "preDeny", "progressSteps", "returnFocus", "reverseButtons", "showCancelButton", "showCloseButton", "showConfirmButton", "showDenyButton", "text", "title", "titleText", "willClose"], Pt = {}, At = ["allowOutsideClick", "allowEnterKey", "backdrop", "focusConfirm", "focusDeny", "focusCancel", "returnFocus", "heightAuto", "keydownListenerCapture"], Le = (e) => Object.prototype.hasOwnProperty.call(q, e), Me = (e) => vt.indexOf(e) !== -1, ge = (e) => Pt[e], kt = (e) => {
+      Le(e) || d('Unknown parameter "'.concat(e, '"'));
+    }, Bt = (e) => {
+      At.includes(e) && d('The parameter "'.concat(e, '" is incompatible with toasts'));
+    }, Et = (e) => {
+      ge(e) && Ct(e, ge(e));
+    }, St = (e) => {
+      !e.backdrop && e.allowOutsideClick && d('"allowOutsideClick" parameter requires `backdrop` parameter to be set to `true`');
+      for (const t in e)
+        kt(t), e.toast && Bt(t), Et(t);
+    }, xt = "swal2-", He = (e) => {
+      const t = {};
+      for (const n in e)
+        t[e[n]] = xt + e[n];
+      return t;
+    }, i = He(["container", "shown", "height-auto", "iosfix", "popup", "modal", "no-backdrop", "no-transition", "toast", "toast-shown", "show", "hide", "close", "title", "html-container", "actions", "confirm", "deny", "cancel", "default-outline", "footer", "icon", "icon-content", "image", "input", "file", "range", "select", "radio", "checkbox", "label", "textarea", "inputerror", "input-label", "validation-message", "progress-steps", "active-progress-step", "progress-step", "progress-step-line", "loader", "loading", "styled", "top", "top-start", "top-end", "top-left", "top-right", "center", "center-start", "center-end", "center-left", "center-right", "bottom", "bottom-start", "bottom-end", "bottom-left", "bottom-right", "grow-row", "grow-column", "grow-fullscreen", "rtl", "timer-progress-bar", "timer-progress-bar-container", "scrollbar-measure", "icon-success", "icon-warning", "icon-info", "icon-question", "icon-error"]), Y = He(["success", "warning", "info", "question", "error"]), h = () => document.body.querySelector(".".concat(i.container)), Z = (e) => {
+      const t = h();
+      return t ? t.querySelector(e) : null;
+    }, P = (e) => Z(".".concat(e)), u = () => P(i.popup), $ = () => P(i.icon), je = () => P(i.title), oe = () => P(i["html-container"]), De = () => P(i.image), Ve = () => P(i["progress-steps"]), ie = () => P(i["validation-message"]), k = () => Z(".".concat(i.actions, " .").concat(i.confirm)), I = () => Z(".".concat(i.actions, " .").concat(i.deny)), Tt = () => P(i["input-label"]), F = () => Z(".".concat(i.loader)), j = () => Z(".".concat(i.actions, " .").concat(i.cancel)), J = () => P(i.actions), qe = () => P(i.footer), se = () => P(i["timer-progress-bar"]), he = () => P(i.close), Ot = `
+  a[href],
+  area[href],
+  input:not([disabled]),
+  select:not([disabled]),
+  textarea:not([disabled]),
+  button:not([disabled]),
+  iframe,
+  object,
+  embed,
+  [tabindex="0"],
+  [contenteditable],
+  audio[controls],
+  video[controls],
+  summary
+`, me = () => {
+      const e = g(u().querySelectorAll('[tabindex]:not([tabindex="-1"]):not([tabindex="0"])')).sort((n, o) => {
+        const s = parseInt(n.getAttribute("tabindex")), r = parseInt(o.getAttribute("tabindex"));
+        return s > r ? 1 : s < r ? -1 : 0;
+      }), t = g(u().querySelectorAll(Ot)).filter((n) => n.getAttribute("tabindex") !== "-1");
+      return O(e.concat(t)).filter((n) => C(n));
+    }, be = () => S(document.body, i.shown) && !S(document.body, i["toast-shown"]) && !S(document.body, i["no-backdrop"]), re = () => u() && S(u(), i.toast), It = () => u().hasAttribute("data-loading"), W = {
+      previousBodyPadding: null
+    }, m = (e, t) => {
+      if (e.textContent = "", t) {
+        const o = new DOMParser().parseFromString(t, "text/html");
+        g(o.querySelector("head").childNodes).forEach((s) => {
+          e.appendChild(s);
+        }), g(o.querySelector("body").childNodes).forEach((s) => {
+          e.appendChild(s);
+        });
+      }
+    }, S = (e, t) => {
+      if (!t)
+        return !1;
+      const n = t.split(/\s+/);
+      for (let o = 0; o < n.length; o++)
+        if (!e.classList.contains(n[o]))
+          return !1;
+      return !0;
+    }, Lt = (e, t) => {
+      g(e.classList).forEach((n) => {
+        !Object.values(i).includes(n) && !Object.values(Y).includes(n) && !Object.values(t.showClass).includes(n) && e.classList.remove(n);
+      });
+    }, A = (e, t, n) => {
+      if (Lt(e, t), t.customClass && t.customClass[n]) {
+        if (typeof t.customClass[n] != "string" && !t.customClass[n].forEach)
+          return d("Invalid type of customClass.".concat(n, '! Expected string or iterable object, got "').concat(typeof t.customClass[n], '"'));
+        a(e, t.customClass[n]);
+      }
+    }, ye = (e, t) => {
+      if (!t)
+        return null;
+      switch (t) {
+        case "select":
+        case "textarea":
+        case "file":
+          return e.querySelector(".".concat(i.popup, " > .").concat(i[t]));
+        case "checkbox":
+          return e.querySelector(".".concat(i.popup, " > .").concat(i.checkbox, " input"));
+        case "radio":
+          return e.querySelector(".".concat(i.popup, " > .").concat(i.radio, " input:checked")) || e.querySelector(".".concat(i.popup, " > .").concat(i.radio, " input:first-child"));
+        case "range":
+          return e.querySelector(".".concat(i.popup, " > .").concat(i.range, " input"));
+        default:
+          return e.querySelector(".".concat(i.popup, " > .").concat(i.input));
+      }
+    }, Fe = (e) => {
+      if (e.focus(), e.type !== "file") {
+        const t = e.value;
+        e.value = "", e.value = t;
+      }
+    }, We = (e, t, n) => {
+      !e || !t || (typeof t == "string" && (t = t.split(/\s+/).filter(Boolean)), t.forEach((o) => {
+        Array.isArray(e) ? e.forEach((s) => {
+          n ? s.classList.add(o) : s.classList.remove(o);
+        }) : n ? e.classList.add(o) : e.classList.remove(o);
+      }));
+    }, a = (e, t) => {
+      We(e, t, !0);
+    }, E = (e, t) => {
+      We(e, t, !1);
+    }, L = (e, t) => {
+      const n = g(e.childNodes);
+      for (let o = 0; o < n.length; o++)
+        if (S(n[o], t))
+          return n[o];
+    }, G = (e, t, n) => {
+      n === "".concat(parseInt(n)) && (n = parseInt(n)), n || parseInt(n) === 0 ? e.style[t] = typeof n == "number" ? "".concat(n, "px") : n : e.style.removeProperty(t);
+    }, p = function(e) {
+      let t = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "flex";
+      e.style.display = t;
+    }, b = (e) => {
+      e.style.display = "none";
+    }, Re = (e, t, n, o) => {
+      const s = e.querySelector(t);
+      s && (s.style[n] = o);
+    }, ce = (e, t, n) => {
+      t ? p(e, n) : b(e);
+    }, C = (e) => !!(e && (e.offsetWidth || e.offsetHeight || e.getClientRects().length)), Mt = () => !C(k()) && !C(I()) && !C(j()), Ue = (e) => e.scrollHeight > e.clientHeight, Ne = (e) => {
+      const t = window.getComputedStyle(e), n = parseFloat(t.getPropertyValue("animation-duration") || "0"), o = parseFloat(t.getPropertyValue("transition-duration") || "0");
+      return n > 0 || o > 0;
+    }, we = function(e) {
+      let t = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : !1;
+      const n = se();
+      C(n) && (t && (n.style.transition = "none", n.style.width = "100%"), setTimeout(() => {
+        n.style.transition = "width ".concat(e / 1e3, "s linear"), n.style.width = "0%";
+      }, 10));
+    }, Ht = () => {
+      const e = se(), t = parseInt(window.getComputedStyle(e).width);
+      e.style.removeProperty("transition"), e.style.width = "100%";
+      const n = parseInt(window.getComputedStyle(e).width), o = t / n * 100;
+      e.style.removeProperty("transition"), e.style.width = "".concat(o, "%");
+    }, ze = () => typeof window > "u" || typeof document > "u", jt = 100, c = {}, Dt = () => {
+      c.previousActiveElement && c.previousActiveElement.focus ? (c.previousActiveElement.focus(), c.previousActiveElement = null) : document.body && document.body.focus();
+    }, Vt = (e) => new Promise((t) => {
+      if (!e)
+        return t();
+      const n = window.scrollX, o = window.scrollY;
+      c.restoreFocusTimeout = setTimeout(() => {
+        Dt(), t();
+      }, jt), window.scrollTo(n, o);
+    }), qt = `
+ <div aria-labelledby="`.concat(i.title, '" aria-describedby="').concat(i["html-container"], '" class="').concat(i.popup, `" tabindex="-1">
+   <button type="button" class="`).concat(i.close, `"></button>
+   <ul class="`).concat(i["progress-steps"], `"></ul>
+   <div class="`).concat(i.icon, `"></div>
+   <img class="`).concat(i.image, `" />
+   <h2 class="`).concat(i.title, '" id="').concat(i.title, `"></h2>
+   <div class="`).concat(i["html-container"], '" id="').concat(i["html-container"], `"></div>
+   <input class="`).concat(i.input, `" />
+   <input type="file" class="`).concat(i.file, `" />
+   <div class="`).concat(i.range, `">
+     <input type="range" />
+     <output></output>
+   </div>
+   <select class="`).concat(i.select, `"></select>
+   <div class="`).concat(i.radio, `"></div>
+   <label for="`).concat(i.checkbox, '" class="').concat(i.checkbox, `">
+     <input type="checkbox" />
+     <span class="`).concat(i.label, `"></span>
+   </label>
+   <textarea class="`).concat(i.textarea, `"></textarea>
+   <div class="`).concat(i["validation-message"], '" id="').concat(i["validation-message"], `"></div>
+   <div class="`).concat(i.actions, `">
+     <div class="`).concat(i.loader, `"></div>
+     <button type="button" class="`).concat(i.confirm, `"></button>
+     <button type="button" class="`).concat(i.deny, `"></button>
+     <button type="button" class="`).concat(i.cancel, `"></button>
+   </div>
+   <div class="`).concat(i.footer, `"></div>
+   <div class="`).concat(i["timer-progress-bar-container"], `">
+     <div class="`).concat(i["timer-progress-bar"], `"></div>
+   </div>
+ </div>
+`).replace(/(^|\n)\s*/g, ""), Ft = () => {
+      const e = h();
+      return e ? (e.remove(), E([document.documentElement, document.body], [i["no-backdrop"], i["toast-shown"], i["has-column"]]), !0) : !1;
+    }, D = () => {
+      c.currentInstance.resetValidationMessage();
+    }, Wt = () => {
+      const e = u(), t = L(e, i.input), n = L(e, i.file), o = e.querySelector(".".concat(i.range, " input")), s = e.querySelector(".".concat(i.range, " output")), r = L(e, i.select), f = e.querySelector(".".concat(i.checkbox, " input")), v = L(e, i.textarea);
+      t.oninput = D, n.onchange = D, r.onchange = D, f.onchange = D, v.oninput = D, o.oninput = () => {
+        D(), s.value = o.value;
+      }, o.onchange = () => {
+        D(), o.nextSibling.value = o.value;
+      };
+    }, Rt = (e) => typeof e == "string" ? document.querySelector(e) : e, Ut = (e) => {
+      const t = u();
+      t.setAttribute("role", e.toast ? "alert" : "dialog"), t.setAttribute("aria-live", e.toast ? "polite" : "assertive"), e.toast || t.setAttribute("aria-modal", "true");
+    }, Nt = (e) => {
+      window.getComputedStyle(e).direction === "rtl" && a(h(), i.rtl);
+    }, zt = (e) => {
+      const t = Ft();
+      if (ze()) {
+        H("SweetAlert2 requires document to initialize");
+        return;
+      }
+      const n = document.createElement("div");
+      n.className = i.container, t && a(n, i["no-transition"]), m(n, qt);
+      const o = Rt(e.target);
+      o.appendChild(n), Ut(e), Nt(o), Wt();
+    }, Ce = (e, t) => {
+      e instanceof HTMLElement ? t.appendChild(e) : typeof e == "object" ? Kt(e, t) : e && m(t, e);
+    }, Kt = (e, t) => {
+      e.jquery ? _t(t, e) : m(t, e.toString());
+    }, _t = (e, t) => {
+      if (e.textContent = "", 0 in t)
+        for (let n = 0; n in t; n++)
+          e.appendChild(t[n].cloneNode(!0));
+      else
+        e.appendChild(t.cloneNode(!0));
+    }, X = (() => {
+      if (ze())
+        return !1;
+      const e = document.createElement("div"), t = {
+        WebkitAnimation: "webkitAnimationEnd",
+        // Chrome, Safari and Opera
+        animation: "animationend"
+        // Standard syntax
+      };
+      for (const n in t)
+        if (Object.prototype.hasOwnProperty.call(t, n) && typeof e.style[n] < "u")
+          return t[n];
+      return !1;
+    })(), Yt = () => {
+      const e = document.createElement("div");
+      e.className = i["scrollbar-measure"], document.body.appendChild(e);
+      const t = e.getBoundingClientRect().width - e.clientWidth;
+      return document.body.removeChild(e), t;
+    }, Zt = (e, t) => {
+      const n = J(), o = F();
+      !t.showConfirmButton && !t.showDenyButton && !t.showCancelButton ? b(n) : p(n), A(n, t, "actions"), $t(n, o, t), m(o, t.loaderHtml), A(o, t, "loader");
+    };
+    function $t(e, t, n) {
+      const o = k(), s = I(), r = j();
+      ve(o, "confirm", n), ve(s, "deny", n), ve(r, "cancel", n), Jt(o, s, r, n), n.reverseButtons && (n.toast ? (e.insertBefore(r, o), e.insertBefore(s, o)) : (e.insertBefore(r, t), e.insertBefore(s, t), e.insertBefore(o, t)));
+    }
+    function Jt(e, t, n, o) {
+      if (!o.buttonsStyling)
+        return E([e, t, n], i.styled);
+      a([e, t, n], i.styled), o.confirmButtonColor && (e.style.backgroundColor = o.confirmButtonColor, a(e, i["default-outline"])), o.denyButtonColor && (t.style.backgroundColor = o.denyButtonColor, a(t, i["default-outline"])), o.cancelButtonColor && (n.style.backgroundColor = o.cancelButtonColor, a(n, i["default-outline"]));
+    }
+    function ve(e, t, n) {
+      ce(e, n["show".concat(B(t), "Button")], "inline-block"), m(e, n["".concat(t, "ButtonText")]), e.setAttribute("aria-label", n["".concat(t, "ButtonAriaLabel")]), e.className = i[t], A(e, n, "".concat(t, "Button")), a(e, n["".concat(t, "ButtonClass")]);
+    }
+    function Gt(e, t) {
+      typeof t == "string" ? e.style.background = t : t || a([document.documentElement, document.body], i["no-backdrop"]);
+    }
+    function Xt(e, t) {
+      t in i ? a(e, i[t]) : (d('The "position" parameter is not valid, defaulting to "center"'), a(e, i.center));
+    }
+    function Qt(e, t) {
+      if (t && typeof t == "string") {
+        const n = "grow-".concat(t);
+        n in i && a(e, i[n]);
+      }
+    }
+    const en = (e, t) => {
+      const n = h();
+      n && (Gt(n, t.backdrop), Xt(n, t.position), Qt(n, t.grow), A(n, t, "container"));
+    };
+    var l = {
+      awaitingPromise: /* @__PURE__ */ new WeakMap(),
+      promise: /* @__PURE__ */ new WeakMap(),
+      innerParams: /* @__PURE__ */ new WeakMap(),
+      domCache: /* @__PURE__ */ new WeakMap()
+    };
+    const tn = ["input", "file", "range", "select", "radio", "checkbox", "textarea"], nn = (e, t) => {
+      const n = u(), o = l.innerParams.get(e), s = !o || t.input !== o.input;
+      tn.forEach((r) => {
+        const f = i[r], v = L(n, f);
+        rn(r, t.inputAttributes), v.className = f, s && b(v);
+      }), t.input && (s && on(t), cn(t));
+    }, on = (e) => {
+      if (!w[e.input])
+        return H('Unexpected type of input! Expected "text", "email", "password", "number", "tel", "select", "radio", "checkbox", "textarea", "file" or "url", got "'.concat(e.input, '"'));
+      const t = Ke(e.input), n = w[e.input](t, e);
+      p(n), setTimeout(() => {
+        Fe(n);
+      });
+    }, sn = (e) => {
+      for (let t = 0; t < e.attributes.length; t++) {
+        const n = e.attributes[t].name;
+        ["type", "value", "style"].includes(n) || e.removeAttribute(n);
+      }
+    }, rn = (e, t) => {
+      const n = ye(u(), e);
+      if (n) {
+        sn(n);
+        for (const o in t)
+          n.setAttribute(o, t[o]);
+      }
+    }, cn = (e) => {
+      const t = Ke(e.input);
+      e.customClass && a(t, e.customClass.input);
+    }, Pe = (e, t) => {
+      (!e.placeholder || t.inputPlaceholder) && (e.placeholder = t.inputPlaceholder);
+    }, Q = (e, t, n) => {
+      if (n.inputLabel) {
+        e.id = i.input;
+        const o = document.createElement("label"), s = i["input-label"];
+        o.setAttribute("for", e.id), o.className = s, a(o, n.customClass.inputLabel), o.innerText = n.inputLabel, t.insertAdjacentElement("beforebegin", o);
+      }
+    }, Ke = (e) => {
+      const t = i[e] ? i[e] : i.input;
+      return L(u(), t);
+    }, w = {};
+    w.text = w.email = w.password = w.number = w.tel = w.url = (e, t) => (typeof t.inputValue == "string" || typeof t.inputValue == "number" ? e.value = t.inputValue : pe(t.inputValue) || d('Unexpected type of inputValue! Expected "string", "number" or "Promise", got "'.concat(typeof t.inputValue, '"')), Q(e, e, t), Pe(e, t), e.type = t.input, e), w.file = (e, t) => (Q(e, e, t), Pe(e, t), e), w.range = (e, t) => {
+      const n = e.querySelector("input"), o = e.querySelector("output");
+      return n.value = t.inputValue, n.type = t.input, o.value = t.inputValue, Q(n, e, t), e;
+    }, w.select = (e, t) => {
+      if (e.textContent = "", t.inputPlaceholder) {
+        const n = document.createElement("option");
+        m(n, t.inputPlaceholder), n.value = "", n.disabled = !0, n.selected = !0, e.appendChild(n);
+      }
+      return Q(e, e, t), e;
+    }, w.radio = (e) => (e.textContent = "", e), w.checkbox = (e, t) => {
+      const n = ye(u(), "checkbox");
+      n.value = "1", n.id = i.checkbox, n.checked = !!t.inputValue;
+      const o = e.querySelector("span");
+      return m(o, t.inputPlaceholder), e;
+    }, w.textarea = (e, t) => {
+      e.value = t.inputValue, Pe(e, t), Q(e, e, t);
+      const n = (o) => parseInt(window.getComputedStyle(o).marginLeft) + parseInt(window.getComputedStyle(o).marginRight);
+      return setTimeout(() => {
+        if ("MutationObserver" in window) {
+          const o = parseInt(window.getComputedStyle(u()).width), s = () => {
+            const r = e.offsetWidth + n(e);
+            r > o ? u().style.width = "".concat(r, "px") : u().style.width = null;
+          };
+          new MutationObserver(s).observe(e, {
+            attributes: !0,
+            attributeFilter: ["style"]
+          });
+        }
+      }), e;
+    };
+    const ln = (e, t) => {
+      const n = oe();
+      A(n, t, "htmlContainer"), t.html ? (Ce(t.html, n), p(n, "block")) : t.text ? (n.textContent = t.text, p(n, "block")) : b(n), nn(e, t);
+    }, an = (e, t) => {
+      const n = qe();
+      ce(n, t.footer), t.footer && Ce(t.footer, n), A(n, t, "footer");
+    }, un = (e, t) => {
+      const n = he();
+      m(n, t.closeButtonHtml), A(n, t, "closeButton"), ce(n, t.showCloseButton), n.setAttribute("aria-label", t.closeButtonAriaLabel);
+    }, dn = (e, t) => {
+      const n = l.innerParams.get(e), o = $();
+      if (n && t.icon === n.icon) {
+        Ye(o, t), _e(o, t);
+        return;
+      }
+      if (!t.icon && !t.iconHtml)
+        return b(o);
+      if (t.icon && Object.keys(Y).indexOf(t.icon) === -1)
+        return H('Unknown icon! Expected "success", "error", "warning", "info" or "question", got "'.concat(t.icon, '"')), b(o);
+      p(o), Ye(o, t), _e(o, t), a(o, t.showClass.icon);
+    }, _e = (e, t) => {
+      for (const n in Y)
+        t.icon !== n && E(e, Y[n]);
+      a(e, Y[t.icon]), hn(e, t), fn(), A(e, t, "icon");
+    }, fn = () => {
+      const e = u(), t = window.getComputedStyle(e).getPropertyValue("background-color"), n = e.querySelectorAll("[class^=swal2-success-circular-line], .swal2-success-fix");
+      for (let o = 0; o < n.length; o++)
+        n[o].style.backgroundColor = t;
+    }, pn = `
+  <div class="swal2-success-circular-line-left"></div>
+  <span class="swal2-success-line-tip"></span> <span class="swal2-success-line-long"></span>
+  <div class="swal2-success-ring"></div> <div class="swal2-success-fix"></div>
+  <div class="swal2-success-circular-line-right"></div>
+`, gn = `
+  <span class="swal2-x-mark">
+    <span class="swal2-x-mark-line-left"></span>
+    <span class="swal2-x-mark-line-right"></span>
+  </span>
+`, Ye = (e, t) => {
+      e.textContent = "", t.iconHtml ? m(e, Ze(t.iconHtml)) : t.icon === "success" ? m(e, pn) : t.icon === "error" ? m(e, gn) : m(e, Ze({
+        question: "?",
+        warning: "!",
+        info: "i"
+      }[t.icon]));
+    }, hn = (e, t) => {
+      if (t.iconColor) {
+        e.style.color = t.iconColor, e.style.borderColor = t.iconColor;
+        for (const n of [".swal2-success-line-tip", ".swal2-success-line-long", ".swal2-x-mark-line-left", ".swal2-x-mark-line-right"])
+          Re(e, n, "backgroundColor", t.iconColor);
+        Re(e, ".swal2-success-ring", "borderColor", t.iconColor);
+      }
+    }, Ze = (e) => '<div class="'.concat(i["icon-content"], '">').concat(e, "</div>"), mn = (e, t) => {
+      const n = De();
+      if (!t.imageUrl)
+        return b(n);
+      p(n, ""), n.setAttribute("src", t.imageUrl), n.setAttribute("alt", t.imageAlt), G(n, "width", t.imageWidth), G(n, "height", t.imageHeight), n.className = i.image, A(n, t, "image");
+    }, bn = (e) => {
+      const t = document.createElement("li");
+      return a(t, i["progress-step"]), m(t, e), t;
+    }, yn = (e) => {
+      const t = document.createElement("li");
+      return a(t, i["progress-step-line"]), e.progressStepsDistance && (t.style.width = e.progressStepsDistance), t;
+    }, wn = (e, t) => {
+      const n = Ve();
+      if (!t.progressSteps || t.progressSteps.length === 0)
+        return b(n);
+      p(n), n.textContent = "", t.currentProgressStep >= t.progressSteps.length && d("Invalid currentProgressStep parameter, it should be less than progressSteps.length (currentProgressStep like JS arrays starts from 0)"), t.progressSteps.forEach((o, s) => {
+        const r = bn(o);
+        if (n.appendChild(r), s === t.currentProgressStep && a(r, i["active-progress-step"]), s !== t.progressSteps.length - 1) {
+          const f = yn(t);
+          n.appendChild(f);
+        }
+      });
+    }, Cn = (e, t) => {
+      const n = je();
+      ce(n, t.title || t.titleText, "block"), t.title && Ce(t.title, n), t.titleText && (n.innerText = t.titleText), A(n, t, "title");
+    }, vn = (e, t) => {
+      const n = h(), o = u();
+      t.toast ? (G(n, "width", t.width), o.style.width = "100%", o.insertBefore(F(), $())) : G(o, "width", t.width), G(o, "padding", t.padding), t.color && (o.style.color = t.color), t.background && (o.style.background = t.background), b(ie()), Pn(o, t);
+    }, Pn = (e, t) => {
+      e.className = "".concat(i.popup, " ").concat(C(e) ? t.showClass.popup : ""), t.toast ? (a([document.documentElement, document.body], i["toast-shown"]), a(e, i.toast)) : a(e, i.modal), A(e, t, "popup"), typeof t.customClass == "string" && a(e, t.customClass), t.icon && a(e, i["icon-".concat(t.icon)]);
+    }, $e = (e, t) => {
+      vn(e, t), en(e, t), wn(e, t), dn(e, t), mn(e, t), Cn(e, t), un(e, t), ln(e, t), Zt(e, t), an(e, t), typeof t.didRender == "function" && t.didRender(u());
+    }, R = Object.freeze({
+      cancel: "cancel",
+      backdrop: "backdrop",
+      close: "close",
+      esc: "esc",
+      timer: "timer"
+    }), An = () => {
+      g(document.body.children).forEach((t) => {
+        t === h() || t.contains(h()) || (t.hasAttribute("aria-hidden") && t.setAttribute("data-previous-aria-hidden", t.getAttribute("aria-hidden")), t.setAttribute("aria-hidden", "true"));
+      });
+    }, Je = () => {
+      g(document.body.children).forEach((t) => {
+        t.hasAttribute("data-previous-aria-hidden") ? (t.setAttribute("aria-hidden", t.getAttribute("data-previous-aria-hidden")), t.removeAttribute("data-previous-aria-hidden")) : t.removeAttribute("aria-hidden");
+      });
+    }, Ge = ["swal-title", "swal-html", "swal-footer"], kn = (e) => {
+      const t = typeof e.template == "string" ? document.querySelector(e.template) : e.template;
+      if (!t)
+        return {};
+      const n = t.content;
+      return In(n), Object.assign(Bn(n), En(n), Sn(n), xn(n), Tn(n), On(n, Ge));
+    }, Bn = (e) => {
+      const t = {};
+      return g(e.querySelectorAll("swal-param")).forEach((n) => {
+        V(n, ["name", "value"]);
+        const o = n.getAttribute("name"), s = n.getAttribute("value");
+        typeof q[o] == "boolean" && s === "false" && (t[o] = !1), typeof q[o] == "object" && (t[o] = JSON.parse(s));
+      }), t;
+    }, En = (e) => {
+      const t = {};
+      return g(e.querySelectorAll("swal-button")).forEach((n) => {
+        V(n, ["type", "color", "aria-label"]);
+        const o = n.getAttribute("type");
+        t["".concat(o, "ButtonText")] = n.innerHTML, t["show".concat(B(o), "Button")] = !0, n.hasAttribute("color") && (t["".concat(o, "ButtonColor")] = n.getAttribute("color")), n.hasAttribute("aria-label") && (t["".concat(o, "ButtonAriaLabel")] = n.getAttribute("aria-label"));
+      }), t;
+    }, Sn = (e) => {
+      const t = {}, n = e.querySelector("swal-image");
+      return n && (V(n, ["src", "width", "height", "alt"]), n.hasAttribute("src") && (t.imageUrl = n.getAttribute("src")), n.hasAttribute("width") && (t.imageWidth = n.getAttribute("width")), n.hasAttribute("height") && (t.imageHeight = n.getAttribute("height")), n.hasAttribute("alt") && (t.imageAlt = n.getAttribute("alt"))), t;
+    }, xn = (e) => {
+      const t = {}, n = e.querySelector("swal-icon");
+      return n && (V(n, ["type", "color"]), n.hasAttribute("type") && (t.icon = n.getAttribute("type")), n.hasAttribute("color") && (t.iconColor = n.getAttribute("color")), t.iconHtml = n.innerHTML), t;
+    }, Tn = (e) => {
+      const t = {}, n = e.querySelector("swal-input");
+      n && (V(n, ["type", "label", "placeholder", "value"]), t.input = n.getAttribute("type") || "text", n.hasAttribute("label") && (t.inputLabel = n.getAttribute("label")), n.hasAttribute("placeholder") && (t.inputPlaceholder = n.getAttribute("placeholder")), n.hasAttribute("value") && (t.inputValue = n.getAttribute("value")));
+      const o = e.querySelectorAll("swal-input-option");
+      return o.length && (t.inputOptions = {}, g(o).forEach((s) => {
+        V(s, ["value"]);
+        const r = s.getAttribute("value"), f = s.innerHTML;
+        t.inputOptions[r] = f;
+      })), t;
+    }, On = (e, t) => {
+      const n = {};
+      for (const o in t) {
+        const s = t[o], r = e.querySelector(s);
+        r && (V(r, []), n[s.replace(/^swal-/, "")] = r.innerHTML.trim());
+      }
+      return n;
+    }, In = (e) => {
+      const t = Ge.concat(["swal-param", "swal-button", "swal-image", "swal-icon", "swal-input", "swal-input-option"]);
+      g(e.children).forEach((n) => {
+        const o = n.tagName.toLowerCase();
+        t.indexOf(o) === -1 && d("Unrecognized element <".concat(o, ">"));
+      });
+    }, V = (e, t) => {
+      g(e.attributes).forEach((n) => {
+        t.indexOf(n.name) === -1 && d(['Unrecognized attribute "'.concat(n.name, '" on <').concat(e.tagName.toLowerCase(), ">."), "".concat(t.length ? "Allowed attributes are: ".concat(t.join(", ")) : "To set the value, use HTML within the element.")]);
+      });
+    };
+    var Xe = {
+      email: (e, t) => /^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9-]{2,24}$/.test(e) ? Promise.resolve() : Promise.resolve(t || "Invalid email address"),
+      url: (e, t) => /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-z]{2,63}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)$/.test(e) ? Promise.resolve() : Promise.resolve(t || "Invalid URL")
+    };
+    function Ln(e) {
+      e.inputValidator || Object.keys(Xe).forEach((t) => {
+        e.input === t && (e.inputValidator = Xe[t]);
+      });
+    }
+    function Mn(e) {
+      (!e.target || typeof e.target == "string" && !document.querySelector(e.target) || typeof e.target != "string" && !e.target.appendChild) && (d('Target parameter is not valid, defaulting to "body"'), e.target = "body");
+    }
+    function Hn(e) {
+      Ln(e), e.showLoaderOnConfirm && !e.preConfirm && d(`showLoaderOnConfirm is set to true, but preConfirm is not defined.
+showLoaderOnConfirm should be used together with preConfirm, see usage example:
+https://sweetalert2.github.io/#ajax-request`), Mn(e), typeof e.title == "string" && (e.title = e.title.split(`
+`).join("<br />")), zt(e);
+    }
+    class jn {
+      constructor(t, n) {
+        this.callback = t, this.remaining = n, this.running = !1, this.start();
+      }
+      start() {
+        return this.running || (this.running = !0, this.started = /* @__PURE__ */ new Date(), this.id = setTimeout(this.callback, this.remaining)), this.remaining;
+      }
+      stop() {
+        return this.running && (this.running = !1, clearTimeout(this.id), this.remaining -= (/* @__PURE__ */ new Date()).getTime() - this.started.getTime()), this.remaining;
+      }
+      increase(t) {
+        const n = this.running;
+        return n && this.stop(), this.remaining += t, n && this.start(), this.remaining;
+      }
+      getTimerLeft() {
+        return this.running && (this.stop(), this.start()), this.remaining;
+      }
+      isRunning() {
+        return this.running;
+      }
+    }
+    const Dn = () => {
+      W.previousBodyPadding === null && document.body.scrollHeight > window.innerHeight && (W.previousBodyPadding = parseInt(window.getComputedStyle(document.body).getPropertyValue("padding-right")), document.body.style.paddingRight = "".concat(W.previousBodyPadding + Yt(), "px"));
+    }, Vn = () => {
+      W.previousBodyPadding !== null && (document.body.style.paddingRight = "".concat(W.previousBodyPadding, "px"), W.previousBodyPadding = null);
+    }, qn = () => {
+      if (// @ts-ignore
+      (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) && !S(document.body, i.iosfix)) {
+        const t = document.body.scrollTop;
+        document.body.style.top = "".concat(t * -1, "px"), a(document.body, i.iosfix), Wn(), Fn();
+      }
+    }, Fn = () => {
+      const e = navigator.userAgent, t = !!e.match(/iPad/i) || !!e.match(/iPhone/i), n = !!e.match(/WebKit/i);
+      t && n && !e.match(/CriOS/i) && u().scrollHeight > window.innerHeight - 44 && (h().style.paddingBottom = "".concat(44, "px"));
+    }, Wn = () => {
+      const e = h();
+      let t;
+      e.ontouchstart = (n) => {
+        t = Rn(n);
+      }, e.ontouchmove = (n) => {
+        t && (n.preventDefault(), n.stopPropagation());
+      };
+    }, Rn = (e) => {
+      const t = e.target, n = h();
+      return Un(e) || Nn(e) ? !1 : t === n || !Ue(n) && t.tagName !== "INPUT" && // #1603
+      t.tagName !== "TEXTAREA" && // #2266
+      !(Ue(oe()) && // #1944
+      oe().contains(t));
+    }, Un = (e) => e.touches && e.touches.length && e.touches[0].touchType === "stylus", Nn = (e) => e.touches && e.touches.length > 1, zn = () => {
+      if (S(document.body, i.iosfix)) {
+        const e = parseInt(document.body.style.top, 10);
+        E(document.body, i.iosfix), document.body.style.top = "", document.body.scrollTop = e * -1;
+      }
+    }, Qe = 10, Kn = (e) => {
+      const t = h(), n = u();
+      typeof e.willOpen == "function" && e.willOpen(n);
+      const s = window.getComputedStyle(document.body).overflowY;
+      Zn(t, n, e), setTimeout(() => {
+        _n(t, n);
+      }, Qe), be() && (Yn(t, e.scrollbarPadding, s), An()), !re() && !c.previousActiveElement && (c.previousActiveElement = document.activeElement), typeof e.didOpen == "function" && setTimeout(() => e.didOpen(n)), E(t, i["no-transition"]);
+    }, et = (e) => {
+      const t = u();
+      if (e.target !== t)
+        return;
+      const n = h();
+      t.removeEventListener(X, et), n.style.overflowY = "auto";
+    }, _n = (e, t) => {
+      X && Ne(t) ? (e.style.overflowY = "hidden", t.addEventListener(X, et)) : e.style.overflowY = "auto";
+    }, Yn = (e, t, n) => {
+      qn(), t && n !== "hidden" && Dn(), setTimeout(() => {
+        e.scrollTop = 0;
+      });
+    }, Zn = (e, t, n) => {
+      a(e, n.showClass.backdrop), t.style.setProperty("opacity", "0", "important"), p(t, "grid"), setTimeout(() => {
+        a(t, n.showClass.popup), t.style.removeProperty("opacity");
+      }, Qe), a([document.documentElement, document.body], i.shown), n.heightAuto && n.backdrop && !n.toast && a([document.documentElement, document.body], i["height-auto"]);
+    }, U = (e) => {
+      let t = u();
+      t || new ue(), t = u();
+      const n = F();
+      re() ? b($()) : $n(t, e), p(n), t.setAttribute("data-loading", !0), t.setAttribute("aria-busy", !0), t.focus();
+    }, $n = (e, t) => {
+      const n = J(), o = F();
+      !t && C(k()) && (t = k()), p(n), t && (b(t), o.setAttribute("data-button-to-replace", t.className)), o.parentNode.insertBefore(o, t), a([e, n], i.loading);
+    }, Jn = (e, t) => {
+      t.input === "select" || t.input === "radio" ? to(e, t) : ["text", "email", "number", "tel", "textarea"].includes(t.input) && (fe(t.inputValue) || pe(t.inputValue)) && (U(k()), no(e, t));
+    }, Gn = (e, t) => {
+      const n = e.getInput();
+      if (!n)
+        return null;
+      switch (t.input) {
+        case "checkbox":
+          return Xn(n);
+        case "radio":
+          return Qn(n);
+        case "file":
+          return eo(n);
+        default:
+          return t.inputAutoTrim ? n.value.trim() : n.value;
+      }
+    }, Xn = (e) => e.checked ? 1 : 0, Qn = (e) => e.checked ? e.value : null, eo = (e) => e.files.length ? e.getAttribute("multiple") !== null ? e.files : e.files[0] : null, to = (e, t) => {
+      const n = u(), o = (s) => oo[t.input](n, Ae(s), t);
+      fe(t.inputOptions) || pe(t.inputOptions) ? (U(k()), _(t.inputOptions).then((s) => {
+        e.hideLoading(), o(s);
+      })) : typeof t.inputOptions == "object" ? o(t.inputOptions) : H("Unexpected type of inputOptions! Expected object, Map or Promise, got ".concat(typeof t.inputOptions));
+    }, no = (e, t) => {
+      const n = e.getInput();
+      b(n), _(t.inputValue).then((o) => {
+        n.value = t.input === "number" ? parseFloat(o) || 0 : "".concat(o), p(n), n.focus(), e.hideLoading();
+      }).catch((o) => {
+        H("Error in inputValue promise: ".concat(o)), n.value = "", p(n), n.focus(), e.hideLoading();
+      });
+    }, oo = {
+      select: (e, t, n) => {
+        const o = L(e, i.select), s = (r, f, v) => {
+          const y = document.createElement("option");
+          y.value = v, m(y, f), y.selected = tt(v, n.inputValue), r.appendChild(y);
+        };
+        t.forEach((r) => {
+          const f = r[0], v = r[1];
+          if (Array.isArray(v)) {
+            const y = document.createElement("optgroup");
+            y.label = f, y.disabled = !1, o.appendChild(y), v.forEach((z) => s(y, z[1], z[0]));
+          } else
+            s(o, v, f);
+        }), o.focus();
+      },
+      radio: (e, t, n) => {
+        const o = L(e, i.radio);
+        t.forEach((r) => {
+          const f = r[0], v = r[1], y = document.createElement("input"), z = document.createElement("label");
+          y.type = "radio", y.name = i.radio, y.value = f, tt(f, n.inputValue) && (y.checked = !0);
+          const Oe = document.createElement("span");
+          m(Oe, v), Oe.className = i.label, z.appendChild(y), z.appendChild(Oe), o.appendChild(z);
+        });
+        const s = o.querySelectorAll("input");
+        s.length && s[0].focus();
+      }
+    }, Ae = (e) => {
+      const t = [];
+      return typeof Map < "u" && e instanceof Map ? e.forEach((n, o) => {
+        let s = n;
+        typeof s == "object" && (s = Ae(s)), t.push([o, s]);
+      }) : Object.keys(e).forEach((n) => {
+        let o = e[n];
+        typeof o == "object" && (o = Ae(o)), t.push([n, o]);
+      }), t;
+    }, tt = (e, t) => t && t.toString() === e.toString();
+    function nt() {
+      const e = l.innerParams.get(this);
+      if (!e)
+        return;
+      const t = l.domCache.get(this);
+      b(t.loader), re() ? e.icon && p($()) : io(t), E([t.popup, t.actions], i.loading), t.popup.removeAttribute("aria-busy"), t.popup.removeAttribute("data-loading"), t.confirmButton.disabled = !1, t.denyButton.disabled = !1, t.cancelButton.disabled = !1;
+    }
+    const io = (e) => {
+      const t = e.popup.getElementsByClassName(e.loader.getAttribute("data-button-to-replace"));
+      t.length ? p(t[0], "inline-block") : Mt() && b(e.actions);
+    };
+    function so(e) {
+      const t = l.innerParams.get(e || this), n = l.domCache.get(e || this);
+      return n ? ye(n.popup, t.input) : null;
+    }
+    var ee = {
+      swalPromiseResolve: /* @__PURE__ */ new WeakMap(),
+      swalPromiseReject: /* @__PURE__ */ new WeakMap()
+    };
+    function ot(e, t, n, o) {
+      re() ? it(e, o) : (Vt(n).then(() => it(e, o)), c.keydownTarget.removeEventListener("keydown", c.keydownHandler, {
+        capture: c.keydownListenerCapture
+      }), c.keydownHandlerAdded = !1), /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ? (t.setAttribute("style", "display:none !important"), t.removeAttribute("class"), t.innerHTML = "") : t.remove(), be() && (Vn(), zn(), Je()), ro();
+    }
+    function ro() {
+      E([document.documentElement, document.body], [i.shown, i["height-auto"], i["no-backdrop"], i["toast-shown"]]);
+    }
+    function le(e) {
+      e = uo(e);
+      const t = ee.swalPromiseResolve.get(this), n = lo(this);
+      this.isAwaitingPromise() ? e.isDismissed || (te(this), t(e)) : n && t(e);
+    }
+    function co() {
+      return !!l.awaitingPromise.get(this);
+    }
+    const lo = (e) => {
+      const t = u();
+      if (!t)
+        return !1;
+      const n = l.innerParams.get(e);
+      if (!n || S(t, n.hideClass.popup))
+        return !1;
+      E(t, n.showClass.popup), a(t, n.hideClass.popup);
+      const o = h();
+      return E(o, n.showClass.backdrop), a(o, n.hideClass.backdrop), fo(e, t, n), !0;
+    };
+    function ao(e) {
+      const t = ee.swalPromiseReject.get(this);
+      te(this), t && t(e);
+    }
+    const te = (e) => {
+      e.isAwaitingPromise() && (l.awaitingPromise.delete(e), l.innerParams.get(e) || e._destroy());
+    }, uo = (e) => typeof e > "u" ? {
+      isConfirmed: !1,
+      isDenied: !1,
+      isDismissed: !0
+    } : Object.assign({
+      isConfirmed: !1,
+      isDenied: !1,
+      isDismissed: !1
+    }, e), fo = (e, t, n) => {
+      const o = h(), s = X && Ne(t);
+      typeof n.willClose == "function" && n.willClose(t), s ? po(e, t, o, n.returnFocus, n.didClose) : ot(e, o, n.returnFocus, n.didClose);
+    }, po = (e, t, n, o, s) => {
+      c.swalCloseEventFinishedCallback = ot.bind(null, e, n, o, s), t.addEventListener(X, function(r) {
+        r.target === t && (c.swalCloseEventFinishedCallback(), delete c.swalCloseEventFinishedCallback);
+      });
+    }, it = (e, t) => {
+      setTimeout(() => {
+        typeof t == "function" && t.bind(e.params)(), e._destroy();
+      });
+    };
+    function st(e, t, n) {
+      const o = l.domCache.get(e);
+      t.forEach((s) => {
+        o[s].disabled = n;
+      });
+    }
+    function rt(e, t) {
+      if (!e)
+        return !1;
+      if (e.type === "radio") {
+        const o = e.parentNode.parentNode.querySelectorAll("input");
+        for (let s = 0; s < o.length; s++)
+          o[s].disabled = t;
+      } else
+        e.disabled = t;
+    }
+    function go() {
+      st(this, ["confirmButton", "denyButton", "cancelButton"], !1);
+    }
+    function ho() {
+      st(this, ["confirmButton", "denyButton", "cancelButton"], !0);
+    }
+    function mo() {
+      return rt(this.getInput(), !1);
+    }
+    function bo() {
+      return rt(this.getInput(), !0);
+    }
+    function yo(e) {
+      const t = l.domCache.get(this), n = l.innerParams.get(this);
+      m(t.validationMessage, e), t.validationMessage.className = i["validation-message"], n.customClass && n.customClass.validationMessage && a(t.validationMessage, n.customClass.validationMessage), p(t.validationMessage);
+      const o = this.getInput();
+      o && (o.setAttribute("aria-invalid", !0), o.setAttribute("aria-describedby", i["validation-message"]), Fe(o), a(o, i.inputerror));
+    }
+    function wo() {
+      const e = l.domCache.get(this);
+      e.validationMessage && b(e.validationMessage);
+      const t = this.getInput();
+      t && (t.removeAttribute("aria-invalid"), t.removeAttribute("aria-describedby"), E(t, i.inputerror));
+    }
+    function Co() {
+      return l.domCache.get(this).progressSteps;
+    }
+    function vo(e) {
+      const t = u(), n = l.innerParams.get(this);
+      if (!t || S(t, n.hideClass.popup))
+        return d("You're trying to update the closed or closing popup, that won't work. Use the update() method in preConfirm parameter or show a new popup.");
+      const o = Po(e), s = Object.assign({}, n, o);
+      $e(this, s), l.innerParams.set(this, s), Object.defineProperties(this, {
+        params: {
+          value: Object.assign({}, this.params, e),
+          writable: !1,
+          enumerable: !0
+        }
+      });
+    }
+    const Po = (e) => {
+      const t = {};
+      return Object.keys(e).forEach((n) => {
+        Me(n) ? t[n] = e[n] : d('Invalid parameter to update: "'.concat(n, `". Updatable params are listed here: https://github.com/sweetalert2/sweetalert2/blob/master/src/utils/params.js
+
+If you think this parameter should be updatable, request it here: https://github.com/sweetalert2/sweetalert2/issues/new?template=02_feature_request.md`));
+      }), t;
+    };
+    function Ao() {
+      const e = l.domCache.get(this), t = l.innerParams.get(this);
+      if (!t) {
+        ct(this);
+        return;
+      }
+      e.popup && c.swalCloseEventFinishedCallback && (c.swalCloseEventFinishedCallback(), delete c.swalCloseEventFinishedCallback), c.deferDisposalTimer && (clearTimeout(c.deferDisposalTimer), delete c.deferDisposalTimer), typeof t.didDestroy == "function" && t.didDestroy(), ko(this);
+    }
+    const ko = (e) => {
+      ct(e), delete e.params, delete c.keydownHandler, delete c.keydownTarget, delete c.currentInstance;
+    }, ct = (e) => {
+      e.isAwaitingPromise() ? (ke(l, e), l.awaitingPromise.set(e, !0)) : (ke(ee, e), ke(l, e));
+    }, ke = (e, t) => {
+      for (const n in e)
+        e[n].delete(t);
+    };
+    var lt = /* @__PURE__ */ Object.freeze({
+      hideLoading: nt,
+      disableLoading: nt,
+      getInput: so,
+      close: le,
+      isAwaitingPromise: co,
+      rejectPromise: ao,
+      handleAwaitingPromise: te,
+      closePopup: le,
+      closeModal: le,
+      closeToast: le,
+      enableButtons: go,
+      disableButtons: ho,
+      enableInput: mo,
+      disableInput: bo,
+      showValidationMessage: yo,
+      resetValidationMessage: wo,
+      getProgressSteps: Co,
+      update: vo,
+      _destroy: Ao
+    });
+    const Bo = (e) => {
+      const t = l.innerParams.get(e);
+      e.disableButtons(), t.input ? at(e, "confirm") : Ee(e, !0);
+    }, Eo = (e) => {
+      const t = l.innerParams.get(e);
+      e.disableButtons(), t.returnInputValueOnDeny ? at(e, "deny") : Be(e, !1);
+    }, So = (e, t) => {
+      e.disableButtons(), t(R.cancel);
+    }, at = (e, t) => {
+      const n = l.innerParams.get(e);
+      if (!n.input)
+        return H('The "input" parameter is needed to be set when using returnInputValueOn'.concat(B(t)));
+      const o = Gn(e, n);
+      n.inputValidator ? xo(e, o, t) : e.getInput().checkValidity() ? t === "deny" ? Be(e, o) : Ee(e, o) : (e.enableButtons(), e.showValidationMessage(n.validationMessage));
+    }, xo = (e, t, n) => {
+      const o = l.innerParams.get(e);
+      e.disableInput(), Promise.resolve().then(() => _(o.inputValidator(t, o.validationMessage))).then((r) => {
+        e.enableButtons(), e.enableInput(), r ? e.showValidationMessage(r) : n === "deny" ? Be(e, t) : Ee(e, t);
+      });
+    }, Be = (e, t) => {
+      const n = l.innerParams.get(e || void 0);
+      n.showLoaderOnDeny && U(I()), n.preDeny ? (l.awaitingPromise.set(e || void 0, !0), Promise.resolve().then(() => _(n.preDeny(t, n.validationMessage))).then((s) => {
+        s === !1 ? (e.hideLoading(), te(e)) : e.closePopup({
+          isDenied: !0,
+          value: typeof s > "u" ? t : s
+        });
+      }).catch((s) => dt(e || void 0, s))) : e.closePopup({
+        isDenied: !0,
+        value: t
+      });
+    }, ut = (e, t) => {
+      e.closePopup({
+        isConfirmed: !0,
+        value: t
+      });
+    }, dt = (e, t) => {
+      e.rejectPromise(t);
+    }, Ee = (e, t) => {
+      const n = l.innerParams.get(e || void 0);
+      n.showLoaderOnConfirm && U(), n.preConfirm ? (e.resetValidationMessage(), l.awaitingPromise.set(e || void 0, !0), Promise.resolve().then(() => _(n.preConfirm(t, n.validationMessage))).then((s) => {
+        C(ie()) || s === !1 ? (e.hideLoading(), te(e)) : ut(e, typeof s > "u" ? t : s);
+      }).catch((s) => dt(e || void 0, s))) : ut(e, t);
+    }, To = (e, t, n) => {
+      l.innerParams.get(e).toast ? Oo(e, t, n) : (Lo(t), Mo(t), Ho(e, t, n));
+    }, Oo = (e, t, n) => {
+      t.popup.onclick = () => {
+        const o = l.innerParams.get(e);
+        o && (Io(o) || o.timer || o.input) || n(R.close);
+      };
+    }, Io = (e) => e.showConfirmButton || e.showDenyButton || e.showCancelButton || e.showCloseButton;
+    let ae = !1;
+    const Lo = (e) => {
+      e.popup.onmousedown = () => {
+        e.container.onmouseup = function(t) {
+          e.container.onmouseup = void 0, t.target === e.container && (ae = !0);
+        };
+      };
+    }, Mo = (e) => {
+      e.container.onmousedown = () => {
+        e.popup.onmouseup = function(t) {
+          e.popup.onmouseup = void 0, (t.target === e.popup || e.popup.contains(t.target)) && (ae = !0);
+        };
+      };
+    }, Ho = (e, t, n) => {
+      t.container.onclick = (o) => {
+        const s = l.innerParams.get(e);
+        if (ae) {
+          ae = !1;
+          return;
+        }
+        o.target === t.container && ne(s.allowOutsideClick) && n(R.backdrop);
+      };
+    }, jo = () => C(u()), ft = () => k() && k().click(), Do = () => I() && I().click(), Vo = () => j() && j().click(), qo = (e, t, n, o) => {
+      t.keydownTarget && t.keydownHandlerAdded && (t.keydownTarget.removeEventListener("keydown", t.keydownHandler, {
+        capture: t.keydownListenerCapture
+      }), t.keydownHandlerAdded = !1), n.toast || (t.keydownHandler = (s) => Wo(e, s, o), t.keydownTarget = n.keydownListenerCapture ? window : u(), t.keydownListenerCapture = n.keydownListenerCapture, t.keydownTarget.addEventListener("keydown", t.keydownHandler, {
+        capture: t.keydownListenerCapture
+      }), t.keydownHandlerAdded = !0);
+    }, Se = (e, t, n) => {
+      const o = me();
+      if (o.length)
+        return t = t + n, t === o.length ? t = 0 : t === -1 && (t = o.length - 1), o[t].focus();
+      u().focus();
+    }, pt = ["ArrowRight", "ArrowDown"], Fo = ["ArrowLeft", "ArrowUp"], Wo = (e, t, n) => {
+      const o = l.innerParams.get(e);
+      o && (t.isComposing || t.keyCode === 229 || (o.stopKeydownPropagation && t.stopPropagation(), t.key === "Enter" ? Ro(e, t, o) : t.key === "Tab" ? Uo(t, o) : [...pt, ...Fo].includes(t.key) ? No(t.key) : t.key === "Escape" && zo(t, o, n)));
+    }, Ro = (e, t, n) => {
+      if (ne(n.allowEnterKey) && t.target && e.getInput() && t.target.outerHTML === e.getInput().outerHTML) {
+        if (["textarea", "file"].includes(n.input))
+          return;
+        ft(), t.preventDefault();
+      }
+    }, Uo = (e, t) => {
+      const n = e.target, o = me();
+      let s = -1;
+      for (let r = 0; r < o.length; r++)
+        if (n === o[r]) {
+          s = r;
+          break;
+        }
+      e.shiftKey ? Se(t, s, -1) : Se(t, s, 1), e.stopPropagation(), e.preventDefault();
+    }, No = (e) => {
+      const t = k(), n = I(), o = j();
+      if (![t, n, o].includes(document.activeElement))
+        return;
+      const s = pt.includes(e) ? "nextElementSibling" : "previousElementSibling";
+      let r = document.activeElement;
+      for (let f = 0; f < J().children.length; f++) {
+        if (r = r[s], !r)
+          return;
+        if (C(r) && r instanceof HTMLButtonElement)
+          break;
+      }
+      r instanceof HTMLButtonElement && r.focus();
+    }, zo = (e, t, n) => {
+      ne(t.allowEscapeKey) && (e.preventDefault(), n(R.esc));
+    }, Ko = (e) => typeof e == "object" && e.jquery, gt = (e) => e instanceof Element || Ko(e), _o = (e) => {
+      const t = {};
+      return typeof e[0] == "object" && !gt(e[0]) ? Object.assign(t, e[0]) : ["title", "html", "icon"].forEach((n, o) => {
+        const s = e[o];
+        typeof s == "string" || gt(s) ? t[n] = s : s !== void 0 && H("Unexpected type of ".concat(n, '! Expected "string" or "Element", got ').concat(typeof s));
+      }), t;
+    };
+    function Yo() {
+      const e = this;
+      for (var t = arguments.length, n = new Array(t), o = 0; o < t; o++)
+        n[o] = arguments[o];
+      return new e(...n);
+    }
+    function Zo(e) {
+      class t extends this {
+        _main(o, s) {
+          return super._main(o, Object.assign({}, e, s));
+        }
+      }
+      return t;
+    }
+    const $o = () => c.timeout && c.timeout.getTimerLeft(), ht = () => {
+      if (c.timeout)
+        return Ht(), c.timeout.stop();
+    }, mt = () => {
+      if (c.timeout) {
+        const e = c.timeout.start();
+        return we(e), e;
+      }
+    }, Jo = () => {
+      const e = c.timeout;
+      return e && (e.running ? ht() : mt());
+    }, Go = (e) => {
+      if (c.timeout) {
+        const t = c.timeout.increase(e);
+        return we(t, !0), t;
+      }
+    }, Xo = () => c.timeout && c.timeout.isRunning();
+    let bt = !1;
+    const xe = {};
+    function Qo() {
+      let e = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : "data-swal-template";
+      xe[e] = this, bt || (document.body.addEventListener("click", ei), bt = !0);
+    }
+    const ei = (e) => {
+      for (let t = e.target; t && t !== document; t = t.parentNode)
+        for (const n in xe) {
+          const o = t.getAttribute(n);
+          if (o) {
+            xe[n].fire({
+              template: o
+            });
+            return;
+          }
+        }
+    };
+    var ti = /* @__PURE__ */ Object.freeze({
+      isValidParameter: Le,
+      isUpdatableParameter: Me,
+      isDeprecatedParameter: ge,
+      argsToParams: _o,
+      isVisible: jo,
+      clickConfirm: ft,
+      clickDeny: Do,
+      clickCancel: Vo,
+      getContainer: h,
+      getPopup: u,
+      getTitle: je,
+      getHtmlContainer: oe,
+      getImage: De,
+      getIcon: $,
+      getInputLabel: Tt,
+      getCloseButton: he,
+      getActions: J,
+      getConfirmButton: k,
+      getDenyButton: I,
+      getCancelButton: j,
+      getLoader: F,
+      getFooter: qe,
+      getTimerProgressBar: se,
+      getFocusableElements: me,
+      getValidationMessage: ie,
+      isLoading: It,
+      fire: Yo,
+      mixin: Zo,
+      showLoading: U,
+      enableLoading: U,
+      getTimerLeft: $o,
+      stopTimer: ht,
+      resumeTimer: mt,
+      toggleTimer: Jo,
+      increaseTimer: Go,
+      isTimerRunning: Xo,
+      bindClickHandler: Qo
+    });
+    let Te;
+    class N {
+      constructor() {
+        if (typeof window > "u")
+          return;
+        Te = this;
+        for (var t = arguments.length, n = new Array(t), o = 0; o < t; o++)
+          n[o] = arguments[o];
+        const s = Object.freeze(this.constructor.argsToParams(n));
+        Object.defineProperties(this, {
+          params: {
+            value: s,
+            writable: !1,
+            enumerable: !0,
+            configurable: !0
+          }
+        });
+        const r = this._main(this.params);
+        l.promise.set(this, r);
+      }
+      _main(t) {
+        let n = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
+        St(Object.assign({}, n, t)), c.currentInstance && (c.currentInstance._destroy(), be() && Je()), c.currentInstance = this;
+        const o = oi(t, n);
+        Hn(o), Object.freeze(o), c.timeout && (c.timeout.stop(), delete c.timeout), clearTimeout(c.restoreFocusTimeout);
+        const s = ii(this);
+        return $e(this, o), l.innerParams.set(this, o), ni(this, s, o);
+      }
+      // `catch` cannot be the name of a module export, so we define our thenable methods here instead
+      then(t) {
+        return l.promise.get(this).then(t);
+      }
+      finally(t) {
+        return l.promise.get(this).finally(t);
+      }
+    }
+    const ni = (e, t, n) => new Promise((o, s) => {
+      const r = (f) => {
+        e.closePopup({
+          isDismissed: !0,
+          dismiss: f
+        });
+      };
+      ee.swalPromiseResolve.set(e, o), ee.swalPromiseReject.set(e, s), t.confirmButton.onclick = () => Bo(e), t.denyButton.onclick = () => Eo(e), t.cancelButton.onclick = () => So(e, r), t.closeButton.onclick = () => r(R.close), To(e, t, r), qo(e, c, n, r), Jn(e, n), Kn(n), si(c, n, r), ri(t, n), setTimeout(() => {
+        t.container.scrollTop = 0;
+      });
+    }), oi = (e, t) => {
+      const n = kn(e), o = Object.assign({}, q, t, n, e);
+      return o.showClass = Object.assign({}, q.showClass, o.showClass), o.hideClass = Object.assign({}, q.hideClass, o.hideClass), o;
+    }, ii = (e) => {
+      const t = {
+        popup: u(),
+        container: h(),
+        actions: J(),
+        confirmButton: k(),
+        denyButton: I(),
+        cancelButton: j(),
+        loader: F(),
+        closeButton: he(),
+        validationMessage: ie(),
+        progressSteps: Ve()
+      };
+      return l.domCache.set(e, t), t;
+    }, si = (e, t, n) => {
+      const o = se();
+      b(o), t.timer && (e.timeout = new jn(() => {
+        n("timer"), delete e.timeout;
+      }, t.timer), t.timerProgressBar && (p(o), A(o, t, "timerProgressBar"), setTimeout(() => {
+        e.timeout && e.timeout.running && we(t.timer);
+      })));
+    }, ri = (e, t) => {
+      if (!t.toast) {
+        if (!ne(t.allowEnterKey))
+          return li();
+        ci(e, t) || Se(t, -1, 1);
+      }
+    }, ci = (e, t) => t.focusDeny && C(e.denyButton) ? (e.denyButton.focus(), !0) : t.focusCancel && C(e.cancelButton) ? (e.cancelButton.focus(), !0) : t.focusConfirm && C(e.confirmButton) ? (e.confirmButton.focus(), !0) : !1, li = () => {
+      document.activeElement instanceof HTMLElement && typeof document.activeElement.blur == "function" && document.activeElement.blur();
+    };
+    Object.assign(N.prototype, lt), Object.assign(N, ti), Object.keys(lt).forEach((e) => {
+      N[e] = function() {
+        if (Te)
+          return Te[e](...arguments);
+      };
+    }), N.DismissReason = R, N.version = "11.4.4";
+    const ue = N;
+    return ue.default = ue, ue;
+  }), typeof M < "u" && M.Sweetalert2 && (M.swal = M.sweetAlert = M.Swal = M.SweetAlert = M.Sweetalert2);
+})(yt);
+var ui = yt.exports;
+const de = /* @__PURE__ */ ai(ui);
+class di {
+  static install(T, K = {}) {
+    var g;
+    const O = de.mixin(K), B = function(...d) {
+      return O.fire.call(O, ...d);
+    };
+    Object.assign(B, de), Object.keys(de).filter((d) => typeof de[d] == "function").forEach((d) => {
+      B[d] = O[d].bind(O);
+    }), (g = T.config) != null && g.globalProperties && !T.config.globalProperties.$swal ? (T.config.globalProperties.$swal = B, T.provide("$swal", B)) : Object.prototype.hasOwnProperty.call(T, "$swal") || (T.prototype.$swal = B, T.swal = B);
+  }
+}
+
+
+
 /***/ })
 
 /******/ 	});
@@ -56521,6 +58532,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _router_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./router.js */ "./src/router.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var sweetalert2_dist_sweetalert2_min_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! sweetalert2/dist/sweetalert2.min.css */ "./node_modules/sweetalert2/dist/sweetalert2.min.css");
+/* harmony import */ var sweetalert2_dist_sweetalert2_min_css__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(sweetalert2_dist_sweetalert2_min_css__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var vue_sweetalert2__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue-sweetalert2 */ "./node_modules/vue-sweetalert2/dist/vue-sweetalert.mjs");
 
 
 
@@ -56528,11 +58542,15 @@ __webpack_require__.r(__webpack_exports__);
 
  // Import jQuery globally
 
+
+
+
 // Create the Vue app
 var app = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createApp)(_components_ResistanceOverview_vue__WEBPACK_IMPORTED_MODULE_1__["default"]);
 window.$ = window.jQuery = (jquery__WEBPACK_IMPORTED_MODULE_3___default());
 
 // Use the router in the app
+app.use(vue_sweetalert2__WEBPACK_IMPORTED_MODULE_5__["default"]);
 app.use(_router_js__WEBPACK_IMPORTED_MODULE_2__["default"]);
 
 // Mount the app to the DOM

@@ -15,7 +15,8 @@
     "semantic-ui-css": "^2.5.0",
     "vue": "^3.5.13",
     "vue-multiselect": "^3.2.0",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "vue-sweetalert2": "^5.0.11"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

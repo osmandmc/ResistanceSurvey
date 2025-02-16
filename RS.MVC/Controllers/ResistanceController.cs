@@ -39,6 +39,7 @@ namespace ResistanceSurvey.Controllers
         {
             return View();
         }
+        
         [Authorize]
         [HttpPost]
         public IActionResult ResistanceList(ResistanceFilterModel filter)
@@ -49,6 +50,7 @@ namespace ResistanceSurvey.Controllers
             result.Filter = filter; 
             return PartialView("_ResistanceList", result);
         }
+        
         [Authorize]
         [HttpGet]
         public IActionResult List(ResistanceFilterModel filter)
@@ -63,6 +65,7 @@ namespace ResistanceSurvey.Controllers
             ViewBag.News = _rsApplication.GetNewsList(year, month);
             return PartialView("_NewsList");
         }
+        
         [Authorize]
         [HttpGet]
         public IActionResult News(int year, int month)
@@ -72,16 +75,7 @@ namespace ResistanceSurvey.Controllers
         }
         
         [Authorize]
-        public IActionResult Categories()
-        {
-            var categories = _db.Category.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList();
-            return Json(categories);
-        }
-
-
-        [Authorize]
         [HttpGet]
-
         public IActionResult Create()
         {
             var companies = _db.Company.Where(s => !s.Deleted).Select(x => new { Id = x.Id, Name = x.Name }).ToList();
@@ -90,6 +84,7 @@ namespace ResistanceSurvey.Controllers
             var name = HttpContext.User.Identity.Name;
             return PartialView("_Create");
         }
+        
         [Authorize]
         [HttpPost]
         public IActionResult Create(ResistanceForm model)
@@ -97,20 +92,6 @@ namespace ResistanceSurvey.Controllers
             if (ModelState.IsValid)
             {
                 model.Resistance.UserName = UserName;
-                _rsApplication.Create(model);
-                return Ok();
-            }
-            var values = ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors).ToList();
-            return StatusCode(StatusCodes.Status500InternalServerError, values);
-        }
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult CreateResistance([FromBody] ResistanceModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                model.UserName = UserName;
                 _rsApplication.Create(model);
                 return Ok();
             }
@@ -147,18 +128,7 @@ namespace ResistanceSurvey.Controllers
             return PartialView("_AddProtesto");
         }
 
-        [Authorize]
-        [HttpPost]
-        public IActionResult CreateOrUpdateProtesto([FromBody] ProtestoEditModel viewModel)
-        {
-            if (ModelState.IsValid)
-            {
-                _rsApplication.UpsertProtesto(viewModel);
-                return Ok();
-            }
-            var values = ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors).ToList();
-            return StatusCode(StatusCodes.Status400BadRequest, values);
-        }
+       
         [Authorize]
         [HttpPost]
         public IActionResult AddProtesto(ProtestoAddModel viewModel)
@@ -215,12 +185,7 @@ namespace ResistanceSurvey.Controllers
             SetLookups();
             return PartialView("_EditResistance", resistance);
         }
-        [Authorize]
-        public IActionResult Get(int id)
-        {
-            var resistance = _rsApplication.GetResistanceDetail(id);
-            return Json(resistance);
-        }
+
 
         [Authorize]
         [HttpPost]
@@ -236,19 +201,7 @@ namespace ResistanceSurvey.Controllers
             return StatusCode(StatusCodes.Status500InternalServerError, values);
         }
         
-        [Authorize]
-        [HttpPost]
-        public IActionResult UpdateResitance([FromBody] ResistanceUpdateModel viewModel)
-        {
-            if (ModelState.IsValid)
-            {
-                viewModel.UserName = UserName;
-                _rsApplication.UpdateResistance(viewModel);
-                return Ok();
-            }
-            var values = ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors).ToList();
-            return StatusCode(StatusCodes.Status500InternalServerError, values);
-        }
+       
         
         [Authorize]
         [HttpPost]

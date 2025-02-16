@@ -235,7 +235,7 @@ export default {
         .then(response => response.json())
         .then(data => (this.companies = data));
 
-    fetchWithToken("/resistance/categories")
+    fetchWithToken("/lookup/categories")
         .then(response => response.json())
         .then(data => (this.categories = data));
     this.initializeSemanticUI();

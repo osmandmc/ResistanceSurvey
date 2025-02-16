@@ -13,12 +13,18 @@ public class LookupController : Controller
     {
         _db = db;
     }
+    
+    [Authorize]
+    public IActionResult Categories()
+    {
+        var categories = _db.Category.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList();
+        return Json(categories);
+    }
     // GET
     [Authorize]
     public IActionResult EmployeeCounts()
     {
         var employeeCount = _db.EmployeeCount
-            .OrderBy(s => s.Name)
             .Select(s => new LookupEntity { Id = s.Id, Name = s.Name })
             .ToList();
         return Json(employeeCount);
@@ -28,7 +34,6 @@ public class LookupController : Controller
     public IActionResult EmployeeCountInProtesto()
     {
         var employeeCount = _db.ProtestoEmployeeCount
-            .OrderBy(s => s.Name)
             .Select(s => new LookupEntity { Id = s.Id, Name = s.Name })
             .ToList();
         return Json(employeeCount);
@@ -109,11 +114,21 @@ public class LookupController : Controller
         return Json(lookup);
     }
     [Authorize]
-    public IActionResult Districts(int? cityId)
+    public IActionResult Districts()
     {
         var lookup = _db.District
             .OrderBy(s=>s.Name)
             .ToList();
         return Json(lookup);
     }
+    [Authorize]
+    public IActionResult InterventionTypes()
+    {
+        var lookup = _db.InterventionType
+            .OrderBy(s=>s.Name)
+            .ToList();
+        return Json(lookup);
+    }
+   
+   
 }

@@ -33,12 +33,9 @@ namespace RS.MVC.Models
         public string LegalInterventionDesc { get; set; }
         public int? FiredEmployeeCountByProtesto { get; set; }
         public ResistanceResult ResistanceResult { get; set; }
-        public List<int> EmploymentTypeIds { get; set; }
-        public List<ResistanceNewsModel> ResistanceNewsIds { get; set; }
-        
+        public List<EmploymentType> EmploymentTypeIds { get; set; }
+        public List<News> ResistanceNews { get; set; }
         public List<ProtestoListModel> Protestos { get; set; }
         public List<ProtestoEditModel> ProtestoItems { get; set; }
-        public List<News> ResistanceNews { get; set; }
-        
     }
 }

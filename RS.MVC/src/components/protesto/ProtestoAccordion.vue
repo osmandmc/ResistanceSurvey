@@ -17,7 +17,10 @@
             :employeeCountInProtestoOptions="employeeCountInProtestoOptions"
             :cities="cities"
             :districts="districts"
+            :intervention-types="interventionTypes"
             @cancelProtesto="handleCancelProtesto"
+            @onProtestoAdded="handleSaveProtesto"
+            @onProtestoDeleted="handleDeleteProtesto"
         />
       </div>
     </div>
@@ -30,11 +33,11 @@ import EditProtesto from "./EditProtesto.vue";
 
 export default {
   name: "ProtestoAccordion",
-  emits: ["cancelProtesto"],
+  emits: ["cancelProtesto", "saveProtesto", "deleteProtesto"],
   components: { EditProtesto },
   data() {
     return {
-      activeIndex: this.activeProtestoIndex
+      activeIndex: this.activeProtestoIndex,
     }
   },
   props: {
@@ -45,7 +48,6 @@ export default {
     protestoItems: {
       type: Array,
       required: true,
-      default: () => []
     },
     protestoTypeOptions: {
       type: Array,
@@ -70,6 +72,10 @@ export default {
     districts: {
       type: Array,
       required: true,
+    },
+    interventionTypes: {
+      type: Array,
+      required: true,
     }
   },
   watch: {
@@ -78,21 +84,20 @@ export default {
       this.activeIndex = newVal;
     }
   },
-  mounted() {
-    console.log(this.activeProtestoIndex);
-  },
   methods: {
     toggleAccordion(index) {
-      console.log("activeIndex", this.activeIndex);
-      console.log("activeProtestoIndex", this.activeProtestoIndex);
       this.activeIndex = this.activeIndex === index ? index : null;
-    },
-    saveProtesto(updatedProtesto) {
-      this.$emit("updateProtesto", updatedProtesto);
     },
     handleCancelProtesto(protesto) {
       console.log("cancel", protesto);
       this.$emit('cancelProtesto', protesto);
+    },
+    handleSaveProtesto(protesto) {
+      this.$emit('saveProtesto', protesto);
+    },
+    handleDeleteProtesto(id) {
+      console.log('delete', id);
+      this.$emit('deleteProtesto', id);
     },
     formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date to a readable string
