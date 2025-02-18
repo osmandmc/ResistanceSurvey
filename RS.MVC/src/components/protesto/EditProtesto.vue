@@ -32,11 +32,11 @@
     </button>
     <button 
         v-if="protesto.protestoId !== null"
-        class="ui primary button"
+        class="ui negative button"
         type="button"
         @click="deleteProtesto"
     >
-      SİL
+      EYLEMİ SİL
     </button>
   </div>
 </template>
@@ -160,35 +160,35 @@ export default {
           "Content-Type": "application/json", // Ensure JSON is sent
         }
       })
-          .then(response => {
-            this.isLoading = false;
-            // Handle HTTP errors
-            if (response.status === 400) {
-              this.$swal.fire({
-                icon: "error",
-                title: "Bir hata olustu",
-                text: response.statusText,
-              });
-              return Promise.reject(response.statusText); // Stop further processing
-            } else if (response.status === 500) {
-              this.$swal.fire({
-                icon: "error",
-                title: "Bir hata olustu",
-                text: 'Yazilim destek: ' + response.statusText,
-              });
-              return Promise.reject(response.statusText); // Stop further processing
-            }
-            this.$swal('Eylem silindi');
-            this.$emit('onProtestoDeleted', this.protestoData.protestoId );
-          })
-          .catch(error => {
-            this.isLoading = false;
-            this.$swal.fire({
-              icon: "error",
-              title: "Bir hata olustu",
-            });
-            console.log(error);
+      .then(response => {
+        this.isLoading = false;
+        // Handle HTTP errors
+        if (response.status === 400) {
+          this.$swal.fire({
+            icon: "error",
+            title: "Bir hata olustu",
+            text: response.statusText,
           });
+          return Promise.reject(response.statusText); // Stop further processing
+        } else if (response.status === 500) {
+          this.$swal.fire({
+            icon: "error",
+            title: "Bir hata olustu",
+            text: 'Yazilim destek: ' + response.statusText,
+          });
+          return Promise.reject(response.statusText); // Stop further processing
+        }
+        this.$swal('Eylem silindi');
+        this.$emit('onProtestoDeleted', this.protestoData.protestoId );
+      })
+      .catch(error => {
+        this.isLoading = false;
+        this.$swal.fire({
+          icon: "error",
+          title: "Bir hata olustu",
+        });
+        console.log(error);
+      });
     },
     cancelProtesto() {
       this.$emit('cancelProtesto', this.protesto);

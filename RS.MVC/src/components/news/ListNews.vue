@@ -42,7 +42,7 @@
     </div>
 
     <!-- News Section -->
-    <div style="overflow-y: scroll; height:700px;">
+    <div style="overflow-y: scroll; height:1000px;">
     <div v-for="item in filteredNews" :key="item.id" class="item" :data-id="item.id">
       <div class="content">
         <!-- Header and Link -->
@@ -145,7 +145,6 @@ export default {
       return new Date(date).toLocaleDateString(); // Format date to a readable string
     },
     linkNews(id){
-      
       const newsItem = this.filteredNews.find(news => news.id === id);
       this.$emit('linkNews', newsItem);
     },

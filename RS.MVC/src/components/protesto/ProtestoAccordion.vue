@@ -86,7 +86,9 @@ export default {
   },
   methods: {
     toggleAccordion(index) {
-      this.activeIndex = this.activeIndex === index ? index : null;
+      console.log(index);
+      this.activeIndex = this.activeIndex === null ? index : null;
+      console.log(this.activeIndex);
     },
     handleCancelProtesto(protesto) {
       console.log("cancel", protesto);

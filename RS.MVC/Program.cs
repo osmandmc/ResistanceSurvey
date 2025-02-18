@@ -87,10 +87,16 @@ app.UseAuthorization();
 
 // Route Setup
 app.MapControllerRoute(
-    name: "default",
+    name: "news", // Explicit route for /News
+    pattern: "News/{action=Index}/{id?}",
+    defaults: new { controller = "News" });
+
+app.MapControllerRoute(
+    name: "default", // Default route for other Razor views
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // Catch-all Route for Vue 3
-app.MapFallbackToController("IndexVue", "Resistance");
+app.MapFallbackToController("IndexVue", "Resistance"); // Ensure only one catch-all route
+
 
 app.Run();

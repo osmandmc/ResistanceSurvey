@@ -200,9 +200,9 @@
                    :preserve-search="true"
                    :taggable="true">
       </multiselect>
-      <span v-if="formErrors.corporationIds" class="text-danger">
-        {{ formErrors.employmentTypeIds }}
-      </span>
+      <div v-if="formErrors.employmentTypeIds" class="field error">
+        <label>{{ formErrors.employmentTypeIds }}</label>
+      </div>
     </div>
   </div>
   <div class="field">

@@ -1,18 +1,20 @@
 <template>
   <div class="ui celled divided grid">
     <div class="row">
-      <div :class="leftColumnClass">
+      <div class="nine wide column">
         <router-view name="LeftSidebar"></router-view>
+<!--        <ListResistance />-->
 <!--        <ListResistance :isEditing="isEditing" />-->
       </div>
 
       <!-- Middle Column: Appears when editing -->
-      <div class="six wide column" v-if="isEditing">
-        <EditResistance :id="$route.params.id" />
-      </div>
+<!--      <div class="six wide column" v-if="isEditing">-->
+<!--        <EditResistance :id="$route.params.id" />-->
+<!--      </div>-->
+     
 
       <!-- News Section -->
-      <div :class="rightColumnClass">
+      <div class="seven wide column">
         <ListNews @linkNews="handlelinkNews" />
       </div>
     </div>

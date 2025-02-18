@@ -121,11 +121,6 @@ export default {
       formErrors: {},
     };
   },
-  props: {
-    id: {
-      type: String,
-    }
-  },
   mounted() {
     this.fetchResistance();
     fetchWithToken("/company/list")
@@ -203,6 +198,7 @@ export default {
     '$route.params.id': 'fetchResistance',
     'addedNews.news': {
       handler(newNews) {
+        console.log(newNews);
         if (newNews && this.resistance) {
           console.log(newNews);
           this.resistance.resistanceNews.push(newNews); // Push into array
@@ -236,7 +232,7 @@ export default {
           protestoStartDate: null,
           protestoEndDate: null,
           protestoPlaceIds: [],
-          genderId: 0,
+          genderId: null,
           interventionTypeIds: [],
           protestoCityIds: [],
           protestoDistrictIds: [],
@@ -386,26 +382,6 @@ export default {
         errors.employmentTypeIds = "Lütfen en az bir istihdam türü seçiniz.";
       }
 
-      // GenderId: Required
-      if (!this.resistance.genderId) {
-        errors.genderId = "Lütfen bir cinsiyet giriniz.";
-      }
-
-      // ProtestoTypeIds: At least one protest type selected
-      if (!this.resistance.protestoTypeIds || this.resistance.protestoTypeIds.length === 0) {
-        errors.protestoTypeIds = "Lütfen en az bir eylem türü seçiniz.";
-      }
-
-      // ProtestoPlaceIds: At least one protest place selected
-      if (!this.resistance.protestoPlaceIds || this.resistance.protestoPlaceIds.length === 0) {
-        errors.protestoPlaceIds = "Lütfen en az bir eylem mekanı seçiniz.";
-      }
-      
-      // ProtestoStartDate: Required
-      if (!this.resistance.protestoStartDate) {
-        errors.protestoStartDate = "Lütfen başlangıç tarihi seçiniz.";
-      }
-
       // AnyLegalIntervention: Required
       if (this.resistance.anyLegalIntervention === null || this.resistance.anyLegalIntervention === undefined) {
         errors.anyLegalIntervention = "Hukuki girişim var mı?";
@@ -421,7 +397,6 @@ export default {
   },
 };
 </script>
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style scoped>
 /* Add styles here */

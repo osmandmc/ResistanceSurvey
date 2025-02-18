@@ -264,6 +264,4 @@ export default {
 };
 </script>
 
-<style scoped>
-/* Add any scoped styles here if necessary */
-</style>
+<style scoped src="vue-multiselect/dist/vue-multiselect.min.css"></style>
