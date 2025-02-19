@@ -12,6 +12,7 @@
         :employmentTypes="employmentTypes"
         :formErrors="formErrors"
         @openCompanyModal="handleOpenCompanyModal"
+        @onInputChanged="clearFormError"
     />
     <h3 class="ui dividing header">Eylem</h3>
     <Protesto
@@ -26,6 +27,7 @@
         :formErrors="formErrors"
         @addLocation="handleAddLocation"
         @deleteLocation="handleDeleteLocation"
+        @onInputChanged="clearFormError"
     />
 
     <resistance-news :news="this.resistance.resistanceNews" @removeNews="handleRemoveNews"/>
@@ -332,37 +334,58 @@ export default {
       }
 
       // GenderId: Required
-      if (!this.resistance.genderId) {
-        errors.genderId = "Lütfen bir cinsiyet giriniz.";
-      }
+      // if (!this.resistance.genderId) {
+      //   errors.genderId = "Lütfen bir cinsiyet giriniz.";
+      // }
 
       // ProtestoTypeIds: At least one protest type selected
-      if (!this.resistance.protestoTypeIds || this.resistance.protestoTypeIds.length === 0) {
+      if (!this.resistance.protesto.protestoTypeIds || this.resistance.protesto.protestoTypeIds.length === 0) {
         errors.protestoTypeIds = "Lütfen en az bir eylem türü seçiniz.";
       }
 
       // ProtestoPlaceIds: At least one protest place selected
-      if (!this.resistance.protestoPlaceIds || this.resistance.protestoPlaceIds.length === 0) {
+      if (!this.resistance.protesto.protestoPlaceIds || this.resistance.protesto.protestoPlaceIds.length === 0) {
         errors.protestoPlaceIds = "Lütfen en az bir eylem mekanı seçiniz.";
       }
 
       // ProtestoStartDate: Required
-      if (!this.resistance.protestoStartDate) {
+      if (!this.resistance.protesto.protestoStartDate) {
         errors.protestoStartDate = "Lütfen başlangıç tarihi seçiniz.";
       }
 
       // AnyLegalIntervention: Required
-      if (this.resistance.anyLegalIntervention === null || this.resistance.anyLegalIntervention === undefined) {
-        errors.anyLegalIntervention = "Hukuki girişim var mı?";
-      }
+      // if (this.resistance.protesto.anyLegalIntervention === null || this.resistance.protesto.anyLegalIntervention === undefined) {
+      //   errors.anyLegalIntervention = "Hukuki girişim var mı?";
+      // }
 
       // DevelopRight: Required
       if (this.resistance.developRight === null || this.resistance.developRight === undefined) {
         errors.developRight = "Hak Geliştirmeye/Savunma Özelliği";
       }
+      // ProtestoStartDate: Required
+      if (!this.resistance.protesto.protestoStartDate) {
+        errors.protestoStartDate = "Lütfen başlangıç tarihi seçiniz.";
+      }
 
+      // GenderId: Required
+      if (!this.resistance.protesto.genderId) {
+        errors.genderId = "Lütfen bir cinsiyet giriniz.";
+      }
+      
+      // InterventionTypeIds: At least one intervention type selected
+      if (!this.resistance.protesto.interventionTypeIds || this.resistance.protesto.interventionTypeIds.length === 0) {
+        errors.interventionTypeIds = "Lütfen en az bir müdahale tipi seçiniz.";
+      }
+
+      // CustodyCount: Required if custody is possible
+      if (this.resistance.protesto.isCustodyPossible && !this.resistance.protesto.custodyCount) {
+        errors.custodyCount = "Lütfen gözaltı sayısını giriniz.";
+      }
       return errors;
     },
+    clearFormError(field){
+      this.formErrors[field] = "";
+    }
   },
 };
 </script>

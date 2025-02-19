@@ -189,7 +189,7 @@ export default {
     fetchResults() {
       this.isLoading = true;
       const queryParams = new URLSearchParams(this.filter).toString();
-      fetchWithToken(`/resistance/list?${queryParams}`)
+      fetchWithToken(`/resistanceapi/list?${queryParams}`)
       .then(response => response.json())
       .then(data => {
         console.log(data);

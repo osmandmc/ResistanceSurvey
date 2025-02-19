@@ -13,9 +13,10 @@
           placeholder="Seçiniz"
           label="name"
           track-by="id"
+          @select="clearError('protestoTypeIds')"
       ></multiselect>
-      <span v-if="formErrors.protestoTypeIds" class="text-danger">
-        {{ formErrors.protestoTypeIds }}
+      <span v-if="formErrors.protestoTypeIds" class="field error">
+        <label>{{ formErrors.protestoTypeIds }}</label>
       </span>
     </div>
   <div class="field" v-if="showStrikeDuration">
@@ -33,10 +34,12 @@
         <VueDatePicker v-model="protesto.protestoStartDate" 
                        text-input 
                        locale="tr-TR"
-                       format="dd/MM/yyyy">
+                       format="dd/MM/yyyy"
+                       @blur="clearError('protestoStartDate')"
+        >
         </VueDatePicker>
-        <span v-if="formErrors.protestoStartDate" class="text-danger">
-          {{ formErrors.protestoTypeIds }}
+        <span v-if="formErrors.protestoStartDate" class="field error">
+          <label>{{ formErrors.protestoStartDate }}</label>
         </span>
       </div>
       <div class="field">
@@ -64,16 +67,17 @@
           placeholder="Seçiniz"
           label="name"
           track-by="id"
+          @select="clearError('protestoPlaceIds')"
       ></multiselect>
-      <span v-if="formErrors.protestoPlaceIds" class="text-danger">
-        {{ formErrors.protestoPlaceIds }}
+      <span v-if="formErrors.protestoPlaceIds" class="field error">
+        <label>{{ formErrors.protestoPlaceIds }}</label>
       </span>
     </div>
 
     <!-- Gender -->
     <div class="field">
       <label for="GenderId">Cinsiyet</label>
-      <select v-model="protesto.genderId" id="GenderId">
+      <select v-model="protesto.genderId" @change="clearError('genderId')">
         <option value="">--Seçiniz--</option>
         <option
             v-for="gender in genderOptions"
@@ -83,8 +87,8 @@
           {{ gender.name }}
         </option>
       </select>
-      <span v-if="formErrors.genderId" class="text-danger">
-        {{ formErrors.genderId }}
+      <span v-if="formErrors.genderId" class="field error">
+        <label>{{ formErrors.genderId }}</label>
       </span>
     </div>
   <div class="field">
@@ -133,13 +137,21 @@
           placeholder="Seçiniz"
           label="name"
           track-by="id"
+          @select="clearError('interventionTypeIds')"
       ></multiselect>
-      
+      <span v-if="formErrors.interventionTypeIds" class="field error">
+          <label>{{ formErrors.interventionTypeIds }}</label>
+      </span>
     </div>
     <div class="field" v-show="isCustodyPossible">
       <label for="CustodyCount">Gözaltı Sayısı</label>
-      <input type="text" id="CustodyCount" v-model="this.protesto.custodyCount"/>
+      <input type="text" id="CustodyCount" v-model="this.protesto.custodyCount" 
+             @input="clearError('custodyCount')" />
+      <span v-if="formErrors.custodyCount" class="field error">
+          <label>{{ formErrors.custodyCount }}</label>
+      </span>
     </div>
+  
     <!-- Notes -->
     <div class="field">
       <label for="Note">Kontrol Kişisine Notlar</label>
@@ -158,7 +170,7 @@ import Location from "./Location.vue";
 
 export default {
   name: "Protesto",
-  emits: ["addProtesto", 'deleteLocation', 'addLocation'],
+  emits: ["addProtesto", 'deleteLocation', 'addLocation', "onInputChanged"],
   components: { Multiselect, VueDatePicker, Location },
   props: {
     protesto: {
@@ -259,9 +271,16 @@ export default {
       } else {
         this.protesto.employeeCountInProtestoId = ""; // Reset if out of range
       }
-    }
+    },
+    clearError(field) {
+      // Clear the error message for the specified field
+      console.log(field);
+      this.$emit('onInputChanged', field);
+    },
   }
 };
 </script>
 
-<style scoped src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style scoped>
+
+</style>

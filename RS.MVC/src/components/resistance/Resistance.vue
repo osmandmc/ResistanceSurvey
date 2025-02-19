@@ -8,22 +8,24 @@
           id="ResistanceDescription"
           rows="6"
           v-model="this.resistance.resistanceDescription"
+          @input="clearError('resistanceDescription')"
       ></textarea>
-      <span v-if="formErrors.resistanceDescription" class="text-danger">
-        {{ formErrors.resistanceDescription }}
+      <span v-if="formErrors.resistanceDescription" class="field error">
+        <label>{{ formErrors.resistanceDescription }}</label>
       </span>
     </div>
   
     <div class="field">
       <label for="CategoryId">Vaka Niteliği</label>
-      <select v-model="this.resistance.categoryId">
+      <select v-model="this.resistance.categoryId"
+              @change="clearError('categoryId')">
         <option value="">--Seçiniz--</option>
         <option v-for="category in categories" :key="category.id" :value="category.id">
           {{ category.name }}
         </option>
       </select>
-      <span v-if="formErrors.categoryId" class="text-danger">
-        {{ formErrors.categoryId }}
+      <span v-if="formErrors.categoryId" class="field error">
+        <label>{{ formErrors.categoryId }}</label>
       </span>
     </div>
 
@@ -39,7 +41,8 @@
       <label for="CompanyId">Şirket</label>
       <div class="two fields">
         <div class="field">
-          <select v-model="this.resistance.companyId">
+          <select v-model="this.resistance.companyId"
+                  @change="clearError('companyId')">
             <option value="">--Seçiniz--</option>
             <option
                 v-for="company in companies"
@@ -49,8 +52,8 @@
               {{ company.name }}
             </option>
           </select>
-          <span v-if="formErrors.companyId" class="text-danger">
-            {{ formErrors.companyId }}
+          <span v-if="formErrors.companyId" class="field error">
+            <label>{{ formErrors.companyId }}</label>
           </span>
         </div>
         <div class="field">
@@ -107,13 +110,14 @@
       <!-- Develop Right -->
       <div class="field">
         <label for="DevelopRight">Hak Geliştirme/Hak Savunma Özelliği</label>
-        <select v-model="this.resistance.developRight">
+        <select v-model="this.resistance.developRight"
+                @change="clearError('developRight')">
           <option value="">--Seçiniz--</option>
           <option :value="true">Hak Geliştirme</option>
           <option :value="false">Hak Savunma</option>
         </select>
-        <span v-if="formErrors.developRight" class="text-danger">
-          {{ formErrors.developRight }}
+        <span v-if="formErrors.developRight" class="field error">
+          <label>{{ formErrors.developRight }}</label>
         </span>
       </div>
     </div>
@@ -133,9 +137,6 @@
             {{ count.name }}
           </option>
         </select>
-        <span v-if="formErrors.employeeCountId" class="text-danger">
-          {{ formErrors.employeeCountId }}
-        </span>
       </div>
       <div class="field">
         <label for="EmployeeCount">İş Yerindeki İşçi Sayısı (Tam)</label>
@@ -157,10 +158,15 @@
                    :close-on-select="false" 
                    :clear-on-select="false"
                    :preserve-search="true" 
-                   :taggable="true" @tag="addCorporation">
+                   :taggable="true" @tag="addCorporation"
+                   @select="clearError('corporationIds')"
+      >
       </multiselect>
+      <span v-if="formErrors.corporationIds" class="field error">
+        <label>{{ formErrors.corporationIds }}</label>
+      </span>
     </div>
-  <div class="field">
+  <div class="field" v-show="showTradeUnionAuthority">
     <label for="TradeUnionAuthorityId">Sendikanın Yetki Durumu</label>
     <select v-model="this.resistance.tradeUnionAuthorityId">
       <option value="">--Seçiniz--</option>
@@ -198,7 +204,8 @@
                    :close-on-select="false"
                    :clear-on-select="false"
                    :preserve-search="true"
-                   :taggable="true">
+                   :taggable="true"
+                   @select="clearError('employmentTypeIds')">
       </multiselect>
       <div v-if="formErrors.employmentTypeIds" class="field error">
         <label>{{ formErrors.employmentTypeIds }}</label>
@@ -226,7 +233,7 @@ import Multiselect from 'vue-multiselect'
 
 export default {
   name: "Resistance",
-  emits: ["openCompanyModal"],
+  emits: ["openCompanyModal", "onInputChanged"],
   components: { Multiselect },
   props: {
     // modelValue: Object,
@@ -272,8 +279,10 @@ export default {
     }
   },
   methods: {
-    toggleOutsource() {
-      // Show/hide outsource section
+    clearError(field) {
+      // Clear the error message for the specified field
+      console.log(field);
+      this.$emit('onInputChanged', field);
     },
     openCompanyModal() {
       this.$emit('openCompanyModal');
@@ -321,6 +330,12 @@ export default {
       return result;
     },
   },
+  computed: {
+    showTradeUnionAuthority(){
+      console.log(this.resistance?.corporationIds);
+      return this.resistance?.corporationIds?.some(s=>s.CorporationTypeId === 1);
+    }
+  }
 };
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

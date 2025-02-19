@@ -20801,7 +20801,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Protesto",
-  emits: ["addProtesto", 'deleteLocation', 'addLocation'],
+  emits: ["addProtesto", 'deleteLocation', 'addLocation', "onInputChanged"],
   components: {
     Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_0__["default"],
     VueDatePicker: _vuepic_vue_datepicker__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -20908,6 +20908,11 @@ __webpack_require__.r(__webpack_exports__);
       } else {
         this.protesto.employeeCountInProtestoId = ""; // Reset if out of range
       }
+    },
+    clearError: function clearError(field) {
+      // Clear the error message for the specified field
+      console.log(field);
+      this.$emit('onInputChanged', field);
     }
   }
 });
@@ -20926,11 +20931,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _EditProtesto_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EditProtesto.vue */ "./src/components/protesto/EditProtesto.vue");
+/* harmony import */ var _resistance_Resistance_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../resistance/Resistance.vue */ "./src/components/resistance/Resistance.vue");
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "ProtestoAccordion",
-  emits: ["cancelProtesto", "saveProtesto", "deleteProtesto"],
+  emits: ["cancelProtesto", "saveProtesto", "deleteProtesto", "onChangeActiveProtesto", "onInputChanged"],
   components: {
+    Resistance: _resistance_Resistance_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
     EditProtesto: _EditProtesto_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   data: function data() {
@@ -20989,10 +20997,11 @@ __webpack_require__.r(__webpack_exports__);
       console.log(index);
       this.activeIndex = this.activeIndex === null ? index : null;
       console.log(this.activeIndex);
+      this.$emit("onChangeActiveProtesto", this.activeIndex);
     },
-    handleCancelProtesto: function handleCancelProtesto(protesto) {
-      console.log("cancel", protesto);
-      this.$emit('cancelProtesto', protesto);
+    handleCancelProtesto: function handleCancelProtesto() {
+      this.activeIndex = null;
+      this.$emit('cancelProtesto');
     },
     handleSaveProtesto: function handleSaveProtesto(protesto) {
       this.$emit('saveProtesto', protesto);
@@ -21003,6 +21012,11 @@ __webpack_require__.r(__webpack_exports__);
     },
     formatDate: function formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date to a readable string
+    },
+    clearError: function clearError(field) {
+      // Clear the error message for the specified field
+      console.log(field);
+      this.$emit('onInputChanged', field);
     }
   }
 });
@@ -21354,35 +21368,57 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       // GenderId: Required
-      if (!this.resistance.genderId) {
-        errors.genderId = "Lütfen bir cinsiyet giriniz.";
-      }
+      // if (!this.resistance.genderId) {
+      //   errors.genderId = "Lütfen bir cinsiyet giriniz.";
+      // }
 
       // ProtestoTypeIds: At least one protest type selected
-      if (!this.resistance.protestoTypeIds || this.resistance.protestoTypeIds.length === 0) {
+      if (!this.resistance.protesto.protestoTypeIds || this.resistance.protesto.protestoTypeIds.length === 0) {
         errors.protestoTypeIds = "Lütfen en az bir eylem türü seçiniz.";
       }
 
       // ProtestoPlaceIds: At least one protest place selected
-      if (!this.resistance.protestoPlaceIds || this.resistance.protestoPlaceIds.length === 0) {
+      if (!this.resistance.protesto.protestoPlaceIds || this.resistance.protesto.protestoPlaceIds.length === 0) {
         errors.protestoPlaceIds = "Lütfen en az bir eylem mekanı seçiniz.";
       }
 
       // ProtestoStartDate: Required
-      if (!this.resistance.protestoStartDate) {
+      if (!this.resistance.protesto.protestoStartDate) {
         errors.protestoStartDate = "Lütfen başlangıç tarihi seçiniz.";
       }
 
       // AnyLegalIntervention: Required
-      if (this.resistance.anyLegalIntervention === null || this.resistance.anyLegalIntervention === undefined) {
-        errors.anyLegalIntervention = "Hukuki girişim var mı?";
-      }
+      // if (this.resistance.protesto.anyLegalIntervention === null || this.resistance.protesto.anyLegalIntervention === undefined) {
+      //   errors.anyLegalIntervention = "Hukuki girişim var mı?";
+      // }
 
       // DevelopRight: Required
       if (this.resistance.developRight === null || this.resistance.developRight === undefined) {
         errors.developRight = "Hak Geliştirmeye/Savunma Özelliği";
       }
+      // ProtestoStartDate: Required
+      if (!this.resistance.protesto.protestoStartDate) {
+        errors.protestoStartDate = "Lütfen başlangıç tarihi seçiniz.";
+      }
+
+      // GenderId: Required
+      if (!this.resistance.protesto.genderId) {
+        errors.genderId = "Lütfen bir cinsiyet giriniz.";
+      }
+
+      // InterventionTypeIds: At least one intervention type selected
+      if (!this.resistance.protesto.interventionTypeIds || this.resistance.protesto.interventionTypeIds.length === 0) {
+        errors.interventionTypeIds = "Lütfen en az bir müdahale tipi seçiniz.";
+      }
+
+      // CustodyCount: Required if custody is possible
+      if (this.resistance.protesto.isCustodyPossible && !this.resistance.protesto.custodyCount) {
+        errors.custodyCount = "Lütfen gözaltı sayısını giriniz.";
+      }
       return errors;
+    },
+    clearFormError: function clearFormError(field) {
+      this.formErrors[field] = "";
     }
   }
 });
@@ -21701,7 +21737,34 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         console.log(error);
       });
     },
-    handleCancelProtesto: function handleCancelProtesto(protesto) {
+    deleteForm: function deleteForm() {
+      var _this5 = this;
+      // Save form logic
+      this.isLoading = true;
+      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/ResistanceApi/DeleteResistance/" + this.resistance.id, {
+        method: 'DELETE',
+        headers: {
+          "Content-Type": "application/json" // Ensure JSON is sent
+        }
+      }).then(function (response) {
+        console.log(response);
+        _this5.isLoading = false;
+        _this5.$swal('Vaka silindi');
+        _this5.$router.push({
+          path: "/"
+        });
+      })["catch"](function (error) {
+        _this5.isLoading = false;
+        _this5.$swal({
+          icon: "error",
+          title: "Bir hata olustu",
+          text: "Bir hata olustu!"
+        });
+        console.log(error);
+      });
+    },
+    handleCancelProtesto: function handleCancelProtesto() {
+      console.log(this.activeProtestoIndex, 'Cancel');
       this.resistance.protestoItems = this.resistance.protestoItems.filter(function (s) {
         return s.protestoId !== 0;
       });
@@ -21735,6 +21798,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         return s.protestoId !== id;
       });
       this.activeProtestoIndex = null;
+    },
+    handleActiveProtesto: function handleActiveProtesto(activeIndex) {
+      this.activeProtestoIndex = activeIndex;
     },
     formatDate: function formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date
@@ -21788,6 +21854,14 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         errors.developRight = "Hak Geliştirmeye/Savunma Özelliği";
       }
       return errors;
+    },
+    clearFormError: function clearFormError(field) {
+      this.formErrors[field] = "";
+    }
+  },
+  computed: {
+    showResistanceButton: function showResistanceButton() {
+      return this.activeProtestoIndex === null;
     }
   }
 });
@@ -21880,7 +21954,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
       this.isLoading = true;
       var queryParams = new URLSearchParams(this.filter).toString();
-      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/resistance/list?".concat(queryParams)).then(function (response) {
+      (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/resistanceapi/list?".concat(queryParams)).then(function (response) {
         return response.json();
       }).then(function (data) {
         console.log(data);
@@ -21960,7 +22034,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Resistance",
-  emits: ["openCompanyModal"],
+  emits: ["openCompanyModal", "onInputChanged"],
   components: {
     Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
@@ -22012,8 +22086,10 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    toggleOutsource: function toggleOutsource() {
-      // Show/hide outsource section
+    clearError: function clearError(field) {
+      // Clear the error message for the specified field
+      console.log(field);
+      this.$emit('onInputChanged', field);
     },
     openCompanyModal: function openCompanyModal() {
       this.$emit('openCompanyModal');
@@ -22053,6 +22129,15 @@ __webpack_require__.r(__webpack_exports__);
       var result = normalize(search);
       console.log(result);
       return result;
+    }
+  },
+  computed: {
+    showTradeUnionAuthority: function showTradeUnionAuthority() {
+      var _this$resistance, _this$resistance2;
+      console.log((_this$resistance = this.resistance) === null || _this$resistance === void 0 ? void 0 : _this$resistance.corporationIds);
+      return (_this$resistance2 = this.resistance) === null || _this$resistance2 === void 0 || (_this$resistance2 = _this$resistance2.corporationIds) === null || _this$resistance2 === void 0 ? void 0 : _this$resistance2.some(function (s) {
+        return s.CorporationTypeId === 1;
+      });
     }
   }
 });
@@ -22629,10 +22714,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true":
-/*!********************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022":
+/*!********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022 ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22647,7 +22732,7 @@ var _hoisted_1 = {
 };
 var _hoisted_2 = {
   key: 0,
-  "class": "text-danger"
+  "class": "field error"
 };
 var _hoisted_3 = {
   key: 0,
@@ -22664,7 +22749,7 @@ var _hoisted_6 = {
 };
 var _hoisted_7 = {
   key: 0,
-  "class": "text-danger"
+  "class": "field error"
 };
 var _hoisted_8 = {
   "class": "field"
@@ -22674,7 +22759,7 @@ var _hoisted_9 = {
 };
 var _hoisted_10 = {
   key: 0,
-  "class": "text-danger"
+  "class": "field error"
 };
 var _hoisted_11 = {
   "class": "field"
@@ -22682,7 +22767,7 @@ var _hoisted_11 = {
 var _hoisted_12 = ["value"];
 var _hoisted_13 = {
   key: 0,
-  "class": "text-danger"
+  "class": "field error"
 };
 var _hoisted_14 = {
   "class": "field"
@@ -22704,9 +22789,17 @@ var _hoisted_20 = {
   "class": "field"
 };
 var _hoisted_21 = {
-  "class": "field"
+  key: 0,
+  "class": "field error"
 };
 var _hoisted_22 = {
+  "class": "field"
+};
+var _hoisted_23 = {
+  key: 0,
+  "class": "field error"
+};
+var _hoisted_24 = {
   "class": "field"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -22714,7 +22807,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_multiselect = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("multiselect");
   var _component_VueDatePicker = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("VueDatePicker");
   var _component_Location = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Location");
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Types "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Types "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoTypeIds"
   }, "Eylem Türleri", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ProtestoTypeIds",
@@ -22729,47 +22822,53 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "preserve-search": true,
     placeholder: "Seçiniz",
     label: "name",
-    "track-by": "id"
-  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.protestoTypeIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoTypeIds), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), $options.showStrikeDuration ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "track-by": "id",
+    onSelect: _cache[1] || (_cache[1] = function ($event) {
+      return $options.clearError('protestoTypeIds');
+    })
+  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.protestoTypeIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoTypeIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), $options.showStrikeDuration ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [_cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "StrikeDuration"
   }, "Eylemin Süresi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
+    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
       return $props.protesto.strikeDuration = $event;
     }),
     type: "text"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.strikeDuration]])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.strikeDuration]])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "SimpleProtestoDescription"
   }, "İş yerinde Basit Eylem Açıklama", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
       return $props.protesto.simpleProtestoDescription = $event;
     }),
     type: "text"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.simpleProtestoDescription]])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.showSimpleProtestoDescription]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Start and End Dates "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.simpleProtestoDescription]])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.showSimpleProtestoDescription]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Start and End Dates "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoStartDate"
   }, "Başlangıç Tarihi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_VueDatePicker, {
     modelValue: $props.protesto.protestoStartDate,
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
       return $props.protesto.protestoStartDate = $event;
     }),
     "text-input": "",
     locale: "tr-TR",
-    format: "dd/MM/yyyy"
-  }, null, 8 /* PROPS */, ["modelValue"]), $props.formErrors.protestoStartDate ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_7, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoTypeIds), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    format: "dd/MM/yyyy",
+    onBlur: _cache[5] || (_cache[5] = function ($event) {
+      return $options.clearError('protestoStartDate');
+    })
+  }, null, 8 /* PROPS */, ["modelValue"]), $props.formErrors.protestoStartDate ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoStartDate), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoEndDate"
   }, "Bitiş Tarihi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_VueDatePicker, {
     modelValue: $props.protesto.protestoEndDate,
-    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
       return $props.protesto.protestoEndDate = $event;
     }),
     "text-input": "",
     locale: "tr-TR",
     format: "dd/MM/yyyy"
-  }, null, 8 /* PROPS */, ["modelValue"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Places "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Places "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoPlaceIds"
   }, "Eylem Yerleri", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ProtestoPlaceIds",
     modelValue: $props.protesto.protestoPlaceIds,
-    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
+    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
       return $props.protesto.protestoPlaceIds = $event;
     }),
     options: $props.protestoPlaceOptions,
@@ -22779,25 +22878,30 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "preserve-search": true,
     placeholder: "Seçiniz",
     label: "name",
-    "track-by": "id"
-  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.protestoPlaceIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_10, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoPlaceIds), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Gender "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [_cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "track-by": "id",
+    onSelect: _cache[8] || (_cache[8] = function ($event) {
+      return $options.clearError('protestoPlaceIds');
+    })
+  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.protestoPlaceIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoPlaceIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Gender "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [_cache[27] || (_cache[27] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "GenderId"
   }, "Cinsiyet", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
       return $props.protesto.genderId = $event;
     }),
-    id: "GenderId"
-  }, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    onChange: _cache[10] || (_cache[10] = function ($event) {
+      return $options.clearError('genderId');
+    })
+  }, [_cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.genderOptions, function (gender) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: gender.id,
       value: gender.id
     }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(gender.name), 9 /* TEXT, PROPS */, _hoisted_12);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.genderId]]), $props.formErrors.genderId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.genderId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }), 128 /* KEYED_FRAGMENT */))], 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.genderId]]), $props.formErrors.genderId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.genderId), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "ui button",
-    onClick: _cache[7] || (_cache[7] = function () {
+    onClick: _cache[11] || (_cache[11] = function () {
       return $options.addLocation && $options.addLocation.apply($options, arguments);
     })
   }, "Lokasyon Ekle")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Location, {
@@ -22805,37 +22909,37 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     cities: $props.cities,
     districts: $props.districts,
     "protesto-locations": $props.protesto.locations
-  }, null, 8 /* PROPS */, ["onDeleteLocation", "cities", "districts", "protesto-locations"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["onDeleteLocation", "cities", "districts", "protesto-locations"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCountInProtesto"
   }, "Eylemdeki İşçi Sayısı (Tam)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
     id: "EmployeeCountInProtesto",
-    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
+    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
       return $props.protesto.employeeCountInProtesto = $event;
     }),
-    onBlur: _cache[9] || (_cache[9] = function () {
+    onBlur: _cache[13] || (_cache[13] = function () {
       return $options.updateEmployeeCountId && $options.updateEmployeeCountId.apply($options, arguments);
     })
-  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.employeeCountInProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [_cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.employeeCountInProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCountInProtestoId"
   }, "Eylemdeki İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
+    "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
       return $props.protesto.employeeCountInProtestoId = $event;
     }),
     id: "EmployeeCountInProtestoId"
-  }, [_cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.employeeCountInProtestoOptions, function (employeeCountInProtesto) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: employeeCountInProtesto.id,
       value: employeeCountInProtesto.id
     }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(employeeCountInProtesto.name), 9 /* TEXT, PROPS */, _hoisted_19);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.employeeCountInProtestoId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.employeeCountInProtestoId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "InterventionTypeId"
   }, "Müdahale Tipi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ProtestoPlaceIds",
     modelValue: $props.protesto.interventionTypeIds,
-    "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
+    "onUpdate:modelValue": _cache[15] || (_cache[15] = function ($event) {
       return $props.protesto.interventionTypeIds = $event;
     }),
     options: $props.interventionTypes,
@@ -22845,20 +22949,26 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "preserve-search": true,
     placeholder: "Seçiniz",
     label: "name",
-    "track-by": "id"
-  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [_cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "track-by": "id",
+    onSelect: _cache[16] || (_cache[16] = function ($event) {
+      return $options.clearError('interventionTypeIds');
+    })
+  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.interventionTypeIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.interventionTypeIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [_cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CustodyCount"
   }, "Gözaltı Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     id: "CustodyCount",
-    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
+    "onUpdate:modelValue": _cache[17] || (_cache[17] = function ($event) {
       return _this.protesto.custodyCount = $event;
+    }),
+    onInput: _cache[18] || (_cache[18] = function ($event) {
+      return $options.clearError('custodyCount');
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.protesto.custodyCount]])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.isCustodyPossible]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Notes "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [_cache[27] || (_cache[27] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.protesto.custodyCount]]), $props.formErrors.custodyCount ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.custodyCount), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.isCustodyPossible]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Notes "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [_cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "Note"
   }, "Kontrol Kişisine Notlar", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     id: "Note",
-    "onUpdate:modelValue": _cache[13] || (_cache[13] = function ($event) {
+    "onUpdate:modelValue": _cache[19] || (_cache[19] = function ($event) {
       return $props.protesto.note = $event;
     }),
     rows: "3"
@@ -22915,8 +23025,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       "intervention-types": $props.interventionTypes,
       onCancelProtesto: $options.handleCancelProtesto,
       onOnProtestoAdded: $options.handleSaveProtesto,
-      onOnProtestoDeleted: $options.handleDeleteProtesto
-    }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions", "cities", "districts", "intervention-types", "onCancelProtesto", "onOnProtestoAdded", "onOnProtestoDeleted"])], 2 /* CLASS */)]);
+      onOnProtestoDeleted: $options.handleDeleteProtesto,
+      onOnInputChanged: _ctx.clearFormError
+    }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions", "cities", "districts", "intervention-types", "onCancelProtesto", "onOnProtestoAdded", "onOnProtestoDeleted", "onOnInputChanged"])], 2 /* CLASS */)]);
   }), 128 /* KEYED_FRAGMENT */))]);
 }
 
@@ -22954,8 +23065,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     tradeUnionAuthorities: $data.tradeUnionAuthorities,
     employmentTypes: $data.employmentTypes,
     formErrors: $data.formErrors,
-    onOpenCompanyModal: $options.handleOpenCompanyModal
-  }, null, 8 /* PROPS */, ["resistance", "corporations", "resistanceReasons", "employeeCounts", "companies", "categories", "tradeUnions", "tradeUnionAuthorities", "employmentTypes", "formErrors", "onOpenCompanyModal"]), _cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
+    onOpenCompanyModal: $options.handleOpenCompanyModal,
+    onOnInputChanged: $options.clearFormError
+  }, null, 8 /* PROPS */, ["resistance", "corporations", "resistanceReasons", "employeeCounts", "companies", "categories", "tradeUnions", "tradeUnionAuthorities", "employmentTypes", "formErrors", "onOpenCompanyModal", "onOnInputChanged"]), _cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
     "class": "ui dividing header"
   }, "Eylem", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Protesto, {
     protesto: $data.resistance.protesto,
@@ -22968,8 +23080,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "intervention-types": $data.interventionTypes,
     formErrors: $data.formErrors,
     onAddLocation: $options.handleAddLocation,
-    onDeleteLocation: $options.handleDeleteLocation
-  }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions", "cities", "districts", "intervention-types", "formErrors", "onAddLocation", "onDeleteLocation"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_resistance_news, {
+    onDeleteLocation: $options.handleDeleteLocation,
+    onOnInputChanged: $options.clearFormError
+  }, null, 8 /* PROPS */, ["protesto", "genderOptions", "protestoTypeOptions", "protestoPlaceOptions", "employeeCountInProtestoOptions", "cities", "districts", "intervention-types", "formErrors", "onAddLocation", "onDeleteLocation", "onOnInputChanged"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_resistance_news, {
     news: this.resistance.resistanceNews,
     onRemoveNews: $options.handleRemoveNews
   }, null, 8 /* PROPS */, ["news", "onRemoveNews"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save and Cancel Buttons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
@@ -23023,19 +23136,19 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_protesto_accordion = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("protesto-accordion");
   var _component_resistance_news = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("resistance-news");
   var _component_company_modal = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("company-modal");
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [this.isLoading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, _cache[3] || (_cache[3] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [this.isLoading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, _cache[4] || (_cache[4] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "ui text loader"
   }, "İşlem Yapılıyor...", -1 /* HOISTED */)]))) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
     to: "/list",
     "class": "item"
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return _cache[4] || (_cache[4] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      return _cache[5] || (_cache[5] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
         "class": "angle double left icon"
       }, null, -1 /* HOISTED */)]);
     }),
     _: 1 /* STABLE */
-  }), _cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Vaka "))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }), _cache[6] || (_cache[6] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Vaka "))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "hidden",
     name: "Id",
     "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
@@ -23052,8 +23165,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     tradeUnionAuthorities: $data.tradeUnionAuthorities,
     employmentTypes: $data.employmentTypes,
     formErrors: $data.formErrors,
-    onOpenCompanyModal: $options.handleOpenCompanyModal
-  }, null, 8 /* PROPS */, ["resistance", "corporations", "resistanceReasons", "employeeCounts", "companies", "categories", "tradeUnions", "tradeUnionAuthorities", "employmentTypes", "formErrors", "onOpenCompanyModal"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protestos "), _cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
+    onOpenCompanyModal: $options.handleOpenCompanyModal,
+    onOnInputChanged: $options.clearFormError
+  }, null, 8 /* PROPS */, ["resistance", "corporations", "resistanceReasons", "employeeCounts", "companies", "categories", "tradeUnions", "tradeUnionAuthorities", "employmentTypes", "formErrors", "onOpenCompanyModal", "onOnInputChanged"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protestos "), _cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
     "class": "ui dividing header"
   }, "Eylemler", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
@@ -23061,7 +23175,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[1] || (_cache[1] = function () {
       return $options.createProtesto && $options.createProtesto.apply($options, arguments);
     })
-  }, _cache[6] || (_cache[6] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Eylem Ekle"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, _cache[7] || (_cache[7] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Eylem Ekle"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "plus icon"
   }, null, -1 /* HOISTED */)])), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_protesto_accordion, {
     activeProtestoIndex: this.activeProtestoIndex,
@@ -23075,20 +23189,26 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "intervention-types": $data.interventionTypes,
     onCancelProtesto: $options.handleCancelProtesto,
     onSaveProtesto: $options.handleSaveProtesto,
-    onDeleteProtesto: $options.handleDeleteProtesto
-  }, null, 8 /* PROPS */, ["activeProtestoIndex", "protestoItems", "protestoPlaceOptions", "protestoTypeOptions", "genderOptions", "employeeCountInProtestoOptions", "cities", "districts", "intervention-types", "onCancelProtesto", "onSaveProtesto", "onDeleteProtesto"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_resistance_news, {
+    onDeleteProtesto: $options.handleDeleteProtesto,
+    onOnChangeActiveProtesto: $options.handleActiveProtesto,
+    onOnInputChanged: $options.clearFormError
+  }, null, 8 /* PROPS */, ["activeProtestoIndex", "protestoItems", "protestoPlaceOptions", "protestoTypeOptions", "genderOptions", "employeeCountInProtestoOptions", "cities", "districts", "intervention-types", "onCancelProtesto", "onSaveProtesto", "onDeleteProtesto", "onOnChangeActiveProtesto", "onOnInputChanged"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_resistance_news, {
     news: this.resistance.resistanceNews,
     onRemoveNews: $options.handleRemoveNews
-  }, null, 8 /* PROPS */, ["news", "onRemoveNews"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save and Cancel Buttons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    id: "btnSave",
+  }, null, 8 /* PROPS */, ["news", "onRemoveNews"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Save and Cancel Buttons "), $options.showResistanceButton ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+    key: 0,
     "class": "ui primary button",
     onClick: _cache[2] || (_cache[2] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.saveForm && $options.saveForm.apply($options, arguments);
     }, ["prevent"]))
-  }, " KAYDET "), _cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, " KAYDET ")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showResistanceButton ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+    key: 1,
+    "class": "ui negative button",
     type: "button",
-    "class": "ui negative button"
-  }, " SİL ", -1 /* HOISTED */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_company_modal, {
+    onClick: _cache[3] || (_cache[3] = function () {
+      return $options.deleteForm && $options.deleteForm.apply($options, arguments);
+    })
+  }, " SİL ")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_company_modal, {
     ref: "modalRef",
     companyTypes: $data.companyTypes,
     companyScales: $data.companyScales,
@@ -23356,7 +23476,7 @@ var _hoisted_1 = {
 };
 var _hoisted_2 = {
   key: 0,
-  "class": "text-danger"
+  "class": "field error"
 };
 var _hoisted_3 = {
   "class": "field"
@@ -23364,7 +23484,7 @@ var _hoisted_3 = {
 var _hoisted_4 = ["value"];
 var _hoisted_5 = {
   key: 0,
-  "class": "text-danger"
+  "class": "field error"
 };
 var _hoisted_6 = {
   "class": "fields"
@@ -23384,7 +23504,7 @@ var _hoisted_10 = {
 var _hoisted_11 = ["value"];
 var _hoisted_12 = {
   key: 0,
-  "class": "text-danger"
+  "class": "field error"
 };
 var _hoisted_13 = {
   "class": "field"
@@ -23415,7 +23535,7 @@ var _hoisted_21 = {
 };
 var _hoisted_22 = {
   key: 0,
-  "class": "text-danger"
+  "class": "field error"
 };
 var _hoisted_23 = {
   "class": "two fields"
@@ -23425,14 +23545,14 @@ var _hoisted_24 = {
 };
 var _hoisted_25 = ["value"];
 var _hoisted_26 = {
-  key: 0,
-  "class": "text-danger"
+  "class": "field"
 };
 var _hoisted_27 = {
   "class": "field"
 };
 var _hoisted_28 = {
-  "class": "field"
+  key: 0,
+  "class": "field error"
 };
 var _hoisted_29 = {
   "class": "field"
@@ -23467,65 +23587,74 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
       return _this.resistance.id = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.id]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.id]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ResistanceDescription"
   }, "Kısa Açıklama", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     id: "ResistanceDescription",
     rows: "6",
     "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
       return _this.resistance.resistanceDescription = $event;
+    }),
+    onInput: _cache[2] || (_cache[2] = function ($event) {
+      return $options.clearError('resistanceDescription');
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.resistanceDescription]]), $props.formErrors.resistanceDescription ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.resistanceDescription), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.resistanceDescription]]), $props.formErrors.resistanceDescription ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.resistanceDescription), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CategoryId"
   }, "Vaka Niteliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
       return _this.resistance.categoryId = $event;
+    }),
+    onChange: _cache[4] || (_cache[4] = function ($event) {
+      return $options.clearError('categoryId');
     })
-  }, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.categories, function (category) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: category.id,
       value: category.id
     }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(category.name), 9 /* TEXT, PROPS */, _hoisted_4);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.categoryId]]), $props.formErrors.categoryId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.categoryId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }), 128 /* KEYED_FRAGMENT */))], 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.categoryId]]), $props.formErrors.categoryId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.categoryId), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "IsOutsource"
   }, "Şirket Taşeron mu?", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
       return _this.resistance.isOutsource = $event;
     })
-  }, _cache[21] || (_cache[21] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, _cache[27] || (_cache[27] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: false
   }, "Hayır", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: true
-  }, "Evet", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.isOutsource]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, "Evet", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.isOutsource]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CompanyId"
   }, "Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
       return _this.resistance.companyId = $event;
+    }),
+    onChange: _cache[7] || (_cache[7] = function ($event) {
+      return $options.clearError('companyId');
     })
-  }, [_cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.companies, function (company) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: company.id,
       value: company.id
     }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(company.name), 9 /* TEXT, PROPS */, _hoisted_11);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.companyId]]), $props.formErrors.companyId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_12, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.companyId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }), 128 /* KEYED_FRAGMENT */))], 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.companyId]]), $props.formErrors.companyId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.companyId), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
-    onClick: _cache[5] || (_cache[5] = function () {
+    onClick: _cache[8] || (_cache[8] = function () {
       return $options.openCompanyModal && $options.openCompanyModal.apply($options, arguments);
     }),
     "class": "ui button"
-  }, _cache[24] || (_cache[24] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, _cache[30] || (_cache[30] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "chevron circle up icon"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Şirket Ekle ")]))])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Main Company (Conditional) "), this.resistance.isOutsource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_14, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Şirket Ekle ")]))])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Main Company (Conditional) "), this.resistance.isOutsource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_14, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "MainCompanyId"
   }, "Ana Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
       return $props.resistance.mainCompanyId = $event;
     })
-  }, [_cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.companies, function (company) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
@@ -23534,18 +23663,18 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(company.name), 9 /* TEXT, PROPS */, _hoisted_17);
   }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.resistance.mainCompanyId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
-    onClick: _cache[7] || (_cache[7] = function () {
+    onClick: _cache[10] || (_cache[10] = function () {
       return $options.openCompanyModal && $options.openCompanyModal.apply($options, arguments);
     }),
     "class": "ui button"
-  }, _cache[27] || (_cache[27] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, _cache[33] || (_cache[33] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "chevron circle up icon"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Ana Şirket Ekle ")]))])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Two Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Case Reasons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [_cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Ana Şirket Ekle ")]))])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Two Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Case Reasons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [_cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ResistanceReasonIds"
   }, "Vaka Nedeni", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ResistanceReasonIds",
     modelValue: this.resistance.resistanceReasonIds,
-    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
+    "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
       return _this.resistance.resistanceReasonIds = $event;
     }),
     placeholder: "Seçiniz",
@@ -23559,45 +23688,48 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "preserve-search": true,
     taggable: true,
     onTag: $options.addResistanceReason
-  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Develop Right "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Develop Right "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [_cache[37] || (_cache[37] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "DevelopRight"
   }, "Hak Geliştirme/Hak Savunma Özelliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
+    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
       return _this.resistance.developRight = $event;
+    }),
+    onChange: _cache[13] || (_cache[13] = function ($event) {
+      return $options.clearError('developRight');
     })
-  }, _cache[30] || (_cache[30] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, _cache[36] || (_cache[36] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: true
   }, "Hak Geliştirme", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: false
-  }, "Hak Savunma", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.developRight]]), $props.formErrors.developRight ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.developRight), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Employee Count "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [_cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, "Hak Savunma", -1 /* HOISTED */)]), 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.developRight]]), $props.formErrors.developRight ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.developRight), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Employee Count "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [_cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCountId"
   }, "İş Yerindeki İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
+    "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
       return _this.resistance.employeeCountId = $event;
     })
-  }, [_cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[38] || (_cache[38] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.employeeCounts, function (count) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: count.id,
       value: count.id
     }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(count.name), 9 /* TEXT, PROPS */, _hoisted_25);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.employeeCountId]]), $props.formErrors.employeeCountId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.employeeCountId), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.employeeCountId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [_cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCount"
   }, "İş Yerindeki İşçi Sayısı (Tam)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     id: "EmployeeCount",
-    "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
+    "onUpdate:modelValue": _cache[15] || (_cache[15] = function ($event) {
       return _this.resistance.employeeCount = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.employeeCount]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [_cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.employeeCount]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [_cache[41] || (_cache[41] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CorporationIds"
   }, "Kurumsallık", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "CorporationIds",
     modelValue: this.resistance.corporationIds,
-    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
+    "onUpdate:modelValue": _cache[16] || (_cache[16] = function ($event) {
       return _this.resistance.corporationIds = $event;
     }),
     placeholder: "Seçiniz",
@@ -23610,39 +23742,42 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "clear-on-select": false,
     "preserve-search": true,
     taggable: true,
-    onTag: $options.addCorporation
-  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [_cache[37] || (_cache[37] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    onTag: $options.addCorporation,
+    onSelect: _cache[17] || (_cache[17] = function ($event) {
+      return $options.clearError('corporationIds');
+    })
+  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"]), $props.formErrors.corporationIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.corporationIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [_cache[43] || (_cache[43] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "TradeUnionAuthorityId"
   }, "Sendikanın Yetki Durumu", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[13] || (_cache[13] = function ($event) {
+    "onUpdate:modelValue": _cache[18] || (_cache[18] = function ($event) {
       return _this.resistance.tradeUnionAuthorityId = $event;
     })
-  }, [_cache[36] || (_cache[36] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(this.tradeUnionAuthorities, function (ta) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: ta.id,
       value: ta.id
     }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(ta.name), 9 /* TEXT, PROPS */, _hoisted_30);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.tradeUnionAuthorityId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_31, [_cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.tradeUnionAuthorityId]])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.showTradeUnionAuthority]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_31, [_cache[45] || (_cache[45] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "TradeUnionId"
   }, "Tepki Gösterilen Sendika", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
+    "onUpdate:modelValue": _cache[19] || (_cache[19] = function ($event) {
       return _this.resistance.tradeUnionId = $event;
     })
-  }, [_cache[38] || (_cache[38] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[44] || (_cache[44] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(this.tradeUnions, function (ta) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: ta.id,
       value: ta.id
     }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(ta.name), 9 /* TEXT, PROPS */, _hoisted_32);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.tradeUnionId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [_cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.tradeUnionId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [_cache[46] || (_cache[46] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmploymentTypeIds"
   }, "İstihdam Türü", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "CorporationIds",
     modelValue: this.resistance.employmentTypeIds,
-    "onUpdate:modelValue": _cache[15] || (_cache[15] = function ($event) {
+    "onUpdate:modelValue": _cache[20] || (_cache[20] = function ($event) {
       return _this.resistance.employmentTypeIds = $event;
     }),
     placeholder: "Seçiniz",
@@ -23654,22 +23789,25 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "close-on-select": false,
     "clear-on-select": false,
     "preserve-search": true,
-    taggable: true
-  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.employmentTypeIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_35, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.employmentTypeIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_36, [_cache[41] || (_cache[41] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    taggable: true,
+    onSelect: _cache[21] || (_cache[21] = function ($event) {
+      return $options.clearError('employmentTypeIds');
+    })
+  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.employmentTypeIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_35, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.employmentTypeIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_36, [_cache[47] || (_cache[47] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "FiredEmployeeCountByProtesto"
   }, "Mücadele Ettiği için İşten Atılan İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
-    "onUpdate:modelValue": _cache[16] || (_cache[16] = function ($event) {
+    "onUpdate:modelValue": _cache[22] || (_cache[22] = function ($event) {
       return _this.resistance.firedEmployeeCountByProtesto = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.firedEmployeeCountByProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_37, [_cache[43] || (_cache[43] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.firedEmployeeCountByProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_37, [_cache[49] || (_cache[49] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ResistanceResult"
   }, "Sonuç", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[17] || (_cache[17] = function ($event) {
+    "onUpdate:modelValue": _cache[23] || (_cache[23] = function ($event) {
       return _this.resistance.resistanceResult = $event;
     }),
     "class": "ui fluid dropdown"
-  }, _cache[42] || (_cache[42] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, _cache[48] || (_cache[48] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 0
   }, "Bilinmiyor", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 1
@@ -24049,7 +24187,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add styles here */
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/CreateResistance.vue"],"names":[],"mappings":";AAmXA,oBAAoB","sourcesContent":["<template>\n  <form class=\"ui form\">\n    <Resistance\n        :resistance=\"resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :tradeUnions=\"tradeUnions\"\n        :tradeUnionAuthorities=\"tradeUnionAuthorities\"\n        :employmentTypes=\"employmentTypes\"\n        :formErrors=\"formErrors\"\n        @openCompanyModal=\"handleOpenCompanyModal\"\n    />\n    <h3 class=\"ui dividing header\">Eylem</h3>\n    <Protesto\n        :protesto=\"resistance.protesto\"\n        :genderOptions=\"genderOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"cities\"\n        :districts=\"districts\"\n        :intervention-types=\"interventionTypes\"\n        :formErrors=\"formErrors\"\n        @addLocation=\"handleAddLocation\"\n        @deleteLocation=\"handleDeleteLocation\"\n    />\n\n    <resistance-news :news=\"this.resistance.resistanceNews\" @removeNews=\"handleRemoveNews\"/>\n\n    <!-- Save and Cancel Buttons -->\n    <button class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" id=\"btnCancelResistanceModal\" class=\"ui negative button\">\n      VAZGEÇ\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n                 :companyTypes=\"companyTypes\"\n                 :companyScales=\"companyScales\"\n                 :worklines=\"worklines\"\n                 :companies=\"companies\"\n                 @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Multiselect from 'vue-multiselect'\nimport CompanyModal from \"../CompanyModal.vue\";\nimport Protesto from \"../protesto/Protesto.vue\";\nimport Resistance from \"./Resistance.vue\";\nimport EditProtesto from \"../protesto/EditProtesto.vue\";\nimport ResistanceNews from \"../news/ResistanceNews.vue\";\nimport {inject} from \"vue\"; // Adjust the path based on your folder structure\n\nexport default {\n  name: \"CreateResistance\",\n  components: {ResistanceNews, EditProtesto, Resistance, Protesto, CompanyModal, Multiselect},\n  data() {\n    return {\n      resistance: {\n        resistanceDescription: null,\n        categoryId: null,\n        developRight: null,\n        isOutsource: false,\n        mainCompanyId: null,\n        employeeCountId: null,\n        employeeCount: null,\n        resistanceResult: null,\n        employmentTypeIds: null,\n        corporationIds: null,\n        resistanceReasonIds: null,\n        resistanceNews: [],\n        protesto: {\n          interventionTypeIds: [],\n          locations: []\n        },\n      },\n      companies:[],\n      resistanceReasons: [],\n      categories: [],\n      corporations: [],\n      employeeCounts: [],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      protestoPlaceOptions: [],\n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      cities:[],\n      districts:[],\n      tradeUnionAuthorities:[],\n      tradeUnions: [],\n      employmentTypes: [],\n      interventionTypes: [],\n      formErrors: {},\n    };\n  },\n  setup() {\n    const addedNews = inject('addedNews'); // Inject full object\n    return { addedNews };\n  },\n  props: ['id'],  // The id is passed as a prop from the router\n  watch: {\n    'addedNews.news': {\n      handler(newNews) {\n        console.log(newNews);\n        // if (newNews && newNews.id && this.resistance) {\n          console.log(newNews);\n          this.resistance.resistanceNews.push(newNews); // Push into array\n        // }\n      },\n      deep: true,\n      // immediate: true,\n    }\n  },\n  mounted() {\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/lookup/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/lookup/employmentTypes\")\n        .then(response => response.json())\n        .then(data => (this.employmentTypes = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => {\n          this.corporations = data;\n          this.tradeUnions = data.filter(s=>s.CorporationTypeId = 1)\n        });\n\n    fetchWithToken(\"/lookup/tradeUnionAuthorities\")\n        .then(response => response.json())\n        .then(data => (this.tradeUnionAuthorities = data));\n    \n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n    \n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/employeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n\n    fetchWithToken(\"/lookup/cities\")\n        .then(response => response.json())\n        .then(data => (this.cities = data));\n\n    fetchWithToken(\"/lookup/districts\")\n        .then(response => response.json())\n        .then(data => (this.districts = data));\n\n    fetchWithToken(\"/lookup/interventionTypes\")\n        .then(response => response.json())\n        .then(data => (this.interventionTypes = data));\n  },\n  methods: {\n    checkTradeUnion() {\n      const corporationIds = this.resistance?.corporationIds?.map(s => s.id);\n      const queryParams = new URLSearchParams();\n      corporationIds.forEach(id => queryParams.append('corporationIds', id));\n\n      fetchWithToken(`/corporation/checkTradeUnion?${queryParams.toString()}`)\n          .then(response => response.json())\n          .then(data => this.tradeUnionIncluded = data);\n    },\n    openCompanyModal(isMain) {\n      this.$refs.modalRef.openModal();\n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(companyData)\n      })\n          .then(response => response.json())\n          .then(data => (console.log(data)));\n      this.companies.push(companyData);\n    },\n    saveForm() {\n      // Save form logic\n      console.log(this.resistance);\n      const errors = this.validateForm();\n      console.log(errors);\n      // If there are errors, display them and stop submission\n      if (Object.keys(errors).length > 0) {\n        this.formErrors = errors; // Update formErrors to display validation messages\n        return;\n      }\n\n      const resistanceData = {\n        categoryId: this.resistance.categoryId,\n        companyId: this.resistance.companyId,\n        resistanceReasonIds: this.resistance.resistanceReasonIds,\n        mainCompanyId: this.resistance.mainCompanyId,\n        corporationIds: this.resistance.corporationIds,\n        hasTradeUnion: true,\n        tradeUnionAuthorityId: this.resistance.tradeUnionAuthorityId,\n        note: this.resistance.note,\n        resistanceDescription: this.resistance.resistanceDescription,\n        employeeCountId: this.resistance.employeeCountId,\n        employeeCount: this.resistance.employeeCount,\n        tradeUnionId: this.resistance.tradeUnionId,\n        protesto: this.resistance.protesto,\n        resistanceNews: this.resistance.resistanceNews,\n      }\n\n      fetchWithToken(\"/ResistanceApi/CreateResistance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(resistanceData)\n      })\n          .then(response =>\n              {\n                this.isLoading = false;\n                if(response.status === 400) {\n                  this.$swal.fire({\n                    icon: \"error\",\n                    title: \"Bir hata olustu\",\n                    text: response.statusText,\n                  });\n                }\n                else if(response.status === 500) {\n                  this.$swal.fire({\n                    icon: \"error\",\n                    title: \"Bir hata olustu\",\n                    text: 'Yazilim destek: ' + response.statusText,\n                  });\n                }\n                else {\n                  this.$swal('Vaka kaydedildi');\n                  this.$router.push({ path: `/` });\n                }\n              }\n          )\n          .catch(error =>\n          {\n            this.isLoading = false;\n            this.$swal.fire({\n              icon: \"error\",\n              title: \"Bir hata olustu\",\n            });\n            console.log(error)\n          });\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    handleRemoveNews(newsId){\n      console.log('remove newsId ',newsId);\n      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);\n    },\n    handleOpenCompanyModal() {\n      this.$refs.modalRef.openModal();\n    },\n    handleAddLocation(){\n      this.resistance.protesto.locations.push({id:0, protestoId: 0, cityId:null, districtId: null, place: null, deleted: false});\n    },\n    handleDeleteLocation(index) {\n      const location = this.resistance.protesto.locations[index];\n      location.deleted = true;\n    },\n    validateForm() {\n      const errors = {};\n\n      if (!this.resistance.resistanceDescription) {\n        errors.resistanceDescription = \"Lütfen bir kısa açıklama seçiniz.\";\n      }\n      // CategoryId: Required\n      if (!this.resistance.categoryId) {\n        errors.categoryId = \"Lütfen bir kategori giriniz.\";\n      }\n\n      // CompanyId: At least one company selected\n      if (!this.resistance.companyId) {\n        errors.companyId = \"Lütfen bir şirket seçiniz.\";\n      }\n\n      // CorporationIds: At least one corporation selected\n      if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {\n        errors.corporationIds = \"Lütfen en az bir kurumsallık seçiniz.\";\n      }\n\n      // EmploymentTypeIds: At least one employment type selected\n      if (!this.resistance.employmentTypeIds || this.resistance.employmentTypeIds.length === 0) {\n        errors.employmentTypeIds = \"Lütfen en az bir istihdam türü seçiniz.\";\n      }\n\n      // GenderId: Required\n      if (!this.resistance.genderId) {\n        errors.genderId = \"Lütfen bir cinsiyet giriniz.\";\n      }\n\n      // ProtestoTypeIds: At least one protest type selected\n      if (!this.resistance.protestoTypeIds || this.resistance.protestoTypeIds.length === 0) {\n        errors.protestoTypeIds = \"Lütfen en az bir eylem türü seçiniz.\";\n      }\n\n      // ProtestoPlaceIds: At least one protest place selected\n      if (!this.resistance.protestoPlaceIds || this.resistance.protestoPlaceIds.length === 0) {\n        errors.protestoPlaceIds = \"Lütfen en az bir eylem mekanı seçiniz.\";\n      }\n\n      // ProtestoStartDate: Required\n      if (!this.resistance.protestoStartDate) {\n        errors.protestoStartDate = \"Lütfen başlangıç tarihi seçiniz.\";\n      }\n\n      // AnyLegalIntervention: Required\n      if (this.resistance.anyLegalIntervention === null || this.resistance.anyLegalIntervention === undefined) {\n        errors.anyLegalIntervention = \"Hukuki girişim var mı?\";\n      }\n\n      // DevelopRight: Required\n      if (this.resistance.developRight === null || this.resistance.developRight === undefined) {\n        errors.developRight = \"Hak Geliştirmeye/Savunma Özelliği\";\n      }\n\n      return errors;\n    },\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/CreateResistance.vue"],"names":[],"mappings":";AA0YA,oBAAoB","sourcesContent":["<template>\n  <form class=\"ui form\">\n    <Resistance\n        :resistance=\"resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :tradeUnions=\"tradeUnions\"\n        :tradeUnionAuthorities=\"tradeUnionAuthorities\"\n        :employmentTypes=\"employmentTypes\"\n        :formErrors=\"formErrors\"\n        @openCompanyModal=\"handleOpenCompanyModal\"\n        @onInputChanged=\"clearFormError\"\n    />\n    <h3 class=\"ui dividing header\">Eylem</h3>\n    <Protesto\n        :protesto=\"resistance.protesto\"\n        :genderOptions=\"genderOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"cities\"\n        :districts=\"districts\"\n        :intervention-types=\"interventionTypes\"\n        :formErrors=\"formErrors\"\n        @addLocation=\"handleAddLocation\"\n        @deleteLocation=\"handleDeleteLocation\"\n        @onInputChanged=\"clearFormError\"\n    />\n\n    <resistance-news :news=\"this.resistance.resistanceNews\" @removeNews=\"handleRemoveNews\"/>\n\n    <!-- Save and Cancel Buttons -->\n    <button class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" id=\"btnCancelResistanceModal\" class=\"ui negative button\">\n      VAZGEÇ\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n                 :companyTypes=\"companyTypes\"\n                 :companyScales=\"companyScales\"\n                 :worklines=\"worklines\"\n                 :companies=\"companies\"\n                 @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Multiselect from 'vue-multiselect'\nimport CompanyModal from \"../CompanyModal.vue\";\nimport Protesto from \"../protesto/Protesto.vue\";\nimport Resistance from \"./Resistance.vue\";\nimport EditProtesto from \"../protesto/EditProtesto.vue\";\nimport ResistanceNews from \"../news/ResistanceNews.vue\";\nimport {inject} from \"vue\"; // Adjust the path based on your folder structure\n\nexport default {\n  name: \"CreateResistance\",\n  components: {ResistanceNews, EditProtesto, Resistance, Protesto, CompanyModal, Multiselect},\n  data() {\n    return {\n      resistance: {\n        resistanceDescription: null,\n        categoryId: null,\n        developRight: null,\n        isOutsource: false,\n        mainCompanyId: null,\n        employeeCountId: null,\n        employeeCount: null,\n        resistanceResult: null,\n        employmentTypeIds: null,\n        corporationIds: null,\n        resistanceReasonIds: null,\n        resistanceNews: [],\n        protesto: {\n          interventionTypeIds: [],\n          locations: []\n        },\n      },\n      companies:[],\n      resistanceReasons: [],\n      categories: [],\n      corporations: [],\n      employeeCounts: [],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      protestoPlaceOptions: [],\n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      cities:[],\n      districts:[],\n      tradeUnionAuthorities:[],\n      tradeUnions: [],\n      employmentTypes: [],\n      interventionTypes: [],\n      formErrors: {},\n    };\n  },\n  setup() {\n    const addedNews = inject('addedNews'); // Inject full object\n    return { addedNews };\n  },\n  props: ['id'],  // The id is passed as a prop from the router\n  watch: {\n    'addedNews.news': {\n      handler(newNews) {\n        console.log(newNews);\n        // if (newNews && newNews.id && this.resistance) {\n          console.log(newNews);\n          this.resistance.resistanceNews.push(newNews); // Push into array\n        // }\n      },\n      deep: true,\n      // immediate: true,\n    }\n  },\n  mounted() {\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/lookup/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/lookup/employmentTypes\")\n        .then(response => response.json())\n        .then(data => (this.employmentTypes = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => {\n          this.corporations = data;\n          this.tradeUnions = data.filter(s=>s.CorporationTypeId = 1)\n        });\n\n    fetchWithToken(\"/lookup/tradeUnionAuthorities\")\n        .then(response => response.json())\n        .then(data => (this.tradeUnionAuthorities = data));\n    \n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n    \n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/employeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n\n    fetchWithToken(\"/lookup/cities\")\n        .then(response => response.json())\n        .then(data => (this.cities = data));\n\n    fetchWithToken(\"/lookup/districts\")\n        .then(response => response.json())\n        .then(data => (this.districts = data));\n\n    fetchWithToken(\"/lookup/interventionTypes\")\n        .then(response => response.json())\n        .then(data => (this.interventionTypes = data));\n  },\n  methods: {\n    checkTradeUnion() {\n      const corporationIds = this.resistance?.corporationIds?.map(s => s.id);\n      const queryParams = new URLSearchParams();\n      corporationIds.forEach(id => queryParams.append('corporationIds', id));\n\n      fetchWithToken(`/corporation/checkTradeUnion?${queryParams.toString()}`)\n          .then(response => response.json())\n          .then(data => this.tradeUnionIncluded = data);\n    },\n    openCompanyModal(isMain) {\n      this.$refs.modalRef.openModal();\n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(companyData)\n      })\n          .then(response => response.json())\n          .then(data => (console.log(data)));\n      this.companies.push(companyData);\n    },\n    saveForm() {\n      // Save form logic\n      console.log(this.resistance);\n      const errors = this.validateForm();\n      console.log(errors);\n      // If there are errors, display them and stop submission\n      if (Object.keys(errors).length > 0) {\n        this.formErrors = errors; // Update formErrors to display validation messages\n        return;\n      }\n\n      const resistanceData = {\n        categoryId: this.resistance.categoryId,\n        companyId: this.resistance.companyId,\n        resistanceReasonIds: this.resistance.resistanceReasonIds,\n        mainCompanyId: this.resistance.mainCompanyId,\n        corporationIds: this.resistance.corporationIds,\n        hasTradeUnion: true,\n        tradeUnionAuthorityId: this.resistance.tradeUnionAuthorityId,\n        note: this.resistance.note,\n        resistanceDescription: this.resistance.resistanceDescription,\n        employeeCountId: this.resistance.employeeCountId,\n        employeeCount: this.resistance.employeeCount,\n        tradeUnionId: this.resistance.tradeUnionId,\n        protesto: this.resistance.protesto,\n        resistanceNews: this.resistance.resistanceNews,\n      }\n\n      fetchWithToken(\"/ResistanceApi/CreateResistance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(resistanceData)\n      })\n          .then(response =>\n              {\n                this.isLoading = false;\n                if(response.status === 400) {\n                  this.$swal.fire({\n                    icon: \"error\",\n                    title: \"Bir hata olustu\",\n                    text: response.statusText,\n                  });\n                }\n                else if(response.status === 500) {\n                  this.$swal.fire({\n                    icon: \"error\",\n                    title: \"Bir hata olustu\",\n                    text: 'Yazilim destek: ' + response.statusText,\n                  });\n                }\n                else {\n                  this.$swal('Vaka kaydedildi');\n                  this.$router.push({ path: `/` });\n                }\n              }\n          )\n          .catch(error =>\n          {\n            this.isLoading = false;\n            this.$swal.fire({\n              icon: \"error\",\n              title: \"Bir hata olustu\",\n            });\n            console.log(error)\n          });\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    handleRemoveNews(newsId){\n      console.log('remove newsId ',newsId);\n      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);\n    },\n    handleOpenCompanyModal() {\n      this.$refs.modalRef.openModal();\n    },\n    handleAddLocation(){\n      this.resistance.protesto.locations.push({id:0, protestoId: 0, cityId:null, districtId: null, place: null, deleted: false});\n    },\n    handleDeleteLocation(index) {\n      const location = this.resistance.protesto.locations[index];\n      location.deleted = true;\n    },\n    validateForm() {\n      const errors = {};\n\n      if (!this.resistance.resistanceDescription) {\n        errors.resistanceDescription = \"Lütfen bir kısa açıklama seçiniz.\";\n      }\n      // CategoryId: Required\n      if (!this.resistance.categoryId) {\n        errors.categoryId = \"Lütfen bir kategori giriniz.\";\n      }\n\n      // CompanyId: At least one company selected\n      if (!this.resistance.companyId) {\n        errors.companyId = \"Lütfen bir şirket seçiniz.\";\n      }\n\n      // CorporationIds: At least one corporation selected\n      if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {\n        errors.corporationIds = \"Lütfen en az bir kurumsallık seçiniz.\";\n      }\n\n      // EmploymentTypeIds: At least one employment type selected\n      if (!this.resistance.employmentTypeIds || this.resistance.employmentTypeIds.length === 0) {\n        errors.employmentTypeIds = \"Lütfen en az bir istihdam türü seçiniz.\";\n      }\n\n      // GenderId: Required\n      // if (!this.resistance.genderId) {\n      //   errors.genderId = \"Lütfen bir cinsiyet giriniz.\";\n      // }\n\n      // ProtestoTypeIds: At least one protest type selected\n      if (!this.resistance.protesto.protestoTypeIds || this.resistance.protesto.protestoTypeIds.length === 0) {\n        errors.protestoTypeIds = \"Lütfen en az bir eylem türü seçiniz.\";\n      }\n\n      // ProtestoPlaceIds: At least one protest place selected\n      if (!this.resistance.protesto.protestoPlaceIds || this.resistance.protesto.protestoPlaceIds.length === 0) {\n        errors.protestoPlaceIds = \"Lütfen en az bir eylem mekanı seçiniz.\";\n      }\n\n      // ProtestoStartDate: Required\n      if (!this.resistance.protesto.protestoStartDate) {\n        errors.protestoStartDate = \"Lütfen başlangıç tarihi seçiniz.\";\n      }\n\n      // AnyLegalIntervention: Required\n      // if (this.resistance.protesto.anyLegalIntervention === null || this.resistance.protesto.anyLegalIntervention === undefined) {\n      //   errors.anyLegalIntervention = \"Hukuki girişim var mı?\";\n      // }\n\n      // DevelopRight: Required\n      if (this.resistance.developRight === null || this.resistance.developRight === undefined) {\n        errors.developRight = \"Hak Geliştirmeye/Savunma Özelliği\";\n      }\n      // ProtestoStartDate: Required\n      if (!this.resistance.protesto.protestoStartDate) {\n        errors.protestoStartDate = \"Lütfen başlangıç tarihi seçiniz.\";\n      }\n\n      // GenderId: Required\n      if (!this.resistance.protesto.genderId) {\n        errors.genderId = \"Lütfen bir cinsiyet giriniz.\";\n      }\n      \n      // InterventionTypeIds: At least one intervention type selected\n      if (!this.resistance.protesto.interventionTypeIds || this.resistance.protesto.interventionTypeIds.length === 0) {\n        errors.interventionTypeIds = \"Lütfen en az bir müdahale tipi seçiniz.\";\n      }\n\n      // CustodyCount: Required if custody is possible\n      if (this.resistance.protesto.isCustodyPossible && !this.resistance.protesto.custodyCount) {\n        errors.custodyCount = \"Lütfen gözaltı sayısını giriniz.\";\n      }\n      return errors;\n    },\n    clearFormError(field){\n      this.formErrors[field] = \"\";\n    }\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -24078,7 +24216,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add styles here */
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/EditResistance.vue"],"names":[],"mappings":";AAiZA,oBAAoB","sourcesContent":["<template>\n  <div v-if=\"this.isLoading\" class=\"ui dimmer active\">\n    <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n  </div>\n  <h4 class=\"ui dividing header\">\n    <router-link to=\"/list\" class=\"item\"><i class=\"angle double left icon\"></i></router-link>\n    Vaka\n  </h4>\n  <form class=\"ui form\">\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistance.id\" />\n    <Resistance\n        :resistance=\"this.resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :tradeUnions=\"tradeUnions\"\n        :tradeUnionAuthorities=\"tradeUnionAuthorities\"\n        :employmentTypes=\"employmentTypes\"\n        :formErrors=\"formErrors\"\n        @openCompanyModal=\"handleOpenCompanyModal\"\n    />\n   \n    <!-- Protestos -->\n    <h3 class=\"ui dividing header\">Eylemler</h3>\n    <button\n        type=\"button\"\n        class=\"ui right labeled small green icon button\"\n        @click=\"createProtesto\"\n    >\n      Eylem Ekle<i class=\"plus icon\"></i>\n    </button>\n    <protesto-accordion\n        :activeProtestoIndex=\"this.activeProtestoIndex\"\n        :protestoItems=\"resistance.protestoItems\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :genderOptions=\"genderOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"cities\"\n        :districts=\"districts\"\n        :intervention-types=\"interventionTypes\"\n        @cancelProtesto=\"handleCancelProtesto\"\n        @saveProtesto=\"handleSaveProtesto\"\n        @deleteProtesto=\"handleDeleteProtesto\"\n    />\n    <resistance-news :news=\"this.resistance.resistanceNews\" @removeNews=\"handleRemoveNews\"/>\n    \n    <!-- Save and Cancel Buttons -->\n    <button id=\"btnSave\" class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" class=\"ui negative button\">\n      SİL\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n         :companyTypes=\"companyTypes\"\n         :companyScales=\"companyScales\"\n         :worklines=\"worklines\"\n         :companies=\"companies\"\n         @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Resistance from \"./Resistance.vue\";\nimport Multiselect from 'vue-multiselect'\nimport ProtestoAccordion from \"../protesto/ProtestoAccordion.vue\";\nimport ResistanceNews from \"../news/ResistanceNews.vue\";\nimport CompanyModal from \"../CompanyModal.vue\";\nimport {inject, watch} from 'vue';\n\nexport default {\n  name: \"EditResistance\",\n  components: {CompanyModal, ProtestoAccordion, Multiselect, Resistance, ResistanceNews},\n  emits: [\"openCompanyModal\"],\n  setup() {\n    const addedNews = inject('addedNews'); // Inject full object\n    return { addedNews };\n  },\n  data() {\n    return {\n      isLoading: true,\n      resistance: {\n        id: null, // Default value for Id (could be null or -1 based on your use case)\n        resistanceDescription: '', // Default empty string for description\n        categoryId: '', // Empty string for the category ID\n        resistanceReasonIds: [], // Default to an empty array for selected reasons\n        developRight: '', // Default empty string (you might want a boolean or string value depending on your form logic)\n        companyId: '', // Default to an empty string for the company ID\n        isOutsource: false, // Default to 'false' indicating the company is not outsourced\n        mainCompanyId: '', // Default empty string for main company, if outsourcing is selected\n        employeeCountId: '', // Default to an empty string for employee count ID\n        employeeCount: '', // Default empty string for employee count (could be a number if required)\n        corporationIds: [], // Default empty array for selected corporation IDs\n        resistanceResult: 0, // Default to \"Bilinmiyor\" (unknown result)\n        protestoItems: [],\n        resistanceNews: [],\n      },\n      categories: [],\n      resistanceReasons: [],\n      companies: [],\n      corporations: [],\n      employeeCounts: [],\n      protestoPlaceOptions: [], \n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      cities: [],\n      districts: [],\n      tradeUnionAuthorities:[],\n      tradeUnions: [],\n      employmentTypes: [],\n      interventionTypes:[],\n      activeProtestoIndex: null,\n      formErrors: {},\n    };\n  },\n  mounted() {\n    this.fetchResistance();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/lookup/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => {\n          this.corporations = data;\n          this.tradeUnions = data.filter(s=>s.CorporationTypeId = 1)\n        });\n    \n    fetchWithToken(\"/lookup/tradeUnionAuthorities\")\n        .then(response => response.json())\n        .then(data => (this.tradeUnionAuthorities = data));\n\n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/EmployeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n\n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/cities\")\n        .then(response => response.json())\n        .then(data => (this.cities = data));\n\n    fetchWithToken(\"/lookup/districts\")\n        .then(response => response.json())\n        .then(data => (this.districts = data));\n    \n    fetchWithToken(\"/lookup/employmentTypes\")\n        .then(response => response.json())\n        .then(data => (this.employmentTypes = data));\n    fetchWithToken(\"/lookup/interventionTypes\")\n        .then(response => response.json())\n        .then(data => (this.interventionTypes = data));\n    // this.initializeSemanticUI();\n  },\n  watch: {\n    '$route.params.id': 'fetchResistance',\n    'addedNews.news': {\n      handler(newNews) {\n        console.log(newNews);\n        if (newNews && this.resistance) {\n          console.log(newNews);\n          this.resistance.resistanceNews.push(newNews); // Push into array\n        }\n      },\n      deep: true,\n    }\n  },\n  methods: {\n    fetchResistance() {\n      this.isLoading = true;\n      const id = this.$route.params.id;  // Accessing the id directly from $route.params\n\n      // Simulate an API call\n      fetchWithToken(`/resistanceapi/get/${id}`)\n          .then(response => response.json())\n          .then(data => { \n            this.resistance = data; \n            this.isLoading = false; \n          });      \n    },\n    createProtesto(){\n      console.log('created');\n      const created = this.resistance.protestoItems.filter(s=>s.protestoId === 0);\n      if(created.length === 0){\n        const protesto = {\n          resistanceId: this.resistance.id,\n          protestoId: 0,\n          protestoTypeIds: [],\n          isAgainstProduction: false,\n          protestoStartDate: null,\n          protestoEndDate: null,\n          protestoPlaceIds: [],\n          genderId: null,\n          interventionTypeIds: [],\n          protestoCityIds: [],\n          protestoDistrictIds: [],\n          locations: [],\n          custodyCount: null,\n          employeeCountInProtesto: null,\n          employeeCountInProtestoId: null,\n          resistanceName: \"\",\n          note: \"\",\n          simpleProtestoDescription: \"\",\n          strikeDuration: 0\n        }\n\n        this.activeProtestoIndex = this.resistance.protestoItems.length;\n        this.resistance.protestoItems.push(protesto);\n        console.log(this.activeProtestoIndex);\n      }\n      else{\n        this.activeProtestoIndex = this.resistance.protestoItems.length;\n      }\n    },\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    handleOpenCompanyModal() {\n      this.$refs.modalRef.openModal();  \n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", { \n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\",\n        },\n        body: JSON.stringify(companyData)})\n          .then(response => {\n            return response.json();\n          })\n          .then(data => {\n            console.log(data);\n            this.companies.push(data);\n            this.resistance.companyId = data.id;\n          });\n     \n    },\n    saveForm() {\n      // Save form logic\n      console.log(this.resistance);\n      const errors = this.validateForm();\n      console.log(errors);\n      // If there are errors, display them and stop submission\n      if (Object.keys(errors).length > 0) {\n        this.formErrors = errors; // Update formErrors to display validation messages\n        return;\n      }\n\n      this.isLoading = true;\n      fetchWithToken(\"/Resistanceapi/UpdateResitance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(this.resistance)\n      })\n      .then(response => { \n        console.log(response);\n        this.isLoading = false;\n        this.$swal('Vaka kaydedildi');\n        this.$router.push({ path: `/` });      \n      })\n      .catch(error =>\n      {\n        this.isLoading = false;\n        this.$swal({\n          icon: \"error\",\n          title: \"Bir hata olustu\",\n          text: \"Bir hata olustu!\",\n        });\n        console.log(error)\n      });\n    },\n    handleCancelProtesto(protesto) {\n      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== 0);\n      this.activeProtestoIndex = null;\n    },\n    handleSaveProtesto(obj) {\n      const { id, protesto } = obj; // Destructure the object for easier access\n      protesto.protestoId = id;\n      // Check if the protestoId already exists in protestoItems\n      const existingIndex = this.resistance.protestoItems.findIndex(item => item.protestoId === id);\n\n      if (existingIndex !== -1) {\n        console.log('update');\n        // Update the existing protesto item\n        this.resistance.protestoItems[existingIndex] = { ...this.resistance.protestoItems[existingIndex], ...protesto };\n      } else {\n        console.log('insert');\n        const createdIndex = this.resistance.protestoItems.findIndex(item => item.protestoId === 0);\n        this.resistance.protestoItems[createdIndex] = { ...this.resistance.protestoItems[existingIndex], ...protesto };\n      }\n      this.activeProtestoIndex = null;\n      // Optionally, you can emit an event or perform other actions here\n      console.log(\"Protesto saved:\", this.resistance.protestoItems);\n    },\n    handleDeleteProtesto(id) {\n      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== id);\n      this.activeProtestoIndex = null;\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    handleRemoveNews(newsId){\n      console.log('remove newsId ',newsId);\n      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);\n    },\n    validateForm() {\n      const errors = {};\n\n      if (!this.resistance.resistanceDescription) {\n        errors.resistanceDescription = \"Lütfen bir kısa açıklama seçiniz.\";\n      }\n      // CategoryId: Required\n      if (!this.resistance.categoryId) {\n        errors.categoryId = \"Lütfen bir kategori giriniz.\";\n      }\n\n      // CompanyId: At least one company selected\n      if (!this.resistance.companyId) {\n        errors.companyId = \"Lütfen bir şirket seçiniz.\";\n      }\n\n      // CorporationIds: At least one corporation selected\n      if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {\n        errors.corporationIds = \"Lütfen en az bir kurumsallık seçiniz.\";\n      }\n\n      // EmploymentTypeIds: At least one employment type selected\n      if (!this.resistance.employmentTypeIds || this.resistance.employmentTypeIds.length === 0) {\n        errors.employmentTypeIds = \"Lütfen en az bir istihdam türü seçiniz.\";\n      }\n\n      // AnyLegalIntervention: Required\n      if (this.resistance.anyLegalIntervention === null || this.resistance.anyLegalIntervention === undefined) {\n        errors.anyLegalIntervention = \"Hukuki girişim var mı?\";\n      }\n\n      // DevelopRight: Required\n      if (this.resistance.developRight === null || this.resistance.developRight === undefined) {\n        errors.developRight = \"Hak Geliştirmeye/Savunma Özelliği\";\n      }\n\n      return errors;\n    },\n  },\n};\n</script>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/EditResistance.vue"],"names":[],"mappings":";AA0bA,oBAAoB","sourcesContent":["<template>\n  <div v-if=\"this.isLoading\" class=\"ui dimmer active\">\n    <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n  </div>\n  <h4 class=\"ui dividing header\">\n    <router-link to=\"/list\" class=\"item\"><i class=\"angle double left icon\"></i></router-link>\n    Vaka\n  </h4>\n  <form class=\"ui form\">\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistance.id\" />\n    <Resistance\n        :resistance=\"this.resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :tradeUnions=\"tradeUnions\"\n        :tradeUnionAuthorities=\"tradeUnionAuthorities\"\n        :employmentTypes=\"employmentTypes\"\n        :formErrors=\"formErrors\"\n        @openCompanyModal=\"handleOpenCompanyModal\"\n        @onInputChanged=\"clearFormError\"\n    />\n   \n    <!-- Protestos -->\n    <h3 class=\"ui dividing header\">Eylemler</h3>\n    <button\n        type=\"button\"\n        class=\"ui right labeled small green icon button\"\n        @click=\"createProtesto\"\n    >\n      Eylem Ekle<i class=\"plus icon\"></i>\n    </button>\n    <protesto-accordion\n        :activeProtestoIndex=\"this.activeProtestoIndex\"\n        :protestoItems=\"resistance.protestoItems\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :genderOptions=\"genderOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"cities\"\n        :districts=\"districts\"\n        :intervention-types=\"interventionTypes\"\n        @cancelProtesto=\"handleCancelProtesto\"\n        @saveProtesto=\"handleSaveProtesto\"\n        @deleteProtesto=\"handleDeleteProtesto\"\n        @onChangeActiveProtesto=\"handleActiveProtesto\"\n        @onInputChanged=\"clearFormError\"\n    />\n    <resistance-news :news=\"this.resistance.resistanceNews\" @removeNews=\"handleRemoveNews\"/>\n    \n    <!-- Save and Cancel Buttons -->\n    <button v-if=\"showResistanceButton\" class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button v-if=\"showResistanceButton\" class=\"ui negative button\" type=\"button\" @click=\"deleteForm\">\n      SİL\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n         :companyTypes=\"companyTypes\"\n         :companyScales=\"companyScales\"\n         :worklines=\"worklines\"\n         :companies=\"companies\"\n         @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Resistance from \"./Resistance.vue\";\nimport Multiselect from 'vue-multiselect'\nimport ProtestoAccordion from \"../protesto/ProtestoAccordion.vue\";\nimport ResistanceNews from \"../news/ResistanceNews.vue\";\nimport CompanyModal from \"../CompanyModal.vue\";\nimport {inject, watch} from 'vue';\n\nexport default {\n  name: \"EditResistance\",\n  components: {CompanyModal, ProtestoAccordion, Multiselect, Resistance, ResistanceNews},\n  emits: [\"openCompanyModal\"],\n  setup() {\n    const addedNews = inject('addedNews'); // Inject full object\n    return { addedNews };\n  },\n  data() {\n    return {\n      isLoading: true,\n      resistance: {\n        id: null, // Default value for Id (could be null or -1 based on your use case)\n        resistanceDescription: '', // Default empty string for description\n        categoryId: '', // Empty string for the category ID\n        resistanceReasonIds: [], // Default to an empty array for selected reasons\n        developRight: '', // Default empty string (you might want a boolean or string value depending on your form logic)\n        companyId: '', // Default to an empty string for the company ID\n        isOutsource: false, // Default to 'false' indicating the company is not outsourced\n        mainCompanyId: '', // Default empty string for main company, if outsourcing is selected\n        employeeCountId: '', // Default to an empty string for employee count ID\n        employeeCount: '', // Default empty string for employee count (could be a number if required)\n        corporationIds: [], // Default empty array for selected corporation IDs\n        resistanceResult: 0, // Default to \"Bilinmiyor\" (unknown result)\n        protestoItems: [],\n        resistanceNews: [],\n      },\n      categories: [],\n      resistanceReasons: [],\n      companies: [],\n      corporations: [],\n      employeeCounts: [],\n      protestoPlaceOptions: [], \n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      cities: [],\n      districts: [],\n      tradeUnionAuthorities:[],\n      tradeUnions: [],\n      employmentTypes: [],\n      interventionTypes:[],\n      activeProtestoIndex: null,\n      formErrors: {},\n    };\n  },\n  mounted() {\n    this.fetchResistance();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/lookup/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => {\n          this.corporations = data;\n          this.tradeUnions = data.filter(s=>s.CorporationTypeId = 1)\n        });\n    \n    fetchWithToken(\"/lookup/tradeUnionAuthorities\")\n        .then(response => response.json())\n        .then(data => (this.tradeUnionAuthorities = data));\n\n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/EmployeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n\n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/cities\")\n        .then(response => response.json())\n        .then(data => (this.cities = data));\n\n    fetchWithToken(\"/lookup/districts\")\n        .then(response => response.json())\n        .then(data => (this.districts = data));\n    \n    fetchWithToken(\"/lookup/employmentTypes\")\n        .then(response => response.json())\n        .then(data => (this.employmentTypes = data));\n    fetchWithToken(\"/lookup/interventionTypes\")\n        .then(response => response.json())\n        .then(data => (this.interventionTypes = data));\n    // this.initializeSemanticUI();\n  },\n  watch: {\n    '$route.params.id': 'fetchResistance',\n    'addedNews.news': {\n      handler(newNews) {\n        console.log(newNews);\n        if (newNews && this.resistance) {\n          console.log(newNews);\n          this.resistance.resistanceNews.push(newNews); // Push into array\n        }\n      },\n      deep: true,\n    },\n  },\n  methods: {\n    fetchResistance() {\n      this.isLoading = true;\n      const id = this.$route.params.id;  // Accessing the id directly from $route.params\n\n      // Simulate an API call\n      fetchWithToken(`/resistanceapi/get/${id}`)\n          .then(response => response.json())\n          .then(data => { \n            this.resistance = data; \n            this.isLoading = false; \n          });      \n    },\n    createProtesto(){\n      console.log('created');\n      const created = this.resistance.protestoItems.filter(s=>s.protestoId === 0);\n      if(created.length === 0){\n        const protesto = {\n          resistanceId: this.resistance.id,\n          protestoId: 0,\n          protestoTypeIds: [],\n          isAgainstProduction: false,\n          protestoStartDate: null,\n          protestoEndDate: null,\n          protestoPlaceIds: [],\n          genderId: null,\n          interventionTypeIds: [],\n          protestoCityIds: [],\n          protestoDistrictIds: [],\n          locations: [],\n          custodyCount: null,\n          employeeCountInProtesto: null,\n          employeeCountInProtestoId: null,\n          resistanceName: \"\",\n          note: \"\",\n          simpleProtestoDescription: \"\",\n          strikeDuration: 0\n        }\n\n        this.activeProtestoIndex = this.resistance.protestoItems.length;\n        this.resistance.protestoItems.push(protesto);\n        console.log(this.activeProtestoIndex);\n      }\n      else{\n        this.activeProtestoIndex = this.resistance.protestoItems.length;\n      }\n    },\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    handleOpenCompanyModal() {\n      this.$refs.modalRef.openModal();  \n    },\n    handleSaveCompany(companyData) {\n      console.log(companyData);\n      fetchWithToken(\"/Company/Create/\", { \n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\",\n        },\n        body: JSON.stringify(companyData)})\n          .then(response => {\n            return response.json();\n          })\n          .then(data => {\n            console.log(data);\n            this.companies.push(data);\n            this.resistance.companyId = data.id;\n          });\n     \n    },\n    saveForm() {\n      // Save form logic\n      console.log(this.resistance);\n      const errors = this.validateForm();\n      console.log(errors);\n      // If there are errors, display them and stop submission\n      if (Object.keys(errors).length > 0) {\n        this.formErrors = errors; // Update formErrors to display validation messages\n        return;\n      }\n\n      this.isLoading = true;\n      fetchWithToken(\"/Resistanceapi/UpdateResitance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(this.resistance)\n      })\n      .then(response => { \n        console.log(response);\n        this.isLoading = false;\n        this.$swal('Vaka kaydedildi');\n        this.$router.push({ path: `/` });      \n      })\n      .catch(error =>\n      {\n        this.isLoading = false;\n        this.$swal({\n          icon: \"error\",\n          title: \"Bir hata olustu\",\n          text: \"Bir hata olustu!\",\n        });\n        console.log(error)\n      });\n    },\n    deleteForm() {\n      // Save form logic\n      this.isLoading = true;\n      fetchWithToken(\"/ResistanceApi/DeleteResistance/\" + this.resistance.id, {\n        method: 'DELETE',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n      })\n          .then(response => {\n            console.log(response);\n            this.isLoading = false;\n            this.$swal('Vaka silindi');\n            this.$router.push({ path: `/` });\n          })\n          .catch(error =>\n          {\n            this.isLoading = false;\n            this.$swal({\n              icon: \"error\",\n              title: \"Bir hata olustu\",\n              text: \"Bir hata olustu!\",\n            });\n            console.log(error)\n          });\n    },\n    handleCancelProtesto() {\n      console.log(this.activeProtestoIndex, 'Cancel');\n      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== 0);\n      this.activeProtestoIndex = null;\n    },\n    handleSaveProtesto(obj) {\n      const { id, protesto } = obj; // Destructure the object for easier access\n      protesto.protestoId = id;\n      // Check if the protestoId already exists in protestoItems\n      const existingIndex = this.resistance.protestoItems.findIndex(item => item.protestoId === id);\n\n      if (existingIndex !== -1) {\n        console.log('update');\n        // Update the existing protesto item\n        this.resistance.protestoItems[existingIndex] = { ...this.resistance.protestoItems[existingIndex], ...protesto };\n      } else {\n        console.log('insert');\n        const createdIndex = this.resistance.protestoItems.findIndex(item => item.protestoId === 0);\n        this.resistance.protestoItems[createdIndex] = { ...this.resistance.protestoItems[existingIndex], ...protesto };\n      }\n      this.activeProtestoIndex = null;\n      // Optionally, you can emit an event or perform other actions here\n      console.log(\"Protesto saved:\", this.resistance.protestoItems);\n    },\n    handleDeleteProtesto(id) {\n      this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== id);\n      this.activeProtestoIndex = null;\n    },\n    handleActiveProtesto(activeIndex){\n      this.activeProtestoIndex = activeIndex;\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    handleRemoveNews(newsId){\n      console.log('remove newsId ',newsId);\n      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);\n    },\n    validateForm() {\n      const errors = {};\n\n      if (!this.resistance.resistanceDescription) {\n        errors.resistanceDescription = \"Lütfen bir kısa açıklama seçiniz.\";\n      }\n      // CategoryId: Required\n      if (!this.resistance.categoryId) {\n        errors.categoryId = \"Lütfen bir kategori giriniz.\";\n      }\n\n      // CompanyId: At least one company selected\n      if (!this.resistance.companyId) {\n        errors.companyId = \"Lütfen bir şirket seçiniz.\";\n      }\n\n      // CorporationIds: At least one corporation selected\n      if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {\n        errors.corporationIds = \"Lütfen en az bir kurumsallık seçiniz.\";\n      }\n\n      // EmploymentTypeIds: At least one employment type selected\n      if (!this.resistance.employmentTypeIds || this.resistance.employmentTypeIds.length === 0) {\n        errors.employmentTypeIds = \"Lütfen en az bir istihdam türü seçiniz.\";\n      }\n\n      // AnyLegalIntervention: Required\n      if (this.resistance.anyLegalIntervention === null || this.resistance.anyLegalIntervention === undefined) {\n        errors.anyLegalIntervention = \"Hukuki girişim var mı?\";\n      }\n\n      // DevelopRight: Required\n      if (this.resistance.developRight === null || this.resistance.developRight === undefined) {\n        errors.developRight = \"Hak Geliştirmeye/Savunma Özelliği\";\n      }\n\n      return errors;\n    },\n    clearFormError(field){\n      this.formErrors[field] = \"\";\n    }\n  },\n  computed: {\n    showResistanceButton() {\n      return this.activeProtestoIndex === null\n    } \n  }\n};\n</script>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -24113,7 +24251,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `
   background: rgba(255, 255, 255, 0.8);
   z-index: 10;
 }
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/ListResistance.vue"],"names":[],"mappings":";AA0PA;EACE,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,oCAAoC;EACpC,WAAW;AACb","sourcesContent":["<template>\n  <div>\n    <div v-if=\"isLoading\" class=\"ui dimmer active\">\n        <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n    </div>\n\n    <div v-else>\n      <h4 class=\"ui dividing header\">\n        <router-link to=\"/create\" class=\"item\"><i class=\"plus icon\"></i></router-link>\n        Vakalar\n      </h4>\n      <a href=\"#\" @click=\"reloadList\" style=\"position:absolute; top:0; right:1em\">\n        <i class=\"redo alternate icon\"></i>\n      </a>\n\n      <div class=\"ui attached secondary segment resistanceFilter\">\n        <div class=\"ui accordion field\">\n          <div class=\"title\">\n            <i class=\"icon dropdown\"></i>\n            Filtreler\n          </div>\n          <div class=\"content ui form\">\n            <div class=\"field\">\n              <label class=\"transition visible\">Şirketler</label>\n              <select v-model=\"filter.companyId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Ana Şirket</label>\n              <select v-model=\"filter.mainCompanyId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Vaka Niteliği</label>\n              <select v-model=\"filter.categoryId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">{{\n                    category.name\n                  }}\n                </option>\n              </select>\n            </div>\n            <div class=\"fields\">\n              <div class=\"field\">\n                <label class=\"transition visible\">Eylem Yıl</label>\n                <select v-model=\"filter.yearId\" class=\"ui fluid selection dropdown\">\n                  <option value=\"\">--Seçiniz--</option>\n                  <option v-for=\"year in years\" :key=\"year\" :value=\"year\">{{ year }}</option>\n                </select>\n              </div>\n              <div class=\"field\">\n                <label class=\"transition visible\">Eylem Ay</label>\n                <select v-model=\"filter.monthId\" class=\"ui fluid search selection dropdown\">\n                  <option value=\"\">--Seçiniz--</option>\n                  <option v-for=\"(month, index) in months\" :key=\"index\" :value=\"index + 1\">{{ month }}</option>\n                </select>\n              </div>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Kişisel Notlar</label>\n              <select v-model=\"filter.personalNote\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option value=\"false\">Yok</option>\n                <option value=\"true\">Var</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <button @click=\"applyFilter\" class=\"ui button\">Filtrele</button>\n              <button @click=\"clearFilter\" class=\"ui basic button clear\">Temizle</button>\n              <button @click=\"exportData\" class=\"ui green basic button clear\">Dışa Aktar</button>\n            </div>\n          </div>\n        </div>\n      </div>\n\n      <table class=\"ui celled selectable striped table\">\n        <tbody>\n        <tr v-for=\"item in results\" :key=\"item.id\">\n          <td v-if=\"!isEditing\">\n            <router-link :to=\"`/edit/${item.id}`\">{{ item.categoryName }}</router-link>\n          </td>\n          <td>\n            <router-link :to=\"`/edit/${item.id}`\">{{ item.companyName }}</router-link>\n          </td>\n          <td>{{ formatDate(item.startDate) }}</td>\n        </tr>\n        </tbody>\n        <tfoot>\n        <tr>\n          <th :colspan=\"isEditing ? 1 : 2\">\n            <p>{{ rowCount }} kayıttan {{ from }} - {{ to }} arasındakiler görüntüleniyor.</p>\n          </th>\n          <th>\n            <div class=\"field\">\n              <select v-model=\"filter.pageNumber\" class=\"ui compact small dropdown\" \n                      @change=\"reloadList\">\n                <option v-for=\"i in pageCount\" :key=\"i\" :value=\"i\">{{ i }}</option>\n              </select>\n            </div>\n          </th>\n        </tr>\n        </tfoot>\n      </table>\n    </div>\n  </div>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\n\nexport default {\n  name: \"ListResistance\",\n  data() {\n    return {\n      isLoading: true,\n      filter: {\n        companyId: \"\",\n        mainCompanyId: \"\",\n        categoryId: \"\",\n        yearId: \"\",\n        monthId: \"\",\n        personalNote: \"\",\n        pageNumber: 1,\n        pageSize: 10, // Define a default page size\n      },\n      rowCount: 0,\n      pageSize: 10,\n      companies: [],\n      categories: [],\n      results: [],\n      years: Array.from({length: new Date().getFullYear() - 2017}, (_, i) => 2018 + i),\n      months: [\n        \"Ocak\", \"Şubat\", \"Mart\", \"Nisan\", \"Mayıs\", \"Haziran\",\n        \"Temmuz\", \"Ağustos\", \"Eylül\", \"Ekim\", \"Kasım\", \"Aralık\"\n      ],\n    };\n  },\n  computed: {\n    filteredResults() {\n      return this.results.filter(item => {\n        return (\n            (!this.filter.companyId || item.companyId === this.filter.companyId) &&\n            (!this.filter.mainCompanyId || item.mainCompanyId === this.filter.mainCompanyId) &&\n            (!this.filter.categoryId || item.categoryId === this.filter.categoryId) &&\n            (!this.filter.yearId || new Date(item.startDate).getFullYear() === this.filter.yearId) &&\n            (!this.filter.monthId || new Date(item.startDate).getMonth() + 1 === this.filter.monthId) &&\n            (!this.filter.personalNote || item.personalNote === JSON.parse(this.filter.personalNote))\n        );\n      });\n    },\n    from() {\n      return Math.min((this.filter.pageNumber - 1) * this.filter.pageSize + 1, this.rowCount);\n    },\n    to() {\n      return Math.min(this.filter.pageNumber * this.filter.pageSize, this.rowCount);\n    },\n    pageCount() {\n      return Math.ceil(this.rowCount / this.filter.pageSize);\n    },\n    isEditing() {\n      return this.$route.path.includes('/edit/');\n    },\n  },\n  methods: {\n    applyFilter() {\n      this.filter.pageNumber = 1;\n      this.reloadList();\n    },\n    clearFilter() {\n      this.filter = {\n        companyId: \"\",\n        mainCompanyId: \"\",\n        categoryId: \"\",\n        yearId: \"\",\n        monthId: \"\",\n        personalNote: \"\",\n        pageNumber: 1,\n        pageSize: 10,\n      };\n      this.reloadList();\n    },\n    reloadList() {\n      this.fetchResults();\n    },\n    fetchResults() {\n      this.isLoading = true;\n      const queryParams = new URLSearchParams(this.filter).toString();\n      fetchWithToken(`/resistance/list?${queryParams}`)\n      .then(response => response.json())\n      .then(data => {\n        console.log(data);\n        this.results = data.results || [];\n        this.filter = data.filter;\n        this.rowCount = data.rowCount;\n      })\n      .catch(err => console.error(\"Error fetching results:\", err))\n      .finally(() => (this.isLoading = false));\n    },\n    exportData() {\n      console.log(\"Exporting data...\");\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString();\n    },\n    nextPage() {\n      if (this.filter.pageNumber < this.pageCount) {\n        this.filter.pageNumber++;\n        this.reloadList(); // Fetch data for the next page\n      }\n    },\n    previousPage() {\n      if (this.filter.pageNumber > 1) {\n        this.filter.pageNumber--;\n        this.reloadList(); // Fetch data for the previous page\n      }\n    },\n    initializeSemanticUI() {\n      // Reinitialize Semantic UI components\n      this.$nextTick(() => {\n        $('.ui.dropdown').dropdown({\n          clearable: true,\n          fullTextSearch: 'exact',\n        });\n        $('.ui.accordion').accordion();\n      });\n    },\n  },\n  mounted() {\n    this.reloadList();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/lookup/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n    this.initializeSemanticUI();\n  },\n  updated() {\n    // Reinitialize Semantic UI components after the DOM updates\n    this.initializeSemanticUI();\n  },\n};\n</script>\n\n<style scoped>\n.ui.column.dimmer.active {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(255, 255, 255, 0.8);\n  z-index: 10;\n}\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/ListResistance.vue"],"names":[],"mappings":";AA0PA;EACE,aAAa;EACb,mBAAmB;EACnB,uBAAuB;EACvB,oCAAoC;EACpC,WAAW;AACb","sourcesContent":["<template>\n  <div>\n    <div v-if=\"isLoading\" class=\"ui dimmer active\">\n        <div class=\"ui text loader\">İşlem Yapılıyor...</div>\n    </div>\n\n    <div v-else>\n      <h4 class=\"ui dividing header\">\n        <router-link to=\"/create\" class=\"item\"><i class=\"plus icon\"></i></router-link>\n        Vakalar\n      </h4>\n      <a href=\"#\" @click=\"reloadList\" style=\"position:absolute; top:0; right:1em\">\n        <i class=\"redo alternate icon\"></i>\n      </a>\n\n      <div class=\"ui attached secondary segment resistanceFilter\">\n        <div class=\"ui accordion field\">\n          <div class=\"title\">\n            <i class=\"icon dropdown\"></i>\n            Filtreler\n          </div>\n          <div class=\"content ui form\">\n            <div class=\"field\">\n              <label class=\"transition visible\">Şirketler</label>\n              <select v-model=\"filter.companyId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Ana Şirket</label>\n              <select v-model=\"filter.mainCompanyId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"company in companies\" :key=\"company.id\" :value=\"company.id\">{{ company.name }}</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Vaka Niteliği</label>\n              <select v-model=\"filter.categoryId\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">{{\n                    category.name\n                  }}\n                </option>\n              </select>\n            </div>\n            <div class=\"fields\">\n              <div class=\"field\">\n                <label class=\"transition visible\">Eylem Yıl</label>\n                <select v-model=\"filter.yearId\" class=\"ui fluid selection dropdown\">\n                  <option value=\"\">--Seçiniz--</option>\n                  <option v-for=\"year in years\" :key=\"year\" :value=\"year\">{{ year }}</option>\n                </select>\n              </div>\n              <div class=\"field\">\n                <label class=\"transition visible\">Eylem Ay</label>\n                <select v-model=\"filter.monthId\" class=\"ui fluid search selection dropdown\">\n                  <option value=\"\">--Seçiniz--</option>\n                  <option v-for=\"(month, index) in months\" :key=\"index\" :value=\"index + 1\">{{ month }}</option>\n                </select>\n              </div>\n            </div>\n            <div class=\"field\">\n              <label class=\"transition visible\">Kişisel Notlar</label>\n              <select v-model=\"filter.personalNote\" class=\"ui fluid search selection dropdown\">\n                <option value=\"\">--Seçiniz--</option>\n                <option value=\"false\">Yok</option>\n                <option value=\"true\">Var</option>\n              </select>\n            </div>\n            <div class=\"field\">\n              <button @click=\"applyFilter\" class=\"ui button\">Filtrele</button>\n              <button @click=\"clearFilter\" class=\"ui basic button clear\">Temizle</button>\n              <button @click=\"exportData\" class=\"ui green basic button clear\">Dışa Aktar</button>\n            </div>\n          </div>\n        </div>\n      </div>\n\n      <table class=\"ui celled selectable striped table\">\n        <tbody>\n        <tr v-for=\"item in results\" :key=\"item.id\">\n          <td v-if=\"!isEditing\">\n            <router-link :to=\"`/edit/${item.id}`\">{{ item.categoryName }}</router-link>\n          </td>\n          <td>\n            <router-link :to=\"`/edit/${item.id}`\">{{ item.companyName }}</router-link>\n          </td>\n          <td>{{ formatDate(item.startDate) }}</td>\n        </tr>\n        </tbody>\n        <tfoot>\n        <tr>\n          <th :colspan=\"isEditing ? 1 : 2\">\n            <p>{{ rowCount }} kayıttan {{ from }} - {{ to }} arasındakiler görüntüleniyor.</p>\n          </th>\n          <th>\n            <div class=\"field\">\n              <select v-model=\"filter.pageNumber\" class=\"ui compact small dropdown\" \n                      @change=\"reloadList\">\n                <option v-for=\"i in pageCount\" :key=\"i\" :value=\"i\">{{ i }}</option>\n              </select>\n            </div>\n          </th>\n        </tr>\n        </tfoot>\n      </table>\n    </div>\n  </div>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\n\nexport default {\n  name: \"ListResistance\",\n  data() {\n    return {\n      isLoading: true,\n      filter: {\n        companyId: \"\",\n        mainCompanyId: \"\",\n        categoryId: \"\",\n        yearId: \"\",\n        monthId: \"\",\n        personalNote: \"\",\n        pageNumber: 1,\n        pageSize: 10, // Define a default page size\n      },\n      rowCount: 0,\n      pageSize: 10,\n      companies: [],\n      categories: [],\n      results: [],\n      years: Array.from({length: new Date().getFullYear() - 2017}, (_, i) => 2018 + i),\n      months: [\n        \"Ocak\", \"Şubat\", \"Mart\", \"Nisan\", \"Mayıs\", \"Haziran\",\n        \"Temmuz\", \"Ağustos\", \"Eylül\", \"Ekim\", \"Kasım\", \"Aralık\"\n      ],\n    };\n  },\n  computed: {\n    filteredResults() {\n      return this.results.filter(item => {\n        return (\n            (!this.filter.companyId || item.companyId === this.filter.companyId) &&\n            (!this.filter.mainCompanyId || item.mainCompanyId === this.filter.mainCompanyId) &&\n            (!this.filter.categoryId || item.categoryId === this.filter.categoryId) &&\n            (!this.filter.yearId || new Date(item.startDate).getFullYear() === this.filter.yearId) &&\n            (!this.filter.monthId || new Date(item.startDate).getMonth() + 1 === this.filter.monthId) &&\n            (!this.filter.personalNote || item.personalNote === JSON.parse(this.filter.personalNote))\n        );\n      });\n    },\n    from() {\n      return Math.min((this.filter.pageNumber - 1) * this.filter.pageSize + 1, this.rowCount);\n    },\n    to() {\n      return Math.min(this.filter.pageNumber * this.filter.pageSize, this.rowCount);\n    },\n    pageCount() {\n      return Math.ceil(this.rowCount / this.filter.pageSize);\n    },\n    isEditing() {\n      return this.$route.path.includes('/edit/');\n    },\n  },\n  methods: {\n    applyFilter() {\n      this.filter.pageNumber = 1;\n      this.reloadList();\n    },\n    clearFilter() {\n      this.filter = {\n        companyId: \"\",\n        mainCompanyId: \"\",\n        categoryId: \"\",\n        yearId: \"\",\n        monthId: \"\",\n        personalNote: \"\",\n        pageNumber: 1,\n        pageSize: 10,\n      };\n      this.reloadList();\n    },\n    reloadList() {\n      this.fetchResults();\n    },\n    fetchResults() {\n      this.isLoading = true;\n      const queryParams = new URLSearchParams(this.filter).toString();\n      fetchWithToken(`/resistanceapi/list?${queryParams}`)\n      .then(response => response.json())\n      .then(data => {\n        console.log(data);\n        this.results = data.results || [];\n        this.filter = data.filter;\n        this.rowCount = data.rowCount;\n      })\n      .catch(err => console.error(\"Error fetching results:\", err))\n      .finally(() => (this.isLoading = false));\n    },\n    exportData() {\n      console.log(\"Exporting data...\");\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString();\n    },\n    nextPage() {\n      if (this.filter.pageNumber < this.pageCount) {\n        this.filter.pageNumber++;\n        this.reloadList(); // Fetch data for the next page\n      }\n    },\n    previousPage() {\n      if (this.filter.pageNumber > 1) {\n        this.filter.pageNumber--;\n        this.reloadList(); // Fetch data for the previous page\n      }\n    },\n    initializeSemanticUI() {\n      // Reinitialize Semantic UI components\n      this.$nextTick(() => {\n        $('.ui.dropdown').dropdown({\n          clearable: true,\n          fullTextSearch: 'exact',\n        });\n        $('.ui.accordion').accordion();\n      });\n    },\n  },\n  mounted() {\n    this.reloadList();\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/lookup/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n    this.initializeSemanticUI();\n  },\n  updated() {\n    // Reinitialize Semantic UI components after the DOM updates\n    this.initializeSemanticUI();\n  },\n};\n</script>\n\n<style scoped>\n.ui.column.dimmer.active {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(255, 255, 255, 0.8);\n  z-index: 10;\n}\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -24142,34 +24280,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add styles here */
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/Resistance.vue"],"names":[],"mappings":";AAwUA,oBAAoB","sourcesContent":["<template>\n    <!-- Hidden Input for ID -->\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistance.id\" />\n\n    <div class=\"field\">\n      <label for=\"ResistanceDescription\">Kısa Açıklama</label>\n      <textarea\n          id=\"ResistanceDescription\"\n          rows=\"6\"\n          v-model=\"this.resistance.resistanceDescription\"\n      ></textarea>\n      <span v-if=\"formErrors.resistanceDescription\" class=\"text-danger\">\n        {{ formErrors.resistanceDescription }}\n      </span>\n    </div>\n  \n    <div class=\"field\">\n      <label for=\"CategoryId\">Vaka Niteliği</label>\n      <select v-model=\"this.resistance.categoryId\">\n        <option value=\"\">--Seçiniz--</option>\n        <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">\n          {{ category.name }}\n        </option>\n      </select>\n      <span v-if=\"formErrors.categoryId\" class=\"text-danger\">\n        {{ formErrors.categoryId }}\n      </span>\n    </div>\n\n  <div class=\"fields\">\n    <div class=\"six wide field\">\n      <label for=\"IsOutsource\">Şirket Taşeron mu?</label>\n      <select v-model=\"this.resistance.isOutsource\">\n        <option :value=\"false\">Hayır</option>\n        <option :value=\"true\">Evet</option>\n      </select>\n    </div>\n    <div class=\"ten wide field\">\n      <label for=\"CompanyId\">Şirket</label>\n      <div class=\"two fields\">\n        <div class=\"field\">\n          <select v-model=\"this.resistance.companyId\">\n            <option value=\"\">--Seçiniz--</option>\n            <option\n                v-for=\"company in companies\"\n                :key=\"company.id\"\n                :value=\"company.id\"\n            >\n              {{ company.name }}\n            </option>\n          </select>\n          <span v-if=\"formErrors.companyId\" class=\"text-danger\">\n            {{ formErrors.companyId }}\n          </span>\n        </div>\n        <div class=\"field\">\n          <button type=\"button\" @click=\"openCompanyModal\" class=\"ui button\">\n            <i class=\"chevron circle up icon\"></i>Şirket Ekle\n          </button>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <!-- Main Company (Conditional) -->\n  <div v-if=\"this.resistance.isOutsource\" id=\"outsource\" class=\"six wide field\">\n    <label for=\"MainCompanyId\">Ana Şirket</label>\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <select v-model=\"resistance.mainCompanyId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"company in companies\"\n              :key=\"company.id\"\n              :value=\"company.id\"\n          >\n            {{ company.name }}\n          </option>\n        </select>\n      </div>\n      <div class=\"field\">\n        <button type=\"button\" @click=\"openCompanyModal\" class=\"ui button\">\n          <i class=\"chevron circle up icon\"></i>Ana Şirket Ekle\n        </button>\n      </div>\n    </div>\n  </div>\n\n  <!-- Two Fields -->\n    <div class=\"two fields\">\n      <!-- Case Reasons -->\n      <div class=\"field\">\n        <label for=\"ResistanceReasonIds\">Vaka Nedeni</label>\n        <multiselect id=\"ResistanceReasonIds\"\n                     v-model=\"this.resistance.resistanceReasonIds\"\n                     placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                     :preselect-first=\"true\"\n                     :options=\"resistanceReasons\"\n                     :multiple=\"true\"\n                     :close-on-select=\"false\"\n                     :clear-on-select=\"false\"\n                     :preserve-search=\"true\"\n                     :taggable=\"true\"  @tag=\"addResistanceReason\">\n        </multiselect>\n      </div>\n\n      <!-- Develop Right -->\n      <div class=\"field\">\n        <label for=\"DevelopRight\">Hak Geliştirme/Hak Savunma Özelliği</label>\n        <select v-model=\"this.resistance.developRight\">\n          <option value=\"\">--Seçiniz--</option>\n          <option :value=\"true\">Hak Geliştirme</option>\n          <option :value=\"false\">Hak Savunma</option>\n        </select>\n        <span v-if=\"formErrors.developRight\" class=\"text-danger\">\n          {{ formErrors.developRight }}\n        </span>\n      </div>\n    </div>\n\n   \n    <!-- Employee Count -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountId\">İş Yerindeki İşçi Sayısı</label>\n        <select v-model=\"this.resistance.employeeCountId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"count in employeeCounts\"\n              :key=\"count.id\"\n              :value=\"count.id\"\n          >\n            {{ count.name }}\n          </option>\n        </select>\n        <span v-if=\"formErrors.employeeCountId\" class=\"text-danger\">\n          {{ formErrors.employeeCountId }}\n        </span>\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCount\">İş Yerindeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"text\"\n            id=\"EmployeeCount\"\n            v-model=\"this.resistance.employeeCount\"\n        />\n      </div>\n    </div>\n    <div class=\"field\">\n      <label for=\"CorporationIds\">Kurumsallık</label>\n      <multiselect id=\"CorporationIds\" \n                   v-model=\"this.resistance.corporationIds\"\n                   placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                   :preselect-first=\"true\"\n                   :options=\"corporations\"\n                   :multiple=\"true\" \n                   :close-on-select=\"false\" \n                   :clear-on-select=\"false\"\n                   :preserve-search=\"true\" \n                   :taggable=\"true\" @tag=\"addCorporation\">\n      </multiselect>\n    </div>\n  <div class=\"field\">\n    <label for=\"TradeUnionAuthorityId\">Sendikanın Yetki Durumu</label>\n    <select v-model=\"this.resistance.tradeUnionAuthorityId\">\n      <option value=\"\">--Seçiniz--</option>\n      <option\n          v-for=\"ta in this.tradeUnionAuthorities\"\n          :key=\"ta.id\"\n          :value=\"ta.id\"\n      >\n        {{ ta.name }}\n      </option>\n    </select>\n  </div>\n  <div class=\"field\">\n    <label for=\"TradeUnionId\">Tepki Gösterilen Sendika</label>\n    <select v-model=\"this.resistance.tradeUnionId\">\n      <option value=\"\">--Seçiniz--</option>\n      <option\n          v-for=\"ta in this.tradeUnions\"\n          :key=\"ta.id\"\n          :value=\"ta.id\"\n      >\n        {{ ta.name }}\n      </option>\n    </select>\n  </div>\n  <div class=\"two fields\">\n    <div class=\"field\">\n      <label for=\"EmploymentTypeIds\">İstihdam Türü</label>\n      <multiselect id=\"CorporationIds\"\n                   v-model=\"this.resistance.employmentTypeIds\"\n                   placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                   :preselect-first=\"true\"\n                   :options=\"employmentTypes\"\n                   :multiple=\"true\"\n                   :close-on-select=\"false\"\n                   :clear-on-select=\"false\"\n                   :preserve-search=\"true\"\n                   :taggable=\"true\">\n      </multiselect>\n      <div v-if=\"formErrors.employmentTypeIds\" class=\"field error\">\n        <label>{{ formErrors.employmentTypeIds }}</label>\n      </div>\n    </div>\n  </div>\n  <div class=\"field\">\n    <label for=\"FiredEmployeeCountByProtesto\">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>\n    <input type=\"number\" v-model=\"this.resistance.firedEmployeeCountByProtesto\">\n  </div>\n    <!-- Other Fields -->\n    <div class=\"field\">\n      <label for=\"ResistanceResult\">Sonuç</label>\n      <select v-model=\"this.resistance.resistanceResult\" class=\"ui fluid dropdown\">\n        <option :value=\"0\">Bilinmiyor</option>\n        <option :value=\"1\">Tam Kazanım</option>\n        <option :value=\"2\">Yarım Kazanım</option>\n        <option :value=\"3\">Sıfır Kazanım</option>\n      </select>\n    </div>\n</template>\n\n<script>\nimport Multiselect from 'vue-multiselect'\n\nexport default {\n  name: \"Resistance\",\n  emits: [\"openCompanyModal\"],\n  components: { Multiselect },\n  props: {\n    // modelValue: Object,\n    resistance: {\n      type: Object,\n      default: () => ({}) \n    },\n    companies: {\n      type: Array,\n      required: true,\n    },\n    resistanceReasons: {\n      type: Array,\n      required: true,\n    },\n    categories: {\n      type: Array,\n      required: true,\n    },\n    corporations: {\n      type: Array,\n      required: true,\n    },\n    tradeUnionAuthorities: {\n      type: Array,\n      required: true,\n    },\n    tradeUnions: {\n      type: Array,\n      required: true,\n    },\n    employmentTypes: {\n      type: Array,\n      required: true,\n    },\n    employeeCounts: {\n      type: Array,\n      required: true,\n    },\n    formErrors: {\n      type:Object,\n      default: () => ({})\n    }\n  },\n  methods: {\n    toggleOutsource() {\n      // Show/hide outsource section\n    },\n    openCompanyModal() {\n      this.$emit('openCompanyModal');\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    addEmploymentType(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.employmentTypes.push(tag)\n      this.resistance.employmentTypeIds.push(tag)\n    },\n    addCorporation(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.corporations.push(newTag);\n      this.resistance.corporationIds.push(tag)\n    },\n    customFilter(search, id) {\n      console.log(id);\n      console.log(search);\n      const normalize = (str) =>\n          str\n              .toLowerCase()\n              .normalize(\"NFD\") // Decompose characters\n              .replace(/[\\u0300-\\u036f]/g, \"\") // Remove diacritics\n              .replace(/ı/g, \"i\")\n              .replace(/ğ/g, \"g\")\n              .replace(/ü/g, \"u\")\n              .replace(/ş/g, \"s\")\n              .replace(/ö/g, \"o\")\n              .replace(/ç/g, \"c\");\n      const result = normalize(search);\n      console.log(result);\n      return result;\n    },\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&id=362e7022&scoped=true&lang=css&external":
-/*!****************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&id=362e7022&scoped=true&lang=css&external ***!
-  \****************************************************************************************************************************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
-/* harmony import */ var _css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-// Imports
-
-
-var ___CSS_LOADER_EXPORT___ = _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, `@keyframes spinning-362e7022{0%{transform:rotate(0)}to{transform:rotate(2turn)}}fieldset[disabled] .multiselect[data-v-362e7022]{pointer-events:none}.multiselect__spinner[data-v-362e7022]{position:absolute;right:1px;top:1px;width:40px;height:38px;background:#fff;display:block}.multiselect__spinner[data-v-362e7022]::after,.multiselect__spinner[data-v-362e7022]::before{position:absolute;content:"";top:50%;left:50%;margin:-8px 0 0-8px;width:16px;height:16px;border-radius:100%;border-color:#41b883 transparent transparent;border-style:solid;border-width:2px;box-shadow:0 0 0 1px transparent;animation:spinning-362e7022 2.4s cubic-bezier(.41,.26,.2,.62);animation-iteration-count:infinite}.multiselect__spinner[data-v-362e7022]::after{animation:spinning-362e7022 2.4s cubic-bezier(.51,.09,.21,.8)}.multiselect__loading-enter-active[data-v-362e7022]{transition:opacity .4s ease-in-out;opacity:1}.multiselect__loading-leave-active[data-v-362e7022]{transition:opacity .4s ease-in-out}.multiselect__loading-enter[data-v-362e7022],.multiselect__loading-leave-active[data-v-362e7022]{opacity:0}.multiselect[data-v-362e7022],.multiselect__input[data-v-362e7022],.multiselect__single[data-v-362e7022]{font-family:inherit;font-size:16px;touch-action:manipulation}.multiselect[data-v-362e7022]{box-sizing:content-box;display:block;position:relative;width:100%;min-height:40px;text-align:left;color:#35495e}.multiselect[data-v-362e7022] *{box-sizing:border-box}.multiselect[data-v-362e7022]:focus{outline:0}.multiselect--disabled[data-v-362e7022]{background:#ededed;pointer-events:none;opacity:.6}.multiselect--active[data-v-362e7022]{z-index:50}.multiselect--active:not(.multiselect--above) .multiselect__current[data-v-362e7022],.multiselect--active:not(.multiselect--above) .multiselect__input[data-v-362e7022],.multiselect--active:not(.multiselect--above) .multiselect__tags[data-v-362e7022]{border-bottom-left-radius:0;border-bottom-right-radius:0}.multiselect--active .multiselect__select[data-v-362e7022]{transform:rotateZ(180deg)}.multiselect--above.multiselect--active .multiselect__current[data-v-362e7022],.multiselect--above.multiselect--active .multiselect__input[data-v-362e7022],.multiselect--above.multiselect--active .multiselect__tags[data-v-362e7022]{border-top-left-radius:0;border-top-right-radius:0}.multiselect__input[data-v-362e7022]{padding:0 0 0 5px;margin-bottom:8px}.multiselect__input[data-v-362e7022],.multiselect__single[data-v-362e7022]{position:relative;display:inline-block;min-height:20px;line-height:20px;border:0;border-radius:5px;background:#fff;width:calc(100%);transition:border .1s ease;box-sizing:border-box;vertical-align:top}.multiselect__input[data-v-362e7022]::placeholder{color:#35495e}.multiselect__tag~.multiselect__input[data-v-362e7022],.multiselect__tag~.multiselect__single[data-v-362e7022]{width:auto}.multiselect__input[data-v-362e7022]:hover,.multiselect__single[data-v-362e7022]:hover{border-color:#cfcfcf}.multiselect__input[data-v-362e7022]:focus,.multiselect__single[data-v-362e7022]:focus{border-color:#a8a8a8;outline:0}.multiselect__single[data-v-362e7022]{padding:0 0 0 5px;margin-bottom:8px}.multiselect__tags-wrap[data-v-362e7022]{display:inline}.multiselect__tags[data-v-362e7022]{min-height:40px;display:block;padding:8px 40px 0 8px;border-radius:5px;border:1px solid #e8e8e8;background:#fff;font-size:14px}.multiselect__tag[data-v-362e7022]{position:relative;display:inline-block;padding:4px 26px 4px 10px;border-radius:5px;margin-right:10px;color:#fff;line-height:1;background:#41b883;margin-bottom:5px;white-space:nowrap;overflow:hidden;max-width:100%;text-overflow:ellipsis}.multiselect__tag-icon[data-v-362e7022]{cursor:pointer;margin-left:7px;position:absolute;right:0;top:0;bottom:0;font-weight:700;font-style:initial;width:22px;text-align:center;line-height:22px;transition:all .2s ease;border-radius:5px}.multiselect__tag-icon[data-v-362e7022]::after{content:"×";color:#266d4d;font-size:14px}.multiselect__tag-icon[data-v-362e7022]:focus::after,.multiselect__tag-icon[data-v-362e7022]:hover::after{color:#fff}.multiselect__current[data-v-362e7022],.multiselect__select[data-v-362e7022]{line-height:16px;display:block;box-sizing:border-box;margin:0;text-decoration:none;cursor:pointer}.multiselect__current[data-v-362e7022]{min-height:40px;overflow:hidden;padding:8px 30px 0 12px;white-space:nowrap;border-radius:5px;border:1px solid #e8e8e8}.multiselect__select[data-v-362e7022]{position:absolute;width:40px;height:38px;right:1px;top:1px;padding:4px 8px;text-align:center;transition:transform .2s ease}.multiselect__select[data-v-362e7022]::before{position:relative;right:0;top:65%;color:#999;margin-top:4px;border-style:solid;border-width:5px 5px 0;border-color:#999 transparent transparent;content:""}.multiselect__placeholder[data-v-362e7022]{color:#adadad;display:inline-block;margin-bottom:10px;padding-top:2px}.multiselect--active .multiselect__placeholder[data-v-362e7022]{display:none}.multiselect__content-wrapper[data-v-362e7022]{position:absolute;display:block;background:#fff;width:100%;max-height:240px;overflow:auto;border:1px solid #e8e8e8;border-top:none;border-bottom-left-radius:5px;border-bottom-right-radius:5px;z-index:50;-webkit-overflow-scrolling:touch}.multiselect__content[data-v-362e7022]{list-style:none;display:inline-block;padding:0;margin:0;min-width:100%;vertical-align:top}.multiselect--above .multiselect__content-wrapper[data-v-362e7022]{bottom:100%;border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:5px;border-top-right-radius:5px;border-bottom:none;border-top:1px solid #e8e8e8}.multiselect__content[data-v-362e7022]::-webkit-scrollbar{display:none}.multiselect__element[data-v-362e7022]{display:block}.multiselect__option[data-v-362e7022]{display:block;padding:12px;min-height:40px;line-height:16px;text-decoration:none;text-transform:none;vertical-align:middle;position:relative;cursor:pointer;white-space:nowrap}.multiselect__option[data-v-362e7022]::after{top:0;right:0;position:absolute;line-height:40px;padding-right:12px;padding-left:20px;font-size:13px}.multiselect__option--highlight[data-v-362e7022]{background:#41b883;outline:0;color:#fff}.multiselect__option--highlight[data-v-362e7022]::after{content:attr(data-select);background:#41b883;color:#fff}.multiselect__option--selected[data-v-362e7022]{background:#f3f3f3;color:#35495e;font-weight:700}.multiselect__option--selected[data-v-362e7022]::after{content:attr(data-selected);color:silver;background:inherit}.multiselect__option--selected.multiselect__option--highlight[data-v-362e7022]{background:#ff6a6a;color:#fff}.multiselect__option--selected.multiselect__option--highlight[data-v-362e7022]::after{background:#ff6a6a;content:attr(data-deselect);color:#fff}.multiselect--disabled .multiselect__current[data-v-362e7022],.multiselect--disabled .multiselect__select[data-v-362e7022]{background:#ededed;color:#a6a6a6}.multiselect__option--disabled[data-v-362e7022]{background:#ededed!important;color:#a6a6a6!important;cursor:text;pointer-events:none}.multiselect__option--group[data-v-362e7022]{background:#ededed;color:#35495e}.multiselect__option--group.multiselect__option--highlight[data-v-362e7022]{background:#35495e;color:#fff}.multiselect__option--group.multiselect__option--highlight[data-v-362e7022]::after{background:#35495e}.multiselect__option--disabled.multiselect__option--highlight[data-v-362e7022]{background:#dedede}.multiselect__option--group-selected.multiselect__option--highlight[data-v-362e7022]{background:#ff6a6a;color:#fff}.multiselect__option--group-selected.multiselect__option--highlight[data-v-362e7022]::after{background:#ff6a6a;content:attr(data-deselect);color:#fff}.multiselect-enter-active[data-v-362e7022],.multiselect-leave-active[data-v-362e7022]{transition:all .15s ease}.multiselect-enter[data-v-362e7022],.multiselect-leave-active[data-v-362e7022]{opacity:0}.multiselect__strong[data-v-362e7022]{margin-bottom:8px;line-height:20px;display:inline-block;vertical-align:top}[dir=rtl] .multiselect[data-v-362e7022]{text-align:right}[dir=rtl] .multiselect__select[data-v-362e7022]{right:auto;left:1px}[dir=rtl] .multiselect__tags[data-v-362e7022]{padding:8px 8px 0 40px}[dir=rtl] .multiselect__content[data-v-362e7022]{text-align:right}[dir=rtl] .multiselect__option[data-v-362e7022]::after{right:auto;left:0}[dir=rtl] .multiselect__clear[data-v-362e7022]{right:auto;left:12px}[dir=rtl] .multiselect__spinner[data-v-362e7022]{right:auto;left:1px}`, "",{"version":3,"sources":["webpack://./node_modules/vue-multiselect/dist/vue-multiselect.min.css"],"names":[],"mappings":"AAAA,6BAA6B,GAAG,mBAAmB,CAAC,GAAG,uBAAuB,CAAC,CAAC,iDAAiD,mBAAmB,CAAC,uCAAuC,iBAAiB,CAAC,SAAS,CAAC,OAAO,CAAC,UAAU,CAAC,WAAW,CAAC,eAAe,CAAC,aAAa,CAAC,6FAA6F,iBAAiB,CAAC,UAAU,CAAC,OAAO,CAAC,QAAQ,CAAC,mBAAmB,CAAC,UAAU,CAAC,WAAW,CAAC,kBAAkB,CAAC,4CAA4C,CAAC,kBAAkB,CAAC,gBAAgB,CAAC,gCAAgC,CAAC,6DAA6D,CAAC,kCAAkC,CAAC,8CAA8C,6DAA6D,CAAC,oDAAoD,kCAAkC,CAAC,SAAS,CAAC,oDAAoD,kCAAkC,CAAC,iGAAiG,SAAS,CAAC,yGAAyG,mBAAmB,CAAC,cAAc,CAAC,yBAAyB,CAAC,8BAA8B,sBAAsB,CAAC,aAAa,CAAC,iBAAiB,CAAC,UAAU,CAAC,eAAe,CAAC,eAAe,CAAC,aAAa,CAAC,gCAAgC,qBAAqB,CAAC,oCAAoC,SAAS,CAAC,wCAAwC,kBAAkB,CAAC,mBAAmB,CAAC,UAAU,CAAC,sCAAsC,UAAU,CAAC,0PAA0P,2BAA2B,CAAC,4BAA4B,CAAC,2DAA2D,yBAAyB,CAAC,wOAAwO,wBAAwB,CAAC,yBAAyB,CAAC,qCAAqC,iBAAiB,CAAC,iBAAiB,CAAC,2EAA2E,iBAAiB,CAAC,oBAAoB,CAAC,eAAe,CAAC,gBAAgB,CAAC,QAAQ,CAAC,iBAAiB,CAAC,eAAe,CAAC,gBAAgB,CAAC,0BAA0B,CAAC,qBAAqB,CAAC,kBAAkB,CAAC,kDAAkD,aAAa,CAAC,+GAA+G,UAAU,CAAC,uFAAuF,oBAAoB,CAAC,uFAAuF,oBAAoB,CAAC,SAAS,CAAC,sCAAsC,iBAAiB,CAAC,iBAAiB,CAAC,yCAAyC,cAAc,CAAC,oCAAoC,eAAe,CAAC,aAAa,CAAC,sBAAsB,CAAC,iBAAiB,CAAC,wBAAwB,CAAC,eAAe,CAAC,cAAc,CAAC,mCAAmC,iBAAiB,CAAC,oBAAoB,CAAC,yBAAyB,CAAC,iBAAiB,CAAC,iBAAiB,CAAC,UAAU,CAAC,aAAa,CAAC,kBAAkB,CAAC,iBAAiB,CAAC,kBAAkB,CAAC,eAAe,CAAC,cAAc,CAAC,sBAAsB,CAAC,wCAAwC,cAAc,CAAC,eAAe,CAAC,iBAAiB,CAAC,OAAO,CAAC,KAAK,CAAC,QAAQ,CAAC,eAAe,CAAC,kBAAkB,CAAC,UAAU,CAAC,iBAAiB,CAAC,gBAAgB,CAAC,uBAAuB,CAAC,iBAAiB,CAAC,+CAA+C,WAAW,CAAC,aAAa,CAAC,cAAc,CAAC,0GAA0G,UAAU,CAAC,6EAA6E,gBAAgB,CAAC,aAAa,CAAC,qBAAqB,CAAC,QAAQ,CAAC,oBAAoB,CAAC,cAAc,CAAC,uCAAuC,eAAe,CAAC,eAAe,CAAC,uBAAuB,CAAC,kBAAkB,CAAC,iBAAiB,CAAC,wBAAwB,CAAC,sCAAsC,iBAAiB,CAAC,UAAU,CAAC,WAAW,CAAC,SAAS,CAAC,OAAO,CAAC,eAAe,CAAC,iBAAiB,CAAC,6BAA6B,CAAC,8CAA8C,iBAAiB,CAAC,OAAO,CAAC,OAAO,CAAC,UAAU,CAAC,cAAc,CAAC,kBAAkB,CAAC,sBAAsB,CAAC,yCAAyC,CAAC,UAAU,CAAC,2CAA2C,aAAa,CAAC,oBAAoB,CAAC,kBAAkB,CAAC,eAAe,CAAC,gEAAgE,YAAY,CAAC,+CAA+C,iBAAiB,CAAC,aAAa,CAAC,eAAe,CAAC,UAAU,CAAC,gBAAgB,CAAC,aAAa,CAAC,wBAAwB,CAAC,eAAe,CAAC,6BAA6B,CAAC,8BAA8B,CAAC,UAAU,CAAC,gCAAgC,CAAC,uCAAuC,eAAe,CAAC,oBAAoB,CAAC,SAAS,CAAC,QAAQ,CAAC,cAAc,CAAC,kBAAkB,CAAC,mEAAmE,WAAW,CAAC,2BAA2B,CAAC,4BAA4B,CAAC,0BAA0B,CAAC,2BAA2B,CAAC,kBAAkB,CAAC,4BAA4B,CAAC,0DAA0D,YAAY,CAAC,uCAAuC,aAAa,CAAC,sCAAsC,aAAa,CAAC,YAAY,CAAC,eAAe,CAAC,gBAAgB,CAAC,oBAAoB,CAAC,mBAAmB,CAAC,qBAAqB,CAAC,iBAAiB,CAAC,cAAc,CAAC,kBAAkB,CAAC,6CAA6C,KAAK,CAAC,OAAO,CAAC,iBAAiB,CAAC,gBAAgB,CAAC,kBAAkB,CAAC,iBAAiB,CAAC,cAAc,CAAC,iDAAiD,kBAAkB,CAAC,SAAS,CAAC,UAAU,CAAC,wDAAwD,yBAAyB,CAAC,kBAAkB,CAAC,UAAU,CAAC,gDAAgD,kBAAkB,CAAC,aAAa,CAAC,eAAe,CAAC,uDAAuD,2BAA2B,CAAC,YAAY,CAAC,kBAAkB,CAAC,+EAA+E,kBAAkB,CAAC,UAAU,CAAC,sFAAsF,kBAAkB,CAAC,2BAA2B,CAAC,UAAU,CAAC,2HAA2H,kBAAkB,CAAC,aAAa,CAAC,gDAAgD,4BAA4B,CAAC,uBAAuB,CAAC,WAAW,CAAC,mBAAmB,CAAC,6CAA6C,kBAAkB,CAAC,aAAa,CAAC,4EAA4E,kBAAkB,CAAC,UAAU,CAAC,mFAAmF,kBAAkB,CAAC,+EAA+E,kBAAkB,CAAC,qFAAqF,kBAAkB,CAAC,UAAU,CAAC,4FAA4F,kBAAkB,CAAC,2BAA2B,CAAC,UAAU,CAAC,sFAAsF,wBAAwB,CAAC,+EAA+E,SAAS,CAAC,sCAAsC,iBAAiB,CAAC,gBAAgB,CAAC,oBAAoB,CAAC,kBAAkB,CAAC,wCAAwC,gBAAgB,CAAC,gDAAgD,UAAU,CAAC,QAAQ,CAAC,8CAA8C,sBAAsB,CAAC,iDAAiD,gBAAgB,CAAC,uDAAuD,UAAU,CAAC,MAAM,CAAC,+CAA+C,UAAU,CAAC,SAAS,CAAC,iDAAiD,UAAU,CAAC,QAAQ","sourcesContent":["@keyframes spinning-362e7022{0%{transform:rotate(0)}to{transform:rotate(2turn)}}fieldset[disabled] .multiselect[data-v-362e7022]{pointer-events:none}.multiselect__spinner[data-v-362e7022]{position:absolute;right:1px;top:1px;width:40px;height:38px;background:#fff;display:block}.multiselect__spinner[data-v-362e7022]::after,.multiselect__spinner[data-v-362e7022]::before{position:absolute;content:\"\";top:50%;left:50%;margin:-8px 0 0-8px;width:16px;height:16px;border-radius:100%;border-color:#41b883 transparent transparent;border-style:solid;border-width:2px;box-shadow:0 0 0 1px transparent;animation:spinning-362e7022 2.4s cubic-bezier(.41,.26,.2,.62);animation-iteration-count:infinite}.multiselect__spinner[data-v-362e7022]::after{animation:spinning-362e7022 2.4s cubic-bezier(.51,.09,.21,.8)}.multiselect__loading-enter-active[data-v-362e7022]{transition:opacity .4s ease-in-out;opacity:1}.multiselect__loading-leave-active[data-v-362e7022]{transition:opacity .4s ease-in-out}.multiselect__loading-enter[data-v-362e7022],.multiselect__loading-leave-active[data-v-362e7022]{opacity:0}.multiselect[data-v-362e7022],.multiselect__input[data-v-362e7022],.multiselect__single[data-v-362e7022]{font-family:inherit;font-size:16px;touch-action:manipulation}.multiselect[data-v-362e7022]{box-sizing:content-box;display:block;position:relative;width:100%;min-height:40px;text-align:left;color:#35495e}.multiselect[data-v-362e7022] *{box-sizing:border-box}.multiselect[data-v-362e7022]:focus{outline:0}.multiselect--disabled[data-v-362e7022]{background:#ededed;pointer-events:none;opacity:.6}.multiselect--active[data-v-362e7022]{z-index:50}.multiselect--active:not(.multiselect--above) .multiselect__current[data-v-362e7022],.multiselect--active:not(.multiselect--above) .multiselect__input[data-v-362e7022],.multiselect--active:not(.multiselect--above) .multiselect__tags[data-v-362e7022]{border-bottom-left-radius:0;border-bottom-right-radius:0}.multiselect--active .multiselect__select[data-v-362e7022]{transform:rotateZ(180deg)}.multiselect--above.multiselect--active .multiselect__current[data-v-362e7022],.multiselect--above.multiselect--active .multiselect__input[data-v-362e7022],.multiselect--above.multiselect--active .multiselect__tags[data-v-362e7022]{border-top-left-radius:0;border-top-right-radius:0}.multiselect__input[data-v-362e7022]{padding:0 0 0 5px;margin-bottom:8px}.multiselect__input[data-v-362e7022],.multiselect__single[data-v-362e7022]{position:relative;display:inline-block;min-height:20px;line-height:20px;border:0;border-radius:5px;background:#fff;width:calc(100%);transition:border .1s ease;box-sizing:border-box;vertical-align:top}.multiselect__input[data-v-362e7022]::placeholder{color:#35495e}.multiselect__tag~.multiselect__input[data-v-362e7022],.multiselect__tag~.multiselect__single[data-v-362e7022]{width:auto}.multiselect__input[data-v-362e7022]:hover,.multiselect__single[data-v-362e7022]:hover{border-color:#cfcfcf}.multiselect__input[data-v-362e7022]:focus,.multiselect__single[data-v-362e7022]:focus{border-color:#a8a8a8;outline:0}.multiselect__single[data-v-362e7022]{padding:0 0 0 5px;margin-bottom:8px}.multiselect__tags-wrap[data-v-362e7022]{display:inline}.multiselect__tags[data-v-362e7022]{min-height:40px;display:block;padding:8px 40px 0 8px;border-radius:5px;border:1px solid #e8e8e8;background:#fff;font-size:14px}.multiselect__tag[data-v-362e7022]{position:relative;display:inline-block;padding:4px 26px 4px 10px;border-radius:5px;margin-right:10px;color:#fff;line-height:1;background:#41b883;margin-bottom:5px;white-space:nowrap;overflow:hidden;max-width:100%;text-overflow:ellipsis}.multiselect__tag-icon[data-v-362e7022]{cursor:pointer;margin-left:7px;position:absolute;right:0;top:0;bottom:0;font-weight:700;font-style:initial;width:22px;text-align:center;line-height:22px;transition:all .2s ease;border-radius:5px}.multiselect__tag-icon[data-v-362e7022]::after{content:\"×\";color:#266d4d;font-size:14px}.multiselect__tag-icon[data-v-362e7022]:focus::after,.multiselect__tag-icon[data-v-362e7022]:hover::after{color:#fff}.multiselect__current[data-v-362e7022],.multiselect__select[data-v-362e7022]{line-height:16px;display:block;box-sizing:border-box;margin:0;text-decoration:none;cursor:pointer}.multiselect__current[data-v-362e7022]{min-height:40px;overflow:hidden;padding:8px 30px 0 12px;white-space:nowrap;border-radius:5px;border:1px solid #e8e8e8}.multiselect__select[data-v-362e7022]{position:absolute;width:40px;height:38px;right:1px;top:1px;padding:4px 8px;text-align:center;transition:transform .2s ease}.multiselect__select[data-v-362e7022]::before{position:relative;right:0;top:65%;color:#999;margin-top:4px;border-style:solid;border-width:5px 5px 0;border-color:#999 transparent transparent;content:\"\"}.multiselect__placeholder[data-v-362e7022]{color:#adadad;display:inline-block;margin-bottom:10px;padding-top:2px}.multiselect--active .multiselect__placeholder[data-v-362e7022]{display:none}.multiselect__content-wrapper[data-v-362e7022]{position:absolute;display:block;background:#fff;width:100%;max-height:240px;overflow:auto;border:1px solid #e8e8e8;border-top:none;border-bottom-left-radius:5px;border-bottom-right-radius:5px;z-index:50;-webkit-overflow-scrolling:touch}.multiselect__content[data-v-362e7022]{list-style:none;display:inline-block;padding:0;margin:0;min-width:100%;vertical-align:top}.multiselect--above .multiselect__content-wrapper[data-v-362e7022]{bottom:100%;border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:5px;border-top-right-radius:5px;border-bottom:none;border-top:1px solid #e8e8e8}.multiselect__content[data-v-362e7022]::-webkit-scrollbar{display:none}.multiselect__element[data-v-362e7022]{display:block}.multiselect__option[data-v-362e7022]{display:block;padding:12px;min-height:40px;line-height:16px;text-decoration:none;text-transform:none;vertical-align:middle;position:relative;cursor:pointer;white-space:nowrap}.multiselect__option[data-v-362e7022]::after{top:0;right:0;position:absolute;line-height:40px;padding-right:12px;padding-left:20px;font-size:13px}.multiselect__option--highlight[data-v-362e7022]{background:#41b883;outline:0;color:#fff}.multiselect__option--highlight[data-v-362e7022]::after{content:attr(data-select);background:#41b883;color:#fff}.multiselect__option--selected[data-v-362e7022]{background:#f3f3f3;color:#35495e;font-weight:700}.multiselect__option--selected[data-v-362e7022]::after{content:attr(data-selected);color:silver;background:inherit}.multiselect__option--selected.multiselect__option--highlight[data-v-362e7022]{background:#ff6a6a;color:#fff}.multiselect__option--selected.multiselect__option--highlight[data-v-362e7022]::after{background:#ff6a6a;content:attr(data-deselect);color:#fff}.multiselect--disabled .multiselect__current[data-v-362e7022],.multiselect--disabled .multiselect__select[data-v-362e7022]{background:#ededed;color:#a6a6a6}.multiselect__option--disabled[data-v-362e7022]{background:#ededed!important;color:#a6a6a6!important;cursor:text;pointer-events:none}.multiselect__option--group[data-v-362e7022]{background:#ededed;color:#35495e}.multiselect__option--group.multiselect__option--highlight[data-v-362e7022]{background:#35495e;color:#fff}.multiselect__option--group.multiselect__option--highlight[data-v-362e7022]::after{background:#35495e}.multiselect__option--disabled.multiselect__option--highlight[data-v-362e7022]{background:#dedede}.multiselect__option--group-selected.multiselect__option--highlight[data-v-362e7022]{background:#ff6a6a;color:#fff}.multiselect__option--group-selected.multiselect__option--highlight[data-v-362e7022]::after{background:#ff6a6a;content:attr(data-deselect);color:#fff}.multiselect-enter-active[data-v-362e7022],.multiselect-leave-active[data-v-362e7022]{transition:all .15s ease}.multiselect-enter[data-v-362e7022],.multiselect-leave-active[data-v-362e7022]{opacity:0}.multiselect__strong[data-v-362e7022]{margin-bottom:8px;line-height:20px;display:inline-block;vertical-align:top}[dir=rtl] .multiselect[data-v-362e7022]{text-align:right}[dir=rtl] .multiselect__select[data-v-362e7022]{right:auto;left:1px}[dir=rtl] .multiselect__tags[data-v-362e7022]{padding:8px 8px 0 40px}[dir=rtl] .multiselect__content[data-v-362e7022]{text-align:right}[dir=rtl] .multiselect__option[data-v-362e7022]::after{right:auto;left:0}[dir=rtl] .multiselect__clear[data-v-362e7022]{right:auto;left:12px}[dir=rtl] .multiselect__spinner[data-v-362e7022]{right:auto;left:1px}"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/Resistance.vue"],"names":[],"mappings":";AAuVA,oBAAoB","sourcesContent":["<template>\n    <!-- Hidden Input for ID -->\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistance.id\" />\n\n    <div class=\"field\">\n      <label for=\"ResistanceDescription\">Kısa Açıklama</label>\n      <textarea\n          id=\"ResistanceDescription\"\n          rows=\"6\"\n          v-model=\"this.resistance.resistanceDescription\"\n          @input=\"clearError('resistanceDescription')\"\n      ></textarea>\n      <span v-if=\"formErrors.resistanceDescription\" class=\"field error\">\n        <label>{{ formErrors.resistanceDescription }}</label>\n      </span>\n    </div>\n  \n    <div class=\"field\">\n      <label for=\"CategoryId\">Vaka Niteliği</label>\n      <select v-model=\"this.resistance.categoryId\"\n              @change=\"clearError('categoryId')\">\n        <option value=\"\">--Seçiniz--</option>\n        <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">\n          {{ category.name }}\n        </option>\n      </select>\n      <span v-if=\"formErrors.categoryId\" class=\"field error\">\n        <label>{{ formErrors.categoryId }}</label>\n      </span>\n    </div>\n\n  <div class=\"fields\">\n    <div class=\"six wide field\">\n      <label for=\"IsOutsource\">Şirket Taşeron mu?</label>\n      <select v-model=\"this.resistance.isOutsource\">\n        <option :value=\"false\">Hayır</option>\n        <option :value=\"true\">Evet</option>\n      </select>\n    </div>\n    <div class=\"ten wide field\">\n      <label for=\"CompanyId\">Şirket</label>\n      <div class=\"two fields\">\n        <div class=\"field\">\n          <select v-model=\"this.resistance.companyId\"\n                  @change=\"clearError('companyId')\">\n            <option value=\"\">--Seçiniz--</option>\n            <option\n                v-for=\"company in companies\"\n                :key=\"company.id\"\n                :value=\"company.id\"\n            >\n              {{ company.name }}\n            </option>\n          </select>\n          <span v-if=\"formErrors.companyId\" class=\"field error\">\n            <label>{{ formErrors.companyId }}</label>\n          </span>\n        </div>\n        <div class=\"field\">\n          <button type=\"button\" @click=\"openCompanyModal\" class=\"ui button\">\n            <i class=\"chevron circle up icon\"></i>Şirket Ekle\n          </button>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <!-- Main Company (Conditional) -->\n  <div v-if=\"this.resistance.isOutsource\" id=\"outsource\" class=\"six wide field\">\n    <label for=\"MainCompanyId\">Ana Şirket</label>\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <select v-model=\"resistance.mainCompanyId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"company in companies\"\n              :key=\"company.id\"\n              :value=\"company.id\"\n          >\n            {{ company.name }}\n          </option>\n        </select>\n      </div>\n      <div class=\"field\">\n        <button type=\"button\" @click=\"openCompanyModal\" class=\"ui button\">\n          <i class=\"chevron circle up icon\"></i>Ana Şirket Ekle\n        </button>\n      </div>\n    </div>\n  </div>\n\n  <!-- Two Fields -->\n    <div class=\"two fields\">\n      <!-- Case Reasons -->\n      <div class=\"field\">\n        <label for=\"ResistanceReasonIds\">Vaka Nedeni</label>\n        <multiselect id=\"ResistanceReasonIds\"\n                     v-model=\"this.resistance.resistanceReasonIds\"\n                     placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                     :preselect-first=\"true\"\n                     :options=\"resistanceReasons\"\n                     :multiple=\"true\"\n                     :close-on-select=\"false\"\n                     :clear-on-select=\"false\"\n                     :preserve-search=\"true\"\n                     :taggable=\"true\"  @tag=\"addResistanceReason\">\n        </multiselect>\n      </div>\n\n      <!-- Develop Right -->\n      <div class=\"field\">\n        <label for=\"DevelopRight\">Hak Geliştirme/Hak Savunma Özelliği</label>\n        <select v-model=\"this.resistance.developRight\"\n                @change=\"clearError('developRight')\">\n          <option value=\"\">--Seçiniz--</option>\n          <option :value=\"true\">Hak Geliştirme</option>\n          <option :value=\"false\">Hak Savunma</option>\n        </select>\n        <span v-if=\"formErrors.developRight\" class=\"field error\">\n          <label>{{ formErrors.developRight }}</label>\n        </span>\n      </div>\n    </div>\n\n   \n    <!-- Employee Count -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountId\">İş Yerindeki İşçi Sayısı</label>\n        <select v-model=\"this.resistance.employeeCountId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"count in employeeCounts\"\n              :key=\"count.id\"\n              :value=\"count.id\"\n          >\n            {{ count.name }}\n          </option>\n        </select>\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCount\">İş Yerindeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"text\"\n            id=\"EmployeeCount\"\n            v-model=\"this.resistance.employeeCount\"\n        />\n      </div>\n    </div>\n    <div class=\"field\">\n      <label for=\"CorporationIds\">Kurumsallık</label>\n      <multiselect id=\"CorporationIds\" \n                   v-model=\"this.resistance.corporationIds\"\n                   placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                   :preselect-first=\"true\"\n                   :options=\"corporations\"\n                   :multiple=\"true\" \n                   :close-on-select=\"false\" \n                   :clear-on-select=\"false\"\n                   :preserve-search=\"true\" \n                   :taggable=\"true\" @tag=\"addCorporation\"\n                   @select=\"clearError('corporationIds')\"\n      >\n      </multiselect>\n      <span v-if=\"formErrors.corporationIds\" class=\"field error\">\n        <label>{{ formErrors.corporationIds }}</label>\n      </span>\n    </div>\n  <div class=\"field\" v-show=\"showTradeUnionAuthority\">\n    <label for=\"TradeUnionAuthorityId\">Sendikanın Yetki Durumu</label>\n    <select v-model=\"this.resistance.tradeUnionAuthorityId\">\n      <option value=\"\">--Seçiniz--</option>\n      <option\n          v-for=\"ta in this.tradeUnionAuthorities\"\n          :key=\"ta.id\"\n          :value=\"ta.id\"\n      >\n        {{ ta.name }}\n      </option>\n    </select>\n  </div>\n  <div class=\"field\">\n    <label for=\"TradeUnionId\">Tepki Gösterilen Sendika</label>\n    <select v-model=\"this.resistance.tradeUnionId\">\n      <option value=\"\">--Seçiniz--</option>\n      <option\n          v-for=\"ta in this.tradeUnions\"\n          :key=\"ta.id\"\n          :value=\"ta.id\"\n      >\n        {{ ta.name }}\n      </option>\n    </select>\n  </div>\n  <div class=\"two fields\">\n    <div class=\"field\">\n      <label for=\"EmploymentTypeIds\">İstihdam Türü</label>\n      <multiselect id=\"CorporationIds\"\n                   v-model=\"this.resistance.employmentTypeIds\"\n                   placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                   :preselect-first=\"true\"\n                   :options=\"employmentTypes\"\n                   :multiple=\"true\"\n                   :close-on-select=\"false\"\n                   :clear-on-select=\"false\"\n                   :preserve-search=\"true\"\n                   :taggable=\"true\"\n                   @select=\"clearError('employmentTypeIds')\">\n      </multiselect>\n      <div v-if=\"formErrors.employmentTypeIds\" class=\"field error\">\n        <label>{{ formErrors.employmentTypeIds }}</label>\n      </div>\n    </div>\n  </div>\n  <div class=\"field\">\n    <label for=\"FiredEmployeeCountByProtesto\">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>\n    <input type=\"number\" v-model=\"this.resistance.firedEmployeeCountByProtesto\">\n  </div>\n    <!-- Other Fields -->\n    <div class=\"field\">\n      <label for=\"ResistanceResult\">Sonuç</label>\n      <select v-model=\"this.resistance.resistanceResult\" class=\"ui fluid dropdown\">\n        <option :value=\"0\">Bilinmiyor</option>\n        <option :value=\"1\">Tam Kazanım</option>\n        <option :value=\"2\">Yarım Kazanım</option>\n        <option :value=\"3\">Sıfır Kazanım</option>\n      </select>\n    </div>\n</template>\n\n<script>\nimport Multiselect from 'vue-multiselect'\n\nexport default {\n  name: \"Resistance\",\n  emits: [\"openCompanyModal\", \"onInputChanged\"],\n  components: { Multiselect },\n  props: {\n    // modelValue: Object,\n    resistance: {\n      type: Object,\n      default: () => ({}) \n    },\n    companies: {\n      type: Array,\n      required: true,\n    },\n    resistanceReasons: {\n      type: Array,\n      required: true,\n    },\n    categories: {\n      type: Array,\n      required: true,\n    },\n    corporations: {\n      type: Array,\n      required: true,\n    },\n    tradeUnionAuthorities: {\n      type: Array,\n      required: true,\n    },\n    tradeUnions: {\n      type: Array,\n      required: true,\n    },\n    employmentTypes: {\n      type: Array,\n      required: true,\n    },\n    employeeCounts: {\n      type: Array,\n      required: true,\n    },\n    formErrors: {\n      type:Object,\n      default: () => ({})\n    }\n  },\n  methods: {\n    clearError(field) {\n      // Clear the error message for the specified field\n      console.log(field);\n      this.$emit('onInputChanged', field);\n    },\n    openCompanyModal() {\n      this.$emit('openCompanyModal');\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    addEmploymentType(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.employmentTypes.push(tag)\n      this.resistance.employmentTypeIds.push(tag)\n    },\n    addCorporation(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.corporations.push(newTag);\n      this.resistance.corporationIds.push(tag)\n    },\n    customFilter(search, id) {\n      console.log(id);\n      console.log(search);\n      const normalize = (str) =>\n          str\n              .toLowerCase()\n              .normalize(\"NFD\") // Decompose characters\n              .replace(/[\\u0300-\\u036f]/g, \"\") // Remove diacritics\n              .replace(/ı/g, \"i\")\n              .replace(/ğ/g, \"g\")\n              .replace(/ü/g, \"u\")\n              .replace(/ş/g, \"s\")\n              .replace(/ö/g, \"o\")\n              .replace(/ç/g, \"c\");\n      const result = normalize(search);\n      console.log(result);\n      return result;\n    },\n  },\n  computed: {\n    showTradeUnionAuthority(){\n      console.log(this.resistance?.corporationIds);\n      return this.resistance?.corporationIds?.some(s=>s.CorporationTypeId === 1);\n    }\n  }\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -35298,18 +35409,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _Protesto_vue_vue_type_template_id_362e7022_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Protesto.vue?vue&type=template&id=362e7022&scoped=true */ "./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true");
+/* harmony import */ var _Protesto_vue_vue_type_template_id_362e7022__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Protesto.vue?vue&type=template&id=362e7022 */ "./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022");
 /* harmony import */ var _Protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Protesto.vue?vue&type=script&lang=js */ "./src/components/protesto/Protesto.vue?vue&type=script&lang=js");
-/* harmony import */ var vue_multiselect_dist_vue_multiselect_min_css_vue_type_style_index_0_id_362e7022_scoped_true_lang_css_external__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&id=362e7022&scoped=true&lang=css&external */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&id=362e7022&scoped=true&lang=css&external");
-/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
 
 ;
-
-
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_Protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Protesto_vue_vue_type_template_id_362e7022_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-362e7022"],['__file',"src/components/protesto/Protesto.vue"]])
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_Protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Protesto_vue_vue_type_template_id_362e7022__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"src/components/protesto/Protesto.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -35794,18 +35902,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true":
-/*!****************************************************************************************!*\
-  !*** ./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true ***!
-  \****************************************************************************************/
+/***/ "./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022":
+/*!****************************************************************************!*\
+  !*** ./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022 ***!
+  \****************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_template_id_362e7022_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_template_id_362e7022__WEBPACK_IMPORTED_MODULE_0__.render)
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_template_id_362e7022_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Protesto.vue?vue&type=template&id=362e7022&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_template_id_362e7022__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Protesto.vue?vue&type=template&id=362e7022 */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022");
 
 
 /***/ }),
@@ -36055,23 +36163,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_style_index_1_id_b2e4a6e2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_style_index_1_id_b2e4a6e2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
 /* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_style_index_1_id_b2e4a6e2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Resistance_vue_vue_type_style_index_1_id_b2e4a6e2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
-/* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&id=362e7022&scoped=true&lang=css&external":
-/*!************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&id=362e7022&scoped=true&lang=css&external ***!
-  \************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _vue_style_loader_index_js_css_loader_dist_cjs_js_vue_loader_dist_stylePostLoader_js_vue_multiselect_min_css_vue_type_style_index_0_id_362e7022_scoped_true_lang_css_external__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../vue-style-loader/index.js!../../css-loader/dist/cjs.js!../../vue-loader/dist/stylePostLoader.js!./vue-multiselect.min.css?vue&type=style&index=0&id=362e7022&scoped=true&lang=css&external */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&id=362e7022&scoped=true&lang=css&external");
-/* harmony import */ var _vue_style_loader_index_js_css_loader_dist_cjs_js_vue_loader_dist_stylePostLoader_js_vue_multiselect_min_css_vue_type_style_index_0_id_362e7022_scoped_true_lang_css_external__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_vue_style_loader_index_js_css_loader_dist_cjs_js_vue_loader_dist_stylePostLoader_js_vue_multiselect_min_css_vue_type_style_index_0_id_362e7022_scoped_true_lang_css_external__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
-/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _vue_style_loader_index_js_css_loader_dist_cjs_js_vue_loader_dist_stylePostLoader_js_vue_multiselect_min_css_vue_type_style_index_0_id_362e7022_scoped_true_lang_css_external__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _vue_style_loader_index_js_css_loader_dist_cjs_js_vue_loader_dist_stylePostLoader_js_vue_multiselect_min_css_vue_type_style_index_0_id_362e7022_scoped_true_lang_css_external__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
 /* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
 
 
@@ -37781,27 +37872,6 @@ if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(/*! !../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
 var update = add("a653618e", content, false, {});
-// Hot Module Replacement
-if(false) {}
-
-/***/ }),
-
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&id=362e7022&scoped=true&lang=css&external":
-/*!*********************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&id=362e7022&scoped=true&lang=css&external ***!
-  \*********************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(/*! !!../../css-loader/dist/cjs.js!../../vue-loader/dist/stylePostLoader.js!./vue-multiselect.min.css?vue&type=style&index=0&id=362e7022&scoped=true&lang=css&external */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&id=362e7022&scoped=true&lang=css&external");
-if(content.__esModule) content = content.default;
-if(typeof content === 'string') content = [[module.id, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var add = (__webpack_require__(/*! !../../vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
-var update = add("d16577a0", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
@@ -58493,13 +58563,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
 /* harmony import */ var _components_ResistanceOverview_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/ResistanceOverview.vue */ "./src/components/ResistanceOverview.vue");
 /* harmony import */ var _router_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./router.js */ "./src/router.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var sweetalert2_dist_sweetalert2_min_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! sweetalert2/dist/sweetalert2.min.css */ "./node_modules/sweetalert2/dist/sweetalert2.min.css");
-/* harmony import */ var sweetalert2_dist_sweetalert2_min_css__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(sweetalert2_dist_sweetalert2_min_css__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @vuepic/vue-datepicker/dist/main.css */ "./node_modules/@vuepic/vue-datepicker/dist/main.css");
-/* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var vue_sweetalert2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue-sweetalert2 */ "./node_modules/vue-sweetalert2/dist/vue-sweetalert.mjs");
+/* harmony import */ var _vuepic_vue_datepicker__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @vuepic/vue-datepicker */ "./node_modules/@vuepic/vue-datepicker/dist/vue-datepicker.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var sweetalert2_dist_sweetalert2_min_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! sweetalert2/dist/sweetalert2.min.css */ "./node_modules/sweetalert2/dist/sweetalert2.min.css");
+/* harmony import */ var sweetalert2_dist_sweetalert2_min_css__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(sweetalert2_dist_sweetalert2_min_css__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @vuepic/vue-datepicker/dist/main.css */ "./node_modules/@vuepic/vue-datepicker/dist/main.css");
+/* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var vue_sweetalert2__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! vue-sweetalert2 */ "./node_modules/vue-sweetalert2/dist/vue-sweetalert.mjs");
 
 
  // Import your routes from a separate file
@@ -58512,10 +58583,11 @@ __webpack_require__.r(__webpack_exports__);
 
 // Create the Vue app
 var app = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createApp)(_components_ResistanceOverview_vue__WEBPACK_IMPORTED_MODULE_1__["default"]);
-window.$ = window.jQuery = (jquery__WEBPACK_IMPORTED_MODULE_3___default());
+window.$ = window.jQuery = (jquery__WEBPACK_IMPORTED_MODULE_4___default());
 
 // Use the router in the app
-app.use(vue_sweetalert2__WEBPACK_IMPORTED_MODULE_6__["default"]);
+app.use(vue_sweetalert2__WEBPACK_IMPORTED_MODULE_7__["default"]);
+app.component('VueDatePicker', _vuepic_vue_datepicker__WEBPACK_IMPORTED_MODULE_3__["default"]);
 app.use(_router_js__WEBPACK_IMPORTED_MODULE_2__["default"]);
 
 // Mount the app to the DOM

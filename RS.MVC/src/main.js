@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import ResistanceOverview from './components/ResistanceOverview.vue';
 import router from './router.js'; // Import your routes from a separate file
+import VueDatePicker from '@vuepic/vue-datepicker';
 
 import $ from 'jquery'; // Import jQuery globally
 
@@ -16,6 +17,7 @@ window.$ = window.jQuery = $;
 
 // Use the router in the app
 app.use(VueSweetalert2);
+app.component('VueDatePicker', VueDatePicker);
 app.use(router);
 
 // Mount the app to the DOM

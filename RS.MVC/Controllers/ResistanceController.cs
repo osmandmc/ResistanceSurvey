@@ -50,15 +50,7 @@ namespace ResistanceSurvey.Controllers
             result.Filter = filter; 
             return PartialView("_ResistanceList", result);
         }
-        
-        [Authorize]
-        [HttpGet]
-        public IActionResult List(ResistanceFilterModel filter)
-        {
-            var result = _rsApplication.GetPaged(filter);
-            result.Filter = filter;
-            return Json(result);
-        }
+       
         [Authorize]
         public IActionResult NewsList(int year, int month)
         {

@@ -21,6 +21,7 @@
             @cancelProtesto="handleCancelProtesto"
             @onProtestoAdded="handleSaveProtesto"
             @onProtestoDeleted="handleDeleteProtesto"
+            @onInputChanged="clearFormError"
         />
       </div>
     </div>
@@ -30,11 +31,12 @@
 <script>
 
 import EditProtesto from "./EditProtesto.vue";
+import Resistance from "../resistance/Resistance.vue";
 
 export default {
   name: "ProtestoAccordion",
-  emits: ["cancelProtesto", "saveProtesto", "deleteProtesto"],
-  components: { EditProtesto },
+  emits: ["cancelProtesto", "saveProtesto", "deleteProtesto", "onChangeActiveProtesto", "onInputChanged"],
+  components: {Resistance, EditProtesto },
   data() {
     return {
       activeIndex: this.activeProtestoIndex,
@@ -89,10 +91,11 @@ export default {
       console.log(index);
       this.activeIndex = this.activeIndex === null ? index : null;
       console.log(this.activeIndex);
+      this.$emit("onChangeActiveProtesto", this.activeIndex);
     },
-    handleCancelProtesto(protesto) {
-      console.log("cancel", protesto);
-      this.$emit('cancelProtesto', protesto);
+    handleCancelProtesto() {
+      this.activeIndex = null;
+      this.$emit('cancelProtesto');
     },
     handleSaveProtesto(protesto) {
       this.$emit('saveProtesto', protesto);
@@ -103,6 +106,11 @@ export default {
     },
     formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date to a readable string
+    },
+    clearError(field) {
+      // Clear the error message for the specified field
+      console.log(field);
+      this.$emit('onInputChanged', field);
     },
   },
 };

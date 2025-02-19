@@ -20,6 +20,7 @@
         :employmentTypes="employmentTypes"
         :formErrors="formErrors"
         @openCompanyModal="handleOpenCompanyModal"
+        @onInputChanged="clearFormError"
     />
    
     <!-- Protestos -->
@@ -44,14 +45,16 @@
         @cancelProtesto="handleCancelProtesto"
         @saveProtesto="handleSaveProtesto"
         @deleteProtesto="handleDeleteProtesto"
+        @onChangeActiveProtesto="handleActiveProtesto"
+        @onInputChanged="clearFormError"
     />
     <resistance-news :news="this.resistance.resistanceNews" @removeNews="handleRemoveNews"/>
     
     <!-- Save and Cancel Buttons -->
-    <button id="btnSave" class="ui primary button" @click.prevent="saveForm">
+    <button v-if="showResistanceButton" class="ui primary button" @click.prevent="saveForm">
       KAYDET
     </button>
-    <button type="button" class="ui negative button">
+    <button v-if="showResistanceButton" class="ui negative button" type="button" @click="deleteForm">
       SİL
     </button>
   </form>
@@ -205,7 +208,7 @@ export default {
         }
       },
       deep: true,
-    }
+    },
   },
   methods: {
     fetchResistance() {
@@ -314,7 +317,34 @@ export default {
         console.log(error)
       });
     },
-    handleCancelProtesto(protesto) {
+    deleteForm() {
+      // Save form logic
+      this.isLoading = true;
+      fetchWithToken("/ResistanceApi/DeleteResistance/" + this.resistance.id, {
+        method: 'DELETE',
+        headers: {
+          "Content-Type": "application/json", // Ensure JSON is sent
+        },
+      })
+          .then(response => {
+            console.log(response);
+            this.isLoading = false;
+            this.$swal('Vaka silindi');
+            this.$router.push({ path: `/` });
+          })
+          .catch(error =>
+          {
+            this.isLoading = false;
+            this.$swal({
+              icon: "error",
+              title: "Bir hata olustu",
+              text: "Bir hata olustu!",
+            });
+            console.log(error)
+          });
+    },
+    handleCancelProtesto() {
+      console.log(this.activeProtestoIndex, 'Cancel');
       this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== 0);
       this.activeProtestoIndex = null;
     },
@@ -340,6 +370,9 @@ export default {
     handleDeleteProtesto(id) {
       this.resistance.protestoItems = this.resistance.protestoItems.filter(s=>s.protestoId !== id);
       this.activeProtestoIndex = null;
+    },
+    handleActiveProtesto(activeIndex){
+      this.activeProtestoIndex = activeIndex;
     },
     formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date
@@ -394,7 +427,15 @@ export default {
 
       return errors;
     },
+    clearFormError(field){
+      this.formErrors[field] = "";
+    }
   },
+  computed: {
+    showResistanceButton() {
+      return this.activeProtestoIndex === null
+    } 
+  }
 };
 </script>
 

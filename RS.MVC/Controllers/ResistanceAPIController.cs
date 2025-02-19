@@ -14,6 +14,15 @@ public class ResistanceApiController(IResistanceApplication rsApplication, RSDBC
     private readonly RSDBContext _db = db;
     private readonly IResistanceApplication _rsApplication = rsApplication;
 
+     
+    [Authorize]
+    [HttpGet]
+    public IActionResult List(ResistanceFilterModel filter)
+    {
+        var result = _rsApplication.GetPaged(filter);
+        result.Filter = filter;
+        return Json(result);
+    }
     [Authorize]
     public IActionResult Get(int id)
     {
@@ -48,7 +57,18 @@ public class ResistanceApiController(IResistanceApplication rsApplication, RSDBC
         var values = ModelState.Values.Where(m => m.Errors.Count > 0).Select(s => s.Errors).ToList();
         return StatusCode(StatusCodes.Status400BadRequest, values);
     }
-    
+    [Authorize]
+    [HttpDelete]
+    public IActionResult DeleteResistance(int id)
+    {
+        var model = new ResistanceDeleteModel()
+        {
+            UserName = UserName,
+            ResistanceId = id
+        };
+        _rsApplication.DeleteResistance(model);
+        return Ok();
+    }
     [Authorize]
     [HttpPost]
     public IActionResult CreateOrUpdateProtesto([FromBody] ProtestoEditModel viewModel)
