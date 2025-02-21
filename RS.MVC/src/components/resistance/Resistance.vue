@@ -57,7 +57,7 @@
           </span>
         </div>
         <div class="field">
-          <button type="button" @click="openCompanyModal" class="ui button">
+          <button type="button" @click="openCompanyModal(false)" class="ui button">
             <i class="chevron circle up icon"></i>Şirket Ekle
           </button>
         </div>
@@ -66,7 +66,7 @@
   </div>
 
   <!-- Main Company (Conditional) -->
-  <div v-if="this.resistance.isOutsource" id="outsource" class="six wide field">
+  <div v-if="this.resistance.isOutsource" id="outsource" class="field">
     <label for="MainCompanyId">Ana Şirket</label>
     <div class="two fields">
       <div class="field">
@@ -82,7 +82,7 @@
         </select>
       </div>
       <div class="field">
-        <button type="button" @click="openCompanyModal" class="ui button">
+        <button type="button" @click="openCompanyModal(true)" class="ui button">
           <i class="chevron circle up icon"></i>Ana Şirket Ekle
         </button>
       </div>
@@ -284,8 +284,9 @@ export default {
       console.log(field);
       this.$emit('onInputChanged', field);
     },
-    openCompanyModal() {
-      this.$emit('openCompanyModal');
+    openCompanyModal(isMain) {
+      console.log(isMain);
+      this.$emit('openCompanyModal', isMain);
     },
     addResistanceReason (newTag) {
       const tag = {
@@ -332,7 +333,6 @@ export default {
   },
   computed: {
     showTradeUnionAuthority(){
-      console.log(this.resistance?.corporationIds);
       return this.resistance?.corporationIds?.some(s=>s.CorporationTypeId === 1);
     }
   }

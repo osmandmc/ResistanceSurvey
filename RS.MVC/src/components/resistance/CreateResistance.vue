@@ -100,6 +100,7 @@ export default {
       employmentTypes: [],
       interventionTypes: [],
       formErrors: {},
+      isMain: false,
     };
   },
   setup() {
@@ -206,11 +207,7 @@ export default {
           .then(response => response.json())
           .then(data => this.tradeUnionIncluded = data);
     },
-    openCompanyModal(isMain) {
-      this.$refs.modalRef.openModal();
-    },
     handleSaveCompany(companyData) {
-      console.log(companyData);
       fetchWithToken("/Company/Create/", {
         method: 'POST',
         headers: {
@@ -218,9 +215,17 @@ export default {
         },
         body: JSON.stringify(companyData)
       })
-          .then(response => response.json())
-          .then(data => (console.log(data)));
-      this.companies.push(companyData);
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        this.companies.push(data);
+        if(this.isMain){
+          this.resistance.mainCompanyId = data.id;  
+        } else {
+          this.resistance.companyId = data.id;  
+        }
+        
+      });
     },
     saveForm() {
       // Save form logic
@@ -257,38 +262,38 @@ export default {
         },
         body: JSON.stringify(resistanceData)
       })
-          .then(response =>
-              {
-                this.isLoading = false;
-                if(response.status === 400) {
-                  this.$swal.fire({
-                    icon: "error",
-                    title: "Bir hata olustu",
-                    text: response.statusText,
-                  });
-                }
-                else if(response.status === 500) {
-                  this.$swal.fire({
-                    icon: "error",
-                    title: "Bir hata olustu",
-                    text: 'Yazilim destek: ' + response.statusText,
-                  });
-                }
-                else {
-                  this.$swal('Vaka kaydedildi');
-                  this.$router.push({ path: `/` });
-                }
-              }
-          )
-          .catch(error =>
+      .then(response =>
           {
             this.isLoading = false;
-            this.$swal.fire({
-              icon: "error",
-              title: "Bir hata olustu",
-            });
-            console.log(error)
-          });
+            if(response.status === 400) {
+              this.$swal.fire({
+                icon: "error",
+                title: "Bir hata olustu",
+                text: response.statusText,
+              });
+            }
+            else if(response.status === 500) {
+              this.$swal.fire({
+                icon: "error",
+                title: "Bir hata olustu",
+                text: 'Yazilim destek: ' + response.statusText,
+              });
+            }
+            else {
+              this.$swal('Vaka kaydedildi');
+              this.$router.push({ path: `/` });
+            }
+          }
+      )
+      .catch(error =>
+      {
+        this.isLoading = false;
+        this.$swal.fire({
+          icon: "error",
+          title: "Bir hata olustu",
+        });
+        console.log(error)
+      });
     },
     formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date
@@ -297,7 +302,9 @@ export default {
       console.log('remove newsId ',newsId);
       this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);
     },
-    handleOpenCompanyModal() {
+    handleOpenCompanyModal(isMain) {
+      console.log(isMain);
+      this.isMain = isMain;
       this.$refs.modalRef.openModal();
     },
     handleAddLocation(){

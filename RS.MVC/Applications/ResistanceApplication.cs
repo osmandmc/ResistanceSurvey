@@ -91,7 +91,16 @@ namespace RS.MVC.Applications
         }
         public void Create(ResistanceModel model)
         {
+            if(model.MainCompanyId.HasValue)
+                db.CompanyOutsourceCompany.Add(
+                    new CompanyOutsourceCompany
+                    {
+                        CompanyId = model.MainCompanyId.Value, 
+                        OutsourceCompanyId = model.CompanyId
+                    });
+            
             Resistance resistance = model.MapToResistance();
+        
             BindCorporations(resistance, model.CorporationIds);
             BindResistanceReasons(resistance, model.ResistanceReasonIds);
             BindEmploymentTypes(resistance, model.EmploymentTypeIds);

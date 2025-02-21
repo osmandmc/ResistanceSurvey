@@ -6,28 +6,6 @@
     <div class="content">
       <form class="ui form" id="companyForm">
         <!-- Hidden Input -->
-        <input type="hidden" v-model="formData.isMain" />
-        <div class="field">
-          <div class="ui checkbox">
-            <input
-                type="checkbox"
-                v-model="formData.isMain"
-            />
-            <label>Taşeron</label>
-          </div>
-        </div>
-        <div class="field" v-if="formData.isMain">
-          <label for="MainCompanyId">Ana Şirket</label>
-          <select
-              id="MainCompanyId"
-              v-model="formData.mainCompanyId"
-          >
-            <option value="">--Seçiniz--</option>
-            <option v-for="type in companies" :key="type.id" :value="type.id">
-              {{ type.name }}
-            </option>
-          </select>
-        </div>
         <!-- Company Name Field -->
         <div class="field">
           <label for="CompanyName">Şirket Adı</label>
@@ -129,10 +107,10 @@ export default {
     return {
       formData: {
         companyName: "",
-        typeId: "",
-        scaleId: "",
-        worklineId: "",
-        mainCompanyId: "",
+        typeId: null,
+        scaleId: null,
+        worklineId: null,
+        mainCompanyId: null,
         isMain: this.isMain,
       },
     };

@@ -21,7 +21,6 @@
             @cancelProtesto="handleCancelProtesto"
             @onProtestoAdded="handleSaveProtesto"
             @onProtestoDeleted="handleDeleteProtesto"
-            @onInputChanged="clearFormError"
         />
       </div>
     </div>
@@ -107,11 +106,7 @@ export default {
     formatDate(date) {
       return new Date(date).toLocaleDateString(); // Format date to a readable string
     },
-    clearError(field) {
-      // Clear the error message for the specified field
-      console.log(field);
-      this.$emit('onInputChanged', field);
-    },
+
   },
 };
 </script>

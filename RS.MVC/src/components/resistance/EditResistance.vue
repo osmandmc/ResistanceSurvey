@@ -122,6 +122,7 @@ export default {
       interventionTypes:[],
       activeProtestoIndex: null,
       formErrors: {},
+      isMain: false,
     };
   },
   mounted() {
@@ -260,7 +261,8 @@ export default {
     toggleOutsource() {
       // Show/hide outsource section
     },
-    handleOpenCompanyModal() {
+    handleOpenCompanyModal(isMain) {
+      this.isMain = isMain;
       this.$refs.modalRef.openModal();  
     },
     handleSaveCompany(companyData) {
@@ -271,14 +273,14 @@ export default {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(companyData)})
-          .then(response => {
-            return response.json();
-          })
-          .then(data => {
-            console.log(data);
-            this.companies.push(data);
-            this.resistance.companyId = data.id;
-          });
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          console.log(data);
+          this.companies.push(data);
+          this.resistance.companyId = data.id;
+        });
      
     },
     saveForm() {
