@@ -31,24 +31,28 @@
     <div class="two fields">
       <div class="field">
         <label for="ProtestoStartDate">Başlangıç Tarihi</label>
-        <VueDatePicker v-model="protesto.protestoStartDate" 
-                       text-input 
-                       locale="tr-TR"
-                       format="dd/MM/yyyy"
-                       @blur="clearError('protestoStartDate')"
-        >
-        </VueDatePicker>
+        <div class="custom-datepicker-wrapper">
+          <VueDatePicker v-model="protesto.protestoStartDate" 
+                         text-input 
+                         locale="tr-TR"
+                         format="dd.MM.yyyy"
+                         @blur="clearError('protestoStartDate')"
+          >
+          </VueDatePicker>
+        </div>
         <span v-if="formErrors.protestoStartDate" class="field error">
           <label>{{ formErrors.protestoStartDate }}</label>
         </span>
       </div>
       <div class="field">
         <label for="ProtestoEndDate">Bitiş Tarihi</label>
-        <VueDatePicker v-model="protesto.protestoEndDate" 
-                       text-input
-                       locale="tr-TR"
-                       format="dd/MM/yyyy">
-        </VueDatePicker>
+        <div class="custom-datepicker-wrapper">
+          <VueDatePicker v-model="protesto.protestoEndDate" 
+                         text-input
+                         locale="tr-TR"
+                         format="dd.MM.yyyy">
+          </VueDatePicker>
+        </div>
       </div>
     </div>
 
@@ -282,5 +286,7 @@ export default {
 </script>
 
 <style scoped>
-
+.custom-datepicker-wrapper >>> .dp__input_icon_pad {
+  padding-inline-start: var(--dp-input-icon-padding) !important;
+}
 </style>

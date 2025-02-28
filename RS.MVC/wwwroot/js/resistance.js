@@ -22682,10 +22682,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022":
-/*!********************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022 ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22716,50 +22716,49 @@ var _hoisted_6 = {
   "class": "field"
 };
 var _hoisted_7 = {
-  key: 0,
-  "class": "field error"
+  "class": "custom-datepicker-wrapper"
 };
 var _hoisted_8 = {
-  "class": "field"
+  key: 0,
+  "class": "field error"
 };
 var _hoisted_9 = {
   "class": "field"
 };
 var _hoisted_10 = {
-  key: 0,
-  "class": "field error"
+  "class": "custom-datepicker-wrapper"
 };
 var _hoisted_11 = {
   "class": "field"
 };
-var _hoisted_12 = ["value"];
-var _hoisted_13 = {
+var _hoisted_12 = {
   key: 0,
   "class": "field error"
 };
-var _hoisted_14 = {
+var _hoisted_13 = {
   "class": "field"
 };
+var _hoisted_14 = ["value"];
 var _hoisted_15 = {
-  "class": "field"
+  key: 0,
+  "class": "field error"
 };
 var _hoisted_16 = {
-  "class": "two fields"
+  "class": "field"
 };
 var _hoisted_17 = {
   "class": "field"
 };
 var _hoisted_18 = {
+  "class": "two fields"
+};
+var _hoisted_19 = {
   "class": "field"
 };
-var _hoisted_19 = ["value"];
 var _hoisted_20 = {
   "class": "field"
 };
-var _hoisted_21 = {
-  key: 0,
-  "class": "field error"
-};
+var _hoisted_21 = ["value"];
 var _hoisted_22 = {
   "class": "field"
 };
@@ -22768,6 +22767,13 @@ var _hoisted_23 = {
   "class": "field error"
 };
 var _hoisted_24 = {
+  "class": "field"
+};
+var _hoisted_25 = {
+  key: 0,
+  "class": "field error"
+};
+var _hoisted_26 = {
   "class": "field"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -22810,28 +22816,28 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     type: "text"
   }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.simpleProtestoDescription]])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.showSimpleProtestoDescription]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Start and End Dates "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoStartDate"
-  }, "Başlangıç Tarihi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_VueDatePicker, {
+  }, "Başlangıç Tarihi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_VueDatePicker, {
     modelValue: $props.protesto.protestoStartDate,
     "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
       return $props.protesto.protestoStartDate = $event;
     }),
     "text-input": "",
     locale: "tr-TR",
-    format: "dd/MM/yyyy",
+    format: "dd.MM.yyyy",
     onBlur: _cache[5] || (_cache[5] = function ($event) {
       return $options.clearError('protestoStartDate');
     })
-  }, null, 8 /* PROPS */, ["modelValue"]), $props.formErrors.protestoStartDate ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoStartDate), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue"])]), $props.formErrors.protestoStartDate ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoStartDate), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [_cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoEndDate"
-  }, "Bitiş Tarihi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_VueDatePicker, {
+  }, "Bitiş Tarihi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_VueDatePicker, {
     modelValue: $props.protesto.protestoEndDate,
     "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
       return $props.protesto.protestoEndDate = $event;
     }),
     "text-input": "",
     locale: "tr-TR",
-    format: "dd/MM/yyyy"
-  }, null, 8 /* PROPS */, ["modelValue"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Places "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    format: "dd.MM.yyyy"
+  }, null, 8 /* PROPS */, ["modelValue"])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Places "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ProtestoPlaceIds"
   }, "Eylem Yerleri", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ProtestoPlaceIds",
@@ -22850,7 +22856,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onSelect: _cache[8] || (_cache[8] = function ($event) {
       return $options.clearError('protestoPlaceIds');
     })
-  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.protestoPlaceIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoPlaceIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Gender "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [_cache[27] || (_cache[27] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.protestoPlaceIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoPlaceIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Gender "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [_cache[27] || (_cache[27] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "GenderId"
   }, "Cinsiyet", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
@@ -22865,19 +22871,19 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: gender.id,
       value: gender.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(gender.name), 9 /* TEXT, PROPS */, _hoisted_12);
-  }), 128 /* KEYED_FRAGMENT */))], 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.genderId]]), $props.formErrors.genderId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.genderId), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(gender.name), 9 /* TEXT, PROPS */, _hoisted_14);
+  }), 128 /* KEYED_FRAGMENT */))], 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.genderId]]), $props.formErrors.genderId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.genderId), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "ui button",
     onClick: _cache[11] || (_cache[11] = function () {
       return $options.addLocation && $options.addLocation.apply($options, arguments);
     })
-  }, "Lokasyon Ekle")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Location, {
+  }, "Lokasyon Ekle")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Location, {
     onDeleteLocation: $options.handleDeleteLocation,
     cities: $props.cities,
     districts: $props.districts,
     "protesto-locations": $props.protesto.locations
-  }, null, 8 /* PROPS */, ["onDeleteLocation", "cities", "districts", "protesto-locations"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["onDeleteLocation", "cities", "districts", "protesto-locations"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCountInProtesto"
   }, "Eylemdeki İşçi Sayısı (Tam)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
@@ -22888,7 +22894,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onBlur: _cache[13] || (_cache[13] = function () {
       return $options.updateEmployeeCountId && $options.updateEmployeeCountId.apply($options, arguments);
     })
-  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.employeeCountInProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.employeeCountInProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCountInProtestoId"
   }, "Eylemdeki İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
@@ -22901,8 +22907,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: employeeCountInProtesto.id,
       value: employeeCountInProtesto.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(employeeCountInProtesto.name), 9 /* TEXT, PROPS */, _hoisted_19);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.employeeCountInProtestoId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(employeeCountInProtesto.name), 9 /* TEXT, PROPS */, _hoisted_21);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $props.protesto.employeeCountInProtestoId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "InterventionTypeId"
   }, "Müdahale Tipi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ProtestoPlaceIds",
@@ -22921,7 +22927,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onSelect: _cache[16] || (_cache[16] = function ($event) {
       return $options.clearError('interventionTypeIds');
     })
-  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.interventionTypeIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.interventionTypeIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [_cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.interventionTypeIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.interventionTypeIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [_cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CustodyCount"
   }, "Gözaltı Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
@@ -22932,7 +22938,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onInput: _cache[18] || (_cache[18] = function ($event) {
       return $options.clearError('custodyCount');
     })
-  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.protesto.custodyCount]]), $props.formErrors.custodyCount ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.custodyCount), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.isCustodyPossible]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Notes "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [_cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.protesto.custodyCount]]), $props.formErrors.custodyCount ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.custodyCount), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.isCustodyPossible]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Notes "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [_cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "Note"
   }, "Kontrol Kişisine Notlar", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     id: "Note",
@@ -24126,6 +24132,37 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add styles if necessary */
 `, "",{"version":3,"sources":["webpack://./src/components/protesto/Location.vue"],"names":[],"mappings":";AA2DA,4BAA4B","sourcesContent":["<template>\n    <div  v-for=\"(location, index) in protestoLocations\" :key=\"index\" class=\"fields\" v-show=\"!location.deleted\">\n      <!-- City Dropdown -->\n      <div class=\"four field\">\n          <select v-model=\"location.cityId\">\n            <option value=\"\">--İl--</option>\n            <option v-for=\"city in cities\" :key=\"city.id\" :value=\"city.id\">{{ city.name }}</option>\n          </select>\n        </div>\n  \n        <div class=\"four field\">\n        <!-- District Dropdown -->\n          <select v-model=\"location.districtId\" >\n            <option value=\"\">--İlçe--</option>\n            <option v-for=\"district in this.districts.filter(s=>s.cityId === location.cityId)\" :key=\"district.id\" :value=\"district.id\">{{ district.name }}</option>\n          </select>\n        </div>\n        <div class=\"four field\">\n          <!-- Place Input -->\n          <input v-model=\"location.place\" type=\"text\" />  \n        </div>\n        <div class=\"four field\">\n          <button type=\"button\" @click=\"deleteLocation(index)\" class=\"ui icon button red basic\"><i class=\"trash icon\"></i></button>\n        </div>\n    </div>\n</template>\n\n<script>\n\nexport default {\n  emits: ['deleteLocation'],\n  props: {\n    protestoLocations: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    }\n  },\n  data() {\n    return {\n      filteredDistricts : []\n    }\n  },\n  methods: {\n    deleteLocation(index) {\n      this.$emit('deleteLocation', index);\n    },\n  }\n};\n</script>\n\n<style scoped>\n/* Add styles if necessary */\n</style>\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css":
+/*!******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css ***!
+  \******************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `
+.custom-datepicker-wrapper[data-v-362e7022] .dp__input_icon_pad {
+  padding-inline-start: var(--dp-input-icon-padding) !important;
+}
+`, "",{"version":3,"sources":["webpack://./src/components/protesto/Protesto.vue"],"names":[],"mappings":";AAgSA;EACE,6DAA6D;AAC/D","sourcesContent":["<template>\n    <!-- Protesto Types -->\n    <div class=\"field\">\n      <label for=\"ProtestoTypeIds\">Eylem Türleri</label>\n      <multiselect\n          id=\"ProtestoTypeIds\"\n          v-model=\"protesto.protestoTypeIds\"\n          :options=\"protestoTypeOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n          @select=\"clearError('protestoTypeIds')\"\n      ></multiselect>\n      <span v-if=\"formErrors.protestoTypeIds\" class=\"field error\">\n        <label>{{ formErrors.protestoTypeIds }}</label>\n      </span>\n    </div>\n  <div class=\"field\" v-if=\"showStrikeDuration\">\n    <label for=\"StrikeDuration\">Eylemin Süresi</label>\n    <input v-model=\"protesto.strikeDuration\" type=\"text\" />\n  </div>\n  <div class=\"field\" v-show=\"showSimpleProtestoDescription\">\n    <label for=\"SimpleProtestoDescription\">İş yerinde Basit Eylem Açıklama</label>\n    <input v-model=\"protesto.simpleProtestoDescription\" type=\"text\" />\n  </div>\n    <!-- Start and End Dates -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"ProtestoStartDate\">Başlangıç Tarihi</label>\n        <div class=\"custom-datepicker-wrapper\">\n          <VueDatePicker v-model=\"protesto.protestoStartDate\" \n                         text-input \n                         locale=\"tr-TR\"\n                         format=\"dd.MM.yyyy\"\n                         @blur=\"clearError('protestoStartDate')\"\n          >\n          </VueDatePicker>\n        </div>\n        <span v-if=\"formErrors.protestoStartDate\" class=\"field error\">\n          <label>{{ formErrors.protestoStartDate }}</label>\n        </span>\n      </div>\n      <div class=\"field\">\n        <label for=\"ProtestoEndDate\">Bitiş Tarihi</label>\n        <div class=\"custom-datepicker-wrapper\">\n          <VueDatePicker v-model=\"protesto.protestoEndDate\" \n                         text-input\n                         locale=\"tr-TR\"\n                         format=\"dd.MM.yyyy\">\n          </VueDatePicker>\n        </div>\n      </div>\n    </div>\n\n  \n    <!-- Protesto Places -->\n    <div class=\"field\">\n      <label for=\"ProtestoPlaceIds\">Eylem Yerleri</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"protesto.protestoPlaceIds\"\n          :options=\"protestoPlaceOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n          @select=\"clearError('protestoPlaceIds')\"\n      ></multiselect>\n      <span v-if=\"formErrors.protestoPlaceIds\" class=\"field error\">\n        <label>{{ formErrors.protestoPlaceIds }}</label>\n      </span>\n    </div>\n\n    <!-- Gender -->\n    <div class=\"field\">\n      <label for=\"GenderId\">Cinsiyet</label>\n      <select v-model=\"protesto.genderId\" @change=\"clearError('genderId')\">\n        <option value=\"\">--Seçiniz--</option>\n        <option\n            v-for=\"gender in genderOptions\"\n            :key=\"gender.id\"\n            :value=\"gender.id\"\n        >\n          {{ gender.name }}\n        </option>\n      </select>\n      <span v-if=\"formErrors.genderId\" class=\"field error\">\n        <label>{{ formErrors.genderId }}</label>\n      </span>\n    </div>\n  <div class=\"field\">\n    <button type=\"button\" class=\"ui button\" @click=\"addLocation\">Lokasyon Ekle</button>\n  </div>\n  <div class=\"field\">\n    <Location @deleteLocation=\"handleDeleteLocation\" :cities=\"cities\" :districts=\"districts\" :protesto-locations=\"protesto.locations\" />\n  </div>\n \n    <!-- Other Fields -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtesto\">Eylemdeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"number\"\n            id=\"EmployeeCountInProtesto\"\n            v-model=\"protesto.employeeCountInProtesto\"\n            @blur=\"updateEmployeeCountId\"\n        />\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtestoId\">Eylemdeki İşçi Sayısı</label>\n        <select v-model=\"protesto.employeeCountInProtestoId\" id=\"EmployeeCountInProtestoId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"employeeCountInProtesto in employeeCountInProtestoOptions\"\n              :key=\"employeeCountInProtesto.id\"\n              :value=\"employeeCountInProtesto.id\"\n          >\n            {{ employeeCountInProtesto.name }}\n          </option>\n        </select>\n      </div>\n      \n    </div>\n    <div class=\"field\">\n      <label for=\"InterventionTypeId\">Müdahale Tipi</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"protesto.interventionTypeIds\"\n          :options=\"interventionTypes\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n          @select=\"clearError('interventionTypeIds')\"\n      ></multiselect>\n      <span v-if=\"formErrors.interventionTypeIds\" class=\"field error\">\n          <label>{{ formErrors.interventionTypeIds }}</label>\n      </span>\n    </div>\n    <div class=\"field\" v-show=\"isCustodyPossible\">\n      <label for=\"CustodyCount\">Gözaltı Sayısı</label>\n      <input type=\"text\" id=\"CustodyCount\" v-model=\"this.protesto.custodyCount\" \n             @input=\"clearError('custodyCount')\" />\n      <span v-if=\"formErrors.custodyCount\" class=\"field error\">\n          <label>{{ formErrors.custodyCount }}</label>\n      </span>\n    </div>\n  \n    <!-- Notes -->\n    <div class=\"field\">\n      <label for=\"Note\">Kontrol Kişisine Notlar</label>\n      <textarea id=\"Note\" v-model=\"protesto.note\" rows=\"3\"></textarea>\n    </div>\n\n    <!-- Save Button -->\n   \n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport '@vuepic/vue-datepicker/dist/main.css'\nimport Location from \"./Location.vue\";\n\nexport default {\n  name: \"Protesto\",\n  emits: [\"addProtesto\", 'deleteLocation', 'addLocation', \"onInputChanged\"],\n  components: { Multiselect, VueDatePicker, Location },\n  props: {\n    protesto: {\n      type: Object,\n      default: () => ({})  // Prevents undefined errors\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n    employeeCountInProtestoOptions: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    },\n    interventionTypes: {\n      type: Array,\n      required: true,\n    },\n    formErrors: {\n      type:Object,\n      default: () => ({})\n    }\n  },\n  computed: {\n    isCustodyPossible() {\n      return this.protesto.interventionTypeIds &&\n        !this.protesto.interventionTypeIds.some(type => type.id === 7)\n    },\n    showSimpleProtestoDescription() {\n      return (\n          this.protesto.protestoTypeIds &&\n          this.protesto.protestoTypeIds.some(type => type.id === 35)\n      );\n    },\n    showStrikeDuration() {\n      return (\n          this.protesto.protestoTypeIds &&\n          this.protesto.protestoTypeIds.some(type => [5, 6].includes(type.id))\n      );\n    }\n  },\n  methods: {\n    addLocation() {\n      this.$emit('addLocation');\n    },\n    handleDeleteLocation(index) {\n      console.log(index);\n      this.$emit('deleteLocation', index);\n    },\n    updateEmployeeCountId() {\n      const employeecount = this.protesto.employeeCountInProtesto;\n      if (employeecount == null) return;\n\n      if (employeecount >= 1 && employeecount <= 5) {\n        this.protesto.employeeCountInProtestoId = 1;\n      } else if (employeecount >= 6 && employeecount <= 25) {\n        this.protesto.employeeCountInProtestoId = 2;\n      } else if (employeecount >= 26 && employeecount <= 50) {\n        this.protesto.employeeCountInProtestoId = 3;\n      } else if (employeecount >= 51 && employeecount <= 100) {\n        this.protesto.employeeCountInProtestoId = 4;\n      } else if (employeecount >= 101 && employeecount <= 250) {\n        this.protesto.employeeCountInProtestoId = 5;\n      } else if (employeecount >= 251 && employeecount <= 500) {\n        this.protesto.employeeCountInProtestoId = 6;\n      } else if (employeecount >= 501 && employeecount <= 1000) {\n        this.protesto.employeeCountInProtestoId = 7;\n      } else if (employeecount >= 1001 && employeecount <= 2500) {\n        this.protesto.employeeCountInProtestoId = 8;\n      } else if (employeecount >= 2501 && employeecount <= 5000) {\n        this.protesto.employeeCountInProtestoId = 9;\n      } else if (employeecount >= 5001 && employeecount <= 10000) {\n        this.protesto.employeeCountInProtestoId = 10;\n      } else if (employeecount >= 10001 && employeecount <= 25000) {\n        this.protesto.employeeCountInProtestoId = 11;\n      } else if (employeecount >= 25001 && employeecount <= 50000) {\n        this.protesto.employeeCountInProtestoId = 12;\n      } else if (employeecount >= 50001 && employeecount <= 100000) {\n        this.protesto.employeeCountInProtestoId = 13;\n      } else if (employeecount >= 100001) {\n        this.protesto.employeeCountInProtestoId = 14;\n      } else {\n        this.protesto.employeeCountInProtestoId = \"\"; // Reset if out of range\n      }\n    },\n    clearError(field) {\n      // Clear the error message for the specified field\n      console.log(field);\n      this.$emit('onInputChanged', field);\n    },\n  }\n};\n</script>\n\n<style scoped>\n.custom-datepicker-wrapper >>> .dp__input_icon_pad {\n  padding-inline-start: var(--dp-input-icon-padding) !important;\n}\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -35376,15 +35413,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _Protesto_vue_vue_type_template_id_362e7022__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Protesto.vue?vue&type=template&id=362e7022 */ "./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022");
+/* harmony import */ var _Protesto_vue_vue_type_template_id_362e7022_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Protesto.vue?vue&type=template&id=362e7022&scoped=true */ "./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true");
 /* harmony import */ var _Protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Protesto.vue?vue&type=script&lang=js */ "./src/components/protesto/Protesto.vue?vue&type=script&lang=js");
-/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var _Protesto_vue_vue_type_style_index_0_id_362e7022_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css */ "./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
 
 ;
-const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_Protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Protesto_vue_vue_type_template_id_362e7022__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"src/components/protesto/Protesto.vue"]])
+
+
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_Protesto_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_Protesto_vue_vue_type_template_id_362e7022_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-362e7022"],['__file',"src/components/protesto/Protesto.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -35869,18 +35909,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022":
-/*!****************************************************************************!*\
-  !*** ./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022 ***!
-  \****************************************************************************/
+/***/ "./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true":
+/*!****************************************************************************************!*\
+  !*** ./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true ***!
+  \****************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_template_id_362e7022__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_template_id_362e7022_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_template_id_362e7022__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Protesto.vue?vue&type=template&id=362e7022 */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_template_id_362e7022_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Protesto.vue?vue&type=template&id=362e7022&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=template&id=362e7022&scoped=true");
 
 
 /***/ }),
@@ -36062,6 +36102,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_e0e8e4d8_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_e0e8e4d8_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
 /* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_e0e8e4d8_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Location_vue_vue_type_style_index_0_id_e0e8e4d8_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
+/* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
+
+
+/***/ }),
+
+/***/ "./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css":
+/*!******************************************************************************************************!*\
+  !*** ./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css ***!
+  \******************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_style_index_0_id_362e7022_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-style-loader/index.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_style_index_0_id_362e7022_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_style_index_0_id_362e7022_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
+/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_style_index_0_id_362e7022_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_Protesto_vue_vue_type_style_index_0_id_362e7022_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
 /* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
 
 
@@ -37755,6 +37812,27 @@ if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(/*! !../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
 var update = add("5e1c237e", content, false, {});
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/protesto/Protesto.vue?vue&type=style&index=0&id=362e7022&scoped=true&lang=css");
+if(content.__esModule) content = content.default;
+if(typeof content === 'string') content = [[module.id, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = (__webpack_require__(/*! !../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
+var update = add("241987a2", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
