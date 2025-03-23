@@ -201,7 +201,44 @@ export default {
       .finally(() => (this.isLoading = false));
     },
     exportData() {
+      this.isLoading = true;
+      const queryParams = new URLSearchParams(this.filter).toString();
+      fetchWithToken(`/resistance/export?${queryParams}`)
+          .then(response => response.blob())
+          .then(blob => {
+            
+
+            // Create a link element to trigger the download
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'Report.xlsx'); // Set the file name
+            document.body.appendChild(link);
+            link.click();
+
+            // Clean up
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+          })
+          .catch(err => console.error("Error fetching results:", err))
+          .finally(() => (this.isLoading = false));
       console.log("Exporting data...");
+
+    },
+    convertToCsv(data) {
+      const headers = Object.keys(data[0]).join(',');
+      const rows = data.map(row =>
+          Object.values(row)
+              .map(value => {
+                if (Array.isArray(value)) {
+                  return `"${value.join(', ')}"`; // Handle arrays (e.g., ResistanceReasons, Corporations)
+                }
+                return `"${value}"`; // Wrap values in quotes to handle commas
+              })
+              .join(',')
+      );
+      return [headers, ...rows].join('\n');
     },
     formatDate(date) {
       return new Date(date).toLocaleDateString();

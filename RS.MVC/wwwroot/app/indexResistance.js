@@ -101,6 +101,7 @@ $(document).on("change", ".city", function () {
 $(document).on("focusout", "input[name=EmployeeCountInProtesto]", function () {
   var employeecountInProtesto = $(this).val();
   var employeeCountInProtestoId = $("select[name = EmployeeCountInProtestoId]");
+  console.log(employeeCountInProtestoId);
   if (employeecountInProtesto == null) return;
   if (employeecountInProtesto > 0 && employeecountInProtesto < 6)
     employeeCountInProtestoId.val(1);

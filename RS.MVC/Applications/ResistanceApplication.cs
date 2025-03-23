@@ -91,12 +91,12 @@ namespace RS.MVC.Applications
         }
         public void Create(ResistanceModel model)
         {
-            if(model.MainCompanyId.HasValue)
+            if(model.MainCompanyId != null)
                 db.CompanyOutsourceCompany.Add(
                     new CompanyOutsourceCompany
                     {
-                        CompanyId = model.MainCompanyId.Value, 
-                        OutsourceCompanyId = model.CompanyId
+                        CompanyId = model.MainCompanyId.Id, 
+                        OutsourceCompanyId = model.CompanyId.Id
                     });
             
             Resistance resistance = model.MapToResistance();
@@ -149,8 +149,8 @@ namespace RS.MVC.Applications
                         {
                             Id = s.Id,
                             Code = s.Code,
-                            CompanyId = s.CompanyId,
-                            MainCompanyId = s.MainCompanyId,
+                            CompanyId = s.Company,
+                            MainCompanyId = s.MainCompany,
                             CategoryId = s.CategoryId,
                             CorporationIds = s.ResistanceCorporations.Select(emp => emp.Corporation).ToList(),
                             EmploymentTypeIds = s.ResistanceEmploymentTypes.Select(emp => emp.EmploymentType).ToList(),
@@ -210,29 +210,29 @@ namespace RS.MVC.Applications
         {
             var viewModel = form.Resistance;
             var resistance = db.Resistance.SingleOrDefault(r => r.Id == viewModel.Id);
-            if (viewModel.CompanyId == -1)
+            if (viewModel.CompanyId.Id == -1)
             {
                 var newCompany = db.Company.Add(new Company { Name = form.Company.Name, CompanyScaleId = form.Company.ScaleId, CompanyTypeId = form.Company.TypeId, CompanyWorkLineId = form.Company.WorklineId });
-                viewModel.CompanyId = newCompany.Entity.Id;
+                viewModel.CompanyId = newCompany.Entity;
             }
-            if (viewModel.MainCompanyId == -1)
+            if (viewModel.MainCompanyId?.Id == -1)
             {
                 var newCompany = db.Company.Add(new Company { Name = form.MainCompany.Name, CompanyScaleId = form.MainCompany.ScaleId, CompanyTypeId = form.MainCompany.TypeId, CompanyWorkLineId = form.MainCompany.WorklineId });
-                viewModel.MainCompanyId = newCompany.Entity.Id;
-                db.CompanyOutsourceCompany.Add(new CompanyOutsourceCompany { CompanyId = viewModel.MainCompanyId.Value, OutsourceCompanyId = viewModel.CompanyId });
+                viewModel.MainCompanyId = newCompany.Entity;
+                db.CompanyOutsourceCompany.Add(new CompanyOutsourceCompany { CompanyId = viewModel.MainCompanyId.Id, OutsourceCompanyId = viewModel.CompanyId.Id });
             }
-            if (viewModel.MainCompanyId != null && viewModel.MainCompanyId != 0)
+            if (viewModel.MainCompanyId != null && viewModel.MainCompanyId.Id != 0)
             {
-                var exist = db.CompanyOutsourceCompany.Any(s => s.CompanyId == viewModel.MainCompanyId && s.OutsourceCompanyId == viewModel.CompanyId);
+                var exist = db.CompanyOutsourceCompany.Any(s => s.CompanyId == viewModel.MainCompanyId.Id && s.OutsourceCompanyId == viewModel.CompanyId.Id);
                 if (!exist)
                 {
-                    db.CompanyOutsourceCompany.Add(new CompanyOutsourceCompany { CompanyId = viewModel.MainCompanyId.Value, OutsourceCompanyId = viewModel.CompanyId });
+                    db.CompanyOutsourceCompany.Add(new CompanyOutsourceCompany { CompanyId = viewModel.MainCompanyId.Id, OutsourceCompanyId = viewModel.CompanyId.Id });
                 }
             }
             resistance.Id = viewModel.Id;
             resistance.CategoryId = viewModel.CategoryId;
-            resistance.CompanyId = viewModel.CompanyId;
-            resistance.MainCompanyId = viewModel.MainCompanyId;
+            resistance.CompanyId = viewModel.CompanyId.Id;
+            resistance.MainCompanyId = viewModel.MainCompanyId?.Id;
             resistance.Code = viewModel.Code;
             resistance.EmployeeCountId = viewModel.EmployeeCountId;
             resistance.EmployeeCountNumber = viewModel.EmployeeCount;
@@ -278,8 +278,8 @@ namespace RS.MVC.Applications
         {
             var resistance = db.Resistance.SingleOrDefault(r => r.Id == viewModel.Id);
             resistance.CategoryId = viewModel.CategoryId;
-            resistance.CompanyId = viewModel.CompanyId;
-            resistance.MainCompanyId = viewModel.MainCompanyId;
+            resistance.CompanyId = viewModel.CompanyId.Id;
+            resistance.MainCompanyId = viewModel.MainCompanyId?.Id;
             resistance.Code = viewModel.Code;
             resistance.EmployeeCountId = viewModel.EmployeeCountId;
             resistance.EmployeeCountNumber = viewModel.EmployeeCount;
@@ -289,9 +289,9 @@ namespace RS.MVC.Applications
             resistance.Description = viewModel.ResistanceDescription;
             resistance.Note = viewModel.Note;
             //resistance.LegalInterventionDesc = viewModel.LegalInterventionDesc;
-            //resistance.FiredEmployeeCountByProtesto = viewModel.FiredEmployeeCountByProtesto;
-            //resistance.DevelopRight = viewModel.DevelopRight;
-            // resistance.ResistanceResult = viewModel.ResistanceResult;
+            resistance.FiredEmployeeCountByProtesto = viewModel.FiredEmployeeCountByProtesto;
+            resistance.DevelopRight = viewModel.DevelopRight;
+            resistance.ResistanceResult = viewModel.ResistanceResult;
             resistance.Updater = viewModel.UserName;
             resistance.UpdateDate = DateTime.Now;
             resistance.ResistanceCorporations = new List<ResistanceCorporation>();

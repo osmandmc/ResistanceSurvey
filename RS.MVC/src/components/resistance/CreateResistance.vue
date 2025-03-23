@@ -251,8 +251,11 @@ export default {
         employeeCountId: this.resistance.employeeCountId,
         employeeCount: this.resistance.employeeCount,
         tradeUnionId: this.resistance.tradeUnionId,
+        employmentTypeIds: this.resistance.employmentTypeIds,
         protesto: this.resistance.protesto,
         resistanceNews: this.resistance.resistanceNews,
+        firedEmployeeCountByProtesto: this.resistance.protesto.firedEmployeeCountByProtesto,
+        resistanceResult: this.resistance.resistanceResult,
       }
 
       fetchWithToken("/ResistanceApi/CreateResistance", {
@@ -387,6 +390,9 @@ export default {
       // CustodyCount: Required if custody is possible
       if (this.resistance.protesto.isCustodyPossible && !this.resistance.protesto.custodyCount) {
         errors.custodyCount = "Lütfen gözaltı sayısını giriniz.";
+      }
+      if (this.resistance.resistanceResult === null || this.resistance.resistanceResult === undefined) {
+        errors.resistanceResult = "Lütfen sonuç giriniz.";
       }
       return errors;
     },

@@ -273,7 +273,7 @@ export default {
       } else if (employeecount >= 100001) {
         this.protesto.employeeCountInProtestoId = 14;
       } else {
-        this.protesto.employeeCountInProtestoId = ""; // Reset if out of range
+        this.protesto.employeeCountInProtestoId = null; // Reset if out of range
       }
     },
     clearError(field) {

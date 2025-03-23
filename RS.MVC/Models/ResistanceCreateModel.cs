@@ -132,8 +132,8 @@ namespace RS.MVC.Models
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public int CategoryId { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
-        public int CompanyId { get; set; }
-        public int? MainCompanyId { get; set; }
+        public Company CompanyId { get; set; }
+        public Company? MainCompanyId { get; set; }
         public string Code { get; set; }
         public bool HasTradeUnion { get; set; }
         public bool DevelopRight { get; set; }
@@ -143,7 +143,7 @@ namespace RS.MVC.Models
         public short AnyLegalIntervention { get; set; }
         public string LegalIntervantionDesc { get; set; }
         public ResistanceResult ResistanceResult { get; set; }
-
+        public int FiredEmployeeCountByProtesto { get; set; }
         public int? EmployeeCountId { get; set; }
         public int? EmployeeCount { get; set; }
         public List<Corporation> CorporationIds { get; set; }
@@ -157,8 +157,8 @@ namespace RS.MVC.Models
         {
             var resistance = new Resistance
             {
-                CompanyId = CompanyId,
-                MainCompanyId = MainCompanyId,
+                CompanyId = CompanyId.Id,
+                MainCompanyId = MainCompanyId?.Id,
                 CategoryId = CategoryId,
                 Code = Code,
                 HasTradeUnion = HasTradeUnion,
@@ -171,7 +171,7 @@ namespace RS.MVC.Models
                 EndDate = Protesto.ProtestoEndDate,
                 Description = ResistanceDescription,
                 Note = Note,
-                FiredEmployeeCountByProtesto = Protesto.FiredEmployeeCountByProtesto,
+                FiredEmployeeCountByProtesto = FiredEmployeeCountByProtesto,
                 Creator = UserName,
                 CreateDate = DateTime.Now,
                 LegalInterventionDesc = LegalIntervantionDesc,
@@ -184,15 +184,7 @@ namespace RS.MVC.Models
             };
             if (AnyLegalIntervention == 1) resistance.AnyLegalIntervention = true;
             if (AnyLegalIntervention == 2) resistance.AnyLegalIntervention = false;
-            if (EmploymentTypeIds != null)
-                EmploymentTypeIds.ForEach(c=> 
-                        resistance.ResistanceEmploymentTypes
-                            .AddRange(new ResistanceEmploymentType
-                            {
-                                EmploymentTypeId = c.Id, ResistanceId = resistance.Id
-                            }));
             
-           
             return resistance;
         }
         public Protesto MapToProtestoDto()
@@ -207,8 +199,8 @@ namespace RS.MVC.Models
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public int CategoryId { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
-        public int CompanyId { get; set; }
-        public int? MainCompanyId { get; set; }
+        public Company CompanyId { get; set; }
+        public Company? MainCompanyId { get; set; }
         public string Code { get; set; }
         public bool HasTradeUnion { get; set; }
         public int? TradeUnionAuthorityId { get; set; }
@@ -221,6 +213,8 @@ namespace RS.MVC.Models
         public List<EmploymentType> EmploymentTypeIds { get; set; }
         public List<ResistanceReason> ResistanceReasonIds { get; set; }
         public List<News> ResistanceNews { get; set; }
-        
+        public int? FiredEmployeeCountByProtesto { get; set; }
+        public ResistanceResult ResistanceResult { get; set; }
+        public bool DevelopRight { get; set; }
     }
 }

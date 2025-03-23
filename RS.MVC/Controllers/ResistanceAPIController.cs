@@ -1,7 +1,10 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RS.COMMON.DTO;
 using RS.EF;
 using RS.MVC.Applications;
@@ -92,5 +95,92 @@ public class ResistanceApiController(IResistanceApplication rsApplication, RSDBC
         var viewModel = new ProtestoDeleteModel(){ ProtestoId = id, UserName = "TO DO" };
         _rsApplication.DeleteProtesto(viewModel);
         return Ok();
+    }
+    
+    public ActionResult Export(ResistanceFilterModel filter)
+    {
+        var protestos = _db.Protesto
+            .Include(item => item.Resistance)
+            .ThenInclude(resistance => resistance.EmployeeCount)
+            .Include("Resistance.Category")
+            .Include("Resistance.Company.CompanyWorkLine")
+            .Include("Resistance.MainCompany.CompanyWorkLine")
+            .Include("Resistance.ResistanceEmploymentTypes")
+            .Include("Resistance.ResistanceEmploymentTypes.EmploymentType")
+            .Include("Resistance.TradeUnion")
+            .Include("Resistance.TradeUnionAuthority")
+            .Include("Resistance.ResistanceResistanceReasons")
+            .Include("Resistance.ResistanceResistanceReasons.ResistanceReason")
+            .Include("Resistance.ResistanceCorporations")
+            .Include("Resistance.ResistanceCorporations.Corporation")
+            .Include("Resistance.ResistanceCorporations.Corporation.CorporationType")
+            .Include("Gender")
+            .Include("ProtestoEmployeeCount")
+            .Include("ProtestoProtestoTypes")
+            .Include("ProtestoProtestoTypes.ProtestoType")
+            .Include("ProtestoProtestoPlaces")
+            .Include("ProtestoProtestoPlaces.ProtestoPlace")
+            .Include("ProtestoInterventionTypes")
+            .Include("ProtestoInterventionTypes.InterventionType")
+            .Include("Locations")
+            .Include("Locations.City")
+            .Include("Locations.District")
+            .Include("Resistance.ResistanceNews")
+            .Include("Resistance.ResistanceNews.News")
+            .Where(rs => !rs.Deleted && !rs.Resistance.Deleted
+                        && (filter.CompanyId == null || rs.Resistance.CompanyId == filter.CompanyId)
+                        && (filter.MainCompanyId == null || rs.Resistance.MainCompanyId == filter.MainCompanyId)
+                        && (filter.CategoryId == null || rs.Resistance.CategoryId == filter.CategoryId)
+                        && (filter.YearId == null || rs.StartDate.Year == filter.YearId && rs.StartDate.Month == filter.MonthId)
+                        && (filter.PersonalNote == null || String.IsNullOrEmpty(rs.Resistance.Note) == !filter.PersonalNote)
+                        )
+            .ToList();
+
+        var rows = new List<dynamic>();
+        foreach (var item in protestos)
+        {
+            var row = new
+            {
+                ResistanceId = item.Resistance.Id,
+                Description = item.Resistance.Description,
+                CategoryName = item.Resistance.Category.Name,
+                CompanyName = item.Resistance.Company.Name,
+                CompanyWorkline = item.Resistance.Company.CompanyWorkLine != null ? item.Resistance.Company.CompanyWorkLine.Name : "",
+                MainCompanyName = item.Resistance.MainCompany != null ? item.Resistance.MainCompany.Name : "",
+                MainCompanyWorkline = item.Resistance.MainCompany != null ? item.Resistance.MainCompany.CompanyWorkLine != null ? item.Resistance.MainCompany.CompanyWorkLine.Name : "" : "",
+                AgainstProduction = item.ProtestoProtestoTypes.Any(s => s.ProtestoType.AgainstProduction) ? "EVET" : "HAYIR",
+                DevelopRight = item.Resistance.DevelopRight ? "EVET" : "HAYIR",
+                EmployeeCount = item.Resistance.EmployeeCount != null ? item.Resistance.EmployeeCount.Name : "",
+                EmployeeCountNumber = item.Resistance.EmployeeCountNumber,
+                HasTradeUnion = item.Resistance.ResistanceCorporations.Any(s => s.Corporation.CorporationTypeId == 1) ? "EVET" : "HAYIR",
+                TradeUnionAuthority = item.Resistance.TradeUnionAuthority != null ? item.Resistance.TradeUnionAuthority.Name : "",
+                ResistanceReasons = item.Resistance.ResistanceResistanceReasons.Select(x => x.ResistanceReason.Name).ToList(),
+                Corporations = item.Resistance.ResistanceCorporations?.Select(x => x.Corporation.Name).ToList() ?? new List<string>(),
+                EmploymentTypes = item.Resistance.ResistanceEmploymentTypes?.Select(x => x.EmploymentType.Name).ToList() ?? new List<string>(),
+                TradeUnionReacted = item.Resistance.TradeUnion != null ? item.Resistance.TradeUnion.Name : "",
+                Gender = item.Gender != null ? item.Gender.Name : "",
+                FiredEmployeeCount = item.Resistance.FiredEmployeeCountByProtesto,
+                AnyLegalIntervention = item.Resistance.AnyLegalIntervention.HasValue ? (item.Resistance.AnyLegalIntervention.Value ? "EVET" : "HAYIR") : "BİLİNMİYOR",
+                LegalInterventionDesc = item.Resistance.LegalInterventionDesc,
+                ProtestoId = item.Id,
+                ProtestoCount = item.Locations.Count,
+                ProtestoTypes = item.ProtestoProtestoTypes?.Select(x => x.ProtestoType.Name).ToList() ?? new List<string>(),
+                ProtestoPlaces = item.ProtestoProtestoPlaces?.Select(x => x.ProtestoPlace.Name).ToList() ?? new List<string>(),
+                StartDate = item.StartDate.ToShortDateString(),
+                EndDate = item.EndDate != null ? item.EndDate.Value.ToShortDateString() : "",
+                StrikeDuration = item.StrikeDuration,
+                Locations = item.Locations.Select(x => x.District != null ? $"{x.City.Name} / {x.District.Name} {x.Place}" : $"{x.City.Name} {x.Place}").ToList(),
+                EmployeeCountInProtesto = item.ProtestoEmployeeCount != null ? item.ProtestoEmployeeCount.Name : "",
+                EmployeeCountInProtestoNumber = item.EmployeeCountNumber,
+                InterventionTypes = item.ProtestoInterventionTypes?.Select(x => x.InterventionType.Name).ToList() ?? new List<string>(),
+                CustodyCount = item.CustodyCount,
+                Note = item.Resistance.Note,
+                ProtestoNote = item.Note,
+                ResistanceResult = item.Resistance.ResistanceResult.ToString(),
+            };
+            rows.Add(row);
+        }
+
+        return Json(rows);
     }
 }

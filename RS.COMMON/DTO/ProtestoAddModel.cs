@@ -92,7 +92,6 @@ namespace RS.COMMON.DTO
         public List<ProtestoLocationModel> Locations { get; set; }
         public string Note { get; set; }
         public string SimpleProtestoDescription { get; set; }
-        public int FiredEmployeeCountByProtesto { get; set; }
         public int StrikeDuration { get; set; }
 
         public Protesto ToEntity()
@@ -123,10 +122,10 @@ namespace RS.COMMON.DTO
             //     ProtestoTypeIds.ForEach(c =>
             //         protesto.ProtestoProtestoTypes
             //             .Add(new ProtestoProtestoType { ProtestoTypeId = c.Id }));
-            if (InterventionTypeIds != null)
-                InterventionTypeIds.ForEach(c =>
-                    protesto.ProtestoInterventionTypes
-                        .Add(new ProtestoInterventionType { InterventionTypeId = c.Id }));
+            // if (InterventionTypeIds != null)
+            //     InterventionTypeIds.ForEach(c =>
+            //         protesto.ProtestoInterventionTypes
+            //             .Add(new ProtestoInterventionType { InterventionTypeId = c.Id }));
         
             // if (ProtestoCityIds != null)
             //     ProtestoCityIds.ForEach(c => protesto.Cities.Add(new ProtestoCity { CityId = c }));

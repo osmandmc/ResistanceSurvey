@@ -41,17 +41,16 @@
       <label for="CompanyId">Şirket</label>
       <div class="two fields">
         <div class="field">
-          <select v-model="this.resistance.companyId"
-                  @change="clearError('companyId')">
-            <option value="">--Seçiniz--</option>
-            <option
-                v-for="company in companies"
-                :key="company.id"
-                :value="company.id"
-            >
-              {{ company.name }}
-            </option>
-          </select>
+          <multiselect id="single-select-search" 
+                       v-model="resistance.companyId" 
+                       :options="companies" 
+                       placeholder="Seçiniz" 
+                       label="name"
+                       track-by="id" 
+                       aria-label="seçiniz"
+                       @select="clearError('companyId')">
+          >
+          </multiselect>
           <span v-if="formErrors.companyId" class="field error">
             <label>{{ formErrors.companyId }}</label>
           </span>
@@ -70,16 +69,15 @@
     <label for="MainCompanyId">Ana Şirket</label>
     <div class="two fields">
       <div class="field">
-        <select v-model="resistance.mainCompanyId">
-          <option value="">--Seçiniz--</option>
-          <option
-              v-for="company in companies"
-              :key="company.id"
-              :value="company.id"
-          >
-            {{ company.name }}
-          </option>
-        </select>
+        <multiselect id="single-select-search"
+                     v-model="resistance.mainCompanyId"
+                     :options="companies"
+                     placeholder="Seçiniz"
+                     label="name"
+                     track-by="id"
+                     aria-label="seçiniz"
+                     @select="clearError('mainCompanyId')">
+        </multiselect>
       </div>
       <div class="field">
         <button type="button" @click="openCompanyModal(true)" class="ui button">
@@ -125,6 +123,15 @@
    
     <!-- Employee Count -->
     <div class="two fields">
+     
+      <div class="field">
+        <label for="EmployeeCount">İş Yerindeki İşçi Sayısı (Tam)</label>
+        <input
+            type="number"
+            id="EmployeeCount"
+            v-model="this.resistance.employeeCount"
+        />
+      </div>
       <div class="field">
         <label for="EmployeeCountId">İş Yerindeki İşçi Sayısı</label>
         <select v-model="this.resistance.employeeCountId">
@@ -138,28 +145,20 @@
           </option>
         </select>
       </div>
-      <div class="field">
-        <label for="EmployeeCount">İş Yerindeki İşçi Sayısı (Tam)</label>
-        <input
-            type="text"
-            id="EmployeeCount"
-            v-model="this.resistance.employeeCount"
-        />
-      </div>
     </div>
     <div class="field">
       <label for="CorporationIds">Kurumsallık</label>
-      <multiselect id="CorporationIds" 
-                   v-model="this.resistance.corporationIds"
-                   placeholder="Seçiniz" label="name" track-by="id"
-                   :preselect-first="true"
-                   :options="corporations"
-                   :multiple="true" 
-                   :close-on-select="false" 
-                   :clear-on-select="false"
-                   :preserve-search="true" 
-                   :taggable="true" @tag="addCorporation"
-                   @select="clearError('corporationIds')"
+      <multiselect 
+          v-model="this.resistance.corporationIds"
+          placeholder="Seçiniz" label="name" track-by="id"
+          :preselect-first="true"
+          :options="corporations"
+          :multiple="true" 
+          :close-on-select="false" 
+          :clear-on-select="false"
+          :preserve-search="true" 
+          :taggable="true" @tag="addCorporation"
+          @select="clearError('corporationIds')"
       >
       </multiselect>
       <span v-if="formErrors.corporationIds" class="field error">
@@ -219,12 +218,18 @@
     <!-- Other Fields -->
     <div class="field">
       <label for="ResistanceResult">Sonuç</label>
-      <select v-model="this.resistance.resistanceResult" class="ui fluid dropdown">
+      <select v-model="this.resistance.resistanceResult" 
+              class="ui fluid dropdown"
+              @change="clearError('resistanceResult')"
+      >
         <option :value="0">Bilinmiyor</option>
         <option :value="1">Tam Kazanım</option>
         <option :value="2">Yarım Kazanım</option>
         <option :value="3">Sıfır Kazanım</option>
       </select>
+      <div v-if="formErrors.resistanceResult" class="field error">
+        <label>{{ formErrors.resistanceResult }}</label>
+      </div>
     </div>
 </template>
 
@@ -320,7 +325,7 @@ export default {
               .toLowerCase()
               .normalize("NFD") // Decompose characters
               .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
-              .replace(/ı/g, "i")
+              .replace(/İ/g, "i")
               .replace(/ğ/g, "g")
               .replace(/ü/g, "u")
               .replace(/ş/g, "s")

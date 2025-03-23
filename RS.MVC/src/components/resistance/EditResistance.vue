@@ -220,6 +220,7 @@ export default {
       fetchWithToken(`/resistanceapi/get/${id}`)
           .then(response => response.json())
           .then(data => { 
+            console.log(data);
             this.resistance = data; 
             this.isLoading = false; 
           });      
@@ -425,6 +426,10 @@ export default {
       // DevelopRight: Required
       if (this.resistance.developRight === null || this.resistance.developRight === undefined) {
         errors.developRight = "Hak Geliştirmeye/Savunma Özelliği";
+      }
+
+      if (this.resistance.resistanceResult === null || this.resistance.resistanceResult === undefined) {
+        errors.resistanceResult = "Lütfen sonuç giriniz.";
       }
 
       return errors;
