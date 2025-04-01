@@ -20286,6 +20286,98 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/DurationPicker.vue?vue&type=script&lang=js":
+/*!*************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/DurationPicker.vue?vue&type=script&lang=js ***!
+  \*************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: "DurationPicker",
+  props: {
+    /**
+     * Total duration in seconds (used by v-model).
+     */
+    modelValue: {
+      type: Number,
+      "default": 0
+    },
+    /**
+     * Whether to show the days input.
+     */
+    showDays: {
+      type: Boolean,
+      "default": true
+    },
+    /**
+     * Whether to show the seconds input.
+     */
+    showSeconds: {
+      type: Boolean,
+      "default": false
+    },
+    /**
+     * If true, the inputs are disabled.
+     */
+    disabled: {
+      type: Boolean,
+      "default": false
+    }
+  },
+  data: function data() {
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0
+    };
+  },
+  watch: {
+    // Sync internal fields whenever modelValue changes from the outside
+    modelValue: {
+      immediate: true,
+      handler: function handler(newVal) {
+        this.setValueFromSeconds(newVal);
+      }
+    }
+  },
+  methods: {
+    /**
+     * Parse total seconds into days, hours, minutes, seconds.
+     */
+    setValueFromSeconds: function setValueFromSeconds(totalSeconds) {
+      var total = parseInt(totalSeconds, 10);
+      if (isNaN(total)) total = 0;
+      this.seconds = total % 60;
+      total = Math.floor(total / 60);
+      this.minutes = total % 60;
+      total = Math.floor(total / 60);
+      if (this.showDays) {
+        this.hours = total % 24;
+        this.days = Math.floor(total / 24);
+      } else {
+        // If not showing days, just accumulate hours beyond 24
+        this.hours = total;
+        this.days = 0;
+      }
+    },
+    /**
+     * Emit the updated total in seconds when the user edits.
+     */
+    emitChange: function emitChange() {
+      var total = this.days * 24 * 3600 + this.hours * 3600 + this.minutes * 60 + this.seconds;
+      this.$emit("update:modelValue", total);
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/NotFound.vue?vue&type=script&lang=js":
 /*!*******************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/NotFound.vue?vue&type=script&lang=js ***!
@@ -20794,6 +20886,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vuepic/vue-datepicker/dist/main.css */ "./node_modules/@vuepic/vue-datepicker/dist/main.css");
 /* harmony import */ var _vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_vuepic_vue_datepicker_dist_main_css__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _Location_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Location.vue */ "./src/components/protesto/Location.vue");
+/* harmony import */ var _DurationPicker_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../DurationPicker.vue */ "./src/components/DurationPicker.vue");
+
 
 
 
@@ -20802,6 +20896,7 @@ __webpack_require__.r(__webpack_exports__);
   name: "Protesto",
   emits: ["addProtesto", 'deleteLocation', 'addLocation', "onInputChanged"],
   components: {
+    DurationPicker: _DurationPicker_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
     Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_0__["default"],
     VueDatePicker: _vuepic_vue_datepicker__WEBPACK_IMPORTED_MODULE_1__["default"],
     Location: _Location_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
@@ -21278,7 +21373,7 @@ __webpack_require__.r(__webpack_exports__);
         employmentTypeIds: this.resistance.employmentTypeIds,
         protesto: this.resistance.protesto,
         resistanceNews: this.resistance.resistanceNews,
-        firedEmployeeCountByProtesto: this.resistance.firedEmployeeCountByProtesto,
+        firedEmployeeCountByProtesto: this.resistance.protesto.firedEmployeeCountByProtesto,
         resistanceResult: this.resistance.resistanceResult
       };
       (0,_fetchWrapper__WEBPACK_IMPORTED_MODULE_0__.fetchWithToken)("/ResistanceApi/CreateResistance", {
@@ -22308,6 +22403,97 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/DurationPicker.vue?vue&type=template&id=2f58e072&scoped=true":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/DurationPicker.vue?vue&type=template&id=2f58e072&scoped=true ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+
+var _hoisted_1 = {
+  "class": "duration-picker"
+};
+var _hoisted_2 = {
+  key: 0,
+  "class": "duration-block"
+};
+var _hoisted_3 = ["disabled"];
+var _hoisted_4 = {
+  "class": "duration-block"
+};
+var _hoisted_5 = ["max", "disabled"];
+var _hoisted_6 = {
+  "class": "duration-block"
+};
+var _hoisted_7 = ["disabled"];
+var _hoisted_8 = {
+  key: 1,
+  "class": "duration-block"
+};
+var _hoisted_9 = ["disabled"];
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Days "), $props.showDays ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "number",
+    min: "0",
+    "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
+      return $data.days = $event;
+    }),
+    disabled: $props.disabled,
+    onChange: _cache[1] || (_cache[1] = function () {
+      return $options.emitChange && $options.emitChange.apply($options, arguments);
+    })
+  }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_3), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.days, void 0, {
+    number: true
+  }]]), _cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Gün", -1 /* HOISTED */))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Hours "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "number",
+    min: 0,
+    max: $props.showDays ? 23 : 99999,
+    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+      return $data.hours = $event;
+    }),
+    disabled: $props.disabled,
+    onChange: _cache[3] || (_cache[3] = function () {
+      return $options.emitChange && $options.emitChange.apply($options, arguments);
+    })
+  }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_5), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.hours, void 0, {
+    number: true
+  }]]), _cache[9] || (_cache[9] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Saat", -1 /* HOISTED */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Minutes "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "number",
+    min: "0",
+    max: "59",
+    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+      return $data.minutes = $event;
+    }),
+    disabled: $props.disabled,
+    onChange: _cache[5] || (_cache[5] = function () {
+      return $options.emitChange && $options.emitChange.apply($options, arguments);
+    })
+  }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_7), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.minutes, void 0, {
+    number: true
+  }]]), _cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Dakika", -1 /* HOISTED */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Seconds "), $props.showSeconds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "number",
+    min: "0",
+    max: "59",
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+      return $data.seconds = $event;
+    }),
+    disabled: $props.disabled,
+    onChange: _cache[7] || (_cache[7] = function () {
+      return $options.emitChange && $options.emitChange.apply($options, arguments);
+    })
+  }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_9), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.seconds, void 0, {
+    number: true
+  }]]), _cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Saniye", -1 /* HOISTED */))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]);
+}
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/NotFound.vue?vue&type=template&id=3a86191f":
 /*!***********************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/NotFound.vue?vue&type=template&id=3a86191f ***!
@@ -22829,6 +23015,7 @@ var _hoisted_26 = {
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _this = this;
   var _component_multiselect = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("multiselect");
+  var _component_DurationPicker = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("DurationPicker");
   var _component_VueDatePicker = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("VueDatePicker");
   var _component_Location = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Location");
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Protesto Types "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
@@ -22852,12 +23039,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.protestoTypeIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.protestoTypeIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), $options.showStrikeDuration ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [_cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "StrikeDuration"
-  }, "Eylemin Süresi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, "Eylemin Süresi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_DurationPicker, {
+    modelValue: $props.protesto.strikeDuration,
     "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
       return $props.protesto.strikeDuration = $event;
     }),
-    type: "text"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.protesto.strikeDuration]])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    showDays: true
+  }, null, 8 /* PROPS */, ["modelValue"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, "Toplam Saniye: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.protesto.strikeDuration), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "SimpleProtestoDescription"
   }, "İş yerinde Basit Eylem Açıklama", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
@@ -24035,6 +24223,46 @@ ___CSS_LOADER_EXPORT___.push([module.id, `
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/DurationPicker.vue?vue&type=style&index=0&id=2f58e072&scoped=true&lang=css":
+/*!***************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/DurationPicker.vue?vue&type=style&index=0&id=2f58e072&scoped=true&lang=css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `
+.duration-picker[data-v-2f58e072] {
+  display: flex;
+  gap: 1rem;
+}
+.duration-block[data-v-2f58e072] {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.duration-block input[data-v-2f58e072] {
+  width: 4em;
+}
+`, "",{"version":3,"sources":["webpack://./src/components/DurationPicker.vue"],"names":[],"mappings":";AAiJA;EACE,aAAa;EACb,SAAS;AACX;AACA;EACE,oBAAoB;EACpB,sBAAsB;EACtB,uBAAuB;AACzB;AACA;EACE,UAAU;AACZ","sourcesContent":["<template>\n  <div class=\"duration-picker\">\n    <!-- Days -->\n    <div v-if=\"showDays\" class=\"duration-block\">\n      <input\n          type=\"number\"\n          min=\"0\"\n          v-model.number=\"days\"\n          :disabled=\"disabled\"\n          @change=\"emitChange\"\n      />\n      <span>Gün</span>\n    </div>\n\n    <!-- Hours -->\n    <div class=\"duration-block\">\n      <input\n          type=\"number\"\n          :min=\"0\"\n          :max=\"showDays ? 23 : 99999\"\n          v-model.number=\"hours\"\n          :disabled=\"disabled\"\n          @change=\"emitChange\"\n      />\n      <span>Saat</span>\n    </div>\n\n    <!-- Minutes -->\n    <div class=\"duration-block\">\n      <input\n          type=\"number\"\n          min=\"0\"\n          max=\"59\"\n          v-model.number=\"minutes\"\n          :disabled=\"disabled\"\n          @change=\"emitChange\"\n      />\n      <span>Dakika</span>\n    </div>\n\n    <!-- Seconds -->\n    <div v-if=\"showSeconds\" class=\"duration-block\">\n      <input\n          type=\"number\"\n          min=\"0\"\n          max=\"59\"\n          v-model.number=\"seconds\"\n          :disabled=\"disabled\"\n          @change=\"emitChange\"\n      />\n      <span>Saniye</span>\n    </div>\n  </div>\n</template>\n\n<script>\nexport default {\n  name: \"DurationPicker\",\n  props: {\n    /**\n     * Total duration in seconds (used by v-model).\n     */\n    modelValue: {\n      type: Number,\n      default: 0,\n    },\n    /**\n     * Whether to show the days input.\n     */\n    showDays: {\n      type: Boolean,\n      default: true,\n    },\n    /**\n     * Whether to show the seconds input.\n     */\n    showSeconds: {\n      type: Boolean,\n      default: false,\n    },\n    /**\n     * If true, the inputs are disabled.\n     */\n    disabled: {\n      type: Boolean,\n      default: false,\n    },\n  },\n  data() {\n    return {\n      days: 0,\n      hours: 0,\n      minutes: 0,\n      seconds: 0,\n    };\n  },\n  watch: {\n    // Sync internal fields whenever modelValue changes from the outside\n    modelValue: {\n      immediate: true,\n      handler(newVal) {\n        this.setValueFromSeconds(newVal);\n      },\n    },\n  },\n  methods: {\n    /**\n     * Parse total seconds into days, hours, minutes, seconds.\n     */\n    setValueFromSeconds(totalSeconds) {\n      let total = parseInt(totalSeconds, 10);\n      if (isNaN(total)) total = 0;\n\n      this.seconds = total % 60;\n      total = Math.floor(total / 60);\n      this.minutes = total % 60;\n      total = Math.floor(total / 60);\n\n      if (this.showDays) {\n        this.hours = total % 24;\n        this.days = Math.floor(total / 24);\n      } else {\n        // If not showing days, just accumulate hours beyond 24\n        this.hours = total;\n        this.days = 0;\n      }\n    },\n\n    /**\n     * Emit the updated total in seconds when the user edits.\n     */\n    emitChange() {\n      const total =\n          this.days * 24 * 3600 +\n          this.hours * 3600 +\n          this.minutes * 60 +\n          this.seconds;\n\n      this.$emit(\"update:modelValue\", total);\n    },\n  },\n};\n</script>\n\n<style scoped>\n.duration-picker {\n  display: flex;\n  gap: 1rem;\n}\n.duration-block {\n  display: inline-flex;\n  flex-direction: column;\n  align-items: flex-start;\n}\n.duration-block input {\n  width: 4em;\n}\n</style>\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/ResistanceOverview.vue?vue&type=style&index=0&id=b726abfc&scoped=true&lang=css":
 /*!*******************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/ResistanceOverview.vue?vue&type=style&index=0&id=b726abfc&scoped=true&lang=css ***!
@@ -24224,7 +24452,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `
 .custom-datepicker-wrapper[data-v-362e7022] .dp__input_icon_pad {
   padding-inline-start: var(--dp-input-icon-padding) !important;
 }
-`, "",{"version":3,"sources":["webpack://./src/components/protesto/Protesto.vue"],"names":[],"mappings":";AAgSA;EACE,6DAA6D;AAC/D","sourcesContent":["<template>\n    <!-- Protesto Types -->\n    <div class=\"field\">\n      <label for=\"ProtestoTypeIds\">Eylem Türleri</label>\n      <multiselect\n          id=\"ProtestoTypeIds\"\n          v-model=\"protesto.protestoTypeIds\"\n          :options=\"protestoTypeOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n          @select=\"clearError('protestoTypeIds')\"\n      ></multiselect>\n      <span v-if=\"formErrors.protestoTypeIds\" class=\"field error\">\n        <label>{{ formErrors.protestoTypeIds }}</label>\n      </span>\n    </div>\n  <div class=\"field\" v-if=\"showStrikeDuration\">\n    <label for=\"StrikeDuration\">Eylemin Süresi</label>\n    <input v-model=\"protesto.strikeDuration\" type=\"text\" />\n  </div>\n  <div class=\"field\" v-show=\"showSimpleProtestoDescription\">\n    <label for=\"SimpleProtestoDescription\">İş yerinde Basit Eylem Açıklama</label>\n    <input v-model=\"protesto.simpleProtestoDescription\" type=\"text\" />\n  </div>\n    <!-- Start and End Dates -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"ProtestoStartDate\">Başlangıç Tarihi</label>\n        <div class=\"custom-datepicker-wrapper\">\n          <VueDatePicker v-model=\"protesto.protestoStartDate\" \n                         text-input \n                         locale=\"tr-TR\"\n                         format=\"dd.MM.yyyy\"\n                         @blur=\"clearError('protestoStartDate')\"\n          >\n          </VueDatePicker>\n        </div>\n        <span v-if=\"formErrors.protestoStartDate\" class=\"field error\">\n          <label>{{ formErrors.protestoStartDate }}</label>\n        </span>\n      </div>\n      <div class=\"field\">\n        <label for=\"ProtestoEndDate\">Bitiş Tarihi</label>\n        <div class=\"custom-datepicker-wrapper\">\n          <VueDatePicker v-model=\"protesto.protestoEndDate\" \n                         text-input\n                         locale=\"tr-TR\"\n                         format=\"dd.MM.yyyy\">\n          </VueDatePicker>\n        </div>\n      </div>\n    </div>\n\n  \n    <!-- Protesto Places -->\n    <div class=\"field\">\n      <label for=\"ProtestoPlaceIds\">Eylem Yerleri</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"protesto.protestoPlaceIds\"\n          :options=\"protestoPlaceOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n          @select=\"clearError('protestoPlaceIds')\"\n      ></multiselect>\n      <span v-if=\"formErrors.protestoPlaceIds\" class=\"field error\">\n        <label>{{ formErrors.protestoPlaceIds }}</label>\n      </span>\n    </div>\n\n    <!-- Gender -->\n    <div class=\"field\">\n      <label for=\"GenderId\">Cinsiyet</label>\n      <select v-model=\"protesto.genderId\" @change=\"clearError('genderId')\">\n        <option value=\"\">--Seçiniz--</option>\n        <option\n            v-for=\"gender in genderOptions\"\n            :key=\"gender.id\"\n            :value=\"gender.id\"\n        >\n          {{ gender.name }}\n        </option>\n      </select>\n      <span v-if=\"formErrors.genderId\" class=\"field error\">\n        <label>{{ formErrors.genderId }}</label>\n      </span>\n    </div>\n  <div class=\"field\">\n    <button type=\"button\" class=\"ui button\" @click=\"addLocation\">Lokasyon Ekle</button>\n  </div>\n  <div class=\"field\">\n    <Location @deleteLocation=\"handleDeleteLocation\" :cities=\"cities\" :districts=\"districts\" :protesto-locations=\"protesto.locations\" />\n  </div>\n \n    <!-- Other Fields -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtesto\">Eylemdeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"number\"\n            id=\"EmployeeCountInProtesto\"\n            v-model=\"protesto.employeeCountInProtesto\"\n            @blur=\"updateEmployeeCountId\"\n        />\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtestoId\">Eylemdeki İşçi Sayısı</label>\n        <select v-model=\"protesto.employeeCountInProtestoId\" id=\"EmployeeCountInProtestoId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"employeeCountInProtesto in employeeCountInProtestoOptions\"\n              :key=\"employeeCountInProtesto.id\"\n              :value=\"employeeCountInProtesto.id\"\n          >\n            {{ employeeCountInProtesto.name }}\n          </option>\n        </select>\n      </div>\n      \n    </div>\n    <div class=\"field\">\n      <label for=\"InterventionTypeId\">Müdahale Tipi</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"protesto.interventionTypeIds\"\n          :options=\"interventionTypes\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n          @select=\"clearError('interventionTypeIds')\"\n      ></multiselect>\n      <span v-if=\"formErrors.interventionTypeIds\" class=\"field error\">\n          <label>{{ formErrors.interventionTypeIds }}</label>\n      </span>\n    </div>\n    <div class=\"field\" v-show=\"isCustodyPossible\">\n      <label for=\"CustodyCount\">Gözaltı Sayısı</label>\n      <input type=\"text\" id=\"CustodyCount\" v-model=\"this.protesto.custodyCount\" \n             @input=\"clearError('custodyCount')\" />\n      <span v-if=\"formErrors.custodyCount\" class=\"field error\">\n          <label>{{ formErrors.custodyCount }}</label>\n      </span>\n    </div>\n  \n    <!-- Notes -->\n    <div class=\"field\">\n      <label for=\"Note\">Kontrol Kişisine Notlar</label>\n      <textarea id=\"Note\" v-model=\"protesto.note\" rows=\"3\"></textarea>\n    </div>\n\n    <!-- Save Button -->\n   \n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport '@vuepic/vue-datepicker/dist/main.css'\nimport Location from \"./Location.vue\";\n\nexport default {\n  name: \"Protesto\",\n  emits: [\"addProtesto\", 'deleteLocation', 'addLocation', \"onInputChanged\"],\n  components: { Multiselect, VueDatePicker, Location },\n  props: {\n    protesto: {\n      type: Object,\n      default: () => ({})  // Prevents undefined errors\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n    employeeCountInProtestoOptions: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    },\n    interventionTypes: {\n      type: Array,\n      required: true,\n    },\n    formErrors: {\n      type:Object,\n      default: () => ({})\n    }\n  },\n  computed: {\n    isCustodyPossible() {\n      return this.protesto.interventionTypeIds &&\n        !this.protesto.interventionTypeIds.some(type => type.id === 7)\n    },\n    showSimpleProtestoDescription() {\n      return (\n          this.protesto.protestoTypeIds &&\n          this.protesto.protestoTypeIds.some(type => type.id === 35)\n      );\n    },\n    showStrikeDuration() {\n      return (\n          this.protesto.protestoTypeIds &&\n          this.protesto.protestoTypeIds.some(type => [5, 6].includes(type.id))\n      );\n    }\n  },\n  methods: {\n    addLocation() {\n      this.$emit('addLocation');\n    },\n    handleDeleteLocation(index) {\n      console.log(index);\n      this.$emit('deleteLocation', index);\n    },\n    updateEmployeeCountId() {\n      const employeecount = this.protesto.employeeCountInProtesto;\n      if (employeecount == null) return;\n\n      if (employeecount >= 1 && employeecount <= 5) {\n        this.protesto.employeeCountInProtestoId = 1;\n      } else if (employeecount >= 6 && employeecount <= 25) {\n        this.protesto.employeeCountInProtestoId = 2;\n      } else if (employeecount >= 26 && employeecount <= 50) {\n        this.protesto.employeeCountInProtestoId = 3;\n      } else if (employeecount >= 51 && employeecount <= 100) {\n        this.protesto.employeeCountInProtestoId = 4;\n      } else if (employeecount >= 101 && employeecount <= 250) {\n        this.protesto.employeeCountInProtestoId = 5;\n      } else if (employeecount >= 251 && employeecount <= 500) {\n        this.protesto.employeeCountInProtestoId = 6;\n      } else if (employeecount >= 501 && employeecount <= 1000) {\n        this.protesto.employeeCountInProtestoId = 7;\n      } else if (employeecount >= 1001 && employeecount <= 2500) {\n        this.protesto.employeeCountInProtestoId = 8;\n      } else if (employeecount >= 2501 && employeecount <= 5000) {\n        this.protesto.employeeCountInProtestoId = 9;\n      } else if (employeecount >= 5001 && employeecount <= 10000) {\n        this.protesto.employeeCountInProtestoId = 10;\n      } else if (employeecount >= 10001 && employeecount <= 25000) {\n        this.protesto.employeeCountInProtestoId = 11;\n      } else if (employeecount >= 25001 && employeecount <= 50000) {\n        this.protesto.employeeCountInProtestoId = 12;\n      } else if (employeecount >= 50001 && employeecount <= 100000) {\n        this.protesto.employeeCountInProtestoId = 13;\n      } else if (employeecount >= 100001) {\n        this.protesto.employeeCountInProtestoId = 14;\n      } else {\n        this.protesto.employeeCountInProtestoId = null; // Reset if out of range\n      }\n    },\n    clearError(field) {\n      // Clear the error message for the specified field\n      console.log(field);\n      this.$emit('onInputChanged', field);\n    },\n  }\n};\n</script>\n\n<style scoped>\n.custom-datepicker-wrapper >>> .dp__input_icon_pad {\n  padding-inline-start: var(--dp-input-icon-padding) !important;\n}\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/protesto/Protesto.vue"],"names":[],"mappings":";AAsSA;EACE,6DAA6D;AAC/D","sourcesContent":["<template>\n    <!-- Protesto Types -->\n    <div class=\"field\">\n      <label for=\"ProtestoTypeIds\">Eylem Türleri</label>\n      <multiselect\n          id=\"ProtestoTypeIds\"\n          v-model=\"protesto.protestoTypeIds\"\n          :options=\"protestoTypeOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n          @select=\"clearError('protestoTypeIds')\"\n      ></multiselect>\n      <span v-if=\"formErrors.protestoTypeIds\" class=\"field error\">\n        <label>{{ formErrors.protestoTypeIds }}</label>\n      </span>\n    </div>\n  <div class=\"field\" v-if=\"showStrikeDuration\">\n    <label for=\"StrikeDuration\">Eylemin Süresi</label>\n    <DurationPicker\n        v-model=\"protesto.strikeDuration\"\n        :showDays=\"true\"\n    />\n    <p>Toplam Saniye: {{ protesto.strikeDuration }}</p>\n\n  </div>\n  <div class=\"field\" v-show=\"showSimpleProtestoDescription\">\n    <label for=\"SimpleProtestoDescription\">İş yerinde Basit Eylem Açıklama</label>\n    <input v-model=\"protesto.simpleProtestoDescription\" type=\"text\" />\n  </div>\n    <!-- Start and End Dates -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"ProtestoStartDate\">Başlangıç Tarihi</label>\n        <div class=\"custom-datepicker-wrapper\">\n          <VueDatePicker v-model=\"protesto.protestoStartDate\" \n                         text-input \n                         locale=\"tr-TR\"\n                         format=\"dd.MM.yyyy\"\n                         @blur=\"clearError('protestoStartDate')\"\n          >\n          </VueDatePicker>\n        </div>\n        <span v-if=\"formErrors.protestoStartDate\" class=\"field error\">\n          <label>{{ formErrors.protestoStartDate }}</label>\n        </span>\n      </div>\n      <div class=\"field\">\n        <label for=\"ProtestoEndDate\">Bitiş Tarihi</label>\n        <div class=\"custom-datepicker-wrapper\">\n          <VueDatePicker v-model=\"protesto.protestoEndDate\" \n                         text-input\n                         locale=\"tr-TR\"\n                         format=\"dd.MM.yyyy\">\n          </VueDatePicker>\n        </div>\n      </div>\n    </div>\n\n  \n    <!-- Protesto Places -->\n    <div class=\"field\">\n      <label for=\"ProtestoPlaceIds\">Eylem Yerleri</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"protesto.protestoPlaceIds\"\n          :options=\"protestoPlaceOptions\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n          @select=\"clearError('protestoPlaceIds')\"\n      ></multiselect>\n      <span v-if=\"formErrors.protestoPlaceIds\" class=\"field error\">\n        <label>{{ formErrors.protestoPlaceIds }}</label>\n      </span>\n    </div>\n\n    <!-- Gender -->\n    <div class=\"field\">\n      <label for=\"GenderId\">Cinsiyet</label>\n      <select v-model=\"protesto.genderId\" @change=\"clearError('genderId')\">\n        <option value=\"\">--Seçiniz--</option>\n        <option\n            v-for=\"gender in genderOptions\"\n            :key=\"gender.id\"\n            :value=\"gender.id\"\n        >\n          {{ gender.name }}\n        </option>\n      </select>\n      <span v-if=\"formErrors.genderId\" class=\"field error\">\n        <label>{{ formErrors.genderId }}</label>\n      </span>\n    </div>\n  <div class=\"field\">\n    <button type=\"button\" class=\"ui button\" @click=\"addLocation\">Lokasyon Ekle</button>\n  </div>\n  <div class=\"field\">\n    <Location @deleteLocation=\"handleDeleteLocation\" :cities=\"cities\" :districts=\"districts\" :protesto-locations=\"protesto.locations\" />\n  </div>\n \n    <!-- Other Fields -->\n    <div class=\"two fields\">\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtesto\">Eylemdeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"number\"\n            id=\"EmployeeCountInProtesto\"\n            v-model=\"protesto.employeeCountInProtesto\"\n            @blur=\"updateEmployeeCountId\"\n        />\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCountInProtestoId\">Eylemdeki İşçi Sayısı</label>\n        <select v-model=\"protesto.employeeCountInProtestoId\" id=\"EmployeeCountInProtestoId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"employeeCountInProtesto in employeeCountInProtestoOptions\"\n              :key=\"employeeCountInProtesto.id\"\n              :value=\"employeeCountInProtesto.id\"\n          >\n            {{ employeeCountInProtesto.name }}\n          </option>\n        </select>\n      </div>\n      \n    </div>\n    <div class=\"field\">\n      <label for=\"InterventionTypeId\">Müdahale Tipi</label>\n      <multiselect\n          id=\"ProtestoPlaceIds\"\n          v-model=\"protesto.interventionTypeIds\"\n          :options=\"interventionTypes\"\n          :multiple=\"true\"\n          :close-on-select=\"false\"\n          :clear-on-select=\"false\"\n          :preserve-search=\"true\"\n          placeholder=\"Seçiniz\"\n          label=\"name\"\n          track-by=\"id\"\n          @select=\"clearError('interventionTypeIds')\"\n      ></multiselect>\n      <span v-if=\"formErrors.interventionTypeIds\" class=\"field error\">\n          <label>{{ formErrors.interventionTypeIds }}</label>\n      </span>\n    </div>\n    <div class=\"field\" v-show=\"isCustodyPossible\">\n      <label for=\"CustodyCount\">Gözaltı Sayısı</label>\n      <input type=\"text\" id=\"CustodyCount\" v-model=\"this.protesto.custodyCount\" \n             @input=\"clearError('custodyCount')\" />\n      <span v-if=\"formErrors.custodyCount\" class=\"field error\">\n          <label>{{ formErrors.custodyCount }}</label>\n      </span>\n    </div>\n  \n    <!-- Notes -->\n    <div class=\"field\">\n      <label for=\"Note\">Kontrol Kişisine Notlar</label>\n      <textarea id=\"Note\" v-model=\"protesto.note\" rows=\"3\"></textarea>\n    </div>\n\n    <!-- Save Button -->\n   \n</template>\n\n<script>\nimport Multiselect from \"vue-multiselect\";\nimport VueDatePicker from '@vuepic/vue-datepicker';\nimport '@vuepic/vue-datepicker/dist/main.css'\nimport Location from \"./Location.vue\";\nimport DurationPicker from \"../DurationPicker.vue\";\n\nexport default {\n  name: \"Protesto\",\n  emits: [\"addProtesto\", 'deleteLocation', 'addLocation', \"onInputChanged\"],\n  components: {DurationPicker, Multiselect, VueDatePicker, Location },\n  props: {\n    protesto: {\n      type: Object,\n      default: () => ({})  // Prevents undefined errors\n    },\n    protestoTypeOptions: {\n      type: Array,\n      required: true,\n    },\n    protestoPlaceOptions: {\n      type: Array,\n      required: true,\n    },\n    genderOptions: {\n      type: Array,\n      required: true,\n    },\n    employeeCountInProtestoOptions: {\n      type: Array,\n      required: true,\n    },\n    cities: {\n      type: Array,\n      required: true,\n    },\n    districts: {\n      type: Array,\n      required: true,\n    },\n    interventionTypes: {\n      type: Array,\n      required: true,\n    },\n    formErrors: {\n      type:Object,\n      default: () => ({})\n    }\n  },\n  computed: {\n    isCustodyPossible() {\n      return this.protesto.interventionTypeIds &&\n        !this.protesto.interventionTypeIds.some(type => type.id === 7)\n    },\n    showSimpleProtestoDescription() {\n      return (\n          this.protesto.protestoTypeIds &&\n          this.protesto.protestoTypeIds.some(type => type.id === 35)\n      );\n    },\n    showStrikeDuration() {\n      return (\n          this.protesto.protestoTypeIds &&\n          this.protesto.protestoTypeIds.some(type => [5, 6].includes(type.id))\n      );\n    }\n  },\n  methods: {\n    addLocation() {\n      this.$emit('addLocation');\n    },\n    handleDeleteLocation(index) {\n      console.log(index);\n      this.$emit('deleteLocation', index);\n    },\n    updateEmployeeCountId() {\n      const employeecount = this.protesto.employeeCountInProtesto;\n      if (employeecount == null) return;\n\n      if (employeecount >= 1 && employeecount <= 5) {\n        this.protesto.employeeCountInProtestoId = 1;\n      } else if (employeecount >= 6 && employeecount <= 25) {\n        this.protesto.employeeCountInProtestoId = 2;\n      } else if (employeecount >= 26 && employeecount <= 50) {\n        this.protesto.employeeCountInProtestoId = 3;\n      } else if (employeecount >= 51 && employeecount <= 100) {\n        this.protesto.employeeCountInProtestoId = 4;\n      } else if (employeecount >= 101 && employeecount <= 250) {\n        this.protesto.employeeCountInProtestoId = 5;\n      } else if (employeecount >= 251 && employeecount <= 500) {\n        this.protesto.employeeCountInProtestoId = 6;\n      } else if (employeecount >= 501 && employeecount <= 1000) {\n        this.protesto.employeeCountInProtestoId = 7;\n      } else if (employeecount >= 1001 && employeecount <= 2500) {\n        this.protesto.employeeCountInProtestoId = 8;\n      } else if (employeecount >= 2501 && employeecount <= 5000) {\n        this.protesto.employeeCountInProtestoId = 9;\n      } else if (employeecount >= 5001 && employeecount <= 10000) {\n        this.protesto.employeeCountInProtestoId = 10;\n      } else if (employeecount >= 10001 && employeecount <= 25000) {\n        this.protesto.employeeCountInProtestoId = 11;\n      } else if (employeecount >= 25001 && employeecount <= 50000) {\n        this.protesto.employeeCountInProtestoId = 12;\n      } else if (employeecount >= 50001 && employeecount <= 100000) {\n        this.protesto.employeeCountInProtestoId = 13;\n      } else if (employeecount >= 100001) {\n        this.protesto.employeeCountInProtestoId = 14;\n      } else {\n        this.protesto.employeeCountInProtestoId = null; // Reset if out of range\n      }\n    },\n    clearError(field) {\n      // Clear the error message for the specified field\n      console.log(field);\n      this.$emit('onInputChanged', field);\n    },\n  }\n};\n</script>\n\n<style scoped>\n.custom-datepicker-wrapper >>> .dp__input_icon_pad {\n  padding-inline-start: var(--dp-input-icon-padding) !important;\n}\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -24253,7 +24481,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add styles here */
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/CreateResistance.vue"],"names":[],"mappings":";AAuZA,oBAAoB","sourcesContent":["<template>\n  <form class=\"ui form\">\n    <Resistance\n        :resistance=\"resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :tradeUnions=\"tradeUnions\"\n        :tradeUnionAuthorities=\"tradeUnionAuthorities\"\n        :employmentTypes=\"employmentTypes\"\n        :formErrors=\"formErrors\"\n        @openCompanyModal=\"handleOpenCompanyModal\"\n        @onInputChanged=\"clearFormError\"\n    />\n    <h3 class=\"ui dividing header\">Eylem</h3>\n    <Protesto\n        :protesto=\"resistance.protesto\"\n        :genderOptions=\"genderOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"cities\"\n        :districts=\"districts\"\n        :intervention-types=\"interventionTypes\"\n        :formErrors=\"formErrors\"\n        @addLocation=\"handleAddLocation\"\n        @deleteLocation=\"handleDeleteLocation\"\n        @onInputChanged=\"clearFormError\"\n    />\n\n    <resistance-news :news=\"this.resistance.resistanceNews\" @removeNews=\"handleRemoveNews\"/>\n\n    <!-- Save and Cancel Buttons -->\n    <button class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" id=\"btnCancelResistanceModal\" class=\"ui negative button\">\n      VAZGEÇ\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n                 :companyTypes=\"companyTypes\"\n                 :companyScales=\"companyScales\"\n                 :worklines=\"worklines\"\n                 :companies=\"companies\"\n                 @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Multiselect from 'vue-multiselect'\nimport CompanyModal from \"../CompanyModal.vue\";\nimport Protesto from \"../protesto/Protesto.vue\";\nimport Resistance from \"./Resistance.vue\";\nimport EditProtesto from \"../protesto/EditProtesto.vue\";\nimport ResistanceNews from \"../news/ResistanceNews.vue\";\nimport {inject} from \"vue\"; // Adjust the path based on your folder structure\n\nexport default {\n  name: \"CreateResistance\",\n  components: {ResistanceNews, EditProtesto, Resistance, Protesto, CompanyModal, Multiselect},\n  data() {\n    return {\n      resistance: {\n        resistanceDescription: null,\n        categoryId: null,\n        developRight: null,\n        isOutsource: false,\n        mainCompanyId: null,\n        employeeCountId: null,\n        employeeCount: null,\n        resistanceResult: null,\n        employmentTypeIds: null,\n        corporationIds: null,\n        resistanceReasonIds: null,\n        resistanceNews: [],\n        protesto: {\n          interventionTypeIds: [],\n          locations: []\n        },\n      },\n      companies:[],\n      resistanceReasons: [],\n      categories: [],\n      corporations: [],\n      employeeCounts: [],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      protestoPlaceOptions: [],\n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      cities:[],\n      districts:[],\n      tradeUnionAuthorities:[],\n      tradeUnions: [],\n      employmentTypes: [],\n      interventionTypes: [],\n      formErrors: {},\n      isMain: false,\n    };\n  },\n  setup() {\n    const addedNews = inject('addedNews'); // Inject full object\n    return { addedNews };\n  },\n  props: ['id'],  // The id is passed as a prop from the router\n  watch: {\n    'addedNews.news': {\n      handler(newNews) {\n        console.log(newNews);\n        // if (newNews && newNews.id && this.resistance) {\n          console.log(newNews);\n          this.resistance.resistanceNews.push(newNews); // Push into array\n        // }\n      },\n      deep: true,\n      // immediate: true,\n    }\n  },\n  mounted() {\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/lookup/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/lookup/employmentTypes\")\n        .then(response => response.json())\n        .then(data => (this.employmentTypes = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => {\n          this.corporations = data;\n          this.tradeUnions = data.filter(s=>s.CorporationTypeId = 1)\n        });\n\n    fetchWithToken(\"/lookup/tradeUnionAuthorities\")\n        .then(response => response.json())\n        .then(data => (this.tradeUnionAuthorities = data));\n    \n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n    \n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/employeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n\n    fetchWithToken(\"/lookup/cities\")\n        .then(response => response.json())\n        .then(data => (this.cities = data));\n\n    fetchWithToken(\"/lookup/districts\")\n        .then(response => response.json())\n        .then(data => (this.districts = data));\n\n    fetchWithToken(\"/lookup/interventionTypes\")\n        .then(response => response.json())\n        .then(data => (this.interventionTypes = data));\n  },\n  methods: {\n    checkTradeUnion() {\n      const corporationIds = this.resistance?.corporationIds?.map(s => s.id);\n      const queryParams = new URLSearchParams();\n      corporationIds.forEach(id => queryParams.append('corporationIds', id));\n\n      fetchWithToken(`/corporation/checkTradeUnion?${queryParams.toString()}`)\n          .then(response => response.json())\n          .then(data => this.tradeUnionIncluded = data);\n    },\n    handleSaveCompany(companyData) {\n      fetchWithToken(\"/Company/Create/\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(companyData)\n      })\n      .then(response => response.json())\n      .then(data => {\n        console.log(data);\n        this.companies.push(data);\n        if(this.isMain){\n          this.resistance.mainCompanyId = data.id;  \n        } else {\n          this.resistance.companyId = data.id;  \n        }\n        \n      });\n    },\n    saveForm() {\n      // Save form logic\n      console.log(this.resistance);\n      const errors = this.validateForm();\n      console.log(errors);\n      // If there are errors, display them and stop submission\n      if (Object.keys(errors).length > 0) {\n        this.formErrors = errors; // Update formErrors to display validation messages\n        return;\n      }\n\n      const resistanceData = {\n        categoryId: this.resistance.categoryId,\n        companyId: this.resistance.companyId,\n        resistanceReasonIds: this.resistance.resistanceReasonIds,\n        mainCompanyId: this.resistance.mainCompanyId,\n        corporationIds: this.resistance.corporationIds,\n        hasTradeUnion: true,\n        tradeUnionAuthorityId: this.resistance.tradeUnionAuthorityId,\n        note: this.resistance.note,\n        resistanceDescription: this.resistance.resistanceDescription,\n        employeeCountId: this.resistance.employeeCountId,\n        employeeCount: this.resistance.employeeCount,\n        tradeUnionId: this.resistance.tradeUnionId,\n        employmentTypeIds: this.resistance.employmentTypeIds,\n        protesto: this.resistance.protesto,\n        resistanceNews: this.resistance.resistanceNews,\n        firedEmployeeCountByProtesto: this.resistance.firedEmployeeCountByProtesto,\n        resistanceResult: this.resistance.resistanceResult,\n      }\n\n      fetchWithToken(\"/ResistanceApi/CreateResistance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(resistanceData)\n      })\n      .then(response =>\n          {\n            this.isLoading = false;\n            if(response.status === 400) {\n              this.$swal.fire({\n                icon: \"error\",\n                title: \"Bir hata olustu\",\n                text: response.statusText,\n              });\n            }\n            else if(response.status === 500) {\n              this.$swal.fire({\n                icon: \"error\",\n                title: \"Bir hata olustu\",\n                text: 'Yazilim destek: ' + response.statusText,\n              });\n            }\n            else {\n              this.$swal('Vaka kaydedildi');\n              this.$router.push({ path: `/` });\n            }\n          }\n      )\n      .catch(error =>\n      {\n        this.isLoading = false;\n        this.$swal.fire({\n          icon: \"error\",\n          title: \"Bir hata olustu\",\n        });\n        console.log(error)\n      });\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    handleRemoveNews(newsId){\n      console.log('remove newsId ',newsId);\n      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);\n    },\n    handleOpenCompanyModal(isMain) {\n      console.log(isMain);\n      this.isMain = isMain;\n      this.$refs.modalRef.openModal();\n    },\n    handleAddLocation(){\n      this.resistance.protesto.locations.push({id:0, protestoId: 0, cityId:null, districtId: null, place: null, deleted: false});\n    },\n    handleDeleteLocation(index) {\n      const location = this.resistance.protesto.locations[index];\n      location.deleted = true;\n    },\n    validateForm() {\n      const errors = {};\n\n      if (!this.resistance.resistanceDescription) {\n        errors.resistanceDescription = \"Lütfen bir kısa açıklama seçiniz.\";\n      }\n      // CategoryId: Required\n      if (!this.resistance.categoryId) {\n        errors.categoryId = \"Lütfen bir kategori giriniz.\";\n      }\n\n      // CompanyId: At least one company selected\n      if (!this.resistance.companyId) {\n        errors.companyId = \"Lütfen bir şirket seçiniz.\";\n      }\n\n      // CorporationIds: At least one corporation selected\n      if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {\n        errors.corporationIds = \"Lütfen en az bir kurumsallık seçiniz.\";\n      }\n\n      // EmploymentTypeIds: At least one employment type selected\n      if (!this.resistance.employmentTypeIds || this.resistance.employmentTypeIds.length === 0) {\n        errors.employmentTypeIds = \"Lütfen en az bir istihdam türü seçiniz.\";\n      }\n\n      // GenderId: Required\n      // if (!this.resistance.genderId) {\n      //   errors.genderId = \"Lütfen bir cinsiyet giriniz.\";\n      // }\n\n      // ProtestoTypeIds: At least one protest type selected\n      if (!this.resistance.protesto.protestoTypeIds || this.resistance.protesto.protestoTypeIds.length === 0) {\n        errors.protestoTypeIds = \"Lütfen en az bir eylem türü seçiniz.\";\n      }\n\n      // ProtestoPlaceIds: At least one protest place selected\n      if (!this.resistance.protesto.protestoPlaceIds || this.resistance.protesto.protestoPlaceIds.length === 0) {\n        errors.protestoPlaceIds = \"Lütfen en az bir eylem mekanı seçiniz.\";\n      }\n\n      // ProtestoStartDate: Required\n      if (!this.resistance.protesto.protestoStartDate) {\n        errors.protestoStartDate = \"Lütfen başlangıç tarihi seçiniz.\";\n      }\n\n      // AnyLegalIntervention: Required\n      // if (this.resistance.protesto.anyLegalIntervention === null || this.resistance.protesto.anyLegalIntervention === undefined) {\n      //   errors.anyLegalIntervention = \"Hukuki girişim var mı?\";\n      // }\n\n      // DevelopRight: Required\n      if (this.resistance.developRight === null || this.resistance.developRight === undefined) {\n        errors.developRight = \"Hak Geliştirmeye/Savunma Özelliği\";\n      }\n      // ProtestoStartDate: Required\n      if (!this.resistance.protesto.protestoStartDate) {\n        errors.protestoStartDate = \"Lütfen başlangıç tarihi seçiniz.\";\n      }\n\n      // GenderId: Required\n      if (!this.resistance.protesto.genderId) {\n        errors.genderId = \"Lütfen bir cinsiyet giriniz.\";\n      }\n      \n      // InterventionTypeIds: At least one intervention type selected\n      if (!this.resistance.protesto.interventionTypeIds || this.resistance.protesto.interventionTypeIds.length === 0) {\n        errors.interventionTypeIds = \"Lütfen en az bir müdahale tipi seçiniz.\";\n      }\n\n      // CustodyCount: Required if custody is possible\n      if (this.resistance.protesto.isCustodyPossible && !this.resistance.protesto.custodyCount) {\n        errors.custodyCount = \"Lütfen gözaltı sayısını giriniz.\";\n      }\n      if (this.resistance.resistanceResult === null || this.resistance.resistanceResult === undefined) {\n        errors.resistanceResult = \"Lütfen sonuç giriniz.\";\n      }\n      return errors;\n    },\n    clearFormError(field){\n      this.formErrors[field] = \"\";\n    }\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/CreateResistance.vue"],"names":[],"mappings":";AAuZA,oBAAoB","sourcesContent":["<template>\n  <form class=\"ui form\">\n    <Resistance\n        :resistance=\"resistance\"\n        :corporations=\"corporations\"\n        :resistanceReasons=\"resistanceReasons\"\n        :employeeCounts=\"employeeCounts\"\n        :companies=\"companies\"\n        :categories=\"categories\"\n        :tradeUnions=\"tradeUnions\"\n        :tradeUnionAuthorities=\"tradeUnionAuthorities\"\n        :employmentTypes=\"employmentTypes\"\n        :formErrors=\"formErrors\"\n        @openCompanyModal=\"handleOpenCompanyModal\"\n        @onInputChanged=\"clearFormError\"\n    />\n    <h3 class=\"ui dividing header\">Eylem</h3>\n    <Protesto\n        :protesto=\"resistance.protesto\"\n        :genderOptions=\"genderOptions\"\n        :protestoTypeOptions=\"protestoTypeOptions\"\n        :protestoPlaceOptions=\"protestoPlaceOptions\"\n        :employeeCountInProtestoOptions=\"employeeCountInProtestoOptions\"\n        :cities=\"cities\"\n        :districts=\"districts\"\n        :intervention-types=\"interventionTypes\"\n        :formErrors=\"formErrors\"\n        @addLocation=\"handleAddLocation\"\n        @deleteLocation=\"handleDeleteLocation\"\n        @onInputChanged=\"clearFormError\"\n    />\n\n    <resistance-news :news=\"this.resistance.resistanceNews\" @removeNews=\"handleRemoveNews\"/>\n\n    <!-- Save and Cancel Buttons -->\n    <button class=\"ui primary button\" @click.prevent=\"saveForm\">\n      KAYDET\n    </button>\n    <button type=\"button\" id=\"btnCancelResistanceModal\" class=\"ui negative button\">\n      VAZGEÇ\n    </button>\n  </form>\n  <company-modal ref=\"modalRef\"\n                 :companyTypes=\"companyTypes\"\n                 :companyScales=\"companyScales\"\n                 :worklines=\"worklines\"\n                 :companies=\"companies\"\n                 @save-company=\"handleSaveCompany\"/>\n</template>\n\n<script>\nimport {fetchWithToken} from \"../../fetchWrapper\";\nimport Multiselect from 'vue-multiselect'\nimport CompanyModal from \"../CompanyModal.vue\";\nimport Protesto from \"../protesto/Protesto.vue\";\nimport Resistance from \"./Resistance.vue\";\nimport EditProtesto from \"../protesto/EditProtesto.vue\";\nimport ResistanceNews from \"../news/ResistanceNews.vue\";\nimport {inject} from \"vue\"; // Adjust the path based on your folder structure\n\nexport default {\n  name: \"CreateResistance\",\n  components: {ResistanceNews, EditProtesto, Resistance, Protesto, CompanyModal, Multiselect},\n  data() {\n    return {\n      resistance: {\n        resistanceDescription: null,\n        categoryId: null,\n        developRight: null,\n        isOutsource: false,\n        mainCompanyId: null,\n        employeeCountId: null,\n        employeeCount: null,\n        resistanceResult: null,\n        employmentTypeIds: null,\n        corporationIds: null,\n        resistanceReasonIds: null,\n        resistanceNews: [],\n        protesto: {\n          interventionTypeIds: [],\n          locations: []\n        },\n      },\n      companies:[],\n      resistanceReasons: [],\n      categories: [],\n      corporations: [],\n      employeeCounts: [],\n      companyTypes: [],\n      companyScales: [],\n      worklines: [],\n      protestoPlaceOptions: [],\n      protestoTypeOptions: [],\n      genderOptions: [],\n      employeeCountInProtestoOptions:[],\n      cities:[],\n      districts:[],\n      tradeUnionAuthorities:[],\n      tradeUnions: [],\n      employmentTypes: [],\n      interventionTypes: [],\n      formErrors: {},\n      isMain: false,\n    };\n  },\n  setup() {\n    const addedNews = inject('addedNews'); // Inject full object\n    return { addedNews };\n  },\n  props: ['id'],  // The id is passed as a prop from the router\n  watch: {\n    'addedNews.news': {\n      handler(newNews) {\n        console.log(newNews);\n        // if (newNews && newNews.id && this.resistance) {\n          console.log(newNews);\n          this.resistance.resistanceNews.push(newNews); // Push into array\n        // }\n      },\n      deep: true,\n      // immediate: true,\n    }\n  },\n  mounted() {\n    fetchWithToken(\"/company/list\")\n        .then(response => response.json())\n        .then(data => (this.companies = data));\n\n    fetchWithToken(\"/lookup/categories\")\n        .then(response => response.json())\n        .then(data => (this.categories = data));\n\n    fetchWithToken(\"/lookup/resistancereasons\")\n        .then(response => response.json())\n        .then(data => (this.resistanceReasons = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/lookup/employmentTypes\")\n        .then(response => response.json())\n        .then(data => (this.employmentTypes = data));\n\n    fetchWithToken(\"/corporation/list\")\n        .then(response => response.json())\n        .then(data => {\n          this.corporations = data;\n          this.tradeUnions = data.filter(s=>s.CorporationTypeId = 1)\n        });\n\n    fetchWithToken(\"/lookup/tradeUnionAuthorities\")\n        .then(response => response.json())\n        .then(data => (this.tradeUnionAuthorities = data));\n    \n    fetchWithToken(\"/lookup/companyTypes\")\n        .then(response => response.json())\n        .then(data => (this.companyTypes = data));\n\n    fetchWithToken(\"/lookup/companyScales\")\n        .then(response => response.json())\n        .then(data => (this.companyScales = data));\n\n    fetchWithToken(\"/lookup/companyWorklines\")\n        .then(response => response.json())\n        .then(data => (this.worklines = data));\n\n    fetchWithToken(\"/lookup/employeeCounts\")\n        .then(response => response.json())\n        .then(data => (this.employeeCounts = data));\n\n    fetchWithToken(\"/ProtestoPlace/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoPlaceOptions = data));\n    \n    fetchWithToken(\"/ProtestoType/List\")\n        .then(response => response.json())\n        .then(data => (this.protestoTypeOptions = data));\n\n    fetchWithToken(\"/lookup/genders\")\n        .then(response => response.json())\n        .then(data => (this.genderOptions = data));\n\n    fetchWithToken(\"/lookup/employeeCountInProtesto\")\n        .then(response => response.json())\n        .then(data => (this.employeeCountInProtestoOptions = data));\n\n    fetchWithToken(\"/lookup/cities\")\n        .then(response => response.json())\n        .then(data => (this.cities = data));\n\n    fetchWithToken(\"/lookup/districts\")\n        .then(response => response.json())\n        .then(data => (this.districts = data));\n\n    fetchWithToken(\"/lookup/interventionTypes\")\n        .then(response => response.json())\n        .then(data => (this.interventionTypes = data));\n  },\n  methods: {\n    checkTradeUnion() {\n      const corporationIds = this.resistance?.corporationIds?.map(s => s.id);\n      const queryParams = new URLSearchParams();\n      corporationIds.forEach(id => queryParams.append('corporationIds', id));\n\n      fetchWithToken(`/corporation/checkTradeUnion?${queryParams.toString()}`)\n          .then(response => response.json())\n          .then(data => this.tradeUnionIncluded = data);\n    },\n    handleSaveCompany(companyData) {\n      fetchWithToken(\"/Company/Create/\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(companyData)\n      })\n      .then(response => response.json())\n      .then(data => {\n        console.log(data);\n        this.companies.push(data);\n        if(this.isMain){\n          this.resistance.mainCompanyId = data.id;  \n        } else {\n          this.resistance.companyId = data.id;  \n        }\n        \n      });\n    },\n    saveForm() {\n      // Save form logic\n      console.log(this.resistance);\n      const errors = this.validateForm();\n      console.log(errors);\n      // If there are errors, display them and stop submission\n      if (Object.keys(errors).length > 0) {\n        this.formErrors = errors; // Update formErrors to display validation messages\n        return;\n      }\n\n      const resistanceData = {\n        categoryId: this.resistance.categoryId,\n        companyId: this.resistance.companyId,\n        resistanceReasonIds: this.resistance.resistanceReasonIds,\n        mainCompanyId: this.resistance.mainCompanyId,\n        corporationIds: this.resistance.corporationIds,\n        hasTradeUnion: true,\n        tradeUnionAuthorityId: this.resistance.tradeUnionAuthorityId,\n        note: this.resistance.note,\n        resistanceDescription: this.resistance.resistanceDescription,\n        employeeCountId: this.resistance.employeeCountId,\n        employeeCount: this.resistance.employeeCount,\n        tradeUnionId: this.resistance.tradeUnionId,\n        employmentTypeIds: this.resistance.employmentTypeIds,\n        protesto: this.resistance.protesto,\n        resistanceNews: this.resistance.resistanceNews,\n        firedEmployeeCountByProtesto: this.resistance.protesto.firedEmployeeCountByProtesto,\n        resistanceResult: this.resistance.resistanceResult,\n      }\n\n      fetchWithToken(\"/ResistanceApi/CreateResistance\", {\n        method: 'POST',\n        headers: {\n          \"Content-Type\": \"application/json\", // Ensure JSON is sent\n        },\n        body: JSON.stringify(resistanceData)\n      })\n      .then(response =>\n          {\n            this.isLoading = false;\n            if(response.status === 400) {\n              this.$swal.fire({\n                icon: \"error\",\n                title: \"Bir hata olustu\",\n                text: response.statusText,\n              });\n            }\n            else if(response.status === 500) {\n              this.$swal.fire({\n                icon: \"error\",\n                title: \"Bir hata olustu\",\n                text: 'Yazilim destek: ' + response.statusText,\n              });\n            }\n            else {\n              this.$swal('Vaka kaydedildi');\n              this.$router.push({ path: `/` });\n            }\n          }\n      )\n      .catch(error =>\n      {\n        this.isLoading = false;\n        this.$swal.fire({\n          icon: \"error\",\n          title: \"Bir hata olustu\",\n        });\n        console.log(error)\n      });\n    },\n    formatDate(date) {\n      return new Date(date).toLocaleDateString(); // Format date\n    },\n    handleRemoveNews(newsId){\n      console.log('remove newsId ',newsId);\n      this.resistance.resistanceNews = this.resistance.resistanceNews.filter(s=>s.id !== newsId);\n    },\n    handleOpenCompanyModal(isMain) {\n      console.log(isMain);\n      this.isMain = isMain;\n      this.$refs.modalRef.openModal();\n    },\n    handleAddLocation(){\n      this.resistance.protesto.locations.push({id:0, protestoId: 0, cityId:null, districtId: null, place: null, deleted: false});\n    },\n    handleDeleteLocation(index) {\n      const location = this.resistance.protesto.locations[index];\n      location.deleted = true;\n    },\n    validateForm() {\n      const errors = {};\n\n      if (!this.resistance.resistanceDescription) {\n        errors.resistanceDescription = \"Lütfen bir kısa açıklama seçiniz.\";\n      }\n      // CategoryId: Required\n      if (!this.resistance.categoryId) {\n        errors.categoryId = \"Lütfen bir kategori giriniz.\";\n      }\n\n      // CompanyId: At least one company selected\n      if (!this.resistance.companyId) {\n        errors.companyId = \"Lütfen bir şirket seçiniz.\";\n      }\n\n      // CorporationIds: At least one corporation selected\n      if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {\n        errors.corporationIds = \"Lütfen en az bir kurumsallık seçiniz.\";\n      }\n\n      // EmploymentTypeIds: At least one employment type selected\n      if (!this.resistance.employmentTypeIds || this.resistance.employmentTypeIds.length === 0) {\n        errors.employmentTypeIds = \"Lütfen en az bir istihdam türü seçiniz.\";\n      }\n\n      // GenderId: Required\n      // if (!this.resistance.genderId) {\n      //   errors.genderId = \"Lütfen bir cinsiyet giriniz.\";\n      // }\n\n      // ProtestoTypeIds: At least one protest type selected\n      if (!this.resistance.protesto.protestoTypeIds || this.resistance.protesto.protestoTypeIds.length === 0) {\n        errors.protestoTypeIds = \"Lütfen en az bir eylem türü seçiniz.\";\n      }\n\n      // ProtestoPlaceIds: At least one protest place selected\n      if (!this.resistance.protesto.protestoPlaceIds || this.resistance.protesto.protestoPlaceIds.length === 0) {\n        errors.protestoPlaceIds = \"Lütfen en az bir eylem mekanı seçiniz.\";\n      }\n\n      // ProtestoStartDate: Required\n      if (!this.resistance.protesto.protestoStartDate) {\n        errors.protestoStartDate = \"Lütfen başlangıç tarihi seçiniz.\";\n      }\n\n      // AnyLegalIntervention: Required\n      // if (this.resistance.protesto.anyLegalIntervention === null || this.resistance.protesto.anyLegalIntervention === undefined) {\n      //   errors.anyLegalIntervention = \"Hukuki girişim var mı?\";\n      // }\n\n      // DevelopRight: Required\n      if (this.resistance.developRight === null || this.resistance.developRight === undefined) {\n        errors.developRight = \"Hak Geliştirmeye/Savunma Özelliği\";\n      }\n      // ProtestoStartDate: Required\n      if (!this.resistance.protesto.protestoStartDate) {\n        errors.protestoStartDate = \"Lütfen başlangıç tarihi seçiniz.\";\n      }\n\n      // GenderId: Required\n      if (!this.resistance.protesto.genderId) {\n        errors.genderId = \"Lütfen bir cinsiyet giriniz.\";\n      }\n      \n      // InterventionTypeIds: At least one intervention type selected\n      if (!this.resistance.protesto.interventionTypeIds || this.resistance.protesto.interventionTypeIds.length === 0) {\n        errors.interventionTypeIds = \"Lütfen en az bir müdahale tipi seçiniz.\";\n      }\n\n      // CustodyCount: Required if custody is possible\n      if (this.resistance.protesto.isCustodyPossible && !this.resistance.protesto.custodyCount) {\n        errors.custodyCount = \"Lütfen gözaltı sayısını giriniz.\";\n      }\n      if (this.resistance.resistanceResult === null || this.resistance.resistanceResult === undefined) {\n        errors.resistanceResult = \"Lütfen sonuç giriniz.\";\n      }\n      return errors;\n    },\n    clearFormError(field){\n      this.formErrors[field] = \"\";\n    }\n  },\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -35281,6 +35509,37 @@ if (false) {}
 
 /***/ }),
 
+/***/ "./src/components/DurationPicker.vue":
+/*!*******************************************!*\
+  !*** ./src/components/DurationPicker.vue ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _DurationPicker_vue_vue_type_template_id_2f58e072_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DurationPicker.vue?vue&type=template&id=2f58e072&scoped=true */ "./src/components/DurationPicker.vue?vue&type=template&id=2f58e072&scoped=true");
+/* harmony import */ var _DurationPicker_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DurationPicker.vue?vue&type=script&lang=js */ "./src/components/DurationPicker.vue?vue&type=script&lang=js");
+/* harmony import */ var _DurationPicker_vue_vue_type_style_index_0_id_2f58e072_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DurationPicker.vue?vue&type=style&index=0&id=2f58e072&scoped=true&lang=css */ "./src/components/DurationPicker.vue?vue&type=style&index=0&id=2f58e072&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+
+
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_DurationPicker_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_DurationPicker_vue_vue_type_template_id_2f58e072_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-2f58e072"],['__file',"src/components/DurationPicker.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
 /***/ "./src/components/NotFound.vue":
 /*!*************************************!*\
   !*** ./src/components/NotFound.vue ***!
@@ -35667,6 +35926,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/components/DurationPicker.vue?vue&type=script&lang=js":
+/*!*******************************************************************!*\
+  !*** ./src/components/DurationPicker.vue?vue&type=script&lang=js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_DurationPicker_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_DurationPicker_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./DurationPicker.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/DurationPicker.vue?vue&type=script&lang=js");
+ 
+
+/***/ }),
+
 /***/ "./src/components/NotFound.vue?vue&type=script&lang=js":
 /*!*************************************************************!*\
   !*** ./src/components/NotFound.vue?vue&type=script&lang=js ***!
@@ -35875,6 +36150,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/components/DurationPicker.vue?vue&type=template&id=2f58e072&scoped=true":
+/*!*************************************************************************************!*\
+  !*** ./src/components/DurationPicker.vue?vue&type=template&id=2f58e072&scoped=true ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_DurationPicker_vue_vue_type_template_id_2f58e072_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_DurationPicker_vue_vue_type_template_id_2f58e072_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./DurationPicker.vue?vue&type=template&id=2f58e072&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/DurationPicker.vue?vue&type=template&id=2f58e072&scoped=true");
+
+
+/***/ }),
+
 /***/ "./src/components/NotFound.vue?vue&type=template&id=3a86191f":
 /*!*******************************************************************!*\
   !*** ./src/components/NotFound.vue?vue&type=template&id=3a86191f ***!
@@ -36079,6 +36370,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
 /* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_CompanyModal_vue_vue_type_style_index_0_id_620f1060_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
+/* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
+
+
+/***/ }),
+
+/***/ "./src/components/DurationPicker.vue?vue&type=style&index=0&id=2f58e072&scoped=true&lang=css":
+/*!***************************************************************************************************!*\
+  !*** ./src/components/DurationPicker.vue?vue&type=style&index=0&id=2f58e072&scoped=true&lang=css ***!
+  \***************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_DurationPicker_vue_vue_type_style_index_0_id_2f58e072_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/vue-style-loader/index.js!../../node_modules/css-loader/dist/cjs.js!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./DurationPicker.vue?vue&type=style&index=0&id=2f58e072&scoped=true&lang=css */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/DurationPicker.vue?vue&type=style&index=0&id=2f58e072&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_DurationPicker_vue_vue_type_style_index_0_id_2f58e072_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_DurationPicker_vue_vue_type_style_index_0_id_2f58e072_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
+/* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_DurationPicker_vue_vue_type_style_index_0_id_2f58e072_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_vue_loader_dist_index_js_ruleSet_1_rules_5_use_0_DurationPicker_vue_vue_type_style_index_0_id_2f58e072_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[__WEBPACK_IMPORT_KEY__]
 /* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
 
 
@@ -37769,6 +38077,27 @@ if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(/*! !../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
 var update = add("44066112", content, false, {});
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/DurationPicker.vue?vue&type=style&index=0&id=2f58e072&scoped=true&lang=css":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/DurationPicker.vue?vue&type=style&index=0&id=2f58e072&scoped=true&lang=css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./DurationPicker.vue?vue&type=style&index=0&id=2f58e072&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[5].use[0]!./src/components/DurationPicker.vue?vue&type=style&index=0&id=2f58e072&scoped=true&lang=css");
+if(content.__esModule) content = content.default;
+if(typeof content === 'string') content = [[module.id, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = (__webpack_require__(/*! !../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")["default"])
+var update = add("1339f86e", content, false, {});
 // Hot Module Replacement
 if(false) {}
 

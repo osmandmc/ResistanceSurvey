@@ -21,7 +21,10 @@
     </div>
   <div class="field" v-if="showStrikeDuration">
     <label for="StrikeDuration">Eylemin Süresi</label>
-    <input v-model="protesto.strikeDuration" type="text" />
+    <DurationPicker
+        v-model="protesto.strikeDuration"
+        :showDays="true"
+    />
   </div>
   <div class="field" v-show="showSimpleProtestoDescription">
     <label for="SimpleProtestoDescription">İş yerinde Basit Eylem Açıklama</label>
@@ -171,11 +174,12 @@ import Multiselect from "vue-multiselect";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import Location from "./Location.vue";
+import DurationPicker from "../DurationPicker.vue";
 
 export default {
   name: "Protesto",
   emits: ["addProtesto", 'deleteLocation', 'addLocation', "onInputChanged"],
-  components: { Multiselect, VueDatePicker, Location },
+  components: {DurationPicker, Multiselect, VueDatePicker, Location },
   props: {
     protesto: {
       type: Object,
