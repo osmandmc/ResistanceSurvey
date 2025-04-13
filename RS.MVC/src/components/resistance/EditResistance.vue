@@ -280,7 +280,7 @@ export default {
         .then(data => {
           console.log(data);
           this.companies.push(data);
-          this.resistance.companyId = data.id;
+          this.resistance.companyId = data;
         });
      
     },

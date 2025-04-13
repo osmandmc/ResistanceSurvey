@@ -220,9 +220,9 @@ export default {
         console.log(data);
         this.companies.push(data);
         if(this.isMain){
-          this.resistance.mainCompanyId = data.id;  
+          this.resistance.mainCompanyId = data;  
         } else {
-          this.resistance.companyId = data.id;  
+          this.resistance.companyId = data;  
         }
         
       });

@@ -28,47 +28,44 @@
         <label>{{ formErrors.categoryId }}</label>
       </span>
     </div>
+  <div class="field">
+    <label for="IsOutsource">Şirket Taşeron mu?</label>
+    <select v-model="this.resistance.isOutsource">
+      <option :value="false">Hayır</option>
+      <option :value="true">Evet</option>
+    </select>
+  </div>
 
-  <div class="fields">
-    <div class="six wide field">
-      <label for="IsOutsource">Şirket Taşeron mu?</label>
-      <select v-model="this.resistance.isOutsource">
-        <option :value="false">Hayır</option>
-        <option :value="true">Evet</option>
-      </select>
-    </div>
-    <div class="ten wide field">
-      <label for="CompanyId">Şirket</label>
-      <div class="two fields">
-        <div class="field">
-          <multiselect id="single-select-search" 
+  <div class="field">
+    <label for="CompanyId">Şirket</label>
+    <div class="fields">
+      <div class="twelve wide field">
+          <multiselect id="single-select-search"
                        v-model="resistance.companyId" 
-                       :options="companies" 
+                       :options="this.companies" 
                        placeholder="Seçiniz" 
                        label="name"
                        track-by="id" 
                        aria-label="seçiniz"
                        @select="clearError('companyId')">
-          >
           </multiselect>
           <span v-if="formErrors.companyId" class="field error">
             <label>{{ formErrors.companyId }}</label>
           </span>
         </div>
-        <div class="field">
-          <button type="button" @click="openCompanyModal(false)" class="ui button">
-            <i class="chevron circle up icon"></i>Şirket Ekle
-          </button>
-        </div>
+      <div class="four wide field">
+        <button type="button" @click="openCompanyModal(false)" class="ui button">
+          <i class="chevron circle up icon"></i>Şirket Ekle
+        </button>
       </div>
-    </div>
+      </div>
   </div>
 
   <!-- Main Company (Conditional) -->
   <div v-if="this.resistance.isOutsource" id="outsource" class="field">
     <label for="MainCompanyId">Ana Şirket</label>
-    <div class="two fields">
-      <div class="field">
+    <div class="fields">
+      <div class="twelve wide field">
         <multiselect id="single-select-search"
                      v-model="resistance.mainCompanyId"
                      :options="companies"
@@ -79,7 +76,7 @@
                      @select="clearError('mainCompanyId')">
         </multiselect>
       </div>
-      <div class="field">
+      <div class="four wide field">
         <button type="button" @click="openCompanyModal(true)" class="ui button">
           <i class="chevron circle up icon"></i>Ana Şirket Ekle
         </button>
@@ -94,14 +91,18 @@
         <label for="ResistanceReasonIds">Vaka Nedeni</label>
         <multiselect id="ResistanceReasonIds"
                      v-model="this.resistance.resistanceReasonIds"
-                     placeholder="Seçiniz" label="name" track-by="id"
+                     placeholder="Seçiniz" 
+                     label="name" 
+                     track-by="id"
                      :preselect-first="true"
                      :options="resistanceReasons"
                      :multiple="true"
                      :close-on-select="false"
                      :clear-on-select="false"
                      :preserve-search="true"
-                     :taggable="true"  @tag="addResistanceReason">
+                     :taggable="true"  
+                     @tag="addResistanceReason"
+        >
         </multiselect>
       </div>
 
@@ -316,24 +317,6 @@ export default {
       }
       this.corporations.push(newTag);
       this.resistance.corporationIds.push(tag)
-    },
-    customFilter(search, id) {
-      console.log(id);
-      console.log(search);
-      const normalize = (str) =>
-          str
-              .toLowerCase()
-              .normalize("NFD") // Decompose characters
-              .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
-              .replace(/İ/g, "i")
-              .replace(/ğ/g, "g")
-              .replace(/ü/g, "u")
-              .replace(/ş/g, "s")
-              .replace(/ö/g, "o")
-              .replace(/ç/g, "c");
-      const result = normalize(search);
-      console.log(result);
-      return result;
     },
   },
   computed: {

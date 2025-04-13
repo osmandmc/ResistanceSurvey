@@ -225,6 +225,11 @@ export default {
         errors.protestoStartDate = "Lütfen başlangıç tarihi seçiniz.";
       }
 
+      // EmployeeCountInProtesto: Required if EmployeeCountInProtestoId is not provided
+      if (!this.protestoData.employeeCountInProtesto && !this.protestoData.employeeCountInProtestoId) {
+        errors.employeeCountInProtesto = "Lütfen eylemdeki işçi sayısını giriniz.";
+      }
+
       // InterventionTypeIds: At least one intervention type selected
       if (!this.protestoData.interventionTypeIds || this.protestoData.interventionTypeIds.length === 0) {
         errors.interventionTypeIds = "Lütfen en az bir müdahale tipi seçiniz.";
