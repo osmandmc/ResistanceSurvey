@@ -412,24 +412,31 @@ namespace RS.MVC.Applications
         }
         public IEnumerable<NewsItem> GetNewsList(int year, int month)
         {
-            var data = (from n in db.News
-                        join r in db.ResistanceNews on n.Id equals r.NewsId into rnd
-                        from rn in rnd.DefaultIfEmpty()
-                        where n.Date.Year == year && n.Date.Month == month && n.Status != COMMON.Constants.Enums.Status.Passive
-                        select new NewsItem
-                        {
-                            Id = n.Id,
-                            Header = n.Header,
-                            Content = n.Content,
-                            Date = n.Date,
-                            Link = n.Link,
-                            Added = rn != null
-                        }
-            )
-            .OrderBy(s => s.Date)
-            .Distinct()
-            .ToList();
+            var data = (
+                    from n in db.News
+                    join r in db.ResistanceNews on n.Id equals r.NewsId into rnd
+                    from rn in rnd.DefaultIfEmpty()
+                    where n.Date.Year == year &&
+                          n.Date.Month == month &&
+                          n.Status != COMMON.Constants.Enums.Status.Passive
+                    select new NewsItem
+                    {
+                        Id = n.Id,
+                        Header = n.Header,
+                        Content = n.Content,
+                        Date = n.Date,
+                        Link = n.Link,
+                        Added = rn != null
+                    }
+                )
+                .ToList() // Force query execution (important!)
+                .GroupBy(x => x.Id)
+                .Select(g => g.First())
+                .OrderBy(x => x.Date)
+                .ToList();
+
             return data;
+
         }
         public string GetNewsContent(int newsId)
         {
