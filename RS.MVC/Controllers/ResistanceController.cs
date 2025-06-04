@@ -283,7 +283,7 @@ namespace ResistanceSurvey.Controllers
                                        && (filter.CompanyId == null || rs.Resistance.CompanyId == filter.CompanyId)
                                        && (filter.MainCompanyId == null || rs.Resistance.MainCompanyId == filter.MainCompanyId)
                                        && (filter.CategoryId == null || rs.Resistance.CategoryId == filter.CategoryId)
-                                       && (filter.YearId == null || rs.StartDate.Year == filter.YearId && rs.StartDate.Month == filter.MonthId)
+                                       && (filter.YearId == null || (rs.StartDate.Year == filter.YearId && rs.StartDate.Month == filter.MonthId))
                                        && (filter.PersonalNote == null || String.IsNullOrEmpty(rs.Resistance.Note) == !filter.PersonalNote)
                                        )
                                        .ToList();
@@ -357,6 +357,8 @@ namespace ResistanceSurvey.Controllers
                                     var locationCount = rows.Max(s => s.Locations.Count);
                                     var protestoPlaceCount = rows.Max(s => s.ProtestoPlaces.Count);
                                     var interventionTypeCount = rows.Max(s => s.InterventionTypes.Count);
+                                    var newsCount = rows.Max(s => s.NewsLink.Count);
+
                                     byte[] byteArray;
                                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                     
@@ -431,7 +433,12 @@ namespace ResistanceSurvey.Controllers
                                         ws.Cells[1, index].Value = "G�zalt� say�s�"; index++;
                                         ws.Cells[1, index].Value = "Notlar"; index++;
                                         ws.Cells[1, index].Value = "Eylem Notlar�"; index++;
+                                        for (int i = 0; i < newsCount; i++)
+                                        {
+                                            ws.Cells[1, i + index].Value = $"Haber Linki {i + 1}";
                     
+                                        }
+
                                         for (int i = 0; i < rows.Count; i++)
                                         {
                                             int r_index = 1;
@@ -503,8 +510,13 @@ namespace ResistanceSurvey.Controllers
                                             ws.Cells[i + 2, r_index].Value = rows[i].CustodyCount; r_index++;
                                             ws.Cells[i + 2, r_index].Value = rows[i].Note; r_index++;
                                             ws.Cells[i + 2, r_index].Value = rows[i].ProtestoNote; r_index++;
+                                            for (int j = 0; j < rows[i].NewsLink.Count; j++)
+                                            {
+                                                ws.Cells[i + 2, j + r_index].Value = rows[i].NewsLink[j];    
+                                            }
+                                            
                                         }
-                    
+
                     
                                         ws.Cells.AutoFitColumns();
                                         byteArray = pck.GetAsByteArray();

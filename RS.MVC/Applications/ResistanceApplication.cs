@@ -412,6 +412,13 @@ namespace RS.MVC.Applications
         }
         public IEnumerable<NewsItem> GetNewsList(int year, int month)
         {
+            var foo = (
+                from n in db.News
+                where n.Date.Year == year &&
+                      n.Date.Month == month &&
+                      n.Status != COMMON.Constants.Enums.Status.Passive
+                select n
+            ).ToList();
             var data = (
                     from n in db.News
                     join r in db.ResistanceNews on n.Id equals r.NewsId into rnd
@@ -429,13 +436,13 @@ namespace RS.MVC.Applications
                         Added = rn != null
                     }
                 )
-                .ToList() // Force query execution (important!)
-                .GroupBy(x => x.Id)
+                .ToList(); // Force query execution (important!)
+                
+
+            return data.GroupBy(x => x.Id)
                 .Select(g => g.First())
                 .OrderBy(x => x.Date)
-                .ToList();
-
-            return data;
+                .ToList();;
 
         }
         public string GetNewsContent(int newsId)
