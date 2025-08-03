@@ -225,6 +225,11 @@ export default {
         errors.protestoStartDate = "Lütfen başlangıç tarihi seçiniz.";
       }
 
+      // ProtestoStartDate: Should be earlier than the end date
+      if (this.protestoData.protestoStartDate > this.protestoData.protestoEndDate) {
+        errors.protestoStartDate = "Baslangic tarihi bitis tarihinden buyuk olmaz.";
+      }
+
       // EmployeeCountInProtesto: Required if EmployeeCountInProtestoId is not provided
       if (!this.protestoData.employeeCountInProtesto && !this.protestoData.employeeCountInProtestoId) {
         errors.employeeCountInProtesto = "Lütfen eylemdeki işçi sayısını giriniz.";

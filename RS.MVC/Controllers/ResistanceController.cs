@@ -283,7 +283,7 @@ namespace ResistanceSurvey.Controllers
                                        && (filter.CompanyId == null || rs.Resistance.CompanyId == filter.CompanyId)
                                        && (filter.MainCompanyId == null || rs.Resistance.MainCompanyId == filter.MainCompanyId)
                                        && (filter.CategoryId == null || rs.Resistance.CategoryId == filter.CategoryId)
-                                       && (filter.YearId == null || (rs.StartDate.Year == filter.YearId && rs.StartDate.Month == filter.MonthId))
+                                       && (filter.YearId == null || (rs.StartDate.Year == filter.YearId && (filter.MonthId == null || rs.StartDate.Month == filter.MonthId)))
                                        && (filter.PersonalNote == null || String.IsNullOrEmpty(rs.Resistance.Note) == !filter.PersonalNote)
                                        )
                                        .ToList();
@@ -321,8 +321,8 @@ namespace ResistanceSurvey.Controllers
                                             ProtestoCount = item.Locations.Count,
                                             ProtestoTypes = new List<string>(),
                                             ProtestoPlaces = new List<string>(),
-                                            StartDate = item.StartDate.ToShortDateString(),
-                                            EndDate = item.EndDate != null ? item.EndDate.Value.ToShortDateString() : "",
+                                            StartDate = item.StartDate,
+                                            EndDate = item.EndDate,
                                             StrikeDuration = item.StrikeDuration,
                                             Locations = new List<string>(),
                                             EmployeeCountInProtesto = item.ProtestoEmployeeCount != null ? item.ProtestoEmployeeCount.Name : "",
@@ -487,7 +487,18 @@ namespace ResistanceSurvey.Controllers
                                             r_index += protestoTypeCount;
                                             ws.Cells[i + 2, r_index].Value = rows[i].ProtestoCount; r_index++;
                                             ws.Cells[i + 2, r_index].Value = rows[i].StartDate; r_index++;
-                                            ws.Cells[i + 2, r_index].Value = rows[i].EndDate; r_index++;
+                                            ws.Cells[i + 2, r_index].Style.Numberformat.Format = "dd/MM/yyyy";
+
+                                            if (rows[i].EndDate == null)
+                                            {
+                                                ws.Cells[i + 2, r_index].Value = ""; r_index++;
+                                            }
+                                            else
+                                            {
+                                                ws.Cells[i + 2, r_index].Value = rows[i].EndDate; r_index++;
+                                                ws.Cells[i + 2, r_index].Style.Numberformat.Format = "dd/MM/yyyy";
+                                            }
+                                            
                                             ws.Cells[i + 2, r_index].Value = rows[i].StrikeDuration; r_index++;
                     
                                             for (int l = 0; l < rows[i].Locations.Count; l++)

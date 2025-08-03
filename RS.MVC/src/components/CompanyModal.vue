@@ -15,6 +15,9 @@
               v-model="formData.companyName"
               placeholder="Şirket adı giriniz"
           />
+          <span v-if="this.formErrors.companyName" class="field error">
+                <label>{{ this.formErrors.companyName }}</label>
+            </span>
         </div>
 
         <!-- Dropdown Fields -->
@@ -62,6 +65,9 @@
                 {{ workline.name }}
               </option>
             </select>
+            <span v-if="this.formErrors.worklineId" class="field error">
+                <label>{{ this.formErrors.worklineId }}</label>
+            </span>
           </div>
         </div>
 
@@ -113,6 +119,7 @@ export default {
         mainCompanyId: null,
         isMain: this.isMain,
       },
+      formErrors: {}
     };
   },
   methods: {
@@ -128,7 +135,16 @@ export default {
       this.closeModal();
     },
     addCompany() {
-      console.log("Adding Company:", this.formData);
+      console.log("Adding Company:", this.formData.worklineId);
+      if(this.formData.companyName === '') {
+        this.formErrors.companyName = "Lütfen bir iş kolu seçiniz.";
+      }
+      if(this.formData.worklineId === null) {
+        this.formErrors.worklineId = "Lütfen bir iş kolu seçiniz.";
+      }
+      if (Object.keys(this.formErrors).length > 0) {
+        return;
+      }
       const company = {
         name: this.formData.companyName,
         typeId: this.formData.typeId,

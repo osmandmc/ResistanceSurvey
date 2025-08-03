@@ -36,9 +36,9 @@
     <button class="ui primary button" @click.prevent="saveForm">
       KAYDET
     </button>
-    <button type="button" id="btnCancelResistanceModal" class="ui negative button">
+    <router-link to="../.." type="button" class="ui negative button" >
       VAZGEÇ
-    </button>
+    </router-link>
   </form>
   <company-modal ref="modalRef"
                  :companyTypes="companyTypes"
@@ -332,7 +332,9 @@ export default {
       if (!this.resistance.companyId) {
         errors.companyId = "Lütfen bir şirket seçiniz.";
       }
-
+      if (!this.resistance.resistanceReasonIds) {
+        errors.resistanceReasonIds = "Lütfen en az bir vaka nedeni seçiniz.";
+      }
       // CorporationIds: At least one corporation selected
       if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {
         errors.corporationIds = "Lütfen en az bir kurumsallık seçiniz.";
@@ -376,7 +378,10 @@ export default {
       if (!this.resistance.protesto.protestoStartDate) {
         errors.protestoStartDate = "Lütfen başlangıç tarihi seçiniz.";
       }
-
+      // ProtestoStartDate: Should be earlier than the end date
+      if (this.resistance.protesto.protestoStartDate > this.resistance.protesto.protestoEndDate) {
+        errors.protestoStartDate = "Baslangic tarihi bitis tarihinden buyuk olmaz.";
+      }
       // GenderId: Required
       if (!this.resistance.protesto.genderId) {
         errors.genderId = "Lütfen bir cinsiyet giriniz.";

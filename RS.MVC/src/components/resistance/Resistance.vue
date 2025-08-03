@@ -104,8 +104,11 @@
                      @tag="addResistanceReason"
         >
         </multiselect>
-      </div>
+        <span v-if="formErrors.resistanceReasonIds" class="field error">
+          <label>{{ formErrors.resistanceReasonIds }}</label>
+        </span>
 
+      </div>
       <!-- Develop Right -->
       <div class="field">
         <label for="DevelopRight">Hak Geliştirme/Hak Savunma Özelliği</label>
