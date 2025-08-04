@@ -145,9 +145,9 @@ public class ResistanceApiController(IResistanceApplication rsApplication, RSDBC
                 ResistanceId = item.Resistance.Id,
                 Description = item.Resistance.Description,
                 CategoryName = item.Resistance.Category.Name,
-                CompanyName = item.Resistance.Target.Name,
-                CompanyWorkline = ((Company)item.Resistance.Target).CompanyWorkLine != null ? 
-                    ((Company)item.Resistance.Target).CompanyWorkLine.Name : 
+                CompanyName = item.Resistance.Company.Name,
+                CompanyWorkline = ((Company)item.Resistance.Company).CompanyWorkLine != null ? 
+                    ((Company)item.Resistance.Company).CompanyWorkLine.Name : 
                     "",
                 MainCompanyName = item.Resistance.MainCompany != null ? item.Resistance.MainCompany.Name : "",
                 MainCompanyWorkline = item.Resistance.MainCompany != null ? item.Resistance.MainCompany.CompanyWorkLine != null ? item.Resistance.MainCompany.CompanyWorkLine.Name : "" : "",

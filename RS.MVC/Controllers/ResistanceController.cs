@@ -301,9 +301,9 @@ namespace ResistanceSurvey.Controllers
                                             Description = item.Resistance.Description,
                                             ResistanceName = item.Resistance.Name,
                                             CategoryName = item.Resistance.Category.Name,
-                                            CompanyName = item.Resistance.Target.Name,
-                                            CompanyWorkline = ((Company)item.Resistance.Target)?.CompanyWorkLine != null ? 
-                                                ((Company)item.Resistance.Target).CompanyWorkLine.Name : 
+                                            CompanyName = item.Resistance.Company.Name,
+                                            CompanyWorkline = ((Company)item.Resistance.Company)?.CompanyWorkLine != null ? 
+                                                ((Company)item.Resistance.Company).CompanyWorkLine.Name : 
                                                 "",
                                             MainCompanyName = item.Resistance.MainCompany != null ? item.Resistance.MainCompany.Name : "",
                                             MainCompanyWorkline = item.Resistance.MainCompany != null ? item.Resistance.MainCompany.CompanyWorkLine != null ? item.Resistance.MainCompany.CompanyWorkLine.Name : "" : "",

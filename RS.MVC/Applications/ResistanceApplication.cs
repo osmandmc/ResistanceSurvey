@@ -194,7 +194,7 @@ namespace RS.MVC.Applications
                                     ProtestoDistrictIds = s.Districts != null ? s.Districts.ToList() : null,
                                     ProtestoStartDate = s.StartDate,
                                     ProtestoEndDate = s.EndDate,
-                                    ResistanceName = s.Resistance.Target.Name,
+                                    ResistanceName = s.Resistance.Company.Name,
                                     Note = s.Note
                                 })
                                 .ToList()

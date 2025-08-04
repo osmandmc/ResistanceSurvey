@@ -56,10 +56,11 @@ namespace RS.EF
         // }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            
 
                  modelBuilder.Entity<Company>()
-                .HasMany(u => u.OutsourceCompanies).WithOne(u => u.Company)
-                .OnDelete(DeleteBehavior.Restrict);
+                    .HasMany(u => u.OutsourceCompanies).WithOne(u => u.Company)
+                    .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

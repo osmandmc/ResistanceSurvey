@@ -14,7 +14,7 @@ namespace RS.MVC.Models
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public int CategoryId { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
-        public int TargetId { get; set; }
+        public int CompanyId { get; set; }
         public int? MainCompanyId { get; set; }
         public string Code { get; set; }
         public bool HasTradeUnion { get; set; }
@@ -63,7 +63,7 @@ namespace RS.MVC.Models
         {
             var resistance = new Resistance
             {
-                TargetId = TargetId,
+                CompanyId = CompanyId,
                 MainCompanyId = MainCompanyId,
                 CategoryId = CategoryId,
                 Code = Code,
@@ -161,7 +161,7 @@ namespace RS.MVC.Models
         {
             var resistance = new Resistance
             {
-                TargetId = CompanyId.Id,
+                CompanyId = CompanyId.Id,
                 MainCompanyId = MainCompanyId?.Id,
                 CategoryId = CategoryId,
                 Code = Code,
