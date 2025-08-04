@@ -21,7 +21,8 @@ namespace RS.MVC.Models
         public bool HasTradeUnion { get; set; }
         public bool DevelopRight { get; set; }
         public int? TradeUnionAuthorityId { get; set; }
-        public string ResistanceDescription { get; set; } 
+        public string ResistanceDescription { get; set; }
+        public string Name { get; set; }
 
         public int? EmployeeCountId { get; set; }
         public int? EmployeeCount { get; set; }

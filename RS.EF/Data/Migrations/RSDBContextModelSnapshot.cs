@@ -683,7 +683,10 @@ namespace RS.EF.Data.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CompanyId")
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CorporationId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateDate")
@@ -722,10 +725,16 @@ namespace RS.EF.Data.Migrations
                     b.Property<int?>("MainCompanyId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ResistanceResult")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResistanceTargetType")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -748,6 +757,8 @@ namespace RS.EF.Data.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("CorporationId");
 
                     b.HasIndex("EmployeeCountId");
 
@@ -1076,9 +1087,11 @@ namespace RS.EF.Data.Migrations
 
                     b.HasOne("RS.COMMON.Entities.Company", "Company")
                         .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CompanyId");
+
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId");
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.EmployeeCount", "EmployeeCount")
                         .WithMany()
@@ -1099,6 +1112,8 @@ namespace RS.EF.Data.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Company");
+
+                    b.Navigation("Corporation");
 
                     b.Navigation("EmployeeCount");
 

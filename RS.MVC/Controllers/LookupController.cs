@@ -17,7 +17,10 @@ public class LookupController : Controller
     [Authorize]
     public IActionResult Categories()
     {
-        var categories = _db.Category.OrderBy(s => s.Name).Select(s => new LookupEntity { Id = s.Id, Name = s.Name }).ToList();
+        var categories = _db.Category
+            .OrderBy(s => s.Name)
+            .Select(s => new LookupEntity { Id = s.Id, Name = s.Name })
+            .ToList();
         return Json(categories);
     }
     // GET

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS.COMMON.DTO;
+using RS.COMMON.Entities;
 using RS.EF;
 using RS.MVC.Applications;
 using RS.MVC.Models;
@@ -145,7 +146,9 @@ public class ResistanceApiController(IResistanceApplication rsApplication, RSDBC
                 Description = item.Resistance.Description,
                 CategoryName = item.Resistance.Category.Name,
                 CompanyName = item.Resistance.Company.Name,
-                CompanyWorkline = item.Resistance.Company.CompanyWorkLine != null ? item.Resistance.Company.CompanyWorkLine.Name : "",
+                CompanyWorkline = ((Company)item.Resistance.Company).CompanyWorkLine != null ? 
+                    ((Company)item.Resistance.Company).CompanyWorkLine.Name : 
+                    "",
                 MainCompanyName = item.Resistance.MainCompany != null ? item.Resistance.MainCompany.Name : "",
                 MainCompanyWorkline = item.Resistance.MainCompany != null ? item.Resistance.MainCompany.CompanyWorkLine != null ? item.Resistance.MainCompany.CompanyWorkLine.Name : "" : "",
                 AgainstProduction = item.ProtestoProtestoTypes.Any(s => s.ProtestoType.AgainstProduction) ? "EVET" : "HAYIR",

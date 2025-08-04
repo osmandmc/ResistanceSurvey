@@ -1,7 +1,13 @@
 <template>
     <!-- Hidden Input for ID -->
     <input type="hidden" name="Id" v-model="this.resistance.id" />
-
+    <div class="field">
+      <label for="ResistanceName">Vaka İsmi</label>
+      <input
+          id="ResistanceName"
+          v-model="this.resistance.resistanceName"
+      />
+    </div>
     <div class="field">
       <label for="ResistanceDescription">Kısa Açıklama</label>
       <textarea
@@ -14,7 +20,7 @@
         <label>{{ formErrors.resistanceDescription }}</label>
       </span>
     </div>
-  
+   
     <div class="field">
       <label for="CategoryId">Vaka Niteliği</label>
       <select v-model="this.resistance.categoryId"
@@ -29,61 +35,79 @@
       </span>
     </div>
   <div class="field">
-    <label for="IsOutsource">Şirket Taşeron mu?</label>
-    <select v-model="this.resistance.isOutsource">
-      <option :value="false">Hayır</option>
-      <option :value="true">Evet</option>
+    <label for="TargetType">Kime Karsi</label>
+    <select v-model="targetType">
+      <option value="">--Seçiniz--</option>
+      <option value="1">Sirket</option>
+      <option value="2">Kurum</option>
     </select>
   </div>
-
-  <div class="field">
-    <label for="CompanyId">Şirket</label>
-    <div class="fields">
-      <div class="twelve wide field">
-          <multiselect id="single-select-search"
-                       v-model="resistance.companyId" 
-                       :options="this.companies" 
-                       placeholder="Seçiniz" 
-                       label="name"
-                       track-by="id" 
-                       aria-label="seçiniz"
-                       @select="clearError('companyId')">
-          </multiselect>
-          <span v-if="formErrors.companyId" class="field error">
-            <label>{{ formErrors.companyId }}</label>
-          </span>
+  <div v-if="this.companySelected">
+    <div class="field">
+      <label for="IsOutsource">Şirket Taşeron mu?</label>
+      <select v-model="this.resistance.isOutsource">
+        <option :value="false">Hayır</option>
+        <option :value="true">Evet</option>
+      </select>
+    </div>
+  
+    <div class="field">
+      <label for="CompanyId">Şirket</label>
+      <div class="fields">
+        <div class="twelve wide field">
+            <multiselect id="single-select-search"
+                         v-model="resistance.companyId" 
+                         :options="this.companies" 
+                         placeholder="Seçiniz" 
+                         label="name"
+                         track-by="id" 
+                         aria-label="seçiniz"
+                         @select="clearError('companyId')">
+            </multiselect>
+            <span v-if="formErrors.companyId" class="field error">
+              <label>{{ formErrors.companyId }}</label>
+            </span>
+          </div>
+        <div class="four wide field">
+          <button type="button" @click="openCompanyModal(false)" class="ui button">
+            <i class="chevron circle up icon"></i>Şirket Ekle
+          </button>
         </div>
-      <div class="four wide field">
-        <button type="button" @click="openCompanyModal(false)" class="ui button">
-          <i class="chevron circle up icon"></i>Şirket Ekle
-        </button>
-      </div>
-      </div>
-  </div>
-
-  <!-- Main Company (Conditional) -->
-  <div v-if="this.resistance.isOutsource" id="outsource" class="field">
-    <label for="MainCompanyId">Ana Şirket</label>
-    <div class="fields">
-      <div class="twelve wide field">
-        <multiselect id="single-select-search"
-                     v-model="resistance.mainCompanyId"
-                     :options="companies"
-                     placeholder="Seçiniz"
-                     label="name"
-                     track-by="id"
-                     aria-label="seçiniz"
-                     @select="clearError('mainCompanyId')">
-        </multiselect>
-      </div>
-      <div class="four wide field">
-        <button type="button" @click="openCompanyModal(true)" class="ui button">
-          <i class="chevron circle up icon"></i>Ana Şirket Ekle
-        </button>
+        </div>
+    </div>
+  
+    <!-- Main Company (Conditional) -->
+    <div v-if="this.resistance.isOutsource" id="outsource" class="field">
+      <label for="MainCompanyId">Ana Şirket</label>
+      <div class="fields">
+        <div class="twelve wide field">
+          <multiselect id="single-select-search"
+                       v-model="resistance.mainCompanyId"
+                       :options="companies"
+                       placeholder="Seçiniz"
+                       label="name"
+                       track-by="id"
+                       aria-label="seçiniz"
+                       @select="clearError('mainCompanyId')">
+          </multiselect>
+        </div>
+        <div class="four wide field">
+          <button type="button" @click="openCompanyModal(true)" class="ui button">
+            <i class="chevron circle up icon"></i>Ana Şirket Ekle
+          </button>
+        </div>
       </div>
     </div>
   </div>
-
+  <div v-if="this.corporationSelected" class="field">
+    <label for="TargetType">Hedef Kurum</label>
+    <select>
+      <option value="">--Seçiniz--</option>
+      <option v-for="corp in corporations" :key="corp.id" :value="corp.id">
+        {{ corp.name }}
+      </option>
+    </select>
+  </div>
   <!-- Two Fields -->
     <div class="two fields">
       <!-- Case Reasons -->
@@ -322,9 +346,20 @@ export default {
       this.resistance.corporationIds.push(tag)
     },
   },
+  data(){
+    return {
+      targetType: null,
+    }
+  },
   computed: {
     showTradeUnionAuthority(){
       return this.resistance?.corporationIds?.some(s=>s.CorporationTypeId === 1);
+    },
+    companySelected() {
+      return this.targetType === "1";
+    },
+    corporationSelected(){
+      return this.targetType === "2";
     }
   }
 };

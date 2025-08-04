@@ -10,8 +10,10 @@ namespace RS.COMMON.Entities
     {
         public int Id { get; set; }
         public int CategoryId { get; set; }
-        public int CompanyId { get; set; }
+        public int? CompanyId { get; set; }
         public int? MainCompanyId { get; set; }
+        public int? CorporationId { get; set; }
+        public ResistanceTargetType ResistanceTargetType { get; set; }
         public string Code { get; set; }
         public int? EmployeeCountNumber { get; set; }
         public int? EmployeeCountId { get; set; }
@@ -23,6 +25,8 @@ namespace RS.COMMON.Entities
         public int? TradeUnionAuthorityId { get; set; }
         public string Note { get; set; }
         public string Description { get; set; }
+        public string Name { get; set; }
+
         public bool? AnyLegalIntervention { get; set; }
         public string LegalInterventionDesc { get; set; }
         public int? FiredEmployeeCountByProtesto { get; set; }
@@ -33,6 +37,7 @@ namespace RS.COMMON.Entities
         public Company Company { get; set; }
         public Company MainCompany { get; set; }
         public EmployeeCount EmployeeCount { get; set; }
+        public Corporation Corporation { get; set; }
         public Corporation TradeUnion { get; set; }
         public TradeUnionAuthority TradeUnionAuthority { get; set; }
         public List<Protesto> Protestos { get; set; }

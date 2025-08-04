@@ -21,6 +21,8 @@ namespace RS.MVC.Models
         public int? TradeUnionAuthorityId { get; set; }
         public string Note { get; set; }
         public string ResistanceDescription { get; set; }
+        public string ResistanceName { get; set; }
+
 
         public int? EmployeeCountId { get; set; }
         public int? EmployeeCount { get; set; }
@@ -74,6 +76,7 @@ namespace RS.MVC.Models
                 StartDate = ProtestoStartDate,
                 EndDate = ProtestoEndDate,
                 Description = ResistanceDescription,
+                Name = ResistanceName,
                 Note = Note,
                 FiredEmployeeCountByProtesto = FiredEmployeeCountByProtesto,
                 Creator = UserName,
@@ -140,6 +143,7 @@ namespace RS.MVC.Models
         public int? TradeUnionAuthorityId { get; set; }
         public string Note { get; set; }
         public string ResistanceDescription { get; set; }
+        public string ResistanceName { get; set; }
         public short AnyLegalIntervention { get; set; }
         public string LegalIntervantionDesc { get; set; }
         public ResistanceResult ResistanceResult { get; set; }
@@ -170,6 +174,7 @@ namespace RS.MVC.Models
                 StartDate = Protesto.ProtestoStartDate,
                 EndDate = Protesto.ProtestoEndDate,
                 Description = ResistanceDescription,
+                Name = ResistanceName,
                 Note = Note,
                 FiredEmployeeCountByProtesto = FiredEmployeeCountByProtesto,
                 Creator = UserName,
