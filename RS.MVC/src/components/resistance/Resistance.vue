@@ -41,6 +41,9 @@
       <option :value="1">Sirket</option>
       <option :value="2">Kurum</option>
     </select>
+    <span v-if="formErrors.targetType" class="field error">
+        <label>{{ formErrors.targetType }}</label>
+      </span>
   </div>
   <div v-if="this.companySelected">
     <div class="field">

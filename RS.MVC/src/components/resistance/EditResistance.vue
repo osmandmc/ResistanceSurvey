@@ -402,12 +402,11 @@ export default {
         errors.categoryId = "Lütfen bir kategori giriniz.";
       }
 
-      // // CompanyId: At least one company selected
-      // if (!this.resistance.companyId) {
-      //   errors.companyId = "Lütfen bir şirket seçiniz.";
-      // }
-
-      // CorporationIds: At least one corporation selected
+      if (!this.resistance.targetType) {
+        errors.targetType = "Zorunlu alan.";
+      }
+      
+        // CorporationIds: At least one corporation selected
       if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {
         errors.corporationIds = "Lütfen en az bir kurumsallık seçiniz.";
       }

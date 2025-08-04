@@ -332,9 +332,9 @@ console.log(resistanceData);
       }
 
       // CompanyId: At least one company selected
-      // if (!this.resistance.companyId) {
-      //   errors.companyId = "Lütfen bir şirket seçiniz.";
-      //
+      if (!this.resistance.targetType) {
+        errors.targetType = "Lütfen bir kime karsi seçiniz.";
+      }
       if (!this.resistance.resistanceReasonIds) {
         errors.resistanceReasonIds = "Lütfen en az bir vaka nedeni seçiniz.";
       }
