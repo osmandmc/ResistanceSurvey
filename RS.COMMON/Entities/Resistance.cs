@@ -23,6 +23,8 @@ namespace RS.COMMON.Entities
         public int? TradeUnionAuthorityId { get; set; }
         public string Note { get; set; }
         public string Description { get; set; }
+        public string Name { get; set; }
+
         public bool? AnyLegalIntervention { get; set; }
         public string LegalInterventionDesc { get; set; }
         public int? FiredEmployeeCountByProtesto { get; set; }

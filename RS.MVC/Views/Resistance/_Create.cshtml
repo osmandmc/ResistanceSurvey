@@ -22,10 +22,10 @@
                 </select>
             </div>
             <div class="ten wide field">
-                <label asp-for="CompanyId">Şirket</label>
+                <label asp-for="TargetId">Şirket</label>
                 <div class="two fields">
                     <div class="field">
-                        <select asp-for="CompanyId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" onchange="checkExisiting()">
+                        <select asp-for="TargetId" asp-items="@ViewBag.Companies" class="ui fluid search selection dropdown" onchange="checkExisiting()">
                             <option value="">--Seçiniz--</option>
                         </select>
                     </div>

@@ -22291,12 +22291,23 @@ __webpack_require__.r(__webpack_exports__);
       this.resistance.corporationIds.push(tag);
     }
   },
+  data: function data() {
+    return {
+      targetType: null
+    };
+  },
   computed: {
     showTradeUnionAuthority: function showTradeUnionAuthority() {
       var _this$resistance;
       return (_this$resistance = this.resistance) === null || _this$resistance === void 0 || (_this$resistance = _this$resistance.corporationIds) === null || _this$resistance === void 0 ? void 0 : _this$resistance.some(function (s) {
         return s.CorporationTypeId === 1;
       });
+    },
+    companySelected: function companySelected() {
+      return this.targetType === "1";
+    },
+    corporationSelected: function corporationSelected() {
+      return this.targetType === "2";
     }
   }
 });
@@ -23713,67 +23724,64 @@ var _hoisted_1 = {
   "class": "field"
 };
 var _hoisted_2 = {
-  key: 0,
-  "class": "field error"
+  "class": "field"
 };
 var _hoisted_3 = {
-  "class": "field"
-};
-var _hoisted_4 = ["value"];
-var _hoisted_5 = {
   key: 0,
   "class": "field error"
 };
-var _hoisted_6 = {
+var _hoisted_4 = {
   "class": "field"
+};
+var _hoisted_5 = ["value"];
+var _hoisted_6 = {
+  key: 0,
+  "class": "field error"
 };
 var _hoisted_7 = {
   "class": "field"
 };
 var _hoisted_8 = {
-  "class": "fields"
+  key: 0
 };
 var _hoisted_9 = {
-  "class": "twelve wide field"
+  "class": "field"
 };
 var _hoisted_10 = {
+  "class": "field"
+};
+var _hoisted_11 = {
+  "class": "fields"
+};
+var _hoisted_12 = {
+  "class": "twelve wide field"
+};
+var _hoisted_13 = {
   key: 0,
   "class": "field error"
 };
-var _hoisted_11 = {
+var _hoisted_14 = {
   "class": "four wide field"
 };
-var _hoisted_12 = {
+var _hoisted_15 = {
   key: 0,
   id: "outsource",
   "class": "field"
 };
-var _hoisted_13 = {
+var _hoisted_16 = {
   "class": "fields"
 };
-var _hoisted_14 = {
+var _hoisted_17 = {
   "class": "twelve wide field"
 };
-var _hoisted_15 = {
+var _hoisted_18 = {
   "class": "four wide field"
 };
-var _hoisted_16 = {
-  "class": "two fields"
-};
-var _hoisted_17 = {
-  "class": "field"
-};
-var _hoisted_18 = {
-  key: 0,
-  "class": "field error"
-};
 var _hoisted_19 = {
+  key: 1,
   "class": "field"
 };
-var _hoisted_20 = {
-  key: 0,
-  "class": "field error"
-};
+var _hoisted_20 = ["value"];
 var _hoisted_21 = {
   "class": "two fields"
 };
@@ -23781,41 +23789,58 @@ var _hoisted_22 = {
   "class": "field"
 };
 var _hoisted_23 = {
-  "class": "field"
-};
-var _hoisted_24 = ["value"];
-var _hoisted_25 = {
-  "class": "field"
-};
-var _hoisted_26 = {
   key: 0,
   "class": "field error"
+};
+var _hoisted_24 = {
+  "class": "field"
+};
+var _hoisted_25 = {
+  key: 0,
+  "class": "field error"
+};
+var _hoisted_26 = {
+  "class": "two fields"
 };
 var _hoisted_27 = {
   "class": "field"
 };
-var _hoisted_28 = ["value"];
-var _hoisted_29 = {
+var _hoisted_28 = {
   "class": "field"
 };
-var _hoisted_30 = ["value"];
+var _hoisted_29 = ["value"];
+var _hoisted_30 = {
+  "class": "field"
+};
 var _hoisted_31 = {
-  "class": "two fields"
+  key: 0,
+  "class": "field error"
 };
 var _hoisted_32 = {
   "class": "field"
 };
-var _hoisted_33 = {
-  key: 0,
-  "class": "field error"
-};
+var _hoisted_33 = ["value"];
 var _hoisted_34 = {
   "class": "field"
 };
-var _hoisted_35 = {
+var _hoisted_35 = ["value"];
+var _hoisted_36 = {
+  "class": "two fields"
+};
+var _hoisted_37 = {
   "class": "field"
 };
-var _hoisted_36 = {
+var _hoisted_38 = {
+  key: 0,
+  "class": "field error"
+};
+var _hoisted_39 = {
+  "class": "field"
+};
+var _hoisted_40 = {
+  "class": "field"
+};
+var _hoisted_41 = {
   key: 0,
   "class": "field error"
 };
@@ -23828,49 +23853,68 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
       return _this.resistance.id = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.id]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.id]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "ResistanceName"
+  }, "Vaka İsmi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    id: "ResistanceName",
+    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
+      return _this.resistance.resistanceName = $event;
+    })
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.resistanceName]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [_cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ResistanceDescription"
   }, "Kısa Açıklama", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     id: "ResistanceDescription",
     rows: "6",
-    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
+    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
       return _this.resistance.resistanceDescription = $event;
     }),
-    onInput: _cache[2] || (_cache[2] = function ($event) {
+    onInput: _cache[3] || (_cache[3] = function ($event) {
       return $options.clearError('resistanceDescription');
     })
-  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.resistanceDescription]]), $props.formErrors.resistanceDescription ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.resistanceDescription), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.resistanceDescription]]), $props.formErrors.resistanceDescription ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.resistanceDescription), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CategoryId"
   }, "Vaka Niteliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
       return _this.resistance.categoryId = $event;
     }),
-    onChange: _cache[4] || (_cache[4] = function ($event) {
+    onChange: _cache[5] || (_cache[5] = function ($event) {
       return $options.clearError('categoryId');
     })
-  }, [_cache[27] || (_cache[27] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.categories, function (category) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: category.id,
       value: category.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(category.name), 9 /* TEXT, PROPS */, _hoisted_4);
-  }), 128 /* KEYED_FRAGMENT */))], 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.categoryId]]), $props.formErrors.categoryId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.categoryId), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(category.name), 9 /* TEXT, PROPS */, _hoisted_5);
+  }), 128 /* KEYED_FRAGMENT */))], 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.categoryId]]), $props.formErrors.categoryId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.categoryId), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [_cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "TargetType"
+  }, "Kime Karsi", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+      return $data.targetType = $event;
+    })
+  }, _cache[32] || (_cache[32] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: "1"
+  }, "Sirket", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: "2"
+  }, "Kurum", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.targetType]])]), this.companySelected ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [_cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "IsOutsource"
   }, "Şirket Taşeron mu?", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
+    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
       return _this.resistance.isOutsource = $event;
     })
-  }, _cache[29] || (_cache[29] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, _cache[34] || (_cache[34] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: false
   }, "Hayır", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: true
-  }, "Evet", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.isOutsource]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [_cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, "Evet", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.isOutsource]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [_cache[37] || (_cache[37] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CompanyId"
-  }, "Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
+  }, "Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "single-select-search",
     modelValue: $props.resistance.companyId,
-    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
       return $props.resistance.companyId = $event;
     }),
     options: this.companies,
@@ -23878,23 +23922,23 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     label: "name",
     "track-by": "id",
     "aria-label": "seçiniz",
-    onSelect: _cache[7] || (_cache[7] = function ($event) {
+    onSelect: _cache[9] || (_cache[9] = function ($event) {
       return $options.clearError('companyId');
     })
-  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.companyId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.companyId), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.companyId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.companyId), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
-    onClick: _cache[8] || (_cache[8] = function ($event) {
+    onClick: _cache[10] || (_cache[10] = function ($event) {
       return $options.openCompanyModal(false);
     }),
     "class": "ui button"
-  }, _cache[31] || (_cache[31] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, _cache[36] || (_cache[36] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "chevron circle up icon"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Şirket Ekle ")]))])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Main Company (Conditional) "), this.resistance.isOutsource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_12, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Şirket Ekle ")]))])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Main Company (Conditional) "), this.resistance.isOutsource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_15, [_cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "MainCompanyId"
-  }, "Ana Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
+  }, "Ana Şirket", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "single-select-search",
     modelValue: $props.resistance.mainCompanyId,
-    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
+    "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
       return $props.resistance.mainCompanyId = $event;
     }),
     options: $props.companies,
@@ -23902,23 +23946,32 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     label: "name",
     "track-by": "id",
     "aria-label": "seçiniz",
-    onSelect: _cache[10] || (_cache[10] = function ($event) {
+    onSelect: _cache[12] || (_cache[12] = function ($event) {
       return $options.clearError('mainCompanyId');
     })
-  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
-    onClick: _cache[11] || (_cache[11] = function ($event) {
+    onClick: _cache[13] || (_cache[13] = function ($event) {
       return $options.openCompanyModal(true);
     }),
     "class": "ui button"
-  }, _cache[33] || (_cache[33] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, _cache[38] || (_cache[38] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "chevron circle up icon"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Ana Şirket Ekle ")]))])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Two Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Case Reasons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [_cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Ana Şirket Ekle ")]))])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), this.corporationSelected ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_19, [_cache[41] || (_cache[41] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "TargetType"
+  }, "Hedef Kurum", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", null, [_cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: ""
+  }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.corporations, function (corp) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: corp.id,
+      value: corp.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(corp.name), 9 /* TEXT, PROPS */, _hoisted_20);
+  }), 128 /* KEYED_FRAGMENT */))])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Two Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Case Reasons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ResistanceReasonIds"
   }, "Vaka Nedeni", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "ResistanceReasonIds",
     modelValue: this.resistance.resistanceReasonIds,
-    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
+    "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
       return _this.resistance.resistanceReasonIds = $event;
     }),
     placeholder: "Seçiniz",
@@ -23932,47 +23985,47 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "preserve-search": true,
     taggable: true,
     onTag: $options.addResistanceReason
-  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"]), $props.formErrors.resistanceReasonIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.resistanceReasonIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Develop Right "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [_cache[37] || (_cache[37] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"]), $props.formErrors.resistanceReasonIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.resistanceReasonIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Develop Right "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [_cache[44] || (_cache[44] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "DevelopRight"
   }, "Hak Geliştirme/Hak Savunma Özelliği", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[13] || (_cache[13] = function ($event) {
+    "onUpdate:modelValue": _cache[15] || (_cache[15] = function ($event) {
       return _this.resistance.developRight = $event;
     }),
-    onChange: _cache[14] || (_cache[14] = function ($event) {
+    onChange: _cache[16] || (_cache[16] = function ($event) {
       return $options.clearError('developRight');
     })
-  }, _cache[36] || (_cache[36] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, _cache[43] || (_cache[43] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: true
   }, "Hak Geliştirme", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: false
-  }, "Hak Savunma", -1 /* HOISTED */)]), 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.developRight]]), $props.formErrors.developRight ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.developRight), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Employee Count "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [_cache[38] || (_cache[38] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, "Hak Savunma", -1 /* HOISTED */)]), 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.developRight]]), $props.formErrors.developRight ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.developRight), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Employee Count "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [_cache[45] || (_cache[45] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCount"
   }, "İş Yerindeki İşçi Sayısı (Tam)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
     id: "EmployeeCount",
-    "onUpdate:modelValue": _cache[15] || (_cache[15] = function ($event) {
+    "onUpdate:modelValue": _cache[17] || (_cache[17] = function ($event) {
       return _this.resistance.employeeCount = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.employeeCount]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [_cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.employeeCount]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [_cache[47] || (_cache[47] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmployeeCountId"
   }, "İş Yerindeki İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[16] || (_cache[16] = function ($event) {
+    "onUpdate:modelValue": _cache[18] || (_cache[18] = function ($event) {
       return _this.resistance.employeeCountId = $event;
     })
-  }, [_cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[46] || (_cache[46] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.employeeCounts, function (count) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: count.id,
       value: count.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(count.name), 9 /* TEXT, PROPS */, _hoisted_24);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.employeeCountId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [_cache[41] || (_cache[41] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(count.name), 9 /* TEXT, PROPS */, _hoisted_29);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.employeeCountId]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_30, [_cache[48] || (_cache[48] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "CorporationIds"
   }, "Kurumsallık", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     modelValue: this.resistance.corporationIds,
-    "onUpdate:modelValue": _cache[17] || (_cache[17] = function ($event) {
+    "onUpdate:modelValue": _cache[19] || (_cache[19] = function ($event) {
       return _this.resistance.corporationIds = $event;
     }),
     placeholder: "Seçiniz",
@@ -23986,41 +24039,41 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "preserve-search": true,
     taggable: true,
     onTag: $options.addCorporation,
-    onSelect: _cache[18] || (_cache[18] = function ($event) {
+    onSelect: _cache[20] || (_cache[20] = function ($event) {
       return $options.clearError('corporationIds');
     })
-  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"]), $props.formErrors.corporationIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_26, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.corporationIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [_cache[43] || (_cache[43] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options", "onTag"]), $props.formErrors.corporationIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.corporationIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, [_cache[50] || (_cache[50] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "TradeUnionAuthorityId"
   }, "Sendikanın Yetki Durumu", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[19] || (_cache[19] = function ($event) {
+    "onUpdate:modelValue": _cache[21] || (_cache[21] = function ($event) {
       return _this.resistance.tradeUnionAuthorityId = $event;
     })
-  }, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[49] || (_cache[49] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(this.tradeUnionAuthorities, function (ta) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: ta.id,
       value: ta.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(ta.name), 9 /* TEXT, PROPS */, _hoisted_28);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.tradeUnionAuthorityId]])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.showTradeUnionAuthority]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [_cache[45] || (_cache[45] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(ta.name), 9 /* TEXT, PROPS */, _hoisted_33);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.tradeUnionAuthorityId]])], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $options.showTradeUnionAuthority]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [_cache[52] || (_cache[52] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "TradeUnionId"
   }, "Tepki Gösterilen Sendika", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[20] || (_cache[20] = function ($event) {
+    "onUpdate:modelValue": _cache[22] || (_cache[22] = function ($event) {
       return _this.resistance.tradeUnionId = $event;
     })
-  }, [_cache[44] || (_cache[44] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[51] || (_cache[51] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "--Seçiniz--", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(this.tradeUnions, function (ta) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       key: ta.id,
       value: ta.id
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(ta.name), 9 /* TEXT, PROPS */, _hoisted_30);
-  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.tradeUnionId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, [_cache[46] || (_cache[46] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(ta.name), 9 /* TEXT, PROPS */, _hoisted_35);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.tradeUnionId]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_36, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_37, [_cache[53] || (_cache[53] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "EmploymentTypeIds"
   }, "İstihdam Türü", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_multiselect, {
     id: "CorporationIds",
     modelValue: this.resistance.employmentTypeIds,
-    "onUpdate:modelValue": _cache[21] || (_cache[21] = function ($event) {
+    "onUpdate:modelValue": _cache[23] || (_cache[23] = function ($event) {
       return _this.resistance.employmentTypeIds = $event;
     }),
     placeholder: "Seçiniz",
@@ -24033,27 +24086,27 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "clear-on-select": false,
     "preserve-search": true,
     taggable: true,
-    onSelect: _cache[22] || (_cache[22] = function ($event) {
+    onSelect: _cache[24] || (_cache[24] = function ($event) {
       return $options.clearError('employmentTypeIds');
     })
-  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.employmentTypeIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.employmentTypeIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [_cache[47] || (_cache[47] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 8 /* PROPS */, ["modelValue", "options"]), $props.formErrors.employmentTypeIds ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_38, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.employmentTypeIds), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_39, [_cache[54] || (_cache[54] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "FiredEmployeeCountByProtesto"
   }, "Mücadele Ettiği için İşten Atılan İşçi Sayısı", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
-    "onUpdate:modelValue": _cache[23] || (_cache[23] = function ($event) {
+    "onUpdate:modelValue": _cache[25] || (_cache[25] = function ($event) {
       return _this.resistance.firedEmployeeCountByProtesto = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.firedEmployeeCountByProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_35, [_cache[49] || (_cache[49] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, this.resistance.firedEmployeeCountByProtesto]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Other Fields "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_40, [_cache[56] || (_cache[56] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "ResistanceResult"
   }, "Sonuç", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[24] || (_cache[24] = function ($event) {
+    "onUpdate:modelValue": _cache[26] || (_cache[26] = function ($event) {
       return _this.resistance.resistanceResult = $event;
     }),
     "class": "ui fluid dropdown",
-    onChange: _cache[25] || (_cache[25] = function ($event) {
+    onChange: _cache[27] || (_cache[27] = function ($event) {
       return $options.clearError('resistanceResult');
     })
-  }, _cache[48] || (_cache[48] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, _cache[55] || (_cache[55] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 0
   }, "Bilinmiyor", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 1
@@ -24061,7 +24114,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     value: 2
   }, "Yarım Kazanım", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 3
-  }, "Sıfır Kazanım", -1 /* HOISTED */)]), 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.resistanceResult]]), $props.formErrors.resistanceResult ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_36, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.resistanceResult), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])], 64 /* STABLE_FRAGMENT */);
+  }, "Sıfır Kazanım", -1 /* HOISTED */)]), 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, this.resistance.resistanceResult]]), $props.formErrors.resistanceResult ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_41, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.formErrors.resistanceResult), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])], 64 /* STABLE_FRAGMENT */);
 }
 
 /***/ }),
@@ -24597,7 +24650,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `
 /* Add styles here */
-`, "",{"version":3,"sources":["webpack://./src/components/resistance/Resistance.vue"],"names":[],"mappings":";AA8UA,oBAAoB","sourcesContent":["<template>\n    <!-- Hidden Input for ID -->\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistance.id\" />\n\n    <div class=\"field\">\n      <label for=\"ResistanceDescription\">Kısa Açıklama</label>\n      <textarea\n          id=\"ResistanceDescription\"\n          rows=\"6\"\n          v-model=\"this.resistance.resistanceDescription\"\n          @input=\"clearError('resistanceDescription')\"\n      ></textarea>\n      <span v-if=\"formErrors.resistanceDescription\" class=\"field error\">\n        <label>{{ formErrors.resistanceDescription }}</label>\n      </span>\n    </div>\n  \n    <div class=\"field\">\n      <label for=\"CategoryId\">Vaka Niteliği</label>\n      <select v-model=\"this.resistance.categoryId\"\n              @change=\"clearError('categoryId')\">\n        <option value=\"\">--Seçiniz--</option>\n        <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">\n          {{ category.name }}\n        </option>\n      </select>\n      <span v-if=\"formErrors.categoryId\" class=\"field error\">\n        <label>{{ formErrors.categoryId }}</label>\n      </span>\n    </div>\n  <div class=\"field\">\n    <label for=\"IsOutsource\">Şirket Taşeron mu?</label>\n    <select v-model=\"this.resistance.isOutsource\">\n      <option :value=\"false\">Hayır</option>\n      <option :value=\"true\">Evet</option>\n    </select>\n  </div>\n\n  <div class=\"field\">\n    <label for=\"CompanyId\">Şirket</label>\n    <div class=\"fields\">\n      <div class=\"twelve wide field\">\n          <multiselect id=\"single-select-search\"\n                       v-model=\"resistance.companyId\" \n                       :options=\"this.companies\" \n                       placeholder=\"Seçiniz\" \n                       label=\"name\"\n                       track-by=\"id\" \n                       aria-label=\"seçiniz\"\n                       @select=\"clearError('companyId')\">\n          </multiselect>\n          <span v-if=\"formErrors.companyId\" class=\"field error\">\n            <label>{{ formErrors.companyId }}</label>\n          </span>\n        </div>\n      <div class=\"four wide field\">\n        <button type=\"button\" @click=\"openCompanyModal(false)\" class=\"ui button\">\n          <i class=\"chevron circle up icon\"></i>Şirket Ekle\n        </button>\n      </div>\n      </div>\n  </div>\n\n  <!-- Main Company (Conditional) -->\n  <div v-if=\"this.resistance.isOutsource\" id=\"outsource\" class=\"field\">\n    <label for=\"MainCompanyId\">Ana Şirket</label>\n    <div class=\"fields\">\n      <div class=\"twelve wide field\">\n        <multiselect id=\"single-select-search\"\n                     v-model=\"resistance.mainCompanyId\"\n                     :options=\"companies\"\n                     placeholder=\"Seçiniz\"\n                     label=\"name\"\n                     track-by=\"id\"\n                     aria-label=\"seçiniz\"\n                     @select=\"clearError('mainCompanyId')\">\n        </multiselect>\n      </div>\n      <div class=\"four wide field\">\n        <button type=\"button\" @click=\"openCompanyModal(true)\" class=\"ui button\">\n          <i class=\"chevron circle up icon\"></i>Ana Şirket Ekle\n        </button>\n      </div>\n    </div>\n  </div>\n\n  <!-- Two Fields -->\n    <div class=\"two fields\">\n      <!-- Case Reasons -->\n      <div class=\"field\">\n        <label for=\"ResistanceReasonIds\">Vaka Nedeni</label>\n        <multiselect id=\"ResistanceReasonIds\"\n                     v-model=\"this.resistance.resistanceReasonIds\"\n                     placeholder=\"Seçiniz\" \n                     label=\"name\" \n                     track-by=\"id\"\n                     :preselect-first=\"true\"\n                     :options=\"resistanceReasons\"\n                     :multiple=\"true\"\n                     :close-on-select=\"false\"\n                     :clear-on-select=\"false\"\n                     :preserve-search=\"true\"\n                     :taggable=\"true\"  \n                     @tag=\"addResistanceReason\"\n        >\n        </multiselect>\n        <span v-if=\"formErrors.resistanceReasonIds\" class=\"field error\">\n          <label>{{ formErrors.resistanceReasonIds }}</label>\n        </span>\n\n      </div>\n      <!-- Develop Right -->\n      <div class=\"field\">\n        <label for=\"DevelopRight\">Hak Geliştirme/Hak Savunma Özelliği</label>\n        <select v-model=\"this.resistance.developRight\"\n                @change=\"clearError('developRight')\">\n          <option value=\"\">--Seçiniz--</option>\n          <option :value=\"true\">Hak Geliştirme</option>\n          <option :value=\"false\">Hak Savunma</option>\n        </select>\n        <span v-if=\"formErrors.developRight\" class=\"field error\">\n          <label>{{ formErrors.developRight }}</label>\n        </span>\n      </div>\n    </div>\n\n   \n    <!-- Employee Count -->\n    <div class=\"two fields\">\n     \n      <div class=\"field\">\n        <label for=\"EmployeeCount\">İş Yerindeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"number\"\n            id=\"EmployeeCount\"\n            v-model=\"this.resistance.employeeCount\"\n        />\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCountId\">İş Yerindeki İşçi Sayısı</label>\n        <select v-model=\"this.resistance.employeeCountId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"count in employeeCounts\"\n              :key=\"count.id\"\n              :value=\"count.id\"\n          >\n            {{ count.name }}\n          </option>\n        </select>\n      </div>\n    </div>\n    <div class=\"field\">\n      <label for=\"CorporationIds\">Kurumsallık</label>\n      <multiselect \n          v-model=\"this.resistance.corporationIds\"\n          placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n          :preselect-first=\"true\"\n          :options=\"corporations\"\n          :multiple=\"true\" \n          :close-on-select=\"false\" \n          :clear-on-select=\"false\"\n          :preserve-search=\"true\" \n          :taggable=\"true\" @tag=\"addCorporation\"\n          @select=\"clearError('corporationIds')\"\n      >\n      </multiselect>\n      <span v-if=\"formErrors.corporationIds\" class=\"field error\">\n        <label>{{ formErrors.corporationIds }}</label>\n      </span>\n    </div>\n  <div class=\"field\" v-show=\"showTradeUnionAuthority\">\n    <label for=\"TradeUnionAuthorityId\">Sendikanın Yetki Durumu</label>\n    <select v-model=\"this.resistance.tradeUnionAuthorityId\">\n      <option value=\"\">--Seçiniz--</option>\n      <option\n          v-for=\"ta in this.tradeUnionAuthorities\"\n          :key=\"ta.id\"\n          :value=\"ta.id\"\n      >\n        {{ ta.name }}\n      </option>\n    </select>\n  </div>\n  <div class=\"field\">\n    <label for=\"TradeUnionId\">Tepki Gösterilen Sendika</label>\n    <select v-model=\"this.resistance.tradeUnionId\">\n      <option value=\"\">--Seçiniz--</option>\n      <option\n          v-for=\"ta in this.tradeUnions\"\n          :key=\"ta.id\"\n          :value=\"ta.id\"\n      >\n        {{ ta.name }}\n      </option>\n    </select>\n  </div>\n  <div class=\"two fields\">\n    <div class=\"field\">\n      <label for=\"EmploymentTypeIds\">İstihdam Türü</label>\n      <multiselect id=\"CorporationIds\"\n                   v-model=\"this.resistance.employmentTypeIds\"\n                   placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                   :preselect-first=\"true\"\n                   :options=\"employmentTypes\"\n                   :multiple=\"true\"\n                   :close-on-select=\"false\"\n                   :clear-on-select=\"false\"\n                   :preserve-search=\"true\"\n                   :taggable=\"true\"\n                   @select=\"clearError('employmentTypeIds')\">\n      </multiselect>\n      <div v-if=\"formErrors.employmentTypeIds\" class=\"field error\">\n        <label>{{ formErrors.employmentTypeIds }}</label>\n      </div>\n    </div>\n  </div>\n  <div class=\"field\">\n    <label for=\"FiredEmployeeCountByProtesto\">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>\n    <input type=\"number\" v-model=\"this.resistance.firedEmployeeCountByProtesto\">\n  </div>\n    <!-- Other Fields -->\n    <div class=\"field\">\n      <label for=\"ResistanceResult\">Sonuç</label>\n      <select v-model=\"this.resistance.resistanceResult\" \n              class=\"ui fluid dropdown\"\n              @change=\"clearError('resistanceResult')\"\n      >\n        <option :value=\"0\">Bilinmiyor</option>\n        <option :value=\"1\">Tam Kazanım</option>\n        <option :value=\"2\">Yarım Kazanım</option>\n        <option :value=\"3\">Sıfır Kazanım</option>\n      </select>\n      <div v-if=\"formErrors.resistanceResult\" class=\"field error\">\n        <label>{{ formErrors.resistanceResult }}</label>\n      </div>\n    </div>\n</template>\n\n<script>\nimport Multiselect from 'vue-multiselect'\n\nexport default {\n  name: \"Resistance\",\n  emits: [\"openCompanyModal\", \"onInputChanged\"],\n  components: { Multiselect },\n  props: {\n    // modelValue: Object,\n    resistance: {\n      type: Object,\n      default: () => ({}) \n    },\n    companies: {\n      type: Array,\n      required: true,\n    },\n    resistanceReasons: {\n      type: Array,\n      required: true,\n    },\n    categories: {\n      type: Array,\n      required: true,\n    },\n    corporations: {\n      type: Array,\n      required: true,\n    },\n    tradeUnionAuthorities: {\n      type: Array,\n      required: true,\n    },\n    tradeUnions: {\n      type: Array,\n      required: true,\n    },\n    employmentTypes: {\n      type: Array,\n      required: true,\n    },\n    employeeCounts: {\n      type: Array,\n      required: true,\n    },\n    formErrors: {\n      type:Object,\n      default: () => ({})\n    }\n  },\n  methods: {\n    clearError(field) {\n      // Clear the error message for the specified field\n      console.log(field);\n      this.$emit('onInputChanged', field);\n    },\n    openCompanyModal(isMain) {\n      console.log(isMain);\n      this.$emit('openCompanyModal', isMain);\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    addEmploymentType(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.employmentTypes.push(tag)\n      this.resistance.employmentTypeIds.push(tag)\n    },\n    addCorporation(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.corporations.push(newTag);\n      this.resistance.corporationIds.push(tag)\n    },\n  },\n  computed: {\n    showTradeUnionAuthority(){\n      return this.resistance?.corporationIds?.some(s=>s.CorporationTypeId === 1);\n    }\n  }\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/components/resistance/Resistance.vue"],"names":[],"mappings":";AAiXA,oBAAoB","sourcesContent":["<template>\n    <!-- Hidden Input for ID -->\n    <input type=\"hidden\" name=\"Id\" v-model=\"this.resistance.id\" />\n    <div class=\"field\">\n      <label for=\"ResistanceName\">Vaka İsmi</label>\n      <input\n          id=\"ResistanceName\"\n          v-model=\"this.resistance.resistanceName\"\n      />\n    </div>\n    <div class=\"field\">\n      <label for=\"ResistanceDescription\">Kısa Açıklama</label>\n      <textarea\n          id=\"ResistanceDescription\"\n          rows=\"6\"\n          v-model=\"this.resistance.resistanceDescription\"\n          @input=\"clearError('resistanceDescription')\"\n      ></textarea>\n      <span v-if=\"formErrors.resistanceDescription\" class=\"field error\">\n        <label>{{ formErrors.resistanceDescription }}</label>\n      </span>\n    </div>\n   \n    <div class=\"field\">\n      <label for=\"CategoryId\">Vaka Niteliği</label>\n      <select v-model=\"this.resistance.categoryId\"\n              @change=\"clearError('categoryId')\">\n        <option value=\"\">--Seçiniz--</option>\n        <option v-for=\"category in categories\" :key=\"category.id\" :value=\"category.id\">\n          {{ category.name }}\n        </option>\n      </select>\n      <span v-if=\"formErrors.categoryId\" class=\"field error\">\n        <label>{{ formErrors.categoryId }}</label>\n      </span>\n    </div>\n  <div class=\"field\">\n    <label for=\"TargetType\">Kime Karsi</label>\n    <select v-model=\"targetType\">\n      <option value=\"\">--Seçiniz--</option>\n      <option value=\"1\">Sirket</option>\n      <option value=\"2\">Kurum</option>\n    </select>\n  </div>\n  <div v-if=\"this.companySelected\">\n    <div class=\"field\">\n      <label for=\"IsOutsource\">Şirket Taşeron mu?</label>\n      <select v-model=\"this.resistance.isOutsource\">\n        <option :value=\"false\">Hayır</option>\n        <option :value=\"true\">Evet</option>\n      </select>\n    </div>\n  \n    <div class=\"field\">\n      <label for=\"CompanyId\">Şirket</label>\n      <div class=\"fields\">\n        <div class=\"twelve wide field\">\n            <multiselect id=\"single-select-search\"\n                         v-model=\"resistance.companyId\" \n                         :options=\"this.companies\" \n                         placeholder=\"Seçiniz\" \n                         label=\"name\"\n                         track-by=\"id\" \n                         aria-label=\"seçiniz\"\n                         @select=\"clearError('companyId')\">\n            </multiselect>\n            <span v-if=\"formErrors.companyId\" class=\"field error\">\n              <label>{{ formErrors.companyId }}</label>\n            </span>\n          </div>\n        <div class=\"four wide field\">\n          <button type=\"button\" @click=\"openCompanyModal(false)\" class=\"ui button\">\n            <i class=\"chevron circle up icon\"></i>Şirket Ekle\n          </button>\n        </div>\n        </div>\n    </div>\n  \n    <!-- Main Company (Conditional) -->\n    <div v-if=\"this.resistance.isOutsource\" id=\"outsource\" class=\"field\">\n      <label for=\"MainCompanyId\">Ana Şirket</label>\n      <div class=\"fields\">\n        <div class=\"twelve wide field\">\n          <multiselect id=\"single-select-search\"\n                       v-model=\"resistance.mainCompanyId\"\n                       :options=\"companies\"\n                       placeholder=\"Seçiniz\"\n                       label=\"name\"\n                       track-by=\"id\"\n                       aria-label=\"seçiniz\"\n                       @select=\"clearError('mainCompanyId')\">\n          </multiselect>\n        </div>\n        <div class=\"four wide field\">\n          <button type=\"button\" @click=\"openCompanyModal(true)\" class=\"ui button\">\n            <i class=\"chevron circle up icon\"></i>Ana Şirket Ekle\n          </button>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div v-if=\"this.corporationSelected\" class=\"field\">\n    <label for=\"TargetType\">Hedef Kurum</label>\n    <select>\n      <option value=\"\">--Seçiniz--</option>\n      <option v-for=\"corp in corporations\" :key=\"corp.id\" :value=\"corp.id\">\n        {{ corp.name }}\n      </option>\n    </select>\n  </div>\n  <!-- Two Fields -->\n    <div class=\"two fields\">\n      <!-- Case Reasons -->\n      <div class=\"field\">\n        <label for=\"ResistanceReasonIds\">Vaka Nedeni</label>\n        <multiselect id=\"ResistanceReasonIds\"\n                     v-model=\"this.resistance.resistanceReasonIds\"\n                     placeholder=\"Seçiniz\" \n                     label=\"name\" \n                     track-by=\"id\"\n                     :preselect-first=\"true\"\n                     :options=\"resistanceReasons\"\n                     :multiple=\"true\"\n                     :close-on-select=\"false\"\n                     :clear-on-select=\"false\"\n                     :preserve-search=\"true\"\n                     :taggable=\"true\"  \n                     @tag=\"addResistanceReason\"\n        >\n        </multiselect>\n        <span v-if=\"formErrors.resistanceReasonIds\" class=\"field error\">\n          <label>{{ formErrors.resistanceReasonIds }}</label>\n        </span>\n\n      </div>\n      <!-- Develop Right -->\n      <div class=\"field\">\n        <label for=\"DevelopRight\">Hak Geliştirme/Hak Savunma Özelliği</label>\n        <select v-model=\"this.resistance.developRight\"\n                @change=\"clearError('developRight')\">\n          <option value=\"\">--Seçiniz--</option>\n          <option :value=\"true\">Hak Geliştirme</option>\n          <option :value=\"false\">Hak Savunma</option>\n        </select>\n        <span v-if=\"formErrors.developRight\" class=\"field error\">\n          <label>{{ formErrors.developRight }}</label>\n        </span>\n      </div>\n    </div>\n\n   \n    <!-- Employee Count -->\n    <div class=\"two fields\">\n     \n      <div class=\"field\">\n        <label for=\"EmployeeCount\">İş Yerindeki İşçi Sayısı (Tam)</label>\n        <input\n            type=\"number\"\n            id=\"EmployeeCount\"\n            v-model=\"this.resistance.employeeCount\"\n        />\n      </div>\n      <div class=\"field\">\n        <label for=\"EmployeeCountId\">İş Yerindeki İşçi Sayısı</label>\n        <select v-model=\"this.resistance.employeeCountId\">\n          <option value=\"\">--Seçiniz--</option>\n          <option\n              v-for=\"count in employeeCounts\"\n              :key=\"count.id\"\n              :value=\"count.id\"\n          >\n            {{ count.name }}\n          </option>\n        </select>\n      </div>\n    </div>\n    <div class=\"field\">\n      <label for=\"CorporationIds\">Kurumsallık</label>\n      <multiselect \n          v-model=\"this.resistance.corporationIds\"\n          placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n          :preselect-first=\"true\"\n          :options=\"corporations\"\n          :multiple=\"true\" \n          :close-on-select=\"false\" \n          :clear-on-select=\"false\"\n          :preserve-search=\"true\" \n          :taggable=\"true\" @tag=\"addCorporation\"\n          @select=\"clearError('corporationIds')\"\n      >\n      </multiselect>\n      <span v-if=\"formErrors.corporationIds\" class=\"field error\">\n        <label>{{ formErrors.corporationIds }}</label>\n      </span>\n    </div>\n  <div class=\"field\" v-show=\"showTradeUnionAuthority\">\n    <label for=\"TradeUnionAuthorityId\">Sendikanın Yetki Durumu</label>\n    <select v-model=\"this.resistance.tradeUnionAuthorityId\">\n      <option value=\"\">--Seçiniz--</option>\n      <option\n          v-for=\"ta in this.tradeUnionAuthorities\"\n          :key=\"ta.id\"\n          :value=\"ta.id\"\n      >\n        {{ ta.name }}\n      </option>\n    </select>\n  </div>\n  <div class=\"field\">\n    <label for=\"TradeUnionId\">Tepki Gösterilen Sendika</label>\n    <select v-model=\"this.resistance.tradeUnionId\">\n      <option value=\"\">--Seçiniz--</option>\n      <option\n          v-for=\"ta in this.tradeUnions\"\n          :key=\"ta.id\"\n          :value=\"ta.id\"\n      >\n        {{ ta.name }}\n      </option>\n    </select>\n  </div>\n  <div class=\"two fields\">\n    <div class=\"field\">\n      <label for=\"EmploymentTypeIds\">İstihdam Türü</label>\n      <multiselect id=\"CorporationIds\"\n                   v-model=\"this.resistance.employmentTypeIds\"\n                   placeholder=\"Seçiniz\" label=\"name\" track-by=\"id\"\n                   :preselect-first=\"true\"\n                   :options=\"employmentTypes\"\n                   :multiple=\"true\"\n                   :close-on-select=\"false\"\n                   :clear-on-select=\"false\"\n                   :preserve-search=\"true\"\n                   :taggable=\"true\"\n                   @select=\"clearError('employmentTypeIds')\">\n      </multiselect>\n      <div v-if=\"formErrors.employmentTypeIds\" class=\"field error\">\n        <label>{{ formErrors.employmentTypeIds }}</label>\n      </div>\n    </div>\n  </div>\n  <div class=\"field\">\n    <label for=\"FiredEmployeeCountByProtesto\">Mücadele Ettiği için İşten Atılan İşçi Sayısı</label>\n    <input type=\"number\" v-model=\"this.resistance.firedEmployeeCountByProtesto\">\n  </div>\n    <!-- Other Fields -->\n    <div class=\"field\">\n      <label for=\"ResistanceResult\">Sonuç</label>\n      <select v-model=\"this.resistance.resistanceResult\" \n              class=\"ui fluid dropdown\"\n              @change=\"clearError('resistanceResult')\"\n      >\n        <option :value=\"0\">Bilinmiyor</option>\n        <option :value=\"1\">Tam Kazanım</option>\n        <option :value=\"2\">Yarım Kazanım</option>\n        <option :value=\"3\">Sıfır Kazanım</option>\n      </select>\n      <div v-if=\"formErrors.resistanceResult\" class=\"field error\">\n        <label>{{ formErrors.resistanceResult }}</label>\n      </div>\n    </div>\n</template>\n\n<script>\nimport Multiselect from 'vue-multiselect'\n\nexport default {\n  name: \"Resistance\",\n  emits: [\"openCompanyModal\", \"onInputChanged\"],\n  components: { Multiselect },\n  props: {\n    // modelValue: Object,\n    resistance: {\n      type: Object,\n      default: () => ({}) \n    },\n    companies: {\n      type: Array,\n      required: true,\n    },\n    resistanceReasons: {\n      type: Array,\n      required: true,\n    },\n    categories: {\n      type: Array,\n      required: true,\n    },\n    corporations: {\n      type: Array,\n      required: true,\n    },\n    tradeUnionAuthorities: {\n      type: Array,\n      required: true,\n    },\n    tradeUnions: {\n      type: Array,\n      required: true,\n    },\n    employmentTypes: {\n      type: Array,\n      required: true,\n    },\n    employeeCounts: {\n      type: Array,\n      required: true,\n    },\n    formErrors: {\n      type:Object,\n      default: () => ({})\n    }\n  },\n  methods: {\n    clearError(field) {\n      // Clear the error message for the specified field\n      console.log(field);\n      this.$emit('onInputChanged', field);\n    },\n    openCompanyModal(isMain) {\n      console.log(isMain);\n      this.$emit('openCompanyModal', isMain);\n    },\n    addResistanceReason (newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.resistanceReasons.push(tag)\n      this.resistance.resistanceReasonIds.push(tag)\n    },\n    addEmploymentType(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.employmentTypes.push(tag)\n      this.resistance.employmentTypeIds.push(tag)\n    },\n    addCorporation(newTag) {\n      const tag = {\n        name: newTag,\n        id: -1\n      }\n      this.corporations.push(newTag);\n      this.resistance.corporationIds.push(tag)\n    },\n  },\n  data(){\n    return {\n      targetType: null,\n    }\n  },\n  computed: {\n    showTradeUnionAuthority(){\n      return this.resistance?.corporationIds?.some(s=>s.CorporationTypeId === 1);\n    },\n    companySelected() {\n      return this.targetType === \"1\";\n    },\n    corporationSelected(){\n      return this.targetType === \"2\";\n    }\n  }\n};\n</script>\n<style src=\"vue-multiselect/dist/vue-multiselect.min.css\"></style>\n\n<style scoped>\n/* Add styles here */\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

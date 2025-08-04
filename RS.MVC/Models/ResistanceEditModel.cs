@@ -15,13 +15,14 @@ namespace RS.MVC.Models
         public string Code { get; set; }
         public int CategoryId { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
-        public Company CompanyId { get; set; }
+        public ResistanceTarget CompanyId { get; set; }
         public Company MainCompanyId { get; set; }
         public bool IsOutsource { get; set; }
         public bool HasTradeUnion { get; set; }
         public bool DevelopRight { get; set; }
         public int? TradeUnionAuthorityId { get; set; }
-        public string ResistanceDescription { get; set; } 
+        public string ResistanceDescription { get; set; }
+        public string Name { get; set; }
 
         public int? EmployeeCountId { get; set; }
         public int? EmployeeCount { get; set; }

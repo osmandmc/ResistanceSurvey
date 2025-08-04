@@ -13,6 +13,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 using ResistanceSurvey.Models;
 using RS.COMMON;
 using RS.COMMON.DTO;
+using RS.COMMON.Entities;
 using RS.COMMON.Entities.LookupEntity;
 using RS.EF;
 using RS.MVC.Applications;
@@ -298,9 +299,12 @@ namespace ResistanceSurvey.Controllers
                                         {
                                             ResistanceId = item.Resistance.Id,
                                             Description = item.Resistance.Description,
+                                            ResistanceName = item.Resistance.Name,
                                             CategoryName = item.Resistance.Category.Name,
-                                            CompanyName = item.Resistance.Company.Name,
-                                            CompanyWorkline = item.Resistance.Company.CompanyWorkLine != null ? item.Resistance.Company.CompanyWorkLine.Name : "",
+                                            CompanyName = item.Resistance.Target.Name,
+                                            CompanyWorkline = ((Company)item.Resistance.Target)?.CompanyWorkLine != null ? 
+                                                ((Company)item.Resistance.Target).CompanyWorkLine.Name : 
+                                                "",
                                             MainCompanyName = item.Resistance.MainCompany != null ? item.Resistance.MainCompany.Name : "",
                                             MainCompanyWorkline = item.Resistance.MainCompany != null ? item.Resistance.MainCompany.CompanyWorkLine != null ? item.Resistance.MainCompany.CompanyWorkLine.Name : "" : "",
                                             AgainstProduction = item.ProtestoProtestoTypes.Any(s => s.ProtestoType.AgainstProduction) ? "EVET" : "HAYIR",

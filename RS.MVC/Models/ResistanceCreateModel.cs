@@ -14,13 +14,15 @@ namespace RS.MVC.Models
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public int CategoryId { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
-        public int CompanyId { get; set; }
+        public int TargetId { get; set; }
         public int? MainCompanyId { get; set; }
         public string Code { get; set; }
         public bool HasTradeUnion { get; set; }
         public int? TradeUnionAuthorityId { get; set; }
         public string Note { get; set; }
         public string ResistanceDescription { get; set; }
+        public string ResistanceName { get; set; }
+
 
         public int? EmployeeCountId { get; set; }
         public int? EmployeeCount { get; set; }
@@ -61,7 +63,7 @@ namespace RS.MVC.Models
         {
             var resistance = new Resistance
             {
-                CompanyId = CompanyId,
+                TargetId = TargetId,
                 MainCompanyId = MainCompanyId,
                 CategoryId = CategoryId,
                 Code = Code,
@@ -74,6 +76,7 @@ namespace RS.MVC.Models
                 StartDate = ProtestoStartDate,
                 EndDate = ProtestoEndDate,
                 Description = ResistanceDescription,
+                Name = ResistanceName,
                 Note = Note,
                 FiredEmployeeCountByProtesto = FiredEmployeeCountByProtesto,
                 Creator = UserName,
@@ -140,6 +143,7 @@ namespace RS.MVC.Models
         public int? TradeUnionAuthorityId { get; set; }
         public string Note { get; set; }
         public string ResistanceDescription { get; set; }
+        public string ResistanceName { get; set; }
         public short AnyLegalIntervention { get; set; }
         public string LegalIntervantionDesc { get; set; }
         public ResistanceResult ResistanceResult { get; set; }
@@ -157,7 +161,7 @@ namespace RS.MVC.Models
         {
             var resistance = new Resistance
             {
-                CompanyId = CompanyId.Id,
+                TargetId = CompanyId.Id,
                 MainCompanyId = MainCompanyId?.Id,
                 CategoryId = CategoryId,
                 Code = Code,
@@ -170,6 +174,7 @@ namespace RS.MVC.Models
                 StartDate = Protesto.ProtestoStartDate,
                 EndDate = Protesto.ProtestoEndDate,
                 Description = ResistanceDescription,
+                Name = ResistanceName,
                 Note = Note,
                 FiredEmployeeCountByProtesto = FiredEmployeeCountByProtesto,
                 Creator = UserName,

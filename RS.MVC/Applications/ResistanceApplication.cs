@@ -163,6 +163,7 @@ namespace RS.MVC.Applications
                             TradeUnionId = s.TradeUnionId,
                             LegalInterventionDesc = s.LegalInterventionDesc,
                             ResistanceDescription = s.Description,
+                            Name = s.Name,
                             ResistanceNote = s.Note,
                             FiredEmployeeCountByProtesto = s.FiredEmployeeCountByProtesto,
                             ResistanceResult = s.ResistanceResult,
@@ -193,7 +194,7 @@ namespace RS.MVC.Applications
                                     ProtestoDistrictIds = s.Districts != null ? s.Districts.ToList() : null,
                                     ProtestoStartDate = s.StartDate,
                                     ProtestoEndDate = s.EndDate,
-                                    ResistanceName = s.Resistance.Company.Name,
+                                    ResistanceName = s.Resistance.Target.Name,
                                     Note = s.Note
                                 })
                                 .ToList()
@@ -240,6 +241,7 @@ namespace RS.MVC.Applications
             resistance.TradeUnionAuthorityId = viewModel.TradeUnionAuthorityId;
             resistance.TradeUnionId = viewModel.TradeUnionId;
             resistance.Description = viewModel.ResistanceDescription;
+            resistance.Name = viewModel.Name;
             resistance.Note = viewModel.ResistanceNote;
             resistance.LegalInterventionDesc = viewModel.LegalInterventionDesc;
             resistance.FiredEmployeeCountByProtesto = viewModel.FiredEmployeeCountByProtesto;
