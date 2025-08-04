@@ -84,7 +84,8 @@
             <router-link :to="`/edit/${item.id}`">{{ item.categoryName }}</router-link>
           </td>
           <td>
-            <router-link :to="`/edit/${item.id}`">{{ item.companyName }}</router-link>
+            <router-link :to="`/edit/${item.id}`">{{ item.companyName }}</router-link><br />
+            <small>{{ item.name }}</small>
           </td>
           <td>{{ formatDate(item.startDate) }}</td>
         </tr>

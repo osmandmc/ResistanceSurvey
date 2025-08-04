@@ -240,11 +240,13 @@ export default {
 
       const resistanceData = {
         categoryId: this.resistance.categoryId,
+        targetType: this.resistance.targetType,
+        corporationId: this.resistance.corporationId,
         companyId: this.resistance.companyId,
         resistanceReasonIds: this.resistance.resistanceReasonIds,
         mainCompanyId: this.resistance.mainCompanyId,
         corporationIds: this.resistance.corporationIds,
-        hasTradeUnion: true,
+        hasTradeUnion: this.resistance.hasTradeUnion,
         tradeUnionAuthorityId: this.resistance.tradeUnionAuthorityId,
         note: this.resistance.note,
         resistanceDescription: this.resistance.resistanceDescription,
@@ -256,8 +258,9 @@ export default {
         resistanceNews: this.resistance.resistanceNews,
         firedEmployeeCountByProtesto: this.resistance.protesto.firedEmployeeCountByProtesto,
         resistanceResult: this.resistance.resistanceResult,
+        name: this.resistance.name,
       }
-
+console.log(resistanceData);
       fetchWithToken("/ResistanceApi/CreateResistance", {
         method: 'POST',
         headers: {
@@ -329,9 +332,9 @@ export default {
       }
 
       // CompanyId: At least one company selected
-      if (!this.resistance.companyId) {
-        errors.companyId = "Lütfen bir şirket seçiniz.";
-      }
+      // if (!this.resistance.companyId) {
+      //   errors.companyId = "Lütfen bir şirket seçiniz.";
+      //
       if (!this.resistance.resistanceReasonIds) {
         errors.resistanceReasonIds = "Lütfen en az bir vaka nedeni seçiniz.";
       }

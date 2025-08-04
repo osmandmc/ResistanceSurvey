@@ -2,10 +2,10 @@
     <!-- Hidden Input for ID -->
     <input type="hidden" name="Id" v-model="this.resistance.id" />
     <div class="field">
-      <label for="ResistanceName">Vaka İsmi</label>
+      <label for="Name">Vaka İsmi</label>
       <input
-          id="ResistanceName"
-          v-model="this.resistance.resistanceName"
+          id="Name"
+          v-model="this.resistance.name"
       />
     </div>
     <div class="field">
@@ -36,10 +36,10 @@
     </div>
   <div class="field">
     <label for="TargetType">Kime Karsi</label>
-    <select v-model="targetType">
-      <option value="">--Seçiniz--</option>
-      <option value="1">Sirket</option>
-      <option value="2">Kurum</option>
+    <select v-model="this.resistance.targetType">
+      <option>--Seçiniz--</option>
+      <option :value="1">Sirket</option>
+      <option :value="2">Kurum</option>
     </select>
   </div>
   <div v-if="this.companySelected">
@@ -101,7 +101,7 @@
   </div>
   <div v-if="this.corporationSelected" class="field">
     <label for="TargetType">Hedef Kurum</label>
-    <select>
+    <select v-model="this.resistance.corporationId">
       <option value="">--Seçiniz--</option>
       <option v-for="corp in corporations" :key="corp.id" :value="corp.id">
         {{ corp.name }}
@@ -356,10 +356,10 @@ export default {
       return this.resistance?.corporationIds?.some(s=>s.CorporationTypeId === 1);
     },
     companySelected() {
-      return this.targetType === "1";
+      return this.resistance?.targetType === 1;
     },
     corporationSelected(){
-      return this.targetType === "2";
+      return this.resistance?.targetType === 2;
     }
   }
 };

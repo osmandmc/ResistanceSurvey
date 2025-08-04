@@ -134,16 +134,18 @@ namespace RS.MVC.Models
     {
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public int CategoryId { get; set; }
-        [Required(ErrorMessage = "Bu alan zorunludur.")]
+
+        public ResistanceTargetType TargetType { get; set; }
         public Company CompanyId { get; set; }
         public Company? MainCompanyId { get; set; }
         public string Code { get; set; }
+        public int? CorporationId { get; set; }
         public bool HasTradeUnion { get; set; }
         public bool DevelopRight { get; set; }
         public int? TradeUnionAuthorityId { get; set; }
         public string Note { get; set; }
         public string ResistanceDescription { get; set; }
-        public string ResistanceName { get; set; }
+        public string Name { get; set; }
         public short AnyLegalIntervention { get; set; }
         public string LegalIntervantionDesc { get; set; }
         public ResistanceResult ResistanceResult { get; set; }
@@ -161,9 +163,11 @@ namespace RS.MVC.Models
         {
             var resistance = new Resistance
             {
-                CompanyId = CompanyId.Id,
+                ResistanceTargetType = TargetType,
+                CompanyId = CompanyId?.Id,
                 MainCompanyId = MainCompanyId?.Id,
                 CategoryId = CategoryId,
+                CorporationId = CorporationId,
                 Code = Code,
                 HasTradeUnion = HasTradeUnion,
                 DevelopRight = DevelopRight,
@@ -174,7 +178,7 @@ namespace RS.MVC.Models
                 StartDate = Protesto.ProtestoStartDate,
                 EndDate = Protesto.ProtestoEndDate,
                 Description = ResistanceDescription,
-                Name = ResistanceName,
+                Name = Name,
                 Note = Note,
                 FiredEmployeeCountByProtesto = FiredEmployeeCountByProtesto,
                 Creator = UserName,
@@ -203,10 +207,13 @@ namespace RS.MVC.Models
         public int Id { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public int CategoryId { get; set; }
-        [Required(ErrorMessage = "Bu alan zorunludur.")]
-        public Company CompanyId { get; set; }
+        
+        public ResistanceTargetType TargetType { get; set; }
+        public Company? CompanyId { get; set; }
         public Company? MainCompanyId { get; set; }
+        public int? CorporationId { get; set; }
         public string Code { get; set; }
+        public string Name { get; set; }
         public bool HasTradeUnion { get; set; }
         public int? TradeUnionAuthorityId { get; set; }
         public string Note { get; set; }

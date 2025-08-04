@@ -245,7 +245,6 @@ export default {
           custodyCount: null,
           employeeCountInProtesto: null,
           employeeCountInProtestoId: null,
-          resistanceName: "",
           note: "",
           simpleProtestoDescription: "",
           strikeDuration: 0
@@ -403,10 +402,10 @@ export default {
         errors.categoryId = "Lütfen bir kategori giriniz.";
       }
 
-      // CompanyId: At least one company selected
-      if (!this.resistance.companyId) {
-        errors.companyId = "Lütfen bir şirket seçiniz.";
-      }
+      // // CompanyId: At least one company selected
+      // if (!this.resistance.companyId) {
+      //   errors.companyId = "Lütfen bir şirket seçiniz.";
+      // }
 
       // CorporationIds: At least one corporation selected
       if (!this.resistance.corporationIds || this.resistance.corporationIds.length === 0) {

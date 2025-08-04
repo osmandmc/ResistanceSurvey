@@ -47,8 +47,10 @@ namespace RS.MVC.Applications
                     {
                         Id = r.Id,
                         CategoryName = r.Category.Name,
-                        CompanyName = r.Company.Name,
-                        StartDate = r.StartDate
+                        CompanyName = r.Company != null ? r.Company.Name :
+                            r.Corporation.Name,
+                        StartDate = r.StartDate,
+                        Name = r.Name,
                     })
                     .OrderByDescending(x => x.StartDate)
                     .ToPagedFilteredResult(filter);
@@ -60,7 +62,7 @@ namespace RS.MVC.Applications
             {
                 Id = r.Id,
                 CategoryName = r.Category.Name,
-                CompanyName = r.Company.Name,
+                CompanyName = r.Company != null ? r.Company.Name : r.Corporation.Name,
                 StartDate = r.Protestos.OrderByDescending(o => o.StartDate).Select(p => p.StartDate).First()
             }).ToList();
             return resistances;
@@ -149,6 +151,8 @@ namespace RS.MVC.Applications
                         {
                             Id = s.Id,
                             Code = s.Code,
+                            TargetType = s.ResistanceTargetType,
+                            CorporationId = s.CorporationId,
                             CompanyId = s.Company,
                             MainCompanyId = s.MainCompany,
                             CategoryId = s.CategoryId,
@@ -280,9 +284,11 @@ namespace RS.MVC.Applications
         {
             var resistance = db.Resistance.SingleOrDefault(r => r.Id == viewModel.Id);
             resistance.CategoryId = viewModel.CategoryId;
-            resistance.CompanyId = viewModel.CompanyId.Id;
+            resistance.CorporationId = viewModel.CorporationId;
+            resistance.CompanyId = viewModel.CompanyId?.Id;
             resistance.MainCompanyId = viewModel.MainCompanyId?.Id;
             resistance.Code = viewModel.Code;
+            resistance.Name = viewModel.Name;
             resistance.EmployeeCountId = viewModel.EmployeeCountId;
             resistance.EmployeeCountNumber = viewModel.EmployeeCount;
             resistance.HasTradeUnion = viewModel.HasTradeUnion;
@@ -290,6 +296,7 @@ namespace RS.MVC.Applications
             resistance.TradeUnionId = viewModel.TradeUnionId;
             resistance.Description = viewModel.ResistanceDescription;
             resistance.Note = viewModel.Note;
+            resistance.ResistanceTargetType = viewModel.TargetType;
             //resistance.LegalInterventionDesc = viewModel.LegalInterventionDesc;
             resistance.FiredEmployeeCountByProtesto = viewModel.FiredEmployeeCountByProtesto;
             resistance.DevelopRight = viewModel.DevelopRight;

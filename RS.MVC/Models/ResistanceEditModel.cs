@@ -14,7 +14,8 @@ namespace RS.MVC.Models
         public int Id { get; set; }
         public string Code { get; set; }
         public int CategoryId { get; set; }
-        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        public int? CorporationId { get; set; }
+        public ResistanceTargetType TargetType { get; set; }
         public Company CompanyId { get; set; }
         public Company MainCompanyId { get; set; }
         public bool IsOutsource { get; set; }
