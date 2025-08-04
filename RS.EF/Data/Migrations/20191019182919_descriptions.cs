@@ -13,9 +13,7 @@ namespace RS.EF.Data.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Description",
-                table: "Resistance");
+           
 
           
 

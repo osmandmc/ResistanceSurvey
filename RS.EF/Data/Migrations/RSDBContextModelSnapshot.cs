@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RS.EF;
 
+#nullable disable
+
 namespace RS.EF.Data.Migrations
 {
     [DbContext(typeof(RSDBContext))]
@@ -15,25 +17,33 @@ namespace RS.EF.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.11-servicing-32099")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("RS.COMMON.Entities.Company", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("CompanyScaleId");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompanyTypeId");
+                    b.Property<int?>("CompanyScaleId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("CompanyWorkLineId");
+                    b.Property<int?>("CompanyTypeId")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsOutsource");
+                    b.Property<int?>("CompanyWorkLineId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -50,11 +60,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("CompanyId");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("OutsourceCompanyId");
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OutsourceCompanyId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -69,9 +83,12 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -82,9 +99,12 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -95,9 +115,12 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -108,11 +131,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Description");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -123,9 +150,12 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -136,24 +166,55 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Approved")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("CorporationTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CorporationTypeId");
+
                     b.ToTable("Corporation");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.CorporationType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CorporationType");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.District", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("CityId");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name");
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -166,9 +227,12 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -179,9 +243,12 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -192,9 +259,12 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -205,11 +275,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Description");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -220,9 +294,12 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -233,9 +310,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Approved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -246,9 +329,21 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AgainstProduction")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Approved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Simple")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -259,9 +354,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Approved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -272,11 +373,18 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("TradeUnionConfederationId");
+                    b.Property<bool>("Approved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TradeUnionConfederationId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -289,9 +397,12 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -302,9 +413,12 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -315,17 +429,27 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<string>("Content");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Date");
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Header");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Link");
+                    b.Property<string>("Header")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status");
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Source")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -336,25 +460,58 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int?>("CustodyCount");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("EmployeeCountNumber");
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("EndDate");
+                    b.Property<string>("Creator")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GenderId");
+                    b.Property<int?>("CustodyCount")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Note");
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
 
-                    b.Property<int?>("ProtestoEmployeeCountId");
+                    b.Property<int?>("EmployeeCountNumber")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ResistanceId");
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("StartDate");
+                    b.Property<int>("GenderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProtestoEmployeeCountId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResistanceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SimpleProtestoDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StrikeDuration")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Updater")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GenderId");
 
                     b.HasIndex("ProtestoEmployeeCountId");
 
@@ -367,11 +524,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("CityId");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ProtestoId");
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProtestoId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -386,11 +547,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("DistrictId");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ProtestoId");
+                    b.Property<int>("DistrictId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProtestoId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -405,11 +570,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("InterventionTypeId");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ProtestoId");
+                    b.Property<int>("InterventionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProtestoId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -420,15 +589,50 @@ namespace RS.EF.Data.Migrations
                     b.ToTable("ProtestoInterventionType");
                 });
 
+            modelBuilder.Entity("RS.COMMON.Entities.ProtestoLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DistrictId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Place")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProtestoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("DistrictId");
+
+                    b.HasIndex("ProtestoId");
+
+                    b.ToTable("ProtestoLocation");
+                });
+
             modelBuilder.Entity("RS.COMMON.Entities.ProtestoProtestoPlace", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("ProtestoId");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ProtestoPlaceId");
+                    b.Property<int>("ProtestoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProtestoPlaceId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -443,11 +647,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("ProtestoId");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ProtestoTypeId");
+                    b.Property<int>("ProtestoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProtestoTypeId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -462,39 +670,78 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<bool>("AnyLegalIntervention");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId");
+                    b.Property<bool?>("AnyLegalIntervention")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("Code");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("CompanyId");
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description");
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("DevelopRight");
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("EmployeeCountId");
+                    b.Property<string>("Creator")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("EmployeeCountNumber");
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime?>("EndDate");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("FiredEmployeeCountByProtesto");
+                    b.Property<bool>("DevelopRight")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("HasTradeUnion");
+                    b.Property<int?>("EmployeeCountId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("LegalInterventionDesc");
+                    b.Property<int?>("EmployeeCountNumber")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Note");
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("StartDate");
+                    b.Property<int?>("FiredEmployeeCountByProtesto")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("TradeUnionAuthorityId");
+                    b.Property<bool>("HasTradeUnion")
+                        .HasColumnType("bit");
 
-                    b.Property<int?>("TradeUnionId");
+                    b.Property<string>("LegalInterventionDesc")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("MainCompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ResistanceResult")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("TradeUnionAuthorityId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TradeUnionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Updater")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -503,6 +750,8 @@ namespace RS.EF.Data.Migrations
                     b.HasIndex("CompanyId");
 
                     b.HasIndex("EmployeeCountId");
+
+                    b.HasIndex("MainCompanyId");
 
                     b.HasIndex("TradeUnionAuthorityId");
 
@@ -515,11 +764,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("CorporationId");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ResistanceId");
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResistanceId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -534,11 +787,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("EmploymentTypeId");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ResistanceId");
+                    b.Property<int>("EmploymentTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResistanceId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -553,11 +810,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("NewsId");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ResistanceId");
+                    b.Property<int>("NewsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResistanceId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -572,11 +833,15 @@ namespace RS.EF.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("ResistanceId");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ResistanceReasonId");
+                    b.Property<int>("ResistanceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResistanceReasonId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -591,18 +856,21 @@ namespace RS.EF.Data.Migrations
                 {
                     b.HasOne("RS.COMMON.Entities.LookupEntity.CompanyScale", "CompanyScale")
                         .WithMany()
-                        .HasForeignKey("CompanyScaleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CompanyScaleId");
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.CompanyType", "CompanyType")
                         .WithMany()
-                        .HasForeignKey("CompanyTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CompanyTypeId");
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.CompanyWorkLine", "CompanyWorkLine")
                         .WithMany()
-                        .HasForeignKey("CompanyWorkLineId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CompanyWorkLineId");
+
+                    b.Navigation("CompanyScale");
+
+                    b.Navigation("CompanyType");
+
+                    b.Navigation("CompanyWorkLine");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.CompanyOutsourceCompany", b =>
@@ -610,12 +878,27 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.Company", "Company")
                         .WithMany("OutsourceCompanies")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Company", "OutsourceCompany")
                         .WithMany()
                         .HasForeignKey("OutsourceCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("OutsourceCompany");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.Corporation", b =>
+                {
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.CorporationType", "CorporationType")
+                        .WithMany()
+                        .HasForeignKey("CorporationTypeId");
+
+                    b.Navigation("CorporationType");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.District", b =>
@@ -623,7 +906,10 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("City");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.TradeUnion", b =>
@@ -631,10 +917,18 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.TradeUnionConfederation", "TradeUnionConfederation")
                         .WithMany()
                         .HasForeignKey("TradeUnionConfederationId");
+
+                    b.Navigation("TradeUnionConfederation");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.Protesto", b =>
                 {
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.Gender", "Gender")
+                        .WithMany()
+                        .HasForeignKey("GenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("RS.COMMON.Entities.LookupEntity.ProtestoEmployeeCount", "ProtestoEmployeeCount")
                         .WithMany()
                         .HasForeignKey("ProtestoEmployeeCountId");
@@ -642,7 +936,14 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.Resistance", "Resistance")
                         .WithMany("Protestos")
                         .HasForeignKey("ResistanceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gender");
+
+                    b.Navigation("ProtestoEmployeeCount");
+
+                    b.Navigation("Resistance");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.ProtestoCity", b =>
@@ -650,12 +951,18 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
                         .WithMany("Cities")
                         .HasForeignKey("ProtestoId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("City");
+
+                    b.Navigation("Protesto");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.ProtestoDistrict", b =>
@@ -663,12 +970,18 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.District", "District")
                         .WithMany()
                         .HasForeignKey("DistrictId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
                         .WithMany("Districts")
                         .HasForeignKey("ProtestoId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("District");
+
+                    b.Navigation("Protesto");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.ProtestoInterventionType", b =>
@@ -676,12 +989,43 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.InterventionType", "InterventionType")
                         .WithMany()
                         .HasForeignKey("InterventionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
                         .WithMany("ProtestoInterventionTypes")
                         .HasForeignKey("ProtestoId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("InterventionType");
+
+                    b.Navigation("Protesto");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.ProtestoLocation", b =>
+                {
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.District", "District")
+                        .WithMany()
+                        .HasForeignKey("DistrictId");
+
+                    b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
+                        .WithMany("Locations")
+                        .HasForeignKey("ProtestoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("City");
+
+                    b.Navigation("District");
+
+                    b.Navigation("Protesto");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.ProtestoProtestoPlace", b =>
@@ -689,12 +1033,18 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
                         .WithMany("ProtestoProtestoPlaces")
                         .HasForeignKey("ProtestoId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.ProtestoPlace", "ProtestoPlace")
                         .WithMany()
                         .HasForeignKey("ProtestoPlaceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Protesto");
+
+                    b.Navigation("ProtestoPlace");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.ProtestoProtestoType", b =>
@@ -702,12 +1052,18 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
                         .WithMany("ProtestoProtestoTypes")
                         .HasForeignKey("ProtestoId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.ProtestoType", "ProtestoType")
                         .WithMany()
                         .HasForeignKey("ProtestoTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Protesto");
+
+                    b.Navigation("ProtestoType");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.Resistance", b =>
@@ -715,24 +1071,42 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Company", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.EmployeeCount", "EmployeeCount")
                         .WithMany()
                         .HasForeignKey("EmployeeCountId");
 
+                    b.HasOne("RS.COMMON.Entities.Company", "MainCompany")
+                        .WithMany()
+                        .HasForeignKey("MainCompanyId");
+
                     b.HasOne("RS.COMMON.Entities.LookupEntity.TradeUnionAuthority", "TradeUnionAuthority")
                         .WithMany()
                         .HasForeignKey("TradeUnionAuthorityId");
 
-                    b.HasOne("RS.COMMON.Entities.LookupEntity.TradeUnion", "TradeUnion")
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.Corporation", "TradeUnion")
                         .WithMany()
                         .HasForeignKey("TradeUnionId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Company");
+
+                    b.Navigation("EmployeeCount");
+
+                    b.Navigation("MainCompany");
+
+                    b.Navigation("TradeUnion");
+
+                    b.Navigation("TradeUnionAuthority");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.ResistanceCorporation", b =>
@@ -740,12 +1114,18 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.Corporation", "Corporation")
                         .WithMany()
                         .HasForeignKey("CorporationId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Resistance", "Resistance")
                         .WithMany("ResistanceCorporations")
                         .HasForeignKey("ResistanceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Corporation");
+
+                    b.Navigation("Resistance");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.ResistanceEmploymentType", b =>
@@ -753,12 +1133,18 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.EmploymentType", "EmploymentType")
                         .WithMany()
                         .HasForeignKey("EmploymentTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Resistance", "Resistance")
                         .WithMany("ResistanceEmploymentTypes")
                         .HasForeignKey("ResistanceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EmploymentType");
+
+                    b.Navigation("Resistance");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.ResistanceNews", b =>
@@ -766,12 +1152,18 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.News", "News")
                         .WithMany()
                         .HasForeignKey("NewsId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Resistance", "Resistance")
                         .WithMany("ResistanceNews")
                         .HasForeignKey("ResistanceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("News");
+
+                    b.Navigation("Resistance");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.ResistanceResistanceReason", b =>
@@ -779,12 +1171,51 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.Resistance", "Resistance")
                         .WithMany("ResistanceResistanceReasons")
                         .HasForeignKey("ResistanceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.ResistanceReason", "ResistanceReason")
                         .WithMany()
                         .HasForeignKey("ResistanceReasonId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resistance");
+
+                    b.Navigation("ResistanceReason");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.Company", b =>
+                {
+                    b.Navigation("OutsourceCompanies");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.Protesto", b =>
+                {
+                    b.Navigation("Cities");
+
+                    b.Navigation("Districts");
+
+                    b.Navigation("Locations");
+
+                    b.Navigation("ProtestoInterventionTypes");
+
+                    b.Navigation("ProtestoProtestoPlaces");
+
+                    b.Navigation("ProtestoProtestoTypes");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.Resistance", b =>
+                {
+                    b.Navigation("Protestos");
+
+                    b.Navigation("ResistanceCorporations");
+
+                    b.Navigation("ResistanceEmploymentTypes");
+
+                    b.Navigation("ResistanceNews");
+
+                    b.Navigation("ResistanceResistanceReasons");
                 });
 #pragma warning restore 612, 618
         }
