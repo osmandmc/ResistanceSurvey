@@ -360,3 +360,9 @@ MigrationBackup/
 # JetBrains IDE (Rider/IntelliJ) project files
 .idea/
 
+# VS Code workspace settings
+.vscode/
+
+# macOS Finder metadata
+.DS_Store
+
