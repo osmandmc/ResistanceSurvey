@@ -110,6 +110,7 @@ namespace ResistanceSurvey.Controllers
                     { "Protesto Notu", item.Note ?? "" },
                     { "Direniş Sonucu", item.Resistance.ResistanceResult.ToString() },
                     { "Direniş Haberleri", string.Join("; ", item.Resistance.ResistanceNews?.Select(x => x.News?.Header ?? "") ?? new List<string>()) },
+                    { "Direniş Haberleri Linki", string.Join("; ", item.Resistance.ResistanceNews?.Select(x => x.News?.Link ?? "") ?? new List<string>()) },
                 };
                 rows.Add(row);
             }
