@@ -26,6 +26,39 @@ namespace ResistanceSurvey.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult News(int? year, int? month)
+        {
+            var query = _db.News.AsQueryable();
+
+            if (year.HasValue)
+            {
+                query = query.Where(n => n.Date.Year == year.Value);
+            }
+
+            if (month.HasValue && month.Value > 0)
+            {
+                query = query.Where(n => n.Date.Month == month.Value);
+            }
+
+            var news = query
+                .OrderByDescending(n => n.Date)
+                .Select(n => new
+                {
+                    n.Id,
+                    n.Header,
+                    n.Content,
+                    n.Date,
+                    n.Link,
+                    n.Status,
+                    n.Source,
+                    Added = false
+                })
+                .ToList();
+
+            return Json(news);
+        }
+
         public ActionResult Export(ResistanceFilterModel filter)
         {
             // Set EPPlus license context
@@ -63,7 +96,7 @@ namespace ResistanceSurvey.Controllers
                             && (filter.CompanyId == null || rs.Resistance.CompanyId == filter.CompanyId)
                             && (filter.MainCompanyId == null || rs.Resistance.MainCompanyId == filter.MainCompanyId)
                             && (filter.CategoryId == null || rs.Resistance.CategoryId == filter.CategoryId)
-                            && (filter.YearId == null || rs.StartDate.Year == filter.YearId && rs.StartDate.Month == filter.MonthId)
+                            && (filter.YearId == null || (rs.StartDate.Year == filter.YearId && (filter.MonthId == null || filter.MonthId == 0 || rs.StartDate.Month == filter.MonthId)))
                             && (filter.PersonalNote == null || String.IsNullOrEmpty(rs.Resistance.Note) == !filter.PersonalNote)
                             )
                 .ToList();
