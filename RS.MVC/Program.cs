@@ -51,6 +51,12 @@ builder.Services.Configure<RequestLocalizationOptions>(opts =>
     opts.SupportedUICultures = supportedCultures;
 });
 
+// News pipeline (empty CutoverMonth = off)
+builder.Services.AddOptions<PipelineSettings>()
+    .Bind(configuration.GetSection(PipelineSettings.SectionName))
+    .Validate(s => s.IsValid(), "Pipeline:CutoverMonth must be empty or \"yyyy-MM\".")
+    .ValidateOnStart();
+
 // JWT Authentication
 var appSettingsSection = configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
