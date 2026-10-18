@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using RS.EF;
 using RS.MVC.Applications;
 using RS.MVC.Models;
+using Microsoft.Extensions.Options;
+using System;
 using System.Globalization;
 using System.Text;
 
@@ -54,8 +56,16 @@ builder.Services.Configure<RequestLocalizationOptions>(opts =>
 // News pipeline (empty CutoverMonth = off)
 builder.Services.AddOptions<PipelineSettings>()
     .Bind(configuration.GetSection(PipelineSettings.SectionName))
-    .Validate(s => s.IsValid(), "Pipeline:CutoverMonth must be empty or \"yyyy-MM\".")
+    .Validate(s => s.IsValid(), "Pipeline: CutoverMonth must be empty or \"yyyy-MM\", and BaseUrl and FunctionKey must be set when it is.")
     .ValidateOnStart();
+builder.Services.AddHttpClient<IPipelineClient, PipelineClient>((sp, http) =>
+{
+    var settings = sp.GetRequiredService<IOptions<PipelineSettings>>().Value;
+    if (Uri.TryCreate(settings.BaseUrl, UriKind.Absolute, out var baseUrl))
+        http.BaseAddress = baseUrl;
+    http.DefaultRequestHeaders.Add("x-functions-key", settings.FunctionKey ?? "");
+    http.Timeout = TimeSpan.FromMinutes(2);
+});
 
 // JWT Authentication
 var appSettingsSection = configuration.GetSection("AppSettings");
