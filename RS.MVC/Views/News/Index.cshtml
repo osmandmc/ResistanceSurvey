@@ -158,7 +158,7 @@
                         console.log(data);
                         if (data.success) {
                             $(".modal").dimmer('hide');
-                            alert("İşleminiz başarılı");
+                            alert(data.successMessages && data.successMessages.length ? data.successMessages.join("\n") : "İşleminiz başarılı");
                         } else {
                             $(".modal").dimmer('hide');
                             alert(data.errorMessages[0]);

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
@@ -49,7 +51,7 @@ namespace ResistanceSurvey.Controllers
 
         }
         [Authorize]
-        public ActionResult UploadFile(int source, int year, int month)
+        public async Task<ActionResult> UploadFile(int source, int year, int month)
         {
             var result = new Result();
             if (HttpContext.Request.Form.Files.Count > 0)
@@ -63,33 +65,46 @@ namespace ResistanceSurvey.Controllers
                     {
                             result.Success = false;
                             result.ErrorMessages.Add("Dosya formatı uyumsuz!");
-                            return Json(result);
+                            return Json(ToJson(result));
                     }
 
                     using (var stream = file.OpenReadStream())
                     {
                         try{
                             
-                            _newsApplication.ReadNews(stream, source, year, month);
+                            result.SuccessMessages.Add(await _newsApplication.ReadNewsAsync(stream, source, year, month));
+                        }
+                        catch(HttpRequestException ex)
+                        {
+                            result.Success = false;
+                            result.ErrorMessages.Add("Haber işleme hattına ulaşılamadı (" + ex.Message + "). Dosyayı tekrar yüklemek güvenlidir.");
+                            return Json(ToJson(result));
                         }
                         catch(Exception ex)
                         {
                             result.Success = false;
                             result.ErrorMessages.Add(ex.Message);
-                            return Json(result);
+                            return Json(ToJson(result));
                         }
                     }
-                    result.SuccessMessages.Add("Haberler başarıyla yüklendi.");
                 }
                 else
                 {
                     result.Success = false;
                     result.ErrorMessages.Add("Dosya boyutu belirtilen aralıkta değil.");
-                    return Json(result);
+                    return Json(ToJson(result));
                 }
             }
-            return Json(result);
+            return Json(ToJson(result));
         }
+
+        // Result exposes public fields, which System.Text.Json skips; map them explicitly.
+        private static object ToJson(Result result) => new
+        {
+            success = result.Success,
+            successMessages = result.SuccessMessages,
+            errorMessages = result.ErrorMessages
+        };
         [Authorize]
         public ActionResult DownloadFile(int year, int month)
         {
