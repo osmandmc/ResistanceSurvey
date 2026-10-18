@@ -62,6 +62,17 @@ namespace RS.EF
                     .HasMany(u => u.OutsourceCompanies).WithOne(u => u.Company)
                     .OnDelete(DeleteBehavior.Restrict);
 
+                 // Pipeline article id: SHA-256 hex of the canonical URL. NULL for news from before the cut-over.
+                 modelBuilder.Entity<News>()
+                    .Property(n => n.ArticleId)
+                    .HasMaxLength(64)
+                    .IsUnicode(false);
+
+                 modelBuilder.Entity<News>()
+                    .HasIndex(n => n.ArticleId)
+                    .IsUnique()
+                    .HasFilter("[ArticleId] IS NOT NULL");
+
         }
     }
 }

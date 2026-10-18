@@ -12,6 +12,7 @@ namespace RS.COMMON.Entities
         public string Link { get; set; }
         public Enums.Status Status { get; set; }
         public int Source { get; set; }
+        public string ArticleId { get; set; }
 
     }
 }
