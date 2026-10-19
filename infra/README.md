@@ -28,9 +28,9 @@ az deployment sub create --location swedencentral --template-file infra/bootstra
 
 It creates the resource group, lets this repository's GitHub deploy jobs sign in as the existing deploy identity (`id-github-deploy`, from the pipeline's bootstrap), and gives that identity Contributor on the new resource group only. Safe to re-run. Note the four output values.
 
-### 2. GitHub settings (Settings → Secrets and variables → Actions)
+### 2. GitHub settings (Settings → Environments → `test`)
 
-Create an environment named **`test`** (Settings → Environments), then add:
+Create an environment named **`test`** and add these as its **environment** variables and secrets. A `test` secret overrides a repository secret of the same name for the test deploy only; `ADMIN_PASSWORD` and `USER_PASSWORD` may be left to the repository secrets to share production's logins:
 
 | Kind | Name | Value |
 |---|---|---|

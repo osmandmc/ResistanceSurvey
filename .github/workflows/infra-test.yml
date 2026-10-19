@@ -15,8 +15,8 @@ concurrency: infra-test
 
 jobs:
   deploy:
-    # Skipped until the bootstrap has run and the repository variables are set (R1).
-    if: vars.AZURE_CLIENT_ID != ''
+    # Azure values (AZURE_*) and secrets are kept on the "test" environment. A job-level `if:` cannot see
+    # environment variables (it is evaluated before the job enters the environment), so there is no guard here.
     runs-on: ubuntu-latest
     environment: test
     steps:
