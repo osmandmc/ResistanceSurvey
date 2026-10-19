@@ -24,18 +24,19 @@ namespace RS.MVC.Applications
 
     public class UserApplication : IUserApplication
     {
-        // users hardcoded for simplicity, store in a db with hashed passwords in production applications
-        private List<User> _users = new List<User>
-        { 
-            new User { Id = 1, FirstName = "Admin", LastName = "User", Username = "admin", Password = "Etc2023!", Role = Role.Admin },
-            new User { Id = 2, FirstName = "Normal", LastName = "User", Username = "user", Password = "usr.Etc2023!", Role = Role.User } 
-        };
+        // Two fixed users; their passwords come from configuration (AppSettings:AdminPass / AppSettings:UserPass).
+        private readonly List<User> _users;
 
         private readonly AppSettings _appSettings;
 
         public UserApplication(IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings.Value;
+            _users = new List<User>
+            {
+                new User { Id = 1, FirstName = "Admin", LastName = "User", Username = "admin", Password = _appSettings.AdminPass, Role = Role.Admin },
+                new User { Id = 2, FirstName = "Normal", LastName = "User", Username = "user", Password = _appSettings.UserPass, Role = Role.User }
+            };
         }
 
         public Result<UserModel> Authenticate(string username, string password)
