@@ -24,6 +24,26 @@ jobs:
     - name: Build and Publish
       run: dotnet publish -c Release -o ./publish
 
+    # Secrets are not in the repository; write them into the published settings from GitHub secrets.
+    - name: Write production secrets
+      shell: pwsh
+      env:
+        RS_CONNECTION_STRING: ${{ secrets.RS_CONNECTION_STRING }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+      run: |
+        $missing = 'RS_CONNECTION_STRING', 'JWT_SECRET', 'ADMIN_PASSWORD', 'USER_PASSWORD' |
+          Where-Object { -not [Environment]::GetEnvironmentVariable($_) }
+        if ($missing) { throw "Missing GitHub secrets: $($missing -join ', ')" }
+        $path = './publish/appsettings.json'
+        $settings = Get-Content $path -Raw | ConvertFrom-Json
+        $settings.ConnectionStrings.RSConnectionString = $env:RS_CONNECTION_STRING
+        $settings.AppSettings.Secret = $env:JWT_SECRET
+        $settings.AppSettings.AdminPass = $env:ADMIN_PASSWORD
+        $settings.AppSettings.UserPass = $env:USER_PASSWORD
+        $settings | ConvertTo-Json -Depth 10 | Set-Content $path -Encoding utf8
+
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:

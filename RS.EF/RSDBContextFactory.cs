@@ -12,7 +12,10 @@ public class RSDBContextFactory : IDesignTimeDbContextFactory<RSDBContext>
 
         var config = new ConfigurationBuilder()
             .SetBasePath(basePath)
-            .AddJsonFile("appsettings.Development.json") // or Production
+            .AddJsonFile("appsettings.Development.json", optional: true)
+            // Same user-secrets store as RS.MVC (its UserSecretsId), then environment variables.
+            .AddUserSecrets("122e3cf6-514c-4268-ba49-23503409d1d5")
+            .AddEnvironmentVariables()
             .Build();
 
         var optionsBuilder = new DbContextOptionsBuilder<RSDBContext>();

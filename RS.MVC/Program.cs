@@ -11,6 +11,7 @@ using RS.MVC.Applications;
 using RS.MVC.Models;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 using System.Globalization;
 using System.Text;
 
@@ -66,6 +67,13 @@ builder.Services.AddHttpClient<IPipelineClient, PipelineClient>((sp, http) =>
     http.DefaultRequestHeaders.Add("x-functions-key", settings.FunctionKey ?? "");
     http.Timeout = TimeSpan.FromMinutes(2);
 });
+
+// Secrets are not in the repository: user-secrets locally, written by the deploy in production. Fail fast if missing.
+var missing = new[] { "ConnectionStrings:RSConnectionString", "AppSettings:Secret", "AppSettings:AdminPass", "AppSettings:UserPass" }
+    .Where(k => string.IsNullOrWhiteSpace(configuration[k]))
+    .ToList();
+if (missing.Count > 0)
+    throw new InvalidOperationException("Missing configuration: " + string.Join(", ", missing) + ". Locally use 'dotnet user-secrets'; see README.");
 
 // JWT Authentication
 var appSettingsSection = configuration.GetSection("AppSettings");
