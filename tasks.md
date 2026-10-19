@@ -47,4 +47,5 @@ Status: ☐ open · ◐ in progress · ☑ done
 | ☐ R11 | AI pre-fill, evidence, flags in Review | Pipeline phase 3 (drafts) |
 | ☐ R12 | Retire old pages, Semantic UI, jQuery, webpack | R5–R9 |
 | ☐ R13 | Secrets out of `appsettings*.json` and rotated; login passwords out of code | Deferred by you (2026-10-18); do before production uses the redesign |
+| ☐ R15 | Login and page protection | Found on the test app (2026-10-19): the login form is `/` (POST `/Home/Login`); auth is JWT bearer only, and the pages' actual protection needs checking. Decide the login approach (likely cookie sign-in for pages) before or with R4 |
 | ☐ R14 | Production move | Redesign proven on the test app; decide hosting (SmarterASP or Azure, D-013) |

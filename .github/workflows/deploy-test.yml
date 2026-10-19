@@ -12,7 +12,9 @@ permissions:
   contents: read
   id-token: write
 
-concurrency: deploy-test
+concurrency:
+  group: deploy-test
+  cancel-in-progress: true # a newer push replaces a deploy still running
 
 jobs:
   deploy:
@@ -53,9 +55,9 @@ jobs:
           package: publish
 
       # The free tier sleeps when idle and the database pauses, so the first start can take several minutes.
-      - name: Check the login page
+      - name: Check the app answers
         run: |
-          url="https://${{ steps.app.outputs.host }}/Home/Login"
+          url="https://${{ steps.app.outputs.host }}/"
           for i in $(seq 1 40); do
             code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$url" || true)
             echo "attempt $i: HTTP $code"
