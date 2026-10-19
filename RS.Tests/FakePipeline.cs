@@ -15,8 +15,20 @@ internal sealed class FakePipeline : IPipelineClient
     public void Add(string id, string url, string title, DateTimeOffset publishedAt, string body = "Metin") =>
         _articles.Add(new PipelineArticleDetail(id, "evrensel", url, title, publishedAt, body));
 
-    public Task<IReadOnlyList<PipelineSubmitResult>> SubmitAsync(IReadOnlyList<PipelineArticle> articles, string origin) =>
-        throw new NotSupportedException();
+    public List<PipelineArticle> Submitted { get; } = [];
+
+    /// <summary>Urls the pipeline already knows (answered as Duplicate); urls without "http" are Rejected.</summary>
+    public HashSet<string> KnownUrls { get; } = [];
+
+    public Task<IReadOnlyList<PipelineSubmitResult>> SubmitAsync(IReadOnlyList<PipelineArticle> articles, string origin)
+    {
+        Submitted.AddRange(articles);
+        IReadOnlyList<PipelineSubmitResult> results = articles.Select(a =>
+            !a.Url.StartsWith("http") ? new PipelineSubmitResult(a.Url, "Rejected", null!, "Not an absolute http(s) URL")
+            : KnownUrls.Contains(a.Url) ? new PipelineSubmitResult(a.Url, "Duplicate", "x", null!)
+            : new PipelineSubmitResult(a.Url, "Accepted", "x", null!)).ToList();
+        return Task.FromResult(results);
+    }
 
     public Task<PipelineArticleList> ListArticlesAsync(PipelineArticleQuery query)
     {

@@ -7,6 +7,7 @@ import CasesPage from './pages/CasesPage.vue'
 import InboxPage from './pages/InboxPage.vue'
 import LoginPage from './pages/LoginPage.vue'
 import ReviewPage from './pages/ReviewPage.vue'
+import UploadPage from './pages/UploadPage.vue'
 import NewCasePage from './pages/NewCasePage.vue'
 import NotFoundPage from './pages/NotFoundPage.vue'
 import PlaceholderPage from './pages/PlaceholderPage.vue'
@@ -46,11 +47,7 @@ export const router = createRouter({
           component: PlaceholderPage,
           meta: { title: 'Durum Paneli', description: 'Haberlerin aşamalara göre sayıları ve hatalar.' },
         },
-        {
-          path: 'upload',
-          component: PlaceholderPage,
-          meta: { title: 'Yükleme', description: 'Excel ile haber yükleme.' },
-        },
+        { path: 'upload', component: UploadPage, meta: { title: 'Yükleme' } },
         { path: ':pathMatch(.*)*', component: NotFoundPage, meta: { title: 'Sayfa bulunamadı' } },
       ],
     },

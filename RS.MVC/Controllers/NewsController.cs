@@ -10,6 +10,7 @@ using RS.COMMON.DTO;
 using RS.COMMON.Entities;
 using RS.EF;
 using RS.MVC.Applications;
+using RS.MVC.Features.Upload;
 
 namespace ResistanceSurvey.Controllers
 {
@@ -51,7 +52,7 @@ namespace ResistanceSurvey.Controllers
 
         }
         [Authorize]
-        public async Task<ActionResult> UploadFile(int source, int year, int month)
+        public async Task<ActionResult> UploadFile(int source, int year, int month, [FromServices] UploadNewsHandler uploadNews)
         {
             var result = new Result();
             if (HttpContext.Request.Form.Files.Count > 0)
@@ -72,7 +73,16 @@ namespace ResistanceSurvey.Controllers
                     {
                         try{
                             
-                            result.SuccessMessages.Add(await _newsApplication.ReadNewsAsync(stream, source, year, month));
+                            var upload = await uploadNews.Handle(new UploadNewsCommand(stream, file.FileName, file.Length, source, year, month));
+                            if (!upload.IsValid)
+                            {
+                                result.Success = false;
+                                result.ErrorMessages.Add(string.Join("\n", upload.Errors));
+                                return Json(ToJson(result));
+                            }
+                            result.SuccessMessages.Add(upload.ToPipeline
+                                ? $"Haberler işleme hattına gönderildi: {upload.Accepted} yeni, {upload.Duplicate} zaten vardı, {upload.Rejected.Count} reddedildi."
+                                : $"Haberler başarıyla yüklendi: {upload.Imported} yeni, {upload.Kept} zaten işlenmişti.");
                         }
                         catch(HttpRequestException ex)
                         {
