@@ -82,3 +82,45 @@ export function toProtestInput(value: ProtestFormValue) {
     note: value.note,
   }
 }
+
+/** "2026-09-10" or "2026-09-10T00:00:00" → that calendar day at local midnight (what the date picker shows). */
+function fromDay(value: string | null) {
+  const match = value ? /^(\d{4})-(\d{2})-(\d{2})/.exec(value) : null
+  return match ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])).getTime() : null
+}
+
+/** A saved protest back into the form (editing). The duration comes in seconds. */
+export function fromProtestInput(input: {
+  protestTypeIds: number[]
+  strikeDurationSeconds: number | null
+  simpleDescription: string | null
+  startDate: string | null
+  endDate: string | null
+  placeIds: number[]
+  genderId: number | null
+  locations: LocationValue[]
+  employeeCount: number | null
+  employeeCountRangeId: number | null
+  interventionTypeIds: number[]
+  custodyCount: number | null
+  note: string | null
+}): ProtestFormValue {
+  const seconds = input.strikeDurationSeconds ?? 0
+  return {
+    protestTypeIds: [...input.protestTypeIds],
+    durationDays: seconds ? Math.floor(seconds / 86400) : null,
+    durationHours: seconds ? Math.floor((seconds % 86400) / 3600) : null,
+    durationMinutes: seconds ? Math.floor((seconds % 3600) / 60) : null,
+    simpleDescription: input.simpleDescription,
+    startDate: fromDay(input.startDate),
+    endDate: fromDay(input.endDate),
+    placeIds: [...input.placeIds],
+    genderId: input.genderId,
+    locations: input.locations.map((l) => ({ ...l })),
+    employeeCount: input.employeeCount,
+    employeeCountRangeId: input.employeeCountRangeId,
+    interventionTypeIds: [...input.interventionTypeIds],
+    custodyCount: input.custodyCount,
+    note: input.note,
+  }
+}

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { setUnauthorizedHandler } from './api'
 import { forgetCurrentUser, loadCurrentUser } from './auth'
 import AppLayout from './layouts/AppLayout.vue'
+import CaseDetailPage from './pages/CaseDetailPage.vue'
 import CasesPage from './pages/CasesPage.vue'
 import InboxPage from './pages/InboxPage.vue'
 import LoginPage from './pages/LoginPage.vue'
@@ -37,6 +38,7 @@ export const router = createRouter({
           meta: { title: 'Haber Arşivi', description: 'Her durumdaki tüm haberler ve her haberin geçmişi.' },
         },
         { path: 'cases', component: CasesPage, meta: { title: 'Vakalar' } },
+        { path: 'cases/:id(\\d+)', component: CaseDetailPage, meta: { title: 'Vaka' } },
         {
           path: 'status',
           component: PlaceholderPage,

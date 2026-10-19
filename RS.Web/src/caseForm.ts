@@ -44,3 +44,9 @@ export function toCaseInput(value: CaseFormValue): CaseInput {
     newCorporationNames: names(corporations),
   }
 }
+
+/** A saved case back into the form (editing). */
+export function fromCaseInput(input: CaseInput): CaseFormValue {
+  const { reasonIds, corporationIds, ...rest } = input
+  return { ...emptyCase(), ...rest, reasons: [...reasonIds], corporations: [...corporationIds] }
+}

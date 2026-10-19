@@ -31,6 +31,22 @@ namespace RS.MVC.Features.Review
             return errors;
         }
 
+        /// <summary>The case part alone (editing a case).</summary>
+        public static Dictionary<string, string> ForCase(CaseInput caseInput)
+        {
+            var errors = new Dictionary<string, string>();
+            ValidateCase(caseInput, errors);
+            return errors;
+        }
+
+        /// <summary>One protest alone (adding or editing a protest on the case page).</summary>
+        public static Dictionary<string, string> ForProtest(ProtestInput protest)
+        {
+            var errors = new Dictionary<string, string>();
+            ValidateProtest(protest, errors);
+            return errors;
+        }
+
         public static Dictionary<string, string> ForLinkOnly(int? resistanceId)
         {
             var errors = new Dictionary<string, string>();

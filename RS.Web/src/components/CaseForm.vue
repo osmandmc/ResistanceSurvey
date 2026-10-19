@@ -11,6 +11,11 @@ const props = defineProps<{
   options: CaseFormOptions
   /** Field path ("case.categoryId") → message, from the server. */
   errors: Record<string, string>
+  /** Names of the chosen companies, so the pickers show them (editing a case). */
+  companyName?: string | null
+  mainCompanyName?: string | null
+  /** The duplicate warning, for a new case only (an existing case would find itself). */
+  warnAboutExistingCases?: boolean
 }>()
 
 const value = defineModel<CaseFormValue>({ required: true })
@@ -65,7 +70,7 @@ watch(
   () => (againstCompany.value ? value.value.companyId : null),
   async (companyId) => {
     existingCases.value = []
-    if (companyId === null) return
+    if (companyId === null || props.warnAboutExistingCases === false) return
     try {
       existingCases.value = await searchCases({ companyId })
     } catch {
@@ -112,6 +117,7 @@ function status(field: string) {
           <company-picker
             v-model="value.companyId"
             input-id="company"
+            :selected-name="props.companyName"
             add-label="Şirket Ekle"
             :company-types="options.companyTypes"
             :company-scales="options.companyScales"
@@ -137,6 +143,7 @@ function status(field: string) {
           <company-picker
             v-model="value.mainCompanyId"
             input-id="main-company"
+            :selected-name="props.mainCompanyName"
             add-label="Ana Şirket Ekle"
             :company-types="options.companyTypes"
             :company-scales="options.companyScales"
