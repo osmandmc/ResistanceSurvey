@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using RS.COMMON.Entities;
+using RS.COMMON.Entities.LookupEntity;
 using RS.EF;
 using RS.MVC.Applications;
 using RS.MVC.Controllers;
@@ -41,7 +42,7 @@ public class ReviewTests
         var resistances = new ResistanceApplication(_db);
         _getArticle = new GetReviewArticleHandler(_pipeline, articleNews);
         _searchCases = new SearchCasesHandler(_db);
-        _createCase = new CreateCaseFromArticleHandler(linker, resistances);
+        _createCase = new CreateCaseFromArticleHandler(linker, resistances, new ListValueResolver(_db));
         _addProtest = new AddProtestFromArticleHandler(linker, resistances);
         _linkToCase = new LinkArticleToCaseHandler(linker);
         _pipeline.Add("a1", ArticleUrl, "Bursa NEV Hastanesi’nde eylem", Oct19, "Hekimler ve sağlık çalışanları 6 aydır maaşlarını alamıyor.");
@@ -107,6 +108,28 @@ public class ReviewTests
         Assert.Equal(("a1", Status.Linked, ArticleUrl), (news.ArticleId, news.Status, news.Link));
         Assert.Equal(news.Id, Assert.Single(resistance.ResistanceNews).NewsId);
         Assert.Equal(("a1", new PipelineOutcomeRequest("Digested", resistance.Id)), Assert.Single(_pipeline.Outcomes));
+    }
+
+    [Fact]
+    public async Task TypedValuesUseExistingEntriesOrBecomeNewOnes()
+    {
+        _db.ResistanceReason.Add(new ResistanceReason { Name = "İşten Çıkarma" });
+        _db.Corporation.Add(new Corporation { Name = "Birleşik Metal-İş", CorporationTypeId = 1 });
+        await _db.SaveChangesAsync();
+        var request = ReviewValidationTests.CompleteNewCase();
+        request.Case!.ReasonIds = [];
+        request.Case.NewReasonNames = ["  işten   çıkarma ", "Ücret alacağı", "ücret ALACAĞI"];
+        request.Case.CorporationIds = [];
+        request.Case.NewCorporationNames = ["Yeni Dayanışma Derneği"];
+
+        var result = await Save("a1", request, "admin");
+
+        Assert.Equal(ReviewStatus.Ok, result.Status);
+        Assert.Equal(["İşten Çıkarma", "Ücret alacağı"], _db.ResistanceReason.Select(r => r.Name).OrderBy(n => n));
+        Assert.Equal(2, _db.ResistanceResistanceReason.Count(r => r.ResistanceId == result.ResistanceId));
+        var newCorporation = Assert.Single(_db.Corporation, c => c.Name == "Yeni Dayanışma Derneği");
+        Assert.Null(newCorporation.CorporationTypeId); // name only, as in the old form
+        Assert.Single(_db.ResistanceCorporation, rc => rc.CorporationId == newCorporation.Id);
     }
 
     [Fact]
@@ -200,7 +223,9 @@ public class ReviewTests
     [Fact]
     public async Task TheControllerRejectsAnUnknownAction()
     {
-        var controller = new ReviewController(_getArticle, _searchCases, _createCase, _addProtest, _linkToCase, NullLogger<ReviewController>.Instance)
+        var controller = new ReviewController(
+            _getArticle, _searchCases, _createCase, _addProtest, _linkToCase,
+            new GetCaseFormOptionsHandler(_db), new SearchCompaniesHandler(_db), new CreateCompanyHandler(_db), NullLogger<ReviewController>.Instance)
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
         };

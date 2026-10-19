@@ -60,6 +60,24 @@ public class ReviewValidationTests
     }
 
     [Fact]
+    public void TypedValuesCountAsChosen()
+    {
+        var request = CompleteNewCase();
+        request.Case!.ReasonIds = [];
+        request.Case.NewReasonNames = ["Ücret alacağı"];
+        request.Case.CorporationIds = [];
+        request.Case.NewCorporationNames = ["  "]; // blank does not count
+
+        Assert.Equal(["case.corporationIds"], ForNewCase(request).Keys);
+    }
+
+    [Theory]
+    [InlineData("İşten Çıkarma", "  işten   çıkarma ")]
+    [InlineData("IŞIK", "ışık")]
+    public void NamesMatchTheTurkishWay(string stored, string typed) =>
+        Assert.Equal(NameMatching.Key(stored), NameMatching.Key(typed));
+
+    [Fact]
     public void StartMustNotBeAfterEnd()
     {
         var request = CompleteNewCase();

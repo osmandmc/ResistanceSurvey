@@ -43,6 +43,7 @@ builder.Services.AddFeatureHandlers();
 builder.Services.AddScoped<ArticleNewsService>();
 builder.Services.AddScoped<OutcomeSender>();
 builder.Services.AddScoped<ArticleCaseLinker>();
+builder.Services.AddScoped<ListValueResolver>();
 
 // Test environment (Azure) only: bring its copy of the database up to date in the background, after startup.
 if (builder.Environment.IsEnvironment("Test"))

@@ -46,10 +46,18 @@ namespace RS.MVC.Models
         public int? MainCompanyId { get; set; }
         public int? TargetCorporationId { get; set; }
         public List<int> ReasonIds { get; set; } = [];
+
+        /// <summary>Reasons typed by the researcher; matched to existing ones by name, otherwise created.</summary>
+        public List<string> NewReasonNames { get; set; } = [];
+
         public bool? DevelopRight { get; set; }
         public int? EmployeeCount { get; set; }
         public int? EmployeeCountRangeId { get; set; }
         public List<int> CorporationIds { get; set; } = [];
+
+        /// <summary>Corporations typed by the researcher; matched to existing ones by name, otherwise created.</summary>
+        public List<string> NewCorporationNames { get; set; } = [];
+
         public int? TradeUnionAuthorityId { get; set; }
         public int? TradeUnionId { get; set; }
         public List<int> EmploymentTypeIds { get; set; } = [];

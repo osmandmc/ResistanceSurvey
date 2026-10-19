@@ -3,9 +3,20 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSelect, NSpin, useMessage } from 'naive-ui'
 import { ApiError } from '@/api'
+import { emptyCase, type CaseFormValue } from '@/caseForm'
+import CaseForm from '@/components/CaseForm.vue'
 import DismissDialog from '@/components/DismissDialog.vue'
 import { formatDate } from '@/format'
-import { getReviewArticle, saveReview, searchCases, type CaseOption, type ReviewAction, type ReviewArticle } from '@/reviewApi'
+import {
+  getFormOptions,
+  getReviewArticle,
+  saveReview,
+  searchCases,
+  type CaseFormOptions,
+  type CaseOption,
+  type ReviewAction,
+  type ReviewArticle,
+} from '@/reviewApi'
 
 const route = useRoute()
 const router = useRouter()
@@ -38,6 +49,23 @@ async function loadArticle() {
 }
 
 watch(articleId, () => loadArticle(), { immediate: true })
+
+// The form's lists, loaded once with the page.
+const formOptions = ref<CaseFormOptions | null>(null)
+const formOptionsError = ref(false)
+
+async function loadFormOptions() {
+  formOptionsError.value = false
+  try {
+    formOptions.value = await getFormOptions()
+  } catch {
+    formOptionsError.value = true
+  }
+}
+
+void loadFormOptions()
+
+const caseValue = ref<CaseFormValue>(emptyCase())
 
 // The decision on the right.
 const action = ref<ReviewAction>('newCase')
@@ -173,9 +201,17 @@ async function onDismissed() {
         <span v-if="fieldErrors.resistanceId" class="field-error">{{ fieldErrors.resistanceId }}</span>
       </div>
 
-      <n-alert v-if="action === 'newCase'" type="info" :show-icon="false">
-        Vaka ve eylem formu bir sonraki adımda buraya eklenecek.
-      </n-alert>
+      <template v-if="action === 'newCase'">
+        <n-alert v-if="formOptionsError" type="error" :show-icon="false">
+          Form listeleri yüklenemedi.
+          <n-button size="small" class="retry" @click="loadFormOptions">Tekrar dene</n-button>
+        </n-alert>
+        <div v-else-if="!formOptions" class="state"><n-spin /></div>
+        <case-form v-else v-model="caseValue" :options="formOptions" :errors="fieldErrors" />
+        <n-alert type="info" :show-icon="false">
+          Eylem formu bir sonraki adımda eklenecek; “Kaydet” o zaman açılacak.
+        </n-alert>
+      </template>
       <n-alert v-else-if="action === 'addProtest'" type="info" :show-icon="false">
         Eylem formu bir sonraki adımda buraya eklenecek.
       </n-alert>

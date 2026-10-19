@@ -13,7 +13,9 @@ namespace RS.MVC.Features.Review
     /// </summary>
     public static class CaseMapping
     {
-        public static ResistanceModel ToResistanceModel(CaseInput c, ProtestInput p, News news, string userName)
+        /// <summary><paramref name="reasonIds"/> and <paramref name="corporationIds"/>: the case's lists after typed values were resolved.</summary>
+        public static ResistanceModel ToResistanceModel(
+            CaseInput c, ProtestInput p, News news, string userName, IReadOnlyList<int> reasonIds, IReadOnlyList<int> corporationIds)
         {
             var againstCompany = c.TargetType == ResistanceTargetType.Company;
             return new ResistanceModel
@@ -26,11 +28,11 @@ namespace RS.MVC.Features.Review
                 CompanyId = againstCompany && c.CompanyId is { } companyId ? new Company { Id = companyId } : null,
                 MainCompanyId = againstCompany && c.IsOutsource && c.MainCompanyId is { } mainId ? new Company { Id = mainId } : null,
                 CorporationId = againstCompany ? null : c.TargetCorporationId,
-                ResistanceReasonIds = c.ReasonIds.Select(id => new ResistanceReason { Id = id }).ToList(),
+                ResistanceReasonIds = reasonIds.Select(id => new ResistanceReason { Id = id }).ToList(),
                 DevelopRight = c.DevelopRight!.Value,
                 EmployeeCount = c.EmployeeCount,
                 EmployeeCountId = c.EmployeeCountRangeId,
-                CorporationIds = c.CorporationIds.Select(id => new Corporation { Id = id }).ToList(),
+                CorporationIds = corporationIds.Select(id => new Corporation { Id = id }).ToList(),
                 TradeUnionAuthorityId = c.TradeUnionAuthorityId,
                 TradeUnionId = c.TradeUnionId,
                 EmploymentTypeIds = c.EmploymentTypeIds.Select(id => new EmploymentType { Id = id }).ToList(),

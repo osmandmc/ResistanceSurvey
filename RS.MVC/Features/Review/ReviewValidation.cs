@@ -55,12 +55,16 @@ namespace RS.MVC.Features.Review
             if (c.CategoryId is not > 0) errors["case.categoryId"] = "Lütfen vaka niteliğini seçiniz.";
             if (c.TargetType == null) errors["case.targetType"] = "Lütfen kime karşı olduğunu seçiniz.";
             if (c.IsOutsource && c.MainCompanyId is not > 0) errors["case.mainCompanyId"] = "Lütfen ana şirketi seçiniz.";
-            if (c.ReasonIds is not { Count: > 0 }) errors["case.reasonIds"] = "Lütfen en az bir vaka nedeni seçiniz.";
+            if (!HasAny(c.ReasonIds, c.NewReasonNames)) errors["case.reasonIds"] = "Lütfen en az bir vaka nedeni seçiniz.";
             if (c.DevelopRight == null) errors["case.developRight"] = "Lütfen hak geliştirme / hak savunma seçiniz.";
-            if (c.CorporationIds is not { Count: > 0 }) errors["case.corporationIds"] = "Lütfen en az bir kurumsallık seçiniz.";
+            if (!HasAny(c.CorporationIds, c.NewCorporationNames)) errors["case.corporationIds"] = "Lütfen en az bir kurumsallık seçiniz.";
             if (c.EmploymentTypeIds is not { Count: > 0 }) errors["case.employmentTypeIds"] = "Lütfen en az bir istihdam türü seçiniz.";
             if (c.Result == null) errors["case.result"] = "Lütfen sonucu seçiniz.";
         }
+
+        // Picked from the list, or typed as a new value.
+        private static bool HasAny(List<int> ids, List<string> newNames) =>
+            ids is { Count: > 0 } || (newNames != null && newNames.Exists(n => !string.IsNullOrWhiteSpace(n)));
 
         private static void ValidateProtest(ProtestInput p, Dictionary<string, string> errors)
         {

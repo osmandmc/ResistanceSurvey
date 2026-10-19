@@ -21,8 +21,32 @@ namespace RS.MVC.Controllers
         CreateCaseFromArticleHandler createCase,
         AddProtestFromArticleHandler addProtest,
         LinkArticleToCaseHandler linkToCase,
+        GetCaseFormOptionsHandler getFormOptions,
+        SearchCompaniesHandler searchCompanies,
+        CreateCompanyHandler createCompany,
         ILogger<ReviewController> logger) : ControllerBase
     {
+        public record CreateCompanyRequest(string Name, int? TypeId, int? ScaleId, int? WorklineId);
+
+        /// <summary>GET /api/review/form-options — every list the case form needs.</summary>
+        [HttpGet("form-options")]
+        public async Task<CaseFormOptions> FormOptions() => await getFormOptions.Handle(new GetCaseFormOptionsQuery());
+
+        /// <summary>GET /api/review/companies?query=… — companies by name (at most 20).</summary>
+        [HttpGet("companies")]
+        public async Task<IReadOnlyList<Option>> SearchCompanies(string query) =>
+            await searchCompanies.Handle(new SearchCompaniesQuery(query));
+
+        /// <summary>POST /api/review/companies — "Şirket Ekle"; an existing company with the same name is returned instead.</summary>
+        [HttpPost("companies")]
+        public async Task<ActionResult<CreateCompanyResult>> CreateCompany(CreateCompanyRequest request)
+        {
+            var result = await createCompany.Handle(new CreateCompanyCommand(request.Name, request.TypeId, request.ScaleId, request.WorklineId));
+            return result.Error == null
+                ? result
+                : BadRequest(new { error = result.Error, fields = new Dictionary<string, string> { ["name"] = result.Error } });
+        }
+
         public record SaveResponse(int ResistanceId, bool OutcomeSent);
 
         /// <summary>GET /api/review/resistances?query=… — existing cases to add a protest to or link to.</summary>
