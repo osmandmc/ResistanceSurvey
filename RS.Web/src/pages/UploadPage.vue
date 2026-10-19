@@ -108,8 +108,9 @@ async function sendLinks() {
   <h1 class="heading">Yükleme</h1>
   <p class="description">Haberleri Excel dosyasıyla ya da bağlantı listesiyle ekleyin.</p>
 
+  <!-- display-directive="show": both panes stay mounted. Otherwise switching tabs patches one pane's button into the other's and keeps the old click handler (Gönder ran the Excel upload). -->
   <n-tabs v-model:value="tab" type="line" class="tabs">
-  <n-tab-pane name="excel" tab="Excel dosyası">
+  <n-tab-pane name="excel" tab="Excel dosyası" display-directive="show">
   <p class="description">Bir kaynağın bir aylık haberleri. Sütunlar: Link, Tarih, Başlık, Metin; ilk satır başlıktır.</p>
   <section class="panel">
     <div class="fields">
@@ -159,7 +160,7 @@ async function sendLinks() {
   </n-alert>
   </n-tab-pane>
 
-  <n-tab-pane name="links" tab="Bağlantılar">
+  <n-tab-pane name="links" tab="Bağlantılar" display-directive="show">
   <p class="description">
     Haber bağlantılarını yapıştırın: her satıra bir bağlantı (boşluk, virgül ya da noktalı virgülle de ayırabilirsiniz).
     İşleme hattı sayfaları indirip okur; haberler birkaç dakika içinde Gelen Kutusu’nda görünür.

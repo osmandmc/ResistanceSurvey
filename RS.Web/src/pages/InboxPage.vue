@@ -105,13 +105,14 @@ function errorText(error: unknown, fallback: string) {
 
   <section class="panel">
     <n-tabs v-model:value="tab" type="line" animated class="tabs">
-      <n-tab-pane name="draft" tab="Taslak hazır · 0">
+      <!-- display-directive="show" keeps each pane mounted, so tab switches never patch one pane's components with the other's static props. -->
+      <n-tab-pane name="draft" tab="Taslak hazır · 0" display-directive="show">
         <div class="state">
           <n-empty description="Yapay zekâ taslakları henüz yok; bu özellik bir sonraki aşamada gelecek." />
         </div>
       </n-tab-pane>
 
-      <n-tab-pane name="manual" :tab="`Elle incelenmeli · ${manualCount}`">
+      <n-tab-pane name="manual" :tab="`Elle incelenmeli · ${manualCount}`" display-directive="show">
         <div v-if="loading" class="state"><n-spin /></div>
 
         <div v-else-if="loadError" class="state">
