@@ -35,6 +35,7 @@ builder.Logging.AddAzureWebAppDiagnostics();
 builder.Services.AddScoped<IResistanceApplication, ResistanceApplication>();
 builder.Services.AddScoped<INewsApplication, NewsApplication>();
 builder.Services.AddScoped<IInboxApplication, InboxApplication>();
+builder.Services.AddScoped<IReviewApplication, ReviewApplication>();
 
 // Test environment (Azure) only: bring its copy of the database up to date in the background, after startup.
 if (builder.Environment.IsEnvironment("Test"))

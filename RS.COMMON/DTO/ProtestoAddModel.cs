@@ -48,6 +48,7 @@ namespace RS.COMMON.DTO
                 GenderId = GenderId,
                 CustodyCount = CustodyCount,
                 Note = Note,
+                SimpleProtestoDescription = SimpleProtestoDescription,
                 StrikeDuration = StrikeDuration
             };
             
@@ -112,6 +113,7 @@ namespace RS.COMMON.DTO
                 GenderId = GenderId,
                 CustodyCount = CustodyCount,
                 Note = Note,
+                SimpleProtestoDescription = SimpleProtestoDescription,
                 StrikeDuration = StrikeDuration
             };
             // if (ProtestoPlaceIds != null)

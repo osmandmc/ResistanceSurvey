@@ -23,8 +23,8 @@ public class InboxApplicationTests
     {
         var settings = Options.Create(new PipelineSettings { Sources = new() { [1] = "evrensel" } });
         _inbox = new InboxApplication(_db, _pipeline, settings, NullLogger<InboxApplication>.Instance);
-        _pipeline.Add("a1", "https://evrensel.net/haber/1/x", "Tekstil işçileri iş bıraktı");
-        _pipeline.Add("a2", "https://evrensel.net/haber/2/y", "Belediye işçileri eylemde");
+        _pipeline.Add("a1", "https://evrensel.net/haber/1/x", "Tekstil işçileri iş bıraktı", Nov3);
+        _pipeline.Add("a2", "https://evrensel.net/haber/2/y", "Belediye işçileri eylemde", Nov3);
     }
 
     [Fact]
@@ -147,37 +147,4 @@ public class InboxApplicationTests
     [Fact]
     public void AMalformedMonthIsRejected() =>
         Assert.Throws<FormatException>(() => InboxApplication.MonthRange("11/2026"));
-
-    private sealed class FakePipeline : IPipelineClient
-    {
-        private readonly List<PipelineArticleDetail> _articles = [];
-
-        public List<PipelineArticleQuery> Queries { get; } = [];
-        public List<(string ArticleId, PipelineOutcomeRequest Outcome)> Outcomes { get; } = [];
-        public bool FailOutcomes { get; set; }
-
-        public void Add(string id, string url, string title) =>
-            _articles.Add(new PipelineArticleDetail(id, "evrensel", url, title, Nov3, "Metin"));
-
-        public Task<IReadOnlyList<PipelineSubmitResult>> SubmitAsync(IReadOnlyList<PipelineArticle> articles, string origin) =>
-            throw new NotSupportedException();
-
-        public Task<PipelineArticleList> ListArticlesAsync(PipelineArticleQuery query)
-        {
-            Queries.Add(query);
-            var items = _articles.Select(a => new PipelineArticleSummary(a.ArticleId, a.SourceId, a.Url, a.Title, a.PublishedAt)).ToList();
-            return Task.FromResult(new PipelineArticleList(items, null!));
-        }
-
-        public Task<PipelineArticleDetail> GetArticleAsync(string articleId) =>
-            Task.FromResult(_articles.FirstOrDefault(a => a.ArticleId == articleId)!);
-
-        public Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome)
-        {
-            if (FailOutcomes)
-                throw new HttpRequestException("pipeline down");
-            Outcomes.Add((articleId, outcome));
-            return Task.CompletedTask;
-        }
-    }
 }

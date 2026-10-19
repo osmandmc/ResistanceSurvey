@@ -16,7 +16,8 @@ namespace RS.MVC.Applications
         PagedResult<ResistanceIndexDto, ResistanceFilterModel> GetPaged(ResistanceFilterModel filter);
         IEnumerable<ResistanceIndexDto> GetAll();
         void Create(ResistanceForm model);
-        void Create(ResistanceModel model);
+        /// <summary>Creates the resistance with its first protest; returns the new resistance's id.</summary>
+        int Create(ResistanceModel model);
         Result<CompanyReturnDto> CreateCompany(CompanyCreateViewModel model);
         Resistance ExistingResistance(int companyId, int categoryId);
         ResistanceEditModel GetResistanceDetail(int id);
@@ -91,7 +92,7 @@ namespace RS.MVC.Applications
             db.Protesto.Add(protesto);
             db.SaveChanges();
         }
-        public void Create(ResistanceModel model)
+        public int Create(ResistanceModel model)
         {
             if(model.MainCompanyId != null)
                 db.CompanyOutsourceCompany.Add(
@@ -121,6 +122,7 @@ namespace RS.MVC.Applications
             resistance.Protestos.Add(protesto);
             db.Resistance.Add(resistance);
             db.SaveChanges();
+            return resistance.Id;
         }
         public Result<CompanyReturnDto> CreateCompany(CompanyCreateViewModel model)
         {

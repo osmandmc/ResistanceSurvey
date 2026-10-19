@@ -50,15 +50,6 @@ namespace RS.MVC.Applications
 
         private static readonly TimeSpan TurkeyOffset = TimeSpan.FromHours(3);
 
-        // Pipeline source ids → names shown to users.
-        private static readonly Dictionary<string, string> SourceNames = new()
-        {
-            ["evrensel"] = "Evrensel",
-            ["kizilbayrak"] = "Kızılbayrak",
-            ["sendika"] = "Sendika.org",
-            ["birgun"] = "BirGün",
-        };
-
         private readonly RSDBContext _db;
         private readonly IPipelineClient _pipeline;
         private readonly PipelineSettings _settings;
@@ -91,7 +82,7 @@ namespace RS.MVC.Applications
             var handledIds = handled.Select(h => h.ArticleId).ToHashSet();
             var items = page.Items
                 .Where(i => !handledIds.Contains(i.ArticleId))
-                .Select(i => new InboxItem(i.ArticleId, i.Title, i.SourceId, SourceName(i.SourceId), i.PublishedAt, i.Url))
+                .Select(i => new InboxItem(i.ArticleId, i.Title, i.SourceId, ArticleNews.SourceName(i.SourceId), i.PublishedAt, i.Url))
                 .ToList();
             return new InboxPage(items, page.Next);
         }
@@ -105,26 +96,13 @@ namespace RS.MVC.Applications
             if (article == null)
                 return DismissResult.NotFound;
 
-            // An article imported the old way (Excel → local table) has no ArticleId yet: reuse that row.
-            var news = await _db.News.FirstOrDefaultAsync(n => n.ArticleId == null && n.Link == article.Url);
-            if (news?.Status == Status.Linked)
+            // An article imported the old way (Excel → local table) has no ArticleId yet: that row is reused.
+            var news = await ArticleNews.FindOrAddAsync(_db, article, _settings);
+            if (news.Status == Status.Linked)
             {
-                news.ArticleId = articleId;
                 await _db.SaveChangesAsync();
                 return DismissResult.AlreadyHandled;
             }
-            if (news == null)
-            {
-                news = new News
-                {
-                    Header = article.Title,
-                    Link = article.Url,
-                    Date = (article.PublishedAt ?? DateTimeOffset.UtcNow).ToOffset(TurkeyOffset).DateTime,
-                    Source = AppSourceNumber(article.SourceId),
-                };
-                _db.News.Add(news);
-            }
-            news.ArticleId = articleId;
             news.Status = Status.Passive;
 
             try
@@ -179,12 +157,6 @@ namespace RS.MVC.Applications
                 _logger.LogWarning(ex, "Could not re-send the outcome for {ArticleId}", articleId);
             }
         }
-
-        private int AppSourceNumber(string sourceId) =>
-            _settings.Sources.FirstOrDefault(s => s.Value == sourceId).Key;
-
-        private static string SourceName(string sourceId) =>
-            sourceId != null && SourceNames.TryGetValue(sourceId, out var name) ? name : sourceId;
 
         private static string Clean(string reason) =>
             string.IsNullOrWhiteSpace(reason) ? null : reason.Trim();
