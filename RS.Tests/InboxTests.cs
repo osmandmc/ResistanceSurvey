@@ -3,13 +3,14 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using RS.COMMON.Entities;
 using RS.EF;
-using RS.MVC.Applications;
+using RS.MVC.Features.Articles;
+using RS.MVC.Features.Inbox;
 using RS.MVC.Models;
 using static RS.COMMON.Constants.Enums;
 
 namespace RS.Tests;
 
-public class InboxApplicationTests
+public class InboxTests
 {
     private static readonly DateTimeOffset Nov3 = new(2026, 11, 3, 10, 42, 0, TimeSpan.FromHours(3));
 
@@ -17,12 +18,15 @@ public class InboxApplicationTests
         .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
 
     private readonly FakePipeline _pipeline = new();
-    private readonly InboxApplication _inbox;
+    private readonly GetInboxHandler _getInbox;
+    private readonly DismissArticleHandler _dismiss;
 
-    public InboxApplicationTests()
+    public InboxTests()
     {
         var settings = Options.Create(new PipelineSettings { Sources = new() { [1] = "evrensel" } });
-        _inbox = new InboxApplication(_db, _pipeline, settings, NullLogger<InboxApplication>.Instance);
+        var outcomes = new OutcomeSender(_pipeline, NullLogger<OutcomeSender>.Instance);
+        _getInbox = new GetInboxHandler(_db, _pipeline, outcomes);
+        _dismiss = new DismissArticleHandler(_db, _pipeline, new ArticleNewsService(_db, settings), outcomes);
         _pipeline.Add("a1", "https://evrensel.net/haber/1/x", "Tekstil işçileri iş bıraktı", Nov3);
         _pipeline.Add("a2", "https://evrensel.net/haber/2/y", "Belediye işçileri eylemde", Nov3);
     }
@@ -30,7 +34,7 @@ public class InboxApplicationTests
     [Fact]
     public async Task ListsOpenArticlesForTheMonth()
     {
-        var page = await _inbox.GetPageAsync("2026-11", "evrensel", next: null);
+        var page = await _getInbox.Handle(new GetInboxQuery("2026-11", "evrensel", null));
 
         Assert.Equal(["a1", "a2"], page.Items.Select(i => i.ArticleId));
         Assert.Equal("Evrensel", page.Items[0].SourceName);
@@ -44,7 +48,7 @@ public class InboxApplicationTests
     [Fact]
     public async Task DismissSavesAThinNewsRowThenTellsThePipeline()
     {
-        var result = await _inbox.DismissAsync("a1", "  İlgisiz  ");
+        var result = await _dismiss.Handle(new DismissArticleCommand("a1", "  İlgisiz  "));
 
         Assert.Equal(DismissResult.Dismissed, result);
         var news = Assert.Single(_db.News);
@@ -60,7 +64,7 @@ public class InboxApplicationTests
         _db.News.Add(new News { Link = "https://evrensel.net/haber/1/x", Header = "Eski", Status = Status.Pending, Source = 1 });
         await _db.SaveChangesAsync();
 
-        await _inbox.DismissAsync("a1", null);
+        await _dismiss.Handle(new DismissArticleCommand("a1", null));
 
         var news = Assert.Single(_db.News);
         Assert.Equal(("a1", Status.Passive, "Eski"), (news.ArticleId, news.Status, news.Header));
@@ -72,7 +76,7 @@ public class InboxApplicationTests
         _db.News.Add(new News { Link = "https://evrensel.net/haber/1/x", Header = "Eski", Status = Status.Linked, Source = 1 });
         await _db.SaveChangesAsync();
 
-        var result = await _inbox.DismissAsync("a1", null);
+        var result = await _dismiss.Handle(new DismissArticleCommand("a1", null));
 
         Assert.Equal(DismissResult.AlreadyHandled, result);
         var news = Assert.Single(_db.News);
@@ -83,16 +87,16 @@ public class InboxApplicationTests
     [Fact]
     public async Task DismissingTwiceIsAlreadyHandled()
     {
-        await _inbox.DismissAsync("a1", null);
+        await _dismiss.Handle(new DismissArticleCommand("a1", null));
 
-        Assert.Equal(DismissResult.AlreadyHandled, await _inbox.DismissAsync("a1", null));
+        Assert.Equal(DismissResult.AlreadyHandled, await _dismiss.Handle(new DismissArticleCommand("a1", null)));
         Assert.Single(_db.News);
     }
 
     [Fact]
     public async Task UnknownArticleIsNotFound()
     {
-        Assert.Equal(DismissResult.NotFound, await _inbox.DismissAsync("nope", null));
+        Assert.Equal(DismissResult.NotFound, await _dismiss.Handle(new DismissArticleCommand("nope", null)));
         Assert.Empty(_db.News);
     }
 
@@ -100,11 +104,11 @@ public class InboxApplicationTests
     public async Task WhenThePipelineMissesTheOutcomeTheInboxHidesTheArticleAndResendsIt()
     {
         _pipeline.FailOutcomes = true;
-        Assert.Equal(DismissResult.DismissedOutcomePending, await _inbox.DismissAsync("a1", null));
+        Assert.Equal(DismissResult.DismissedOutcomePending, await _dismiss.Handle(new DismissArticleCommand("a1", null)));
         Assert.Single(_db.News); // still handled in the app
 
         _pipeline.FailOutcomes = false;
-        var page = await _inbox.GetPageAsync("2026-11", null, null);
+        var page = await _getInbox.Handle(new GetInboxQuery("2026-11", null, null));
 
         Assert.Equal(["a2"], page.Items.Select(i => i.ArticleId));
         Assert.Equal(("a1", new PipelineOutcomeRequest("Dismissed")), Assert.Single(_pipeline.Outcomes));
@@ -119,7 +123,7 @@ public class InboxApplicationTests
         _db.ResistanceNews.Add(new ResistanceNews { NewsId = news.Id, ResistanceId = 412 });
         await _db.SaveChangesAsync();
 
-        var page = await _inbox.GetPageAsync("2026-11", null, null);
+        var page = await _getInbox.Handle(new GetInboxQuery("2026-11", null, null));
 
         Assert.Equal(["a1"], page.Items.Select(i => i.ArticleId));
         Assert.Equal(("a2", new PipelineOutcomeRequest("Digested", 412)), Assert.Single(_pipeline.Outcomes));
@@ -132,7 +136,7 @@ public class InboxApplicationTests
         await _db.SaveChangesAsync();
         _pipeline.FailOutcomes = true;
 
-        var page = await _inbox.GetPageAsync("2026-11", null, null);
+        var page = await _getInbox.Handle(new GetInboxQuery("2026-11", null, null));
 
         Assert.Equal(["a1"], page.Items.Select(i => i.ArticleId));
     }
@@ -142,9 +146,9 @@ public class InboxApplicationTests
     [InlineData("2028-02", "2028-02-01", "2028-02-29")]
     [InlineData("2026-12", "2026-12-01", "2026-12-31")]
     public void MonthRangeCoversTheWholeMonth(string month, string from, string to) =>
-        Assert.Equal((DateOnly.Parse(from), DateOnly.Parse(to)), InboxApplication.MonthRange(month));
+        Assert.Equal((DateOnly.Parse(from), DateOnly.Parse(to)), GetInboxHandler.MonthRange(month));
 
     [Fact]
     public void AMalformedMonthIsRejected() =>
-        Assert.Throws<FormatException>(() => InboxApplication.MonthRange("11/2026"));
+        Assert.Throws<FormatException>(() => GetInboxHandler.MonthRange("11/2026"));
 }

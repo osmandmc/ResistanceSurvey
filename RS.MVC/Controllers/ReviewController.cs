@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using RS.MVC.Applications;
+using RS.MVC.Features.Review;
 using RS.MVC.Models;
 
 namespace RS.MVC.Controllers
@@ -15,14 +15,20 @@ namespace RS.MVC.Controllers
     [ApiController]
     [Route("api/review")]
     [Authorize]
-    public class ReviewController(IReviewApplication review, ILogger<ReviewController> logger) : ControllerBase
+    public class ReviewController(
+        GetReviewArticleHandler getArticle,
+        SearchCasesHandler searchCases,
+        CreateCaseFromArticleHandler createCase,
+        AddProtestFromArticleHandler addProtest,
+        LinkArticleToCaseHandler linkToCase,
+        ILogger<ReviewController> logger) : ControllerBase
     {
         public record SaveResponse(int ResistanceId, bool OutcomeSent);
 
         /// <summary>GET /api/review/resistances?query=… — existing cases to add a protest to or link to.</summary>
         [HttpGet("resistances")]
         public async Task<IReadOnlyList<ResistanceOption>> SearchResistances(string query) =>
-            await review.SearchResistancesAsync(query);
+            await searchCases.Handle(new SearchCasesQuery(query));
 
         /// <summary>GET /api/review/{articleId} — the article with its full text.</summary>
         [HttpGet("{articleId}")]
@@ -30,7 +36,7 @@ namespace RS.MVC.Controllers
         {
             try
             {
-                var result = await review.GetArticleAsync(articleId);
+                var result = await getArticle.Handle(new GetReviewArticleQuery(articleId));
                 return result.Status switch
                 {
                     ReviewStatus.Ok => result.Article,
@@ -50,7 +56,14 @@ namespace RS.MVC.Controllers
         {
             try
             {
-                var result = await review.SaveAsync(articleId, request, User.Identity?.Name);
+                var userName = User.Identity?.Name;
+                var result = request?.Action switch
+                {
+                    ReviewAction.NewCase => await createCase.Handle(new CreateCaseFromArticleCommand(articleId, request.Case, request.Protest, userName)),
+                    ReviewAction.AddProtest => await addProtest.Handle(new AddProtestFromArticleCommand(articleId, request.ResistanceId, request.Protest, userName)),
+                    ReviewAction.LinkOnly => await linkToCase.Handle(new LinkArticleToCaseCommand(articleId, request.ResistanceId)),
+                    _ => ReviewSaveResult.Invalid(new Dictionary<string, string> { ["action"] = "Lütfen bir işlem seçiniz." }),
+                };
                 return result.Status switch
                 {
                     ReviewStatus.Ok => new SaveResponse(result.ResistanceId!.Value, result.OutcomeSent),

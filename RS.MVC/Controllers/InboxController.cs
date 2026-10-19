@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using RS.MVC.Applications;
+using RS.MVC.Features.Inbox;
 
 namespace RS.MVC.Controllers
 {
@@ -13,7 +13,7 @@ namespace RS.MVC.Controllers
     [ApiController]
     [Route("api/inbox")]
     [Authorize]
-    public class InboxController(IInboxApplication inbox, ILogger<InboxController> logger) : ControllerBase
+    public class InboxController(GetInboxHandler getInbox, DismissArticleHandler dismissArticle, ILogger<InboxController> logger) : ControllerBase
     {
         public record DismissRequest(string Reason);
 
@@ -25,7 +25,7 @@ namespace RS.MVC.Controllers
         {
             try
             {
-                return await inbox.GetPageAsync(month, source, next);
+                return await getInbox.Handle(new GetInboxQuery(month, source, next));
             }
             catch (FormatException)
             {
@@ -55,7 +55,7 @@ namespace RS.MVC.Controllers
         {
             try
             {
-                return await inbox.DismissAsync(articleId, request?.Reason) switch
+                return await dismissArticle.Handle(new DismissArticleCommand(articleId, request?.Reason)) switch
                 {
                     DismissResult.Dismissed => new DismissResponse(OutcomeSent: true),
                     DismissResult.DismissedOutcomePending => new DismissResponse(OutcomeSent: false),

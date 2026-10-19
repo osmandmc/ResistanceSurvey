@@ -3,7 +3,7 @@ using System.Linq;
 using RS.COMMON.Entities;
 using RS.MVC.Models;
 
-namespace RS.MVC.Applications
+namespace RS.MVC.Features.Review
 {
     /// <summary>
     /// Required fields of the case form, checked on the server: the same rules the old form checked in the browser,
@@ -15,32 +15,32 @@ namespace RS.MVC.Applications
         /// <summary>The intervention type meaning "no intervention": with it, there is no custody count.</summary>
         public const int NoInterventionTypeId = 7;
 
-        public static Dictionary<string, string> Validate(ReviewSaveRequest request)
+        public static Dictionary<string, string> ForNewCase(CaseInput caseInput, ProtestInput protest)
         {
             var errors = new Dictionary<string, string>();
-            switch (request?.Action)
-            {
-                case ReviewAction.NewCase:
-                    ValidateCase(request.Case, errors);
-                    ValidateProtest(request.Protest, errors);
-                    break;
-                case ReviewAction.AddProtest:
-                    RequireResistance(request, errors);
-                    ValidateProtest(request.Protest, errors);
-                    break;
-                case ReviewAction.LinkOnly:
-                    RequireResistance(request, errors);
-                    break;
-                default:
-                    errors["action"] = "Lütfen bir işlem seçiniz.";
-                    break;
-            }
+            ValidateCase(caseInput, errors);
+            ValidateProtest(protest, errors);
             return errors;
         }
 
-        private static void RequireResistance(ReviewSaveRequest request, Dictionary<string, string> errors)
+        public static Dictionary<string, string> ForAddProtest(int? resistanceId, ProtestInput protest)
         {
-            if (request.ResistanceId is not > 0)
+            var errors = new Dictionary<string, string>();
+            RequireResistance(resistanceId, errors);
+            ValidateProtest(protest, errors);
+            return errors;
+        }
+
+        public static Dictionary<string, string> ForLinkOnly(int? resistanceId)
+        {
+            var errors = new Dictionary<string, string>();
+            RequireResistance(resistanceId, errors);
+            return errors;
+        }
+
+        private static void RequireResistance(int? resistanceId, Dictionary<string, string> errors)
+        {
+            if (resistanceId is not > 0)
                 errors["resistanceId"] = "Lütfen bir vaka seçiniz.";
         }
 

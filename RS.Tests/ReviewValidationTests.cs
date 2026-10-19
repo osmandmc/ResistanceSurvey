@@ -1,5 +1,5 @@
 using RS.COMMON.Entities;
-using RS.MVC.Applications;
+using RS.MVC.Features.Review;
 using RS.MVC.Models;
 using static RS.COMMON.Constants.Enums;
 
@@ -39,13 +39,16 @@ public class ReviewValidationTests
         Locations = [new LocationInput { CityId = 16, DistrictId = 160, Place = "Fabrika önü" }],
     };
 
+    private static Dictionary<string, string> ForNewCase(ReviewSaveRequest request) =>
+        ReviewValidation.ForNewCase(request.Case!, request.Protest!);
+
     [Fact]
-    public void ACompleteNewCaseIsValid() => Assert.Empty(ReviewValidation.Validate(CompleteNewCase()));
+    public void ACompleteNewCaseIsValid() => Assert.Empty(ForNewCase(CompleteNewCase()));
 
     [Fact]
     public void AnEmptyNewCaseNamesEveryRequiredField()
     {
-        var errors = ReviewValidation.Validate(new ReviewSaveRequest { Action = ReviewAction.NewCase, Case = new(), Protest = new() });
+        var errors = ReviewValidation.ForNewCase(new CaseInput(), new ProtestInput());
 
         Assert.Equal(
             [
@@ -57,16 +60,12 @@ public class ReviewValidationTests
     }
 
     [Fact]
-    public void AnUnknownActionIsRejected() =>
-        Assert.Contains("action", ReviewValidation.Validate(new ReviewSaveRequest { Action = "delete" }).Keys);
-
-    [Fact]
     public void StartMustNotBeAfterEnd()
     {
         var request = CompleteNewCase();
         request.Protest.EndDate = new DateTime(2026, 10, 1);
 
-        Assert.Equal(["protest.startDate"], ReviewValidation.Validate(request).Keys);
+        Assert.Equal(["protest.startDate"], ForNewCase(request).Keys);
     }
 
     [Theory]
@@ -79,7 +78,7 @@ public class ReviewValidationTests
         request.Protest.InterventionTypeIds = [2];
         request.Protest.CustodyCount = custody;
 
-        Assert.Equal(missing, ReviewValidation.Validate(request).ContainsKey("protest.custodyCount"));
+        Assert.Equal(missing, ForNewCase(request).ContainsKey("protest.custodyCount"));
     }
 
     [Fact]
@@ -88,7 +87,7 @@ public class ReviewValidationTests
         var request = CompleteNewCase();
         request.Protest.Locations = [new LocationInput { CityId = 16 }];
 
-        Assert.Equal(["protest.locations"], ReviewValidation.Validate(request).Keys);
+        Assert.Equal(["protest.locations"], ForNewCase(request).Keys);
     }
 
     [Fact]
@@ -97,13 +96,13 @@ public class ReviewValidationTests
         var request = CompleteNewCase();
         request.Case!.IsOutsource = true;
 
-        Assert.Equal(["case.mainCompanyId"], ReviewValidation.Validate(request).Keys);
+        Assert.Equal(["case.mainCompanyId"], ForNewCase(request).Keys);
     }
 
     [Fact]
     public void AddProtestNeedsACaseAndAProtest()
     {
-        var errors = ReviewValidation.Validate(new ReviewSaveRequest { Action = ReviewAction.AddProtest });
+        var errors = ReviewValidation.ForAddProtest(null, null!);
 
         Assert.Equal(["protest", "resistanceId"], errors.Keys.Order());
     }
@@ -111,7 +110,7 @@ public class ReviewValidationTests
     [Fact]
     public void LinkOnlyNeedsOnlyTheCase()
     {
-        Assert.Empty(ReviewValidation.Validate(new ReviewSaveRequest { Action = ReviewAction.LinkOnly, ResistanceId = 412 }));
-        Assert.Equal(["resistanceId"], ReviewValidation.Validate(new ReviewSaveRequest { Action = ReviewAction.LinkOnly }).Keys);
+        Assert.Empty(ReviewValidation.ForLinkOnly(412));
+        Assert.Equal(["resistanceId"], ReviewValidation.ForLinkOnly(null).Keys);
     }
 }

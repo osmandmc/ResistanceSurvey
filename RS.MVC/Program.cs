@@ -13,6 +13,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using RS.EF;
 using RS.MVC.Applications;
+using RS.MVC.Features;
+using RS.MVC.Features.Articles;
+using RS.MVC.Features.Review;
 using RS.MVC.Models;
 using Microsoft.Extensions.Options;
 using System;
@@ -34,8 +37,12 @@ builder.Logging.AddAzureWebAppDiagnostics();
 // Add Services
 builder.Services.AddScoped<IResistanceApplication, ResistanceApplication>();
 builder.Services.AddScoped<INewsApplication, NewsApplication>();
-builder.Services.AddScoped<IInboxApplication, InboxApplication>();
-builder.Services.AddScoped<IReviewApplication, ReviewApplication>();
+
+// Use cases of the new screens (commands and queries under Features/), and what they share.
+builder.Services.AddFeatureHandlers();
+builder.Services.AddScoped<ArticleNewsService>();
+builder.Services.AddScoped<OutcomeSender>();
+builder.Services.AddScoped<ArticleCaseLinker>();
 
 // Test environment (Azure) only: bring its copy of the database up to date in the background, after startup.
 if (builder.Environment.IsEnvironment("Test"))

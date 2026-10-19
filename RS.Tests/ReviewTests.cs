@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -5,12 +7,15 @@ using Microsoft.Extensions.Options;
 using RS.COMMON.Entities;
 using RS.EF;
 using RS.MVC.Applications;
+using RS.MVC.Controllers;
+using RS.MVC.Features.Articles;
+using RS.MVC.Features.Review;
 using RS.MVC.Models;
 using static RS.COMMON.Constants.Enums;
 
 namespace RS.Tests;
 
-public class ReviewApplicationTests
+public class ReviewTests
 {
     private static readonly DateTimeOffset Oct19 = new(2026, 10, 19, 17, 58, 0, TimeSpan.FromHours(3));
     private const string ArticleUrl = "https://www.evrensel.net/haber/6005665/bursa-nev-hastanesinde-eylem";
@@ -22,14 +27,35 @@ public class ReviewApplicationTests
         .Options);
 
     private readonly FakePipeline _pipeline = new();
-    private readonly ReviewApplication _review;
+    private readonly GetReviewArticleHandler _getArticle;
+    private readonly SearchCasesHandler _searchCases;
+    private readonly CreateCaseFromArticleHandler _createCase;
+    private readonly AddProtestFromArticleHandler _addProtest;
+    private readonly LinkArticleToCaseHandler _linkToCase;
 
-    public ReviewApplicationTests()
+    public ReviewTests()
     {
         var settings = Options.Create(new PipelineSettings { Sources = new() { [1] = "evrensel" } });
-        _review = new ReviewApplication(_db, new ResistanceApplication(_db), _pipeline, settings, NullLogger<ReviewApplication>.Instance);
+        var articleNews = new ArticleNewsService(_db, settings);
+        var linker = new ArticleCaseLinker(_db, _pipeline, articleNews, new OutcomeSender(_pipeline, NullLogger<OutcomeSender>.Instance));
+        var resistances = new ResistanceApplication(_db);
+        _getArticle = new GetReviewArticleHandler(_pipeline, articleNews);
+        _searchCases = new SearchCasesHandler(_db);
+        _createCase = new CreateCaseFromArticleHandler(linker, resistances);
+        _addProtest = new AddProtestFromArticleHandler(linker, resistances);
+        _linkToCase = new LinkArticleToCaseHandler(linker);
         _pipeline.Add("a1", ArticleUrl, "Bursa NEV Hastanesi’nde eylem", Oct19, "Hekimler ve sağlık çalışanları 6 aydır maaşlarını alamıyor.");
     }
+
+    // Dispatches by action, as ReviewController does.
+    private Task<ReviewSaveResult> Save(string articleId, ReviewSaveRequest request, string userName) => request.Action switch
+    {
+        ReviewAction.NewCase => _createCase.Handle(new CreateCaseFromArticleCommand(articleId, request.Case!, request.Protest!, userName)),
+        ReviewAction.AddProtest => _addProtest.Handle(new AddProtestFromArticleCommand(articleId, request.ResistanceId, request.Protest!, userName)),
+        _ => _linkToCase.Handle(new LinkArticleToCaseCommand(articleId, request.ResistanceId)),
+    };
+
+    private Task<ReviewArticleResult> GetArticle(string articleId) => _getArticle.Handle(new GetReviewArticleQuery(articleId));
 
     private Resistance AddResistance(string name, string? company, params DateTime[] protestDates)
     {
@@ -48,18 +74,18 @@ public class ReviewApplicationTests
     [Fact]
     public async Task TheArticleComesWithItsFullText()
     {
-        var result = await _review.GetArticleAsync("a1");
+        var result = await GetArticle("a1");
 
         Assert.Equal(ReviewStatus.Ok, result.Status);
         Assert.Equal("Evrensel", result.Article!.SourceName);
         Assert.Equal("Hekimler ve sağlık çalışanları 6 aydır maaşlarını alamıyor.", result.Article.Body);
-        Assert.Equal(ReviewStatus.NotFound, (await _review.GetArticleAsync("nope")).Status);
+        Assert.Equal(ReviewStatus.NotFound, (await GetArticle("nope")).Status);
     }
 
     [Fact]
     public async Task ANewCaseSavesTheResistanceItsProtestAndTheLink()
     {
-        var result = await _review.SaveAsync("a1", ReviewValidationTests.CompleteNewCase(), "admin");
+        var result = await Save("a1", ReviewValidationTests.CompleteNewCase(), "admin");
 
         Assert.Equal(ReviewStatus.Ok, result.Status);
         Assert.True(result.OutcomeSent);
@@ -89,7 +115,7 @@ public class ReviewApplicationTests
         var existing = AddResistance("NEV Hastanesi direnişi", "NEV Hastanesi", new DateTime(2026, 9, 1));
         var request = new ReviewSaveRequest { Action = ReviewAction.AddProtest, ResistanceId = existing.Id, Protest = ReviewValidationTests.CompleteProtest() };
 
-        var result = await _review.SaveAsync("a1", request, "admin");
+        var result = await Save("a1", request, "admin");
 
         Assert.Equal((ReviewStatus.Ok, existing.Id), (result.Status, result.ResistanceId));
         Assert.Equal(2, _db.Protesto.Count(p => p.ResistanceId == existing.Id));
@@ -103,7 +129,7 @@ public class ReviewApplicationTests
     {
         var existing = AddResistance("NEV Hastanesi direnişi", "NEV Hastanesi", new DateTime(2026, 9, 1));
 
-        var result = await _review.SaveAsync("a1", new ReviewSaveRequest { Action = ReviewAction.LinkOnly, ResistanceId = existing.Id }, "admin");
+        var result = await Save("a1", new ReviewSaveRequest { Action = ReviewAction.LinkOnly, ResistanceId = existing.Id }, "admin");
 
         Assert.Equal(ReviewStatus.Ok, result.Status);
         Assert.Equal(1, _db.Protesto.Count());
@@ -118,7 +144,7 @@ public class ReviewApplicationTests
         _db.News.Add(new News { Link = ArticleUrl, Header = "Eski", Status = Status.Pending, Source = 1 });
         await _db.SaveChangesAsync();
 
-        await _review.SaveAsync("a1", new ReviewSaveRequest { Action = ReviewAction.LinkOnly, ResistanceId = existing.Id }, "admin");
+        await Save("a1", new ReviewSaveRequest { Action = ReviewAction.LinkOnly, ResistanceId = existing.Id }, "admin");
 
         var news = Assert.Single(_db.News);
         Assert.Equal(("a1", Status.Linked, "Eski"), (news.ArticleId, news.Status, news.Header));
@@ -127,7 +153,7 @@ public class ReviewApplicationTests
     [Fact]
     public async Task MissingFieldsSaveNothing()
     {
-        var result = await _review.SaveAsync("a1", new ReviewSaveRequest { Action = ReviewAction.NewCase, Case = new(), Protest = new() }, "admin");
+        var result = await Save("a1", new ReviewSaveRequest { Action = ReviewAction.NewCase, Case = new(), Protest = new() }, "admin");
 
         Assert.Equal(ReviewStatus.Invalid, result.Status);
         Assert.Contains("case.categoryId", result.Errors!.Keys);
@@ -139,7 +165,7 @@ public class ReviewApplicationTests
     [Fact]
     public async Task AnUnknownCaseIsRejected()
     {
-        var result = await _review.SaveAsync("a1", new ReviewSaveRequest { Action = ReviewAction.LinkOnly, ResistanceId = 999 }, "admin");
+        var result = await Save("a1", new ReviewSaveRequest { Action = ReviewAction.LinkOnly, ResistanceId = 999 }, "admin");
 
         Assert.Equal(ReviewStatus.Invalid, result.Status);
         Assert.Equal(["resistanceId"], result.Errors!.Keys);
@@ -149,13 +175,13 @@ public class ReviewApplicationTests
     [Fact]
     public async Task AnAlreadyHandledArticleIsNotSavedAgain()
     {
-        await _review.SaveAsync("a1", ReviewValidationTests.CompleteNewCase(), "admin");
+        await Save("a1", ReviewValidationTests.CompleteNewCase(), "admin");
 
-        var second = await _review.SaveAsync("a1", ReviewValidationTests.CompleteNewCase(), "user");
+        var second = await Save("a1", ReviewValidationTests.CompleteNewCase(), "user");
 
         Assert.Equal(ReviewStatus.AlreadyHandled, second.Status);
         Assert.Single(_db.Resistance);
-        Assert.Equal(ReviewStatus.AlreadyHandled, (await _review.GetArticleAsync("a1")).Status);
+        Assert.Equal(ReviewStatus.AlreadyHandled, (await GetArticle("a1")).Status);
     }
 
     [Fact]
@@ -163,12 +189,26 @@ public class ReviewApplicationTests
     {
         _pipeline.FailOutcomes = true;
 
-        var result = await _review.SaveAsync("a1", ReviewValidationTests.CompleteNewCase(), "admin");
+        var result = await Save("a1", ReviewValidationTests.CompleteNewCase(), "admin");
 
         Assert.Equal(ReviewStatus.Ok, result.Status);
         Assert.False(result.OutcomeSent);
         Assert.Single(_db.Resistance);
         Assert.Equal(Status.Linked, Assert.Single(_db.News).Status); // the inbox re-sends Digested later
+    }
+
+    [Fact]
+    public async Task TheControllerRejectsAnUnknownAction()
+    {
+        var controller = new ReviewController(_getArticle, _searchCases, _createCase, _addProtest, _linkToCase, NullLogger<ReviewController>.Instance)
+        {
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
+        };
+
+        var response = await controller.Save("a1", new ReviewSaveRequest { Action = "delete" });
+
+        Assert.IsType<BadRequestObjectResult>(response.Result);
+        Assert.Empty(_db.News);
     }
 
     [Fact]
@@ -180,8 +220,8 @@ public class ReviewApplicationTests
         deleted.Deleted = true;
         await _db.SaveChangesAsync();
 
-        var byCompany = await _review.SearchResistancesAsync("Tekstil");
-        var all = await _review.SearchResistancesAsync("");
+        var byCompany = await _searchCases.Handle(new SearchCasesQuery("Tekstil"));
+        var all = await _searchCases.Handle(new SearchCasesQuery(""));
 
         var hit = Assert.Single(byCompany);
         Assert.Equal(("Tekstil ücret direnişi", "Örnek Tekstil", new DateTime(2026, 10, 1)), (hit.Name, hit.CompanyName, hit.LastProtestDate));
