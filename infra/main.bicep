@@ -138,6 +138,22 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
   }
 }
 
+// App log messages (Warning and up) to the file system, so they show in the portal's Log stream. Kept 3 days.
+resource webAppLogs 'Microsoft.Web/sites/config@2023-12-01' = {
+  parent: webApp
+  name: 'logs'
+  properties: {
+    applicationLogs: {
+      fileSystem: { level: 'Warning' }
+    }
+    httpLogs: {
+      fileSystem: { enabled: false, retentionInDays: 3, retentionInMb: 35 }
+    }
+    detailedErrorMessages: { enabled: false }
+    failedRequestsTracing: { enabled: false }
+  }
+}
+
 // ---------- Budget alert ----------
 
 resource budget 'Microsoft.Consumption/budgets@2023-11-01' = if (!empty(budgetContactEmail)) {

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using RS.EF;
 using RS.MVC.Applications;
@@ -26,6 +27,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Load Configuration
 var configuration = builder.Configuration;
+
+// On Azure App Service, send log messages to its Log stream and log files (no effect elsewhere).
+builder.Logging.AddAzureWebAppDiagnostics();
 
 // Add Services
 builder.Services.AddScoped<IResistanceApplication, ResistanceApplication>();

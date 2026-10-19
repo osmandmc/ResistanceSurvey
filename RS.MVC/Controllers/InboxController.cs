@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using RS.MVC.Applications;
 
 namespace RS.MVC.Controllers
@@ -12,7 +13,7 @@ namespace RS.MVC.Controllers
     [ApiController]
     [Route("api/inbox")]
     [Authorize]
-    public class InboxController(IInboxApplication inbox) : ControllerBase
+    public class InboxController(IInboxApplication inbox, ILogger<InboxController> logger) : ControllerBase
     {
         public record DismissRequest(string Reason);
 
@@ -30,10 +31,23 @@ namespace RS.MVC.Controllers
             {
                 return BadRequest(new { error = "'month' is like 2026-11" });
             }
-            catch (HttpRequestException)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
             {
-                return StatusCode(StatusCodes.Status502BadGateway, new { error = "Haber işleme hattına ulaşılamadı." });
+                return PipelineUnavailable(ex);
             }
+        }
+
+        // The pipeline did not answer usefully. Name the cause on screen (status, or connection/timeout) and in the log.
+        private ObjectResult PipelineUnavailable(Exception ex)
+        {
+            var cause = ex switch
+            {
+                HttpRequestException { StatusCode: { } status } => $"HTTP {(int)status}",
+                TaskCanceledException => "zaman aşımı",
+                _ => "bağlantı hatası",
+            };
+            logger.LogWarning(ex, "Pipeline unavailable for {Path}: {Cause}", Request.Path, cause);
+            return StatusCode(StatusCodes.Status502BadGateway, new { error = $"Haber işleme hattına ulaşılamadı ({cause})." });
         }
 
         [HttpPost("{articleId}/dismiss")]
@@ -49,9 +63,9 @@ namespace RS.MVC.Controllers
                     _ => NotFound(new { error = "Haber bulunamadı." }),
                 };
             }
-            catch (HttpRequestException)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
             {
-                return StatusCode(StatusCodes.Status502BadGateway, new { error = "Haber işleme hattına ulaşılamadı." });
+                return PipelineUnavailable(ex);
             }
         }
     }
