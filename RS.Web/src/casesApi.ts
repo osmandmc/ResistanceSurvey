@@ -148,3 +148,8 @@ export function attachArticle(caseId: number, newsId: number) {
 export function detachArticle(caseId: number, newsId: number) {
   return api<{ id: number }>(`/api/cases/${caseId}/articles/${newsId}`, { method: 'DELETE' })
 }
+
+/** A new case with its first protest, without an article. */
+export function createCase(input: { case: CaseInput; protest: unknown }) {
+  return api<{ id: number }>('/api/cases', { method: 'POST', body: JSON.stringify(input) })
+}

@@ -22,11 +22,19 @@ namespace RS.MVC.Controllers
         DeleteCaseHandler deleteCase,
         SearchNewsHandler searchNews,
         AttachArticleHandler attachArticle,
-        DetachArticleHandler detachArticle) : ControllerBase
+        DetachArticleHandler detachArticle,
+        CreateCaseHandler createCase) : ControllerBase
     {
         public record AttachArticleRequest(int NewsId);
 
+        public record CreateCaseRequest(CaseInput Case, ProtestInput Protest);
+
         private string UserName => User.Identity?.Name;
+
+        /// <summary>POST /api/cases — a new case with its first protest, without an article.</summary>
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateCaseRequest request) =>
+            ToResult(await createCase.Handle(new CreateCaseCommand(request.Case, request.Protest, UserName)));
 
         /// <summary>GET /api/cases/{id} — the case with its protests and articles.</summary>
         [HttpGet("{id:int}")]

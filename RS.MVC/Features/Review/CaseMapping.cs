@@ -13,7 +13,10 @@ namespace RS.MVC.Features.Review
     /// </summary>
     public static class CaseMapping
     {
-        /// <summary><paramref name="reasonIds"/> and <paramref name="corporationIds"/>: the case's lists after typed values were resolved.</summary>
+        /// <summary>
+        /// <paramref name="reasonIds"/> and <paramref name="corporationIds"/>: the case's lists after typed values were resolved.
+        /// <paramref name="news"/>: the article to link, or null for a case created without one.
+        /// </summary>
         public static ResistanceModel ToResistanceModel(
             CaseInput c, ProtestInput p, News news, string userName, IReadOnlyList<int> reasonIds, IReadOnlyList<int> corporationIds)
         {
@@ -38,7 +41,7 @@ namespace RS.MVC.Features.Review
                 EmploymentTypeIds = c.EmploymentTypeIds.Select(id => new EmploymentType { Id = id }).ToList(),
                 FiredEmployeeCountByProtesto = c.FiredEmployeeCount ?? 0,
                 ResistanceResult = c.Result!.Value,
-                ResistanceNews = [news],
+                ResistanceNews = news == null ? [] : [news],
                 Protesto = new ProtestoModel
                 {
                     ProtestoTypeIds = p.ProtestTypeIds.Select(id => new ProtestoType { Id = id }).ToList(),

@@ -141,6 +141,7 @@ function open(item: CaseListItem) {
     </div>
     <div class="head-actions">
       <n-button tag="a" :href="download">Dışa Aktar</n-button>
+      <n-button type="primary" @click="router.push('/cases/new')">Yeni vaka</n-button>
     </div>
   </div>
 
@@ -228,6 +229,10 @@ function open(item: CaseListItem) {
 </template>
 
 <style scoped>
+.head-actions {
+  display: flex;
+  gap: 8px;
+}
 .page-head {
   display: flex;
   flex-wrap: wrap;

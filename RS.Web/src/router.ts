@@ -7,6 +7,7 @@ import CasesPage from './pages/CasesPage.vue'
 import InboxPage from './pages/InboxPage.vue'
 import LoginPage from './pages/LoginPage.vue'
 import ReviewPage from './pages/ReviewPage.vue'
+import NewCasePage from './pages/NewCasePage.vue'
 import NotFoundPage from './pages/NotFoundPage.vue'
 import PlaceholderPage from './pages/PlaceholderPage.vue'
 
@@ -38,6 +39,7 @@ export const router = createRouter({
           meta: { title: 'Haber Arşivi', description: 'Her durumdaki tüm haberler ve her haberin geçmişi.' },
         },
         { path: 'cases', component: CasesPage, meta: { title: 'Vakalar' } },
+        { path: 'cases/new', component: NewCasePage, meta: { title: 'Yeni vaka' } },
         { path: 'cases/:id(\\d+)', component: CaseDetailPage, meta: { title: 'Vaka' } },
         {
           path: 'status',
