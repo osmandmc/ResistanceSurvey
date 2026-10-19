@@ -35,6 +35,10 @@ builder.Logging.AddAzureWebAppDiagnostics();
 builder.Services.AddScoped<IResistanceApplication, ResistanceApplication>();
 builder.Services.AddScoped<INewsApplication, NewsApplication>();
 builder.Services.AddScoped<IInboxApplication, InboxApplication>();
+
+// Test environment (Azure) only: bring its copy of the database up to date in the background, after startup.
+if (builder.Environment.IsEnvironment("Test"))
+    builder.Services.AddHostedService<TestDatabaseMigrator>();
 builder.Services.AddScoped<IUserApplication, UserApplication>();
 
 // Database Context
@@ -132,24 +136,6 @@ builder.Services.AddAuthentication("Auto")
 // Build the App
 var app = builder.Build();
 
-// Test environment (Azure) only: bring its copy of the database up to date on startup.
-// Production migrations stay a manual step. The test database pauses when idle, so retry while it wakes.
-if (app.Environment.IsEnvironment("Test"))
-{
-    for (var attempt = 1; ; attempt++)
-    {
-        try
-        {
-            using var scope = app.Services.CreateScope();
-            scope.ServiceProvider.GetRequiredService<RSDBContext>().Database.Migrate();
-            break;
-        }
-        catch (Microsoft.Data.SqlClient.SqlException) when (attempt < 6)
-        {
-            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(20));
-        }
-    }
-}
 
 // Middleware Setup
 app.UseStaticFiles();
