@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { setUnauthorizedHandler } from './api'
 import { forgetCurrentUser, loadCurrentUser } from './auth'
 import AppLayout from './layouts/AppLayout.vue'
+import InboxPage from './pages/InboxPage.vue'
 import LoginPage from './pages/LoginPage.vue'
 import NotFoundPage from './pages/NotFoundPage.vue'
 import PlaceholderPage from './pages/PlaceholderPage.vue'
@@ -26,11 +27,7 @@ export const router = createRouter({
       component: AppLayout,
       children: [
         { path: '', redirect: '/inbox' },
-        {
-          path: 'inbox',
-          component: PlaceholderPage,
-          meta: { title: 'Gelen Kutusu', description: 'Karar bekleyen haberler: taslağı hazır olanlar ve elle incelenecekler.' },
-        },
+        { path: 'inbox', component: InboxPage, meta: { title: 'Gelen Kutusu' } },
         {
           path: 'archive',
           component: PlaceholderPage,
