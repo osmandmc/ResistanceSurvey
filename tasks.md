@@ -34,7 +34,7 @@ Status: ☐ open · ◐ in progress · ☑ done
 | # | Task | Notes |
 |---|---|---|
 | ◐ R4 | `RS.Web` project + layout | In increments: ☑ **R4a** cookie sign-in (`/api/auth/login`, `/logout`, `/me`; bearer still accepted) · ☑ **R4b** `RS.Web` skeleton served at `/app` · ☑ **R4d** deploy builds the front end · ◐ **R4c** login screen, top menu, empty pages, “Eski ekranlar” link (English paths: `/app/login`, `/inbox`, `/archive`, `/cases`, `/status`, `/upload`) |
-| ☐ R5 | Gelen Kutusu (Inbox) | Open articles from the pipeline, processing count, “İlgisiz” sends `Dismissed`. “Taslak hazır” tab empty until AI drafts exist |
+| ◐ R5 | Gelen Kutusu (Inbox) | ☑ **R5a** backend: `GET /api/inbox` (open, parsed articles per month/source; articles already handled in the app are hidden and their outcome re-sent), `POST /api/inbox/{id}/dismiss` (thin `News` row, then `Dismissed`; optional reason); `RS.Tests` project · ☐ **R5b** the Inbox page. “Taslak hazır” tab empty until AI drafts exist; processing count waits for pipeline B6 |
 | ☐ R6 | İnceleme (Review) | Article beside the full case form (all fields of today's form). New resistance / add protest to existing / link only. Save: case + thin `News` row (`ArticleId`) + link in one transaction, then `Digested` |
 | ☐ R7 | Haber Arşivi (Archive) | All articles with status and timeline; needs title search in the pipeline API |
 | ☐ R8 | Vakalar (Cases) | Today's list plus linked articles per case |

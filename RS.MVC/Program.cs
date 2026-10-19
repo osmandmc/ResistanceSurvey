@@ -30,6 +30,7 @@ var configuration = builder.Configuration;
 // Add Services
 builder.Services.AddScoped<IResistanceApplication, ResistanceApplication>();
 builder.Services.AddScoped<INewsApplication, NewsApplication>();
+builder.Services.AddScoped<IInboxApplication, InboxApplication>();
 builder.Services.AddScoped<IUserApplication, UserApplication>();
 
 // Database Context

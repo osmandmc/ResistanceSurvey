@@ -40,6 +40,9 @@ jobs:
           npm ci
           npm run build
 
+      - name: Test
+        run: dotnet test RS.Tests/RS.Tests.csproj -c Release
+
       - name: Publish
         run: dotnet publish RS.MVC/RS.MVC.csproj -c Release -o publish
 
