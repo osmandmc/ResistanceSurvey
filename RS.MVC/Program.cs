@@ -179,8 +179,9 @@ app.MapControllerRoute(
 if (rsWebFiles != null)
     app.MapFallbackToFile("app/{*path:nonfile}", "index.html", new StaticFileOptions { FileProvider = rsWebFiles });
 
-// Catch-all Route for Vue 3
-app.MapFallbackToController("IndexVue", "Resistance"); // Ensure only one catch-all route
+// The old Vue app's own paths (e.g. /Resistance/IndexVue/edit/5) survive a page refresh.
+// Only its paths: any other unknown address is a 404, not the old Vue page.
+app.MapFallbackToController("Resistance/IndexVue/{*path:nonfile}", "IndexVue", "Resistance");
 
 
 app.Run();

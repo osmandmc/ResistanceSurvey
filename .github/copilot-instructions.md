@@ -7,7 +7,7 @@ Purpose
 Big picture
 
 - ASP.NET Core MVC app with EF Core for the data access layer (`RS.EF/RSDBContext.cs`). The legacy `RS.DAL` project has been removed; rely on EF and application services instead of Dapper helpers.
-- Frontend: Razor Views plus a Vue 3 standalone SPA served under a catch-all route (see `RS.MVC/Program.cs` -> MapFallbackToController("IndexVue", "Resistance")).
+- Frontend: Razor Views plus the old Vue 3 SPA under `/Resistance/IndexVue` (fallback limited to that path in `RS.MVC/Program.cs`), and the new front end `RS.Web` (Vue 3 + TypeScript + Naive UI) served at `/app` from `wwwroot/rsweb`.
 - Services: application-level services live under `RS.MVC/Applications` (e.g., `ResistanceApplication.cs`) and are registered in `RS.MVC/Program.cs` / `Startup.cs` as scoped services.
 
 How the pieces talk
@@ -47,7 +47,7 @@ Where to look for examples
 Quick tips for edits
 
 - Keep controller actions and view model shapes backward compatible: many consumers expect specific JSON shapes (CamelCase serializer configured in Startup).
-- When changing routing, preserve the fallback route for Vue: MapFallbackToController("IndexVue", "Resistance") to avoid breaking SPA routes.
+- When changing routing, keep both scoped fallbacks: `Resistance/IndexVue/{*path:nonfile}` for the old Vue app and `app/{*path:nonfile}` for RS.Web. There is no global catch-all; unknown addresses return 404.
 - When introducing schema changes, update the EF entities and corresponding application-layer logic that rely on the affected tables/columns.
 
 If you are unsure

@@ -33,7 +33,7 @@ Status: ☐ open · ◐ in progress · ☑ done
 
 | # | Task | Notes |
 |---|---|---|
-| ◐ R4 | `RS.Web` project + layout | In increments: ☑ **R4a** cookie sign-in (`/api/auth/login`, `/logout`, `/me`; bearer still accepted) · ☑ **R4b** `RS.Web` skeleton served at `/app` · ◐ **R4d** deploy builds the front end · ☐ **R4c** login screen, top menu, empty pages, “Eski ekranlar” link |
+| ◐ R4 | `RS.Web` project + layout | In increments: ☑ **R4a** cookie sign-in (`/api/auth/login`, `/logout`, `/me`; bearer still accepted) · ☑ **R4b** `RS.Web` skeleton served at `/app` · ☑ **R4d** deploy builds the front end · ☐ **R4c** login screen, top menu, empty pages, “Eski ekranlar” link |
 | ☐ R5 | Gelen Kutusu (Inbox) | Open articles from the pipeline, processing count, “İlgisiz” sends `Dismissed`. “Taslak hazır” tab empty until AI drafts exist |
 | ☐ R6 | İnceleme (Review) | Article beside the full case form (all fields of today's form). New resistance / add protest to existing / link only. Save: case + thin `News` row (`ArticleId`) + link in one transaction, then `Digested` |
 | ☐ R7 | Haber Arşivi (Archive) | All articles with status and timeline; needs title search in the pipeline API |
