@@ -38,9 +38,11 @@ jobs:
       - name: Find the web app
         id: app
         run: |
-          read -r name host < <(az webapp list --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
-            --query "[?starts_with(name, 'app-direnistakip-')] | [0].[name, defaultHostName]" -o tsv)
+          rg="${{ vars.AZURE_RESOURCE_GROUP }}"
+          name=$(az webapp list --resource-group "$rg" --query "[?starts_with(name, 'app-direnistakip-')] | [0].name" -o tsv)
           if [ -z "$name" ]; then echo "No web app found; run infra-test first." >&2; exit 1; fi
+          host=$(az webapp show --resource-group "$rg" --name "$name" --query defaultHostName -o tsv)
+          echo "Web app: $name ($host)"
           echo "name=$name" >> "$GITHUB_OUTPUT"
           echo "host=$host" >> "$GITHUB_OUTPUT"
 
