@@ -153,10 +153,6 @@ app.UseCors("VuePolicy"); // Enable CORS for Vue 3
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Localization Middleware
-// var localizationOptions = app.Services.GetRequiredService<RequestLocalizationOptions>();
-// app.UseRequestLocalization(localizationOptions);
-
 // Route Setup
 app.MapControllerRoute(
     name: "news", // Explicit route for /News

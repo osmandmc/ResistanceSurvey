@@ -276,9 +276,6 @@ namespace RS.MVC.Applications
           
             var rNews = db.ResistanceNews.Where(r => r.ResistanceId == resistance.Id).ToList();
             db.ResistanceNews.RemoveRange(rNews);
-            //BindTradeUnionId(resistance, viewModel.TradeUnionId);
-            //BindCorporation(resistance, viewModel.CorporationIds);
-            //BindResistanceReason(resistance, viewModel.ResistanceReasonIds);
             db.Resistance.Update(resistance);
             db.SaveChanges();
         }
@@ -299,7 +296,6 @@ namespace RS.MVC.Applications
             resistance.Description = viewModel.ResistanceDescription;
             resistance.Note = viewModel.Note;
             resistance.ResistanceTargetType = viewModel.TargetType;
-            //resistance.LegalInterventionDesc = viewModel.LegalInterventionDesc;
             resistance.FiredEmployeeCountByProtesto = viewModel.FiredEmployeeCountByProtesto;
             resistance.DevelopRight = viewModel.DevelopRight;
             resistance.ResistanceResult = viewModel.ResistanceResult;
@@ -309,8 +305,6 @@ namespace RS.MVC.Applications
             resistance.ResistanceEmploymentTypes = new List<ResistanceEmploymentType>();
             resistance.ResistanceResistanceReasons = new List<ResistanceResistanceReason>();
             resistance.ResistanceNews = new List<ResistanceNews>();
-            // if (viewModel.AnyLegalIntervention == 1) resistance.AnyLegalIntervention = true;
-            // if (viewModel.AnyLegalIntervention == 2) resistance.AnyLegalIntervention = false;
             var rCorporations = db.ResistanceCorporation.Where(r => r.ResistanceId == resistance.Id).ToList();
             db.ResistanceCorporation.RemoveRange(rCorporations);
             

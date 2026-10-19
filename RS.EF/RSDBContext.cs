@@ -49,11 +49,6 @@ namespace RS.EF
         public DbSet<ProtestoDistrict> ProtestoDistrict { get; set; }
 
        
-        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        // {
-        //     optionsBuilder.UseMySQL(@"Server=127.0.0.1; Uid=root; Pwd=root; Database=RSDB;");
-            
-        // }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             

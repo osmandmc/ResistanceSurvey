@@ -31,7 +31,7 @@ public class ReviewApplicationTests
         _pipeline.Add("a1", ArticleUrl, "Bursa NEV Hastanesi’nde eylem", Oct19, "Hekimler ve sağlık çalışanları 6 aydır maaşlarını alamıyor.");
     }
 
-    private Resistance AddResistance(string name, string company, params DateTime[] protestDates)
+    private Resistance AddResistance(string name, string? company, params DateTime[] protestDates)
     {
         var resistance = new Resistance
         {

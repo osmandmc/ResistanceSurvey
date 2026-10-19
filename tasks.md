@@ -40,6 +40,19 @@ Status: ☐ open · ◐ in progress · ☑ done
 | ☐ R8 | Vakalar (Cases) | Today's list plus linked articles per case |
 | ☐ R9 | Yükleme (Upload) | The B3 upload on its own page, with the result summary |
 
+## Refactoring (from the code review, 2026-10-19)
+
+| # | Task | Notes |
+|---|---|---|
+| ☑ F1 | Small fixes | Login on the four data actions that had none (`Resistance/News`, `Resistance/Export`, `Corporation/IsTradeUnion`, `CheckTradeUnion`); `Enums.cs` re-saved as UTF-8 (result labels were garbled); `appsettings.Development.json` name; removed `Startup.cs`, `RS.Tests.Api` and commented-out code |
+| ☐ F2 | **CQRS-lite instead of the `…Application` classes** | One handler per use case (`CreateCase`, `AddProtest`, `LinkArticle`, `DismissArticle`, `GetInbox`, `SearchCases` …): queries project straight from EF, commands validate and write. No MediatR (commercial licence since v13): plain handlers, injected directly. Start with the new screens' code (Inbox, Review), then move the old `ResistanceApplication` (604 lines) use case by use case |
+| ☐ F3 | `ArticleNews` as an injected service | Today a static helper; becomes part of the F2 handlers. Source names → a small `SourceCatalog` |
+| ☐ F4 | Per-person accounts | Instead of two shared logins with plain-text passwords in config: users table, hashed passwords, who-did-what. Needed before production uses the redesign |
+| ☐ F5 | Request models with ids only | 18 request models bind EF entities (over-posting; `{id: -1}` creates lookup values). New APIs already use ids |
+| ☐ F6 | Global error handling and logging | Exception handler middleware; no bare 500s |
+| ☐ F7 | Build and test on pull requests | Today only the deploy workflows build |
+| ☐ F8 | Smaller clean-ups | Remove the unused .NET Framework package `Microsoft.Web.Deployment`; async EF calls where code is touched; Excel export out of the controller; one generic lookup admin instead of five near-identical controllers; named constants for intervention type 7 and corporation type 1; decide whether to switch on the configured tr-TR request localization |
+
 ## Later
 
 | # | Task | Waits for |

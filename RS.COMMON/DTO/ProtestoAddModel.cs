@@ -116,26 +116,6 @@ namespace RS.COMMON.DTO
                 SimpleProtestoDescription = SimpleProtestoDescription,
                 StrikeDuration = StrikeDuration
             };
-            // if (ProtestoPlaceIds != null)
-            //     ProtestoPlaceIds.ForEach(c =>
-            //         protesto.ProtestoProtestoPlaces
-            //             .Add(new ProtestoProtestoPlace { ProtestoPlaceId = c.Id }));
-            // if (ProtestoTypeIds != null)
-            //     ProtestoTypeIds.ForEach(c =>
-            //         protesto.ProtestoProtestoTypes
-            //             .Add(new ProtestoProtestoType { ProtestoTypeId = c.Id }));
-            // if (InterventionTypeIds != null)
-            //     InterventionTypeIds.ForEach(c =>
-            //         protesto.ProtestoInterventionTypes
-            //             .Add(new ProtestoInterventionType { InterventionTypeId = c.Id }));
-        
-            // if (ProtestoCityIds != null)
-            //     ProtestoCityIds.ForEach(c => protesto.Cities.Add(new ProtestoCity { CityId = c }));
-            // if (ProtestoDistrictIds != null)
-            //     ProtestoDistrictIds.ForEach(c =>
-            //     {
-            //         if (c.HasValue) protesto.Districts.Add(new ProtestoDistrict { DistrictId = c.Value });
-            //     });
             if (Locations != null)
                 Locations.Where(s => !s.Deleted).ToList().ForEach(c =>
                 {

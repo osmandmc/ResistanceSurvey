@@ -54,7 +54,6 @@ namespace RS.MVC.Models
         public string SimpleProtestoDescription { get; set; }
         public int StrikeDuration { get; set; }
 
-        //public List<int> ResistanceNewsIds { get; set; }
         public List<int> ProtestoCityIds { get; set; }
         public List<int?> ProtestoDistrictIds { get; set; }
         public List<ProtestoLocationModel> Locations { get; set; }
@@ -93,8 +92,6 @@ namespace RS.MVC.Models
             if (EmploymentTypeIds != null)
                 EmploymentTypeIds.ForEach(c=> resistance.ResistanceEmploymentTypes.Add(new ResistanceEmploymentType{EmploymentTypeId = c, ResistanceId = resistance.Id}));
             
-            //if(ResistanceNewsIds != null)
-            //    ResistanceNewsIds.ForEach(c=> resistance.ResistanceNews.Add(new ResistanceNews{NewsId = c, ResistanceId = resistance.Id}));
             return resistance;
         }
         public Protesto MapToProtestoDto()

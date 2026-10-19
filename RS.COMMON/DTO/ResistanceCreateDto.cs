@@ -9,7 +9,6 @@ namespace RS.COMMON.DTO
         public int CategoryId { get; set; }
         public bool HasTradeUnion { get; set; }
         public int? TradeUnionAuthorityId { get; set; }
-        //public string DirectlyCommunicated { get; set; }
         public int EmployeeCountId { get; set; }
         public int EmployeeCount { get; set; }
         public List<int> CorporationIds { get; set; }

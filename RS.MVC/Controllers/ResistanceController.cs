@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -26,6 +27,7 @@ namespace ResistanceSurvey.Controllers
             return View();
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult News(int? year, int? month)
         {
@@ -59,6 +61,7 @@ namespace ResistanceSurvey.Controllers
             return Json(news);
         }
 
+        [Authorize]
         public ActionResult Export(ResistanceFilterModel filter)
         {
             // Set EPPlus license context
