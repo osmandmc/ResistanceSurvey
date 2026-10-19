@@ -6,8 +6,9 @@ Status: ☐ open · ◐ in progress · ☑ done
 
 ## Decisions
 
-- **Stack.** Backend stays ASP.NET Core 9 + EF Core 9 + SQL Server (`RS.MVC`, `RS.EF`, `RS.COMMON`). New screens are a separate front-end project, **`RS.Web`**: Vue 3 + TypeScript + Vite + PrimeVue 4 (theme set to the mockup's colours and IBM Plex Sans). Its build goes to `RS.MVC/wwwroot/app` and is served by the same site: one login, one deploy. CI builds it; bundles are not committed.
+- **Stack.** Backend stays ASP.NET Core 9 + EF Core 9 + SQL Server (`RS.MVC`, `RS.EF`, `RS.COMMON`). New screens are a separate front-end project, **`RS.Web`**: Vue 3 + TypeScript + Vite + **Naive UI** (MIT; theme set to the mockup's colours and IBM Plex Sans). PrimeVue was the first choice, but version 5 (2026) moved to a commercial licence with a key; Naive UI has no conditions. Its build goes to `RS.MVC/wwwroot/rsweb` and is served by the same site at `/app` (`wwwroot/app` holds the old pages' scripts): one login, one deploy. CI builds it; bundles are not committed.
 - **Old pages stay until replaced.** Razor + Semantic UI + jQuery pages and the current Vue case form keep working; each new screen replaces one. When the last is replaced, Semantic UI, jQuery and the webpack build are removed.
+- **Sign-in for the new app is an HttpOnly cookie** (`/api/auth/*`), not a token in `localStorage`; the backend also accepts the old bearer token until the old screens are retired.
 - **Pipeline access goes through the backend.** The browser never sees the pipeline's function key; `RS.MVC` calls the pipeline API and exposes its own JSON endpoints.
 - **Target screens:** see the mockup (Gelen Kutusu, İnceleme, Haber Arşivi, Durum Paneli, Vakalar, Yükleme): https://claude.ai/artifact/DhTuKR4eCcn2gdnBQjtUq8
 - **Test environment in Azure, production untouched.** The redesign is tried on a test app in Azure with a copy of the database. Production stays on SmarterASP until the redesign is proven.
@@ -32,7 +33,7 @@ Status: ☐ open · ◐ in progress · ☑ done
 
 | # | Task | Notes |
 |---|---|---|
-| ☐ R4 | `RS.Web` project + layout | Vite + Vue 3 + TS + PrimeVue, theme, top menu, routes, login reuse; CI build; old pages linked from the menu until replaced |
+| ◐ R4 | `RS.Web` project + layout | In increments: ☑ **R4a** cookie sign-in (`/api/auth/login`, `/logout`, `/me`; bearer still accepted) · ◐ **R4b** `RS.Web` skeleton served at `/app` · ☐ **R4d** deploy builds the front end · ☐ **R4c** login screen, top menu, empty pages, “Eski ekranlar” link |
 | ☐ R5 | Gelen Kutusu (Inbox) | Open articles from the pipeline, processing count, “İlgisiz” sends `Dismissed`. “Taslak hazır” tab empty until AI drafts exist |
 | ☐ R6 | İnceleme (Review) | Article beside the full case form (all fields of today's form). New resistance / add protest to existing / link only. Save: case + thin `News` row (`ArticleId`) + link in one transaction, then `Digested` |
 | ☐ R7 | Haber Arşivi (Archive) | All articles with status and timeline; needs title search in the pipeline API |
@@ -47,5 +48,5 @@ Status: ☐ open · ◐ in progress · ☑ done
 | ☐ R11 | AI pre-fill, evidence, flags in Review | Pipeline phase 3 (drafts) |
 | ☐ R12 | Retire old pages, Semantic UI, jQuery, webpack | R5–R9 |
 | ☐ R13 | Secrets out of `appsettings*.json` and rotated; login passwords out of code | Deferred by you (2026-10-18); do before production uses the redesign |
-| ☐ R15 | Login and page protection | Found on the test app (2026-10-19): the login form is `/` (POST `/Home/Login`); auth is JWT bearer only, and the pages' actual protection needs checking. Decide the login approach (likely cookie sign-in for pages) before or with R4 |
+| ◐ R15 | Login and page protection | Found on the test app (2026-10-19): the login form is `/` (POST `/Home/Login`); auth was JWT bearer only and the old pages render without login. New app: cookie sign-in (R4a) and login required on every screen (R4c). Old pages: protected or retired with R12 |
 | ☐ R14 | Production move | Redesign proven on the test app; decide hosting (SmarterASP or Azure, D-013) |

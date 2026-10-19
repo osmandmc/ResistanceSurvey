@@ -17,7 +17,9 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Globalization;
+using System.IO;
 using System.Text;
+using Microsoft.Extensions.FileProviders;
 using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -146,6 +148,14 @@ if (app.Environment.IsEnvironment("Test"))
 
 // Middleware Setup
 app.UseStaticFiles();
+
+// The new front end (RS.Web) is built into wwwroot/rsweb and served at /app. wwwroot/app holds the old pages'
+// scripts, which keep their /app/*.js addresses. Skipped when the front end has not been built.
+var rsWebPath = Path.Combine(app.Environment.WebRootPath, "rsweb");
+var rsWebFiles = Directory.Exists(rsWebPath) ? new PhysicalFileProvider(rsWebPath) : null;
+if (rsWebFiles != null)
+    app.UseStaticFiles(new StaticFileOptions { FileProvider = rsWebFiles, RequestPath = "/app" });
+
 app.UseRouting();
 app.UseCors("VuePolicy"); // Enable CORS for Vue 3
 app.UseAuthentication();
@@ -164,6 +174,10 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default", // Default route for other Razor views
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// The new front end's own router handles the paths under /app.
+if (rsWebFiles != null)
+    app.MapFallbackToFile("app/{*path:nonfile}", "index.html", new StaticFileOptions { FileProvider = rsWebFiles });
 
 // Catch-all Route for Vue 3
 app.MapFallbackToController("IndexVue", "Resistance"); // Ensure only one catch-all route

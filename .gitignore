@@ -366,3 +366,6 @@ MigrationBackup/
 # macOS Finder metadata
 .DS_Store
 
+# New front end (RS.Web): dependencies and the build output it writes into RS.MVC
+RS.Web/node_modules/
+RS.MVC/wwwroot/rsweb/
