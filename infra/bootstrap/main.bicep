@@ -16,10 +16,10 @@ param resourceGroupName string = 'rg-direnistakip-app-${environmentName}'
 param identityResourceGroupName string = 'rg-direnistakip-prod'
 param identityName string = 'id-github-deploy'
 
-// GitHub's immutable OIDC subject format: owner@ownerId/repo@repoId (IDs are public, not secrets).
-// The exact value appears in an AADSTS700213 login error if it ever differs.
+// As GitHub presents this repository in the OIDC subject claim (owner/repo). The exact value appears in an
+// AADSTS700213 login error if it ever differs (e.g. if the repository switches to immutable owner@id/repo@id subjects).
 @description('GitHub repository allowed to sign in, as it appears in the OIDC subject claim.')
-param githubRepo string = 'osmandmc@20256505/ResistanceSurvey@145420398'
+param githubRepo string = 'osmandmc/ResistanceSurvey'
 
 resource rg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   name: resourceGroupName
