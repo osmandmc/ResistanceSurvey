@@ -15,6 +15,19 @@ export interface CaseOption {
   name: string | null
   companyName: string | null
   lastProtestDate: string | null
+  protestCount: number
+  /** The latest protest has no end date. */
+  ongoing: boolean
+  /** Where its protests took place. */
+  cities: string[]
+}
+
+export interface CaseSearch {
+  query?: string
+  companyId?: number | null
+  cityId?: number | null
+  /** "yyyy-MM-dd": only cases whose latest protest is on or after this day. */
+  since?: string | null
 }
 
 /** Matches the server's ReviewAction. */
@@ -37,8 +50,13 @@ export function getReviewArticle(articleId: string) {
   return api<ReviewArticle>(`/api/review/${encodeURIComponent(articleId)}`)
 }
 
-export function searchCases(query: string) {
-  return api<CaseOption[]>(`/api/review/resistances?${new URLSearchParams({ query })}`)
+export function searchCases(search: CaseSearch) {
+  const params = new URLSearchParams()
+  if (search.query) params.set('query', search.query)
+  if (search.companyId) params.set('companyId', String(search.companyId))
+  if (search.cityId) params.set('cityId', String(search.cityId))
+  if (search.since) params.set('since', search.since)
+  return api<CaseOption[]>(`/api/review/resistances?${params}`)
 }
 
 export function saveReview(articleId: string, request: SaveReviewRequest) {

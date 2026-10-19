@@ -1,15 +1,26 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NDatePicker, NEmpty, NFormItem, NSelect, NSpin, NTabPane, NTabs } from 'naive-ui'
 import { ApiError } from '@/api'
 import DismissDialog from '@/components/DismissDialog.vue'
 import { formatDate } from '@/format'
 import { getInbox, type InboxItem } from '@/inboxApi'
 
-// Filters. The month picker works with a timestamp; the API takes "yyyy-MM".
-const now = new Date()
-const month = ref<number>(new Date(now.getFullYear(), now.getMonth(), 1).getTime())
-const source = ref<string>('')
+const route = useRoute()
+const router = useRouter()
+
+// Filters, kept in the address (?month=2026-10&source=evrensel) so the review screen can come back to them.
+// The month picker works with a timestamp; the API takes "yyyy-MM".
+function initialMonth() {
+  const fromQuery = typeof route.query.month === 'string' ? /^(\d{4})-(\d{2})$/.exec(route.query.month) : null
+  const now = new Date()
+  return fromQuery
+    ? new Date(Number(fromQuery[1]), Number(fromQuery[2]) - 1, 1).getTime()
+    : new Date(now.getFullYear(), now.getMonth(), 1).getTime()
+}
+const month = ref<number>(initialMonth())
+const source = ref<string>(typeof route.query.source === 'string' ? route.query.source : '')
 const sourceOptions = [
   { label: 'Tümü', value: '' },
   { label: 'Evrensel', value: 'evrensel' },
@@ -50,7 +61,16 @@ async function load(more = false) {
   }
 }
 
-watch([monthParam, source], () => load(), { immediate: true })
+const filterQuery = computed(() => ({ month: monthParam.value, ...(source.value ? { source: source.value } : {}) }))
+
+watch(
+  [monthParam, source],
+  () => {
+    void router.replace({ query: filterQuery.value })
+    void load()
+  },
+  { immediate: true },
+)
 
 const manualCount = computed(() => `${items.value.length}${next.value ? '+' : ''}`)
 
@@ -124,7 +144,7 @@ function errorText(error: unknown, fallback: string) {
                   <td>{{ item.sourceName }}</td>
                   <td class="nowrap">{{ formatDate(item.publishedAt) }}</td>
                   <td class="actions">
-                    <router-link :to="`/review/${encodeURIComponent(item.articleId)}`" custom v-slot="{ navigate }">
+                    <router-link :to="{ path: `/review/${encodeURIComponent(item.articleId)}`, query: filterQuery }" custom v-slot="{ navigate }">
                       <n-button type="primary" size="small" @click="navigate">Aç</n-button>
                     </router-link>
                     <n-button size="small" @click="dismissTarget = item">İlgisiz</n-button>

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
-import { NFormItem, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect } from 'naive-ui'
+import { computed, ref, watch } from 'vue'
+import { NAlert, NButton, NFormItem, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect } from 'naive-ui'
 import type { CaseFormValue } from '@/caseForm'
-import { TargetType, resultOptions, type CaseFormOptions, type Option } from '@/reviewApi'
+import { formatDate } from '@/format'
+import { TargetType, resultOptions, searchCases, type CaseFormOptions, type CaseOption, type Option } from '@/reviewApi'
 import CompanyPicker from './CompanyPicker.vue'
 
 /** The "Vaka (Direniş)" part of the case form: every field of the old form, in the same order. */
@@ -13,6 +14,11 @@ const props = defineProps<{
 }>()
 
 const value = defineModel<CaseFormValue>({ required: true })
+
+const emit = defineEmits<{
+  /** The researcher chose to add a protest to an existing case of this company instead of opening a new one. */
+  useExisting: [existing: CaseOption]
+}>()
 
 const toOptions = (list: Option[]) => list.map((o) => ({ label: o.name, value: o.id }))
 
@@ -52,6 +58,21 @@ watch(
 watch(hasTradeUnion, (yes) => {
   if (!yes) value.value.tradeUnionAuthorityId = null
 })
+
+// Duplicate guard: once a company is chosen, show its existing cases (ongoing first).
+const existingCases = ref<CaseOption[]>([])
+watch(
+  () => (againstCompany.value ? value.value.companyId : null),
+  async (companyId) => {
+    existingCases.value = []
+    if (companyId === null) return
+    try {
+      existingCases.value = await searchCases({ companyId })
+    } catch {
+      // only a hint; the form works without it
+    }
+  },
+)
 
 function error(field: string) {
   return props.errors[`case.${field}`]
@@ -98,6 +119,20 @@ function status(field: string) {
             :status="status('companyId')"
           />
         </n-form-item>
+        <n-alert v-if="existingCases.length" type="warning" :show-icon="false" class="wide existing">
+          <p class="existing-text">
+            Bu şirket için {{ existingCases.length }} vaka var. Aynı mücadeleyse yeni vaka yerine mevcut vakaya eylem ekleyin:
+          </p>
+          <ul class="existing-list">
+            <li v-for="c in existingCases.slice(0, 3)" :key="c.id">
+              <span>
+                <strong>{{ c.name || `Vaka #${c.id}` }}</strong>
+                · {{ c.ongoing ? 'devam ediyor' : `son eylem ${formatDate(c.lastProtestDate)}` }}
+              </span>
+              <n-button size="small" @click="emit('useExisting', c)">Bu vakaya eylem ekle</n-button>
+            </li>
+          </ul>
+        </n-alert>
         <n-form-item v-if="value.isOutsource" label="Ana Şirket" label-placement="top" class="wide" required :validation-status="status('mainCompanyId')" :feedback="error('mainCompanyId')">
           <company-picker
             v-model="value.mainCompanyId"
@@ -182,5 +217,26 @@ function status(field: string) {
 }
 .full {
   width: 100%;
+}
+.existing {
+  margin-bottom: 16px;
+}
+.existing-text {
+  margin: 0 0 8px;
+}
+.existing-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.existing-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 </style>

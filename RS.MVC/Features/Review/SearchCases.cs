@@ -8,28 +8,68 @@ using RS.MVC.Models;
 
 namespace RS.MVC.Features.Review
 {
-    /// <summary>Existing resistances whose name or company matches, for adding a protest or linking.</summary>
-    public record SearchCasesQuery(string Text);
+    /// <summary>
+    /// Existing resistances, for adding a protest or linking an article. The company leads, as researchers search
+    /// today: a company lists all its cases (also as main company of a subcontractor). Free text matches the case
+    /// name, its description and the company; city and "latest protest since" narrow it down.
+    /// </summary>
+    public record SearchCasesQuery(string Text, int? CompanyId = null, int? CityId = null, DateTime? LastProtestSince = null);
 
     public class SearchCasesHandler(RSDBContext db)
     {
         public const int MaxResults = 20;
 
-        /// <summary>Most recent protest first; deleted cases are left out.</summary>
+        /// <summary>Ongoing cases first, then the most recent protest; deleted cases are left out.</summary>
         public async Task<IReadOnlyList<ResistanceOption>> Handle(SearchCasesQuery query)
         {
+            var rows = await Build(query).ToListAsync();
+            return rows.Select(r => new ResistanceOption(r.Id, r.Name, r.CompanyName, r.LastProtestDate, r.ProtestCount, r.Ongoing, r.Cities)).ToList();
+        }
+
+        /// <summary>The database query (public so a test can check it translates to SQL Server).</summary>
+        public IQueryable<CaseRow> Build(SearchCasesQuery query)
+        {
             var text = query.Text?.Trim() ?? "";
-            return await db.Resistance
-                .Where(r => !r.Deleted)
-                .Where(r => text == "" || r.Name.Contains(text) || (r.Company != null && r.Company.Name.Contains(text)))
-                .Select(r => new ResistanceOption(
-                    r.Id,
-                    r.Name,
-                    r.Company != null ? r.Company.Name : null,
-                    r.Protestos.Where(p => !p.Deleted).Max(p => (DateTime?)p.StartDate)))
-                .OrderByDescending(o => o.LastProtestDate)
-                .Take(MaxResults)
-                .ToListAsync();
+            var cases = db.Resistance.Where(r => !r.Deleted);
+
+            if (query.CompanyId is { } companyId)
+                cases = cases.Where(r => r.CompanyId == companyId || r.MainCompanyId == companyId);
+            if (text != "")
+                cases = cases.Where(r => r.Name.Contains(text) || r.Description.Contains(text)
+                    || (r.Company != null && r.Company.Name.Contains(text)));
+            if (query.CityId is { } cityId)
+                cases = cases.Where(r => r.Protestos.Any(p => !p.Deleted && p.Locations.Any(l => l.CityId == cityId)));
+
+            // Projected with an object initializer, so EF can filter and sort on the computed values in SQL.
+            var rows = cases.Select(r => new CaseRow
+            {
+                Id = r.Id,
+                Name = r.Name,
+                CompanyName = r.Company != null ? r.Company.Name : null,
+                LastProtestDate = r.Protestos.Where(p => !p.Deleted).Max(p => (DateTime?)p.StartDate),
+                ProtestCount = r.Protestos.Count(p => !p.Deleted),
+                Ongoing = r.Protestos.Where(p => !p.Deleted).OrderByDescending(p => p.StartDate).Select(p => p.EndDate == null).FirstOrDefault(),
+                Cities = r.Protestos.Where(p => !p.Deleted).SelectMany(p => p.Locations).Select(l => l.City.Name).Distinct().ToList(),
+            });
+
+            if (query.LastProtestSince is { } since)
+                rows = rows.Where(r => r.LastProtestDate >= since);
+
+            return rows
+                .OrderByDescending(r => r.Ongoing)
+                .ThenByDescending(r => r.LastProtestDate)
+                .Take(MaxResults);
+        }
+
+        public class CaseRow
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string CompanyName { get; set; }
+            public DateTime? LastProtestDate { get; set; }
+            public int ProtestCount { get; set; }
+            public bool Ongoing { get; set; }
+            public List<string> Cities { get; set; }
         }
     }
 }

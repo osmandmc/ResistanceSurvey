@@ -93,6 +93,16 @@ namespace RS.MVC.Models
     /// <summary>The article shown beside the form: its full text from the pipeline.</summary>
     public record ReviewArticle(string ArticleId, string Title, string Url, string SourceName, DateTimeOffset? PublishedAt, string Body);
 
-    /// <summary>An existing resistance to add a protest to, or to link the article to.</summary>
-    public record ResistanceOption(int Id, string Name, string CompanyName, DateTime? LastProtestDate);
+    /// <summary>
+    /// An existing resistance to add a protest to, or to link the article to. Ongoing: its latest protest has no end
+    /// date. Cities: where its protests took place.
+    /// </summary>
+    public record ResistanceOption(
+        int Id,
+        string Name,
+        string CompanyName,
+        DateTime? LastProtestDate,
+        int ProtestCount,
+        bool Ongoing,
+        IReadOnlyList<string> Cities);
 }

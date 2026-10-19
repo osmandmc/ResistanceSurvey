@@ -49,10 +49,13 @@ namespace RS.MVC.Controllers
 
         public record SaveResponse(int ResistanceId, bool OutcomeSent);
 
-        /// <summary>GET /api/review/resistances?query=… — existing cases to add a protest to or link to.</summary>
+        /// <summary>
+        /// GET /api/review/resistances?query=…&amp;companyId=…&amp;cityId=…&amp;since=2026-07-01 — existing cases to add a protest
+        /// to or link to; every parameter is optional.
+        /// </summary>
         [HttpGet("resistances")]
-        public async Task<IReadOnlyList<ResistanceOption>> SearchResistances(string query) =>
-            await searchCases.Handle(new SearchCasesQuery(query));
+        public async Task<IReadOnlyList<ResistanceOption>> SearchResistances(string query, int? companyId, int? cityId, DateTime? since) =>
+            await searchCases.Handle(new SearchCasesQuery(query, companyId, cityId, since));
 
         /// <summary>GET /api/review/{articleId} — the article with its full text.</summary>
         [HttpGet("{articleId}")]

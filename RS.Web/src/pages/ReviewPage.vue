@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSelect, NSpin, useMessage } from 'naive-ui'
+import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSpin, useMessage } from 'naive-ui'
 import { ApiError } from '@/api'
 import { emptyCase, toCaseInput, type CaseFormValue } from '@/caseForm'
+import CaseFinder from '@/components/CaseFinder.vue'
 import CaseForm from '@/components/CaseForm.vue'
 import ProtestForm from '@/components/ProtestForm.vue'
 import { emptyProtest, toProtestInput, type ProtestFormValue } from '@/protestForm'
 import DismissDialog from '@/components/DismissDialog.vue'
 import { formatDate } from '@/format'
+import { getInbox } from '@/inboxApi'
 import {
   getFormOptions,
   getReviewArticle,
   saveReview,
-  searchCases,
   type CaseFormOptions,
   type CaseOption,
   type ReviewAction,
@@ -68,6 +69,7 @@ async function loadFormOptions() {
 void loadFormOptions()
 
 const caseValue = ref<CaseFormValue>(emptyCase())
+const fieldErrors = ref<Record<string, string>>({})
 const protestValue = ref<ProtestFormValue>(emptyProtest())
 
 // The decision on the right.
@@ -80,41 +82,61 @@ const actionOptions: { value: ReviewAction; label: string }[] = [
 const needsCase = computed(() => action.value !== 'newCase')
 const needsProtest = computed(() => action.value !== 'linkOnly')
 
-// Finding an existing case by name or company.
+// The existing case, for "add protest" and "link only" (CaseFinder). Its company filter can be set from the
+// case form's duplicate warning.
 const resistanceId = ref<number | null>(null)
-const caseOptions = ref<{ label: string; value: number }[]>([])
-const searching = ref(false)
-let searchTimer: ReturnType<typeof setTimeout> | undefined
+const finderCompanyId = ref<number | null>(null)
+const finderCompanyName = ref<string | null>(null)
 
-function caseLabel(option: CaseOption) {
-  const parts = [option.name || `Vaka #${option.id}`]
-  if (option.companyName) parts.push(option.companyName)
-  if (option.lastProtestDate) parts.push(`son eylem ${formatDate(option.lastProtestDate)}`)
-  return parts.join(' · ')
+function onUseExisting(existing: CaseOption) {
+  action.value = 'addProtest'
+  finderCompanyId.value = caseValue.value.companyId
+  finderCompanyName.value = existing.companyName
+  resistanceId.value = existing.id
+  void nextTick(() => document.getElementById('decision-heading')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
 }
 
-function onSearch(text: string) {
-  clearTimeout(searchTimer)
-  searchTimer = setTimeout(async () => {
-    searching.value = true
-    try {
-      const found = await searchCases(text)
-      caseOptions.value = found.map((o) => ({ label: caseLabel(o), value: o.id }))
-    } catch {
-      caseOptions.value = []
-    } finally {
-      searching.value = false
-    }
-  }, 300)
-}
-
-watch(needsCase, (needed) => {
-  if (needed && caseOptions.value.length === 0) onSearch('')
+// A new article starts with a clean form.
+watch(articleId, () => {
+  action.value = 'newCase'
+  caseValue.value = emptyCase()
+  protestValue.value = emptyProtest()
+  resistanceId.value = null
+  finderCompanyId.value = null
+  finderCompanyName.value = null
+  fieldErrors.value = {}
 })
+
+// The inbox's filters travel along, so "next" and "back" stay in the same month and source.
+const inboxQuery = computed(() => ({
+  ...(typeof route.query.month === 'string' ? { month: route.query.month } : {}),
+  ...(typeof route.query.source === 'string' ? { source: route.query.source } : {}),
+}))
+
+function currentMonth() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+}
+
+/** The next open article in the inbox (after this one when it is still open), or back to the inbox. */
+async function goNext() {
+  try {
+    const page = await getInbox(inboxQuery.value.month ?? currentMonth(), inboxQuery.value.source ?? null, null)
+    const index = page.items.findIndex((i) => i.articleId === articleId.value)
+    const next = index >= 0 ? page.items[index + 1] : page.items[0]
+    if (next) {
+      await router.push({ path: `/review/${encodeURIComponent(next.articleId)}`, query: inboxQuery.value })
+      return
+    }
+    message.info('Bu ayda karar bekleyen başka haber yok.')
+  } catch {
+    // fall back to the inbox
+  }
+  await router.push({ path: '/inbox', query: inboxQuery.value })
+}
 
 // Saving: the server checks the required fields and answers with a message per field.
 const saving = ref(false)
-const fieldErrors = ref<Record<string, string>>({})
 const canSave = computed(() => !saving.value && (!needsProtest.value || formOptions.value !== null))
 
 const successText: Record<ReviewAction, string> = {
@@ -148,7 +170,7 @@ async function save() {
     const result = await saveReview(articleId.value, request())
     if (result.outcomeSent) message.success(successText[action.value])
     else message.warning(`${successText[action.value]} İşleme hattına daha sonra bildirilecek.`)
-    await router.push('/inbox')
+    await goNext()
   } catch (error) {
     if (error instanceof ApiError && error.status === 400) {
       fieldErrors.value = error.fields
@@ -156,7 +178,7 @@ async function save() {
       await showFirstError()
     } else if (error instanceof ApiError && error.status === 409) {
       message.warning(error.message)
-      await router.push('/inbox')
+      await goNext()
     } else {
       message.error(error instanceof ApiError && error.status === 502 ? error.message : 'Kaydedilemedi.')
     }
@@ -169,12 +191,12 @@ const dismissTarget = ref<ReviewArticle | null>(null)
 
 async function onDismissed() {
   dismissTarget.value = null
-  await router.push('/inbox')
+  await goNext()
 }
 </script>
 
 <template>
-  <router-link to="/inbox" class="back">← Gelen Kutusu</router-link>
+  <router-link :to="{ path: '/inbox', query: inboxQuery }" class="back">← Gelen Kutusu</router-link>
 
   <div v-if="loading" class="state"><n-spin /></div>
 
@@ -214,19 +236,14 @@ async function onDismissed() {
       </n-radio-group>
 
       <div v-if="needsCase" class="field">
-        <label for="case-search" class="field-label">Vaka</label>
-        <n-select
-          v-model:value="resistanceId"
-          :options="caseOptions"
-          :loading="searching"
-          filterable
-          remote
-          clearable
-          placeholder="Vaka adı veya şirket ile arayın"
-          :input-props="{ id: 'case-search' }"
-          @search="onSearch"
+        <span class="field-label">Vaka</span>
+        <case-finder
+          v-model="resistanceId"
+          v-model:company-id="finderCompanyId"
+          v-model:company-name="finderCompanyName"
+          :cities="formOptions?.cities ?? []"
+          :error="fieldErrors.resistanceId"
         />
-        <span v-if="fieldErrors.resistanceId" class="field-error">{{ fieldErrors.resistanceId }}</span>
       </div>
 
       <template v-if="action === 'newCase'">
@@ -235,7 +252,7 @@ async function onDismissed() {
           <n-button size="small" class="retry" @click="loadFormOptions">Tekrar dene</n-button>
         </n-alert>
         <div v-else-if="!formOptions" class="state"><n-spin /></div>
-        <case-form v-else v-model="caseValue" :options="formOptions" :errors="fieldErrors" />
+        <case-form v-else v-model="caseValue" :options="formOptions" :errors="fieldErrors" @use-existing="onUseExisting" />
       </template>
 
       <template v-if="needsProtest && formOptions">
@@ -249,7 +266,8 @@ async function onDismissed() {
       <div class="buttons">
         <n-button type="primary" :disabled="!canSave" :loading="saving" @click="save">Kaydet</n-button>
         <n-button @click="dismissTarget = article">İlgisiz olarak işaretle</n-button>
-        <n-button quaternary @click="router.push('/inbox')">Vazgeç</n-button>
+        <n-button quaternary @click="router.push({ path: '/inbox', query: inboxQuery })">Vazgeç</n-button>
+        <n-button quaternary class="next" @click="goNext">Sonraki haber →</n-button>
       </div>
       <p class="hint">Hiçbir şey sizin onayınız olmadan kaydedilmez. Kaydedince haber Gelen Kutusu’ndan kalkar.</p>
     </section>
@@ -369,6 +387,9 @@ async function onDismissed() {
   gap: 10px;
   padding-top: 8px;
   border-top: 1px solid var(--rs-border);
+}
+.next {
+  margin-left: auto;
 }
 .hint {
   margin: 0;
