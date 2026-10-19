@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using RS.EF;
 using RS.MVC.Applications;
@@ -97,6 +98,14 @@ builder.Services.AddAuthentication("Bearer")
 
 // Build the App
 var app = builder.Build();
+
+// Test environment (Azure) only: bring its copy of the database up to date on startup.
+// Production migrations stay a manual step.
+if (app.Environment.IsEnvironment("Test"))
+{
+    using var scope = app.Services.CreateScope();
+    scope.ServiceProvider.GetRequiredService<RSDBContext>().Database.Migrate();
+}
 
 // Middleware Setup
 app.UseStaticFiles();
