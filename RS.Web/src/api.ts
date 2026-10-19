@@ -4,8 +4,15 @@ export class ApiError extends Error {
   constructor(
     readonly status: number,
     message: string,
+    /** The server's JSON answer, e.g. { error, fields } for a 400 with missing fields. */
+    readonly details?: Record<string, unknown>,
   ) {
     super(message)
+  }
+
+  /** Field path → message, when the server listed missing fields (400). */
+  get fields(): Record<string, string> {
+    return (this.details?.fields as Record<string, string> | undefined) ?? {}
   }
 }
 
@@ -32,13 +39,14 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   }
   if (!response.ok) {
     let message = response.statusText
+    let details: Record<string, unknown> | undefined
     try {
-      const body = await response.json()
-      message = body.error ?? message
+      details = await response.json()
+      message = (details?.error as string | undefined) ?? message
     } catch {
       // not JSON; keep the status text
     }
-    throw new ApiError(response.status, message)
+    throw new ApiError(response.status, message, details)
   }
   if (response.status === 204) {
     return undefined as T

@@ -4,6 +4,7 @@ import { forgetCurrentUser, loadCurrentUser } from './auth'
 import AppLayout from './layouts/AppLayout.vue'
 import InboxPage from './pages/InboxPage.vue'
 import LoginPage from './pages/LoginPage.vue'
+import ReviewPage from './pages/ReviewPage.vue'
 import NotFoundPage from './pages/NotFoundPage.vue'
 import PlaceholderPage from './pages/PlaceholderPage.vue'
 
@@ -28,6 +29,7 @@ export const router = createRouter({
       children: [
         { path: '', redirect: '/inbox' },
         { path: 'inbox', component: InboxPage, meta: { title: 'Gelen Kutusu' } },
+        { path: 'review/:articleId', component: ReviewPage, meta: { title: 'İnceleme' } },
         {
           path: 'archive',
           component: PlaceholderPage,

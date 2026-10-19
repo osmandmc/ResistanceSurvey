@@ -1,0 +1,312 @@
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSelect, NSpin, useMessage } from 'naive-ui'
+import { ApiError } from '@/api'
+import DismissDialog from '@/components/DismissDialog.vue'
+import { formatDate } from '@/format'
+import { getReviewArticle, saveReview, searchCases, type CaseOption, type ReviewAction, type ReviewArticle } from '@/reviewApi'
+
+const route = useRoute()
+const router = useRouter()
+const message = useMessage()
+
+const articleId = computed(() => String(route.params.articleId))
+
+// The article shown on the left.
+const article = ref<ReviewArticle | null>(null)
+const loading = ref(false)
+const loadError = ref<'handled' | 'notFound' | 'unavailable' | ''>('')
+const loadErrorText = ref('')
+
+async function loadArticle() {
+  loading.value = true
+  loadError.value = ''
+  article.value = null
+  try {
+    article.value = await getReviewArticle(articleId.value)
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 409) loadError.value = 'handled'
+    else if (error instanceof ApiError && error.status === 404) loadError.value = 'notFound'
+    else {
+      loadError.value = 'unavailable'
+      loadErrorText.value = error instanceof ApiError && error.status === 502 ? error.message : 'Haber yüklenemedi.'
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+watch(articleId, () => loadArticle(), { immediate: true })
+
+// The decision on the right.
+const action = ref<ReviewAction>('newCase')
+const actionOptions: { value: ReviewAction; label: string }[] = [
+  { value: 'newCase', label: 'Yeni direniş + eylem oluştur' },
+  { value: 'addProtest', label: 'Mevcut direnişe eylem ekle' },
+  { value: 'linkOnly', label: 'Sadece haberi bağla' },
+]
+const needsCase = computed(() => action.value !== 'newCase')
+
+// Finding an existing case by name or company.
+const resistanceId = ref<number | null>(null)
+const caseOptions = ref<{ label: string; value: number }[]>([])
+const searching = ref(false)
+let searchTimer: ReturnType<typeof setTimeout> | undefined
+
+function caseLabel(option: CaseOption) {
+  const parts = [option.name || `Vaka #${option.id}`]
+  if (option.companyName) parts.push(option.companyName)
+  if (option.lastProtestDate) parts.push(`son eylem ${formatDate(option.lastProtestDate)}`)
+  return parts.join(' · ')
+}
+
+function onSearch(text: string) {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(async () => {
+    searching.value = true
+    try {
+      const found = await searchCases(text)
+      caseOptions.value = found.map((o) => ({ label: caseLabel(o), value: o.id }))
+    } catch {
+      caseOptions.value = []
+    } finally {
+      searching.value = false
+    }
+  }, 300)
+}
+
+watch(needsCase, (needed) => {
+  if (needed && caseOptions.value.length === 0) onSearch('')
+})
+
+// Saving. Only "link only" is complete for now; the forms for the other two come next (R6c–R6e).
+const saving = ref(false)
+const fieldErrors = ref<Record<string, string>>({})
+const canSave = computed(() => action.value === 'linkOnly' && resistanceId.value !== null && !saving.value)
+
+async function save() {
+  if (!canSave.value) return
+  saving.value = true
+  fieldErrors.value = {}
+  try {
+    const result = await saveReview(articleId.value, { action: action.value, resistanceId: resistanceId.value })
+    if (result.outcomeSent) message.success('Haber vakaya bağlandı.')
+    else message.warning('Haber vakaya bağlandı; işleme hattına daha sonra bildirilecek.')
+    await router.push('/inbox')
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 400) {
+      fieldErrors.value = error.fields
+      message.error(error.message)
+    } else if (error instanceof ApiError && error.status === 409) {
+      message.warning(error.message)
+      await router.push('/inbox')
+    } else {
+      message.error(error instanceof ApiError && error.status === 502 ? error.message : 'Kaydedilemedi.')
+    }
+  } finally {
+    saving.value = false
+  }
+}
+
+const dismissTarget = ref<ReviewArticle | null>(null)
+
+async function onDismissed() {
+  dismissTarget.value = null
+  await router.push('/inbox')
+}
+</script>
+
+<template>
+  <router-link to="/inbox" class="back">← Gelen Kutusu</router-link>
+
+  <div v-if="loading" class="state"><n-spin /></div>
+
+  <n-result v-else-if="loadError === 'handled'" status="info" title="Bu haber zaten işlendi" description="Bir başkası bu haberi bir vakaya bağladı ya da ilgisiz olarak işaretledi.">
+    <template #footer><router-link to="/inbox">Gelen Kutusu’na dön</router-link></template>
+  </n-result>
+
+  <n-result v-else-if="loadError === 'notFound'" status="404" title="Haber bulunamadı">
+    <template #footer><router-link to="/inbox">Gelen Kutusu’na dön</router-link></template>
+  </n-result>
+
+  <n-alert v-else-if="loadError === 'unavailable'" type="error" :show-icon="false">
+    {{ loadErrorText }}
+    <n-button size="small" class="retry" @click="loadArticle">Tekrar dene</n-button>
+  </n-alert>
+
+  <div v-else-if="article" class="columns">
+    <article class="article panel">
+      <div class="meta">
+        <span>{{ article.sourceName }}</span>
+        <span>{{ formatDate(article.publishedAt) }}</span>
+        <a :href="article.url" target="_blank" rel="noopener">Kaynağa git ↗</a>
+      </div>
+      <h1 class="article-title">{{ article.title || article.url }}</h1>
+      <p v-if="article.body" class="body">{{ article.body }}</p>
+      <p v-else class="no-body">Haberin metni henüz okunmadı; kaynağa giderek okuyabilirsiniz.</p>
+    </article>
+
+    <section class="decision panel" aria-labelledby="decision-heading">
+      <h2 id="decision-heading" class="decision-heading">Önerilen işlem</h2>
+
+      <n-radio-group v-model:value="action" name="action" class="choices">
+        <label v-for="option in actionOptions" :key="option.value" class="choice" :class="{ selected: action === option.value }">
+          <n-radio :value="option.value" />
+          <span>{{ option.label }}</span>
+        </label>
+      </n-radio-group>
+
+      <div v-if="needsCase" class="field">
+        <label for="case-search" class="field-label">Vaka</label>
+        <n-select
+          v-model:value="resistanceId"
+          :options="caseOptions"
+          :loading="searching"
+          filterable
+          remote
+          clearable
+          placeholder="Vaka adı veya şirket ile arayın"
+          :input-props="{ id: 'case-search' }"
+          @search="onSearch"
+        />
+        <span v-if="fieldErrors.resistanceId" class="field-error">{{ fieldErrors.resistanceId }}</span>
+      </div>
+
+      <n-alert v-if="action === 'newCase'" type="info" :show-icon="false">
+        Vaka ve eylem formu bir sonraki adımda buraya eklenecek.
+      </n-alert>
+      <n-alert v-else-if="action === 'addProtest'" type="info" :show-icon="false">
+        Eylem formu bir sonraki adımda buraya eklenecek.
+      </n-alert>
+
+      <div class="buttons">
+        <n-button type="primary" :disabled="!canSave" :loading="saving" @click="save">Kaydet</n-button>
+        <n-button @click="dismissTarget = article">İlgisiz olarak işaretle</n-button>
+        <n-button quaternary @click="router.push('/inbox')">Vazgeç</n-button>
+      </div>
+      <p class="hint">Hiçbir şey sizin onayınız olmadan kaydedilmez. Kaydedince haber Gelen Kutusu’ndan kalkar.</p>
+    </section>
+  </div>
+
+  <dismiss-dialog :article="dismissTarget" @handled="onDismissed" @close="dismissTarget = null" />
+</template>
+
+<style scoped>
+.back {
+  display: inline-block;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+.state {
+  padding: 48px 16px;
+  display: flex;
+  justify-content: center;
+}
+.retry {
+  margin-left: 12px;
+}
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-start;
+}
+.panel {
+  background: var(--rs-surface);
+  border: 1px solid var(--rs-border);
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+.article {
+  flex: 1 1 420px;
+  min-width: 0;
+  padding: 24px 28px;
+}
+/* On wide screens the article stays in view while the form on the right scrolls. */
+@media (min-width: 1000px) {
+  .article {
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+  }
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 13px;
+  color: var(--rs-muted);
+}
+.article-title {
+  margin: 12px 0 16px;
+  font-size: 24px;
+  line-height: 1.3;
+}
+.body {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+.no-body {
+  color: var(--rs-muted);
+}
+.decision {
+  flex: 1.2 1 480px;
+  min-width: 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.decision-heading {
+  margin: 0;
+  font-size: 18px;
+}
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+}
+.choice.selected {
+  border-color: var(--rs-accent);
+  background: #f0f8f7;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+.field-error {
+  font-size: 13px;
+  color: #b42318;
+}
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rs-border);
+}
+.hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--rs-muted);
+}
+</style>

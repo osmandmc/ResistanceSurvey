@@ -1,23 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import {
-  NAlert,
-  NButton,
-  NDatePicker,
-  NEmpty,
-  NFormItem,
-  NInput,
-  NModal,
-  NSelect,
-  NSpin,
-  NTabPane,
-  NTabs,
-  useMessage,
-} from 'naive-ui'
+import { NAlert, NButton, NDatePicker, NEmpty, NFormItem, NSelect, NSpin, NTabPane, NTabs } from 'naive-ui'
 import { ApiError } from '@/api'
-import { dismissArticle, getInbox, type InboxItem } from '@/inboxApi'
-
-const message = useMessage()
+import DismissDialog from '@/components/DismissDialog.vue'
+import { formatDate } from '@/format'
+import { getInbox, type InboxItem } from '@/inboxApi'
 
 // Filters. The month picker works with a timestamp; the API takes "yyyy-MM".
 const now = new Date()
@@ -67,54 +54,12 @@ watch([monthParam, source], () => load(), { immediate: true })
 
 const manualCount = computed(() => `${items.value.length}${next.value ? '+' : ''}`)
 
-const dateFormat = new Intl.DateTimeFormat('tr-TR', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  timeZone: 'Europe/Istanbul',
-})
-function formatDate(value: string | null) {
-  return value ? dateFormat.format(new Date(value)) : '—'
-}
-
-// Dismissing: a small dialog with an optional reason.
+// Dismissing happens in DismissDialog; a handled article leaves the list.
 const dismissTarget = ref<InboxItem | null>(null)
-const reason = ref('')
-const dismissing = ref(false)
 
-function askDismiss(item: InboxItem) {
-  dismissTarget.value = item
-  reason.value = ''
-}
-
-function removeItem(articleId: string) {
+function onHandled(articleId: string) {
   items.value = items.value.filter((i) => i.articleId !== articleId)
-}
-
-async function confirmDismiss() {
-  const item = dismissTarget.value
-  if (!item) return
-  dismissing.value = true
-  try {
-    const result = await dismissArticle(item.articleId, reason.value)
-    removeItem(item.articleId)
-    if (result.outcomeSent) {
-      message.success('İlgisiz olarak işaretlendi.')
-    } else {
-      message.warning('İlgisiz olarak işaretlendi; işleme hattına daha sonra bildirilecek.')
-    }
-    dismissTarget.value = null
-  } catch (error) {
-    if (error instanceof ApiError && (error.status === 409 || error.status === 404)) {
-      removeItem(item.articleId)
-      message.warning(error.message)
-      dismissTarget.value = null
-    } else {
-      message.error(errorText(error, 'İşaretlenemedi.'))
-    }
-  } finally {
-    dismissing.value = false
-  }
+  dismissTarget.value = null
 }
 
 function errorText(error: unknown, fallback: string) {
@@ -173,15 +118,16 @@ function errorText(error: unknown, fallback: string) {
               </thead>
               <tbody>
                 <tr v-for="item in items" :key="item.articleId">
-                  <td class="title">{{ item.title || item.url }}</td>
+                  <td class="title">
+                    <a :href="item.url" target="_blank" rel="noopener">{{ item.title || item.url }}</a>
+                  </td>
                   <td>{{ item.sourceName }}</td>
                   <td class="nowrap">{{ formatDate(item.publishedAt) }}</td>
                   <td class="actions">
-                    <!-- Until the review screen exists (R6), "Aç" opens the original article. -->
-                    <n-button tag="a" :href="item.url" target="_blank" rel="noopener" type="primary" size="small">
-                      Aç
-                    </n-button>
-                    <n-button size="small" @click="askDismiss(item)">İlgisiz</n-button>
+                    <router-link :to="`/review/${encodeURIComponent(item.articleId)}`" custom v-slot="{ navigate }">
+                      <n-button type="primary" size="small" @click="navigate">Aç</n-button>
+                    </router-link>
+                    <n-button size="small" @click="dismissTarget = item">İlgisiz</n-button>
                   </td>
                 </tr>
               </tbody>
@@ -195,31 +141,7 @@ function errorText(error: unknown, fallback: string) {
     </n-tabs>
   </section>
 
-  <n-modal
-    :show="dismissTarget !== null"
-    preset="card"
-    title="İlgisiz olarak işaretle"
-    :style="{ width: 'min(520px, calc(100vw - 32px))' }"
-    :mask-closable="!dismissing"
-    @update:show="(show: boolean) => { if (!show && !dismissing) dismissTarget = null }"
-  >
-    <p class="dismiss-title">{{ dismissTarget?.title }}</p>
-    <n-form-item label="Neden (isteğe bağlı)" label-placement="top" :show-feedback="false">
-      <n-input
-        v-model:value="reason"
-        type="textarea"
-        :autosize="{ minRows: 2, maxRows: 5 }"
-        maxlength="500"
-        placeholder="Örn. işçi eylemi değil, görüş yazısı"
-      />
-    </n-form-item>
-    <template #footer>
-      <div class="dialog-actions">
-        <n-button :disabled="dismissing" @click="dismissTarget = null">Vazgeç</n-button>
-        <n-button type="primary" :loading="dismissing" @click="confirmDismiss">İlgisiz olarak işaretle</n-button>
-      </div>
-    </template>
-  </n-modal>
+  <dismiss-dialog :article="dismissTarget" @handled="onHandled" @close="dismissTarget = null" />
 </template>
 
 <style scoped>
@@ -289,6 +211,13 @@ function errorText(error: unknown, fallback: string) {
 .title {
   font-weight: 500;
 }
+.title a {
+  color: var(--rs-ink);
+  text-decoration: none;
+}
+.title a:hover {
+  text-decoration: underline;
+}
 .nowrap {
   white-space: nowrap;
 }
@@ -310,14 +239,5 @@ function errorText(error: unknown, fallback: string) {
   height: 1px;
   overflow: hidden;
   clip: rect(0 0 0 0);
-}
-.dismiss-title {
-  margin: 0 0 16px;
-  font-weight: 500;
-}
-.dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
 }
 </style>
