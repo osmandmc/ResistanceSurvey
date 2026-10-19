@@ -39,6 +39,7 @@ Status: ☐ open · ◐ in progress · ☑ done
 | ☐ R7 | Haber Arşivi (Archive) | All articles with status and timeline; needs title search in the pipeline API |
 | ☑ R8 | Vakalar (Cases) | ☑ **R8a** list: old filters (year and month now independent) plus text, city, has-note, ongoing-only; paging; Excel export moved to `ExportCasesHandler` (columns unchanged; the old list's export uses it too) · ☑ **R8b** detail and editing (`/app/cases/{id}`: case form, protests add/edit/delete, articles add/remove, delete case; start date follows the earliest protest; editing records the subcontractor relation and no longer touches the note or the articles) · ☑ **R8c** new case without an article (`/app/cases/new`, same rules and save path as from an article) |
 | ☑ R9 | Yükleme (Upload) | `/app/upload` with the result summary and where the month goes (pipeline or app). `UploadNewsHandler` (also behind the old news page's upload): every row checked first, problems listed by row number and nothing saved; a re-upload keeps handled rows (linked or dismissed) instead of resetting them and no longer doubles linked ones |
+| ◐ R18 | Bağlantılar (links as a second way in) | Yükleme page, second tab: a pasted list of article links (lines, spaces, commas or semicolons; at most 200) goes to the pipeline (`POST /api/upload/links`, origin Manual), which downloads and reads each page; one result per link (new, already there, rejected with reason, not a link). Any month; the cut-over does not apply |
 
 ## Refactoring (from the code review, 2026-10-19)
 

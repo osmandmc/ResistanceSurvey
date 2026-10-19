@@ -1,9 +1,20 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { NAlert, NButton, NFormItem, NSelect } from 'naive-ui'
+import { NAlert, NButton, NFormItem, NInput, NSelect, NTabPane, NTabs, NTag } from 'naive-ui'
 import { ApiError } from '@/api'
-import { uploadNews, uploadSources, uploadTarget, type UploadResult } from '@/uploadApi'
+import {
+  isLink,
+  maxLinks,
+  splitLinks,
+  submitLinks,
+  uploadNews,
+  uploadSources,
+  uploadTarget,
+  type LinkResult,
+  type UploadResult,
+} from '@/uploadApi'
 
+const tab = ref<'excel' | 'links'>('excel')
 const now = new Date()
 const source = ref(1)
 const year = ref(now.getFullYear())
@@ -60,14 +71,46 @@ async function upload() {
     uploading.value = false
   }
 }
+
+// "Bağlantılar": a pasted list of links, sent to the pipeline.
+const linksText = ref('')
+const pieces = computed(() => splitLinks(linksText.value))
+const linkCount = computed(() => pieces.value.filter(isLink).length)
+const invalidCount = computed(() => pieces.value.length - linkCount.value)
+const sendingLinks = ref(false)
+const linkResults = ref<LinkResult[] | null>(null)
+const linksError = ref('')
+
+const statusLabel: Record<LinkResult['status'], { text: string; type: 'success' | 'info' | 'error' | 'warning' }> = {
+  Accepted: { text: 'yeni', type: 'success' },
+  Duplicate: { text: 'zaten var', type: 'info' },
+  Rejected: { text: 'reddedildi', type: 'error' },
+  Invalid: { text: 'geçersiz', type: 'warning' },
+}
+const accepted = computed(() => linkResults.value?.filter((r) => r.status === 'Accepted').length ?? 0)
+
+async function sendLinks() {
+  sendingLinks.value = true
+  linksError.value = ''
+  linkResults.value = null
+  try {
+    linkResults.value = (await submitLinks(linksText.value)).links
+    if (linkResults.value.every((r) => r.status !== 'Invalid' && r.status !== 'Rejected')) linksText.value = ''
+  } catch (error) {
+    linksError.value = error instanceof ApiError ? error.message : 'Bağlantılar gönderilemedi.'
+  } finally {
+    sendingLinks.value = false
+  }
+}
 </script>
 
 <template>
   <h1 class="heading">Yükleme</h1>
-  <p class="description">
-    Bir kaynağın bir aylık haberlerini Excel ile ekleyin. Sütunlar: Link, Tarih, Başlık, Metin; ilk satır başlıktır.
-  </p>
+  <p class="description">Haberleri Excel dosyasıyla ya da bağlantı listesiyle ekleyin.</p>
 
+  <n-tabs v-model:value="tab" type="line" class="tabs">
+  <n-tab-pane name="excel" tab="Excel dosyası">
+  <p class="description">Bir kaynağın bir aylık haberleri. Sütunlar: Link, Tarih, Başlık, Metin; ilk satır başlıktır.</p>
   <section class="panel">
     <div class="fields">
       <n-form-item label="Kaynak" label-placement="top" :show-feedback="false">
@@ -114,6 +157,49 @@ async function upload() {
   <n-alert v-else-if="result" type="success" title="Haberler yüklendi" class="result">
     {{ result.rows }} satır: {{ result.imported }} yeni haber eklendi, {{ result.kept }} haber zaten işlenmişti ve korundu.
   </n-alert>
+  </n-tab-pane>
+
+  <n-tab-pane name="links" tab="Bağlantılar">
+  <p class="description">
+    Haber bağlantılarını yapıştırın: her satıra bir bağlantı (boşluk, virgül ya da noktalı virgülle de ayırabilirsiniz).
+    İşleme hattı sayfaları indirip okur; haberler birkaç dakika içinde Gelen Kutusu’nda görünür.
+  </p>
+  <section class="panel">
+    <n-form-item :label="`Bağlantılar (en çok ${maxLinks})`" label-placement="top" :show-feedback="false">
+      <n-input
+        v-model:value="linksText"
+        type="textarea"
+        :autosize="{ minRows: 6, maxRows: 16 }"
+        placeholder="https://www.evrensel.net/haber/…&#10;https://www.evrensel.net/haber/…"
+        :input-props="{ id: 'links' }"
+      />
+    </n-form-item>
+    <p class="hint">
+      {{ linkCount }} bağlantı
+      <template v-if="invalidCount"> · {{ invalidCount }} bağlantı olmayan parça (gönderilmez)</template>
+      <template v-if="pieces.length > maxLinks"> · en çok {{ maxLinks }} gönderilebilir</template>
+    </p>
+    <div class="actions">
+      <n-button type="primary" :disabled="linkCount === 0 || pieces.length > maxLinks" :loading="sendingLinks" @click="sendLinks">Gönder</n-button>
+      <span class="hint">Şimdilik yalnızca Evrensel bağlantıları işlenir. Aynı bağlantıyı tekrar göndermek güvenlidir.</span>
+    </div>
+  </section>
+
+  <n-alert v-if="linksError" type="error" :show-icon="false" class="result">{{ linksError }}</n-alert>
+
+  <section v-if="linkResults" class="panel result" aria-label="Sonuç">
+    <p class="summary">{{ linkResults.length }} parça: {{ accepted }} yeni.</p>
+    <ul class="link-results">
+      <li v-for="r in linkResults" :key="r.url">
+        <n-tag size="small" :type="statusLabel[r.status].type" :bordered="false">{{ statusLabel[r.status].text }}</n-tag>
+        <span class="link-url">{{ r.url }}</span>
+        <span v-if="r.reason" class="hint">{{ r.reason }}</span>
+      </li>
+    </ul>
+    <p v-if="accepted" class="next"><router-link to="/inbox">Gelen Kutusu’na git</router-link></p>
+  </section>
+  </n-tab-pane>
+  </n-tabs>
 </template>
 
 <style scoped>
@@ -178,5 +264,32 @@ async function upload() {
 }
 .next {
   margin: 8px 0 0;
+}
+.tabs {
+  max-width: 760px;
+}
+.summary {
+  margin: 0;
+  font-weight: 600;
+}
+.link-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 420px;
+  overflow: auto;
+}
+.link-results li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+}
+.link-url {
+  word-break: break-all;
+  font-size: 14px;
 }
 </style>
