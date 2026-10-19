@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSelect, NSpin, useMessage } from 'naive-ui'
 import { ApiError } from '@/api'
-import { emptyCase, type CaseFormValue } from '@/caseForm'
+import { emptyCase, toCaseInput, type CaseFormValue } from '@/caseForm'
 import CaseForm from '@/components/CaseForm.vue'
+import ProtestForm from '@/components/ProtestForm.vue'
+import { emptyProtest, toProtestInput, type ProtestFormValue } from '@/protestForm'
 import DismissDialog from '@/components/DismissDialog.vue'
 import { formatDate } from '@/format'
 import {
@@ -66,6 +68,7 @@ async function loadFormOptions() {
 void loadFormOptions()
 
 const caseValue = ref<CaseFormValue>(emptyCase())
+const protestValue = ref<ProtestFormValue>(emptyProtest())
 
 // The decision on the right.
 const action = ref<ReviewAction>('newCase')
@@ -75,6 +78,7 @@ const actionOptions: { value: ReviewAction; label: string }[] = [
   { value: 'linkOnly', label: 'Sadece haberi bağla' },
 ]
 const needsCase = computed(() => action.value !== 'newCase')
+const needsProtest = computed(() => action.value !== 'linkOnly')
 
 // Finding an existing case by name or company.
 const resistanceId = ref<number | null>(null)
@@ -108,24 +112,48 @@ watch(needsCase, (needed) => {
   if (needed && caseOptions.value.length === 0) onSearch('')
 })
 
-// Saving. Only "link only" is complete for now; the forms for the other two come next (R6c–R6e).
+// Saving: the server checks the required fields and answers with a message per field.
 const saving = ref(false)
 const fieldErrors = ref<Record<string, string>>({})
-const canSave = computed(() => action.value === 'linkOnly' && resistanceId.value !== null && !saving.value)
+const canSave = computed(() => !saving.value && (!needsProtest.value || formOptions.value !== null))
+
+const successText: Record<ReviewAction, string> = {
+  newCase: 'Vaka kaydedildi; haber vakaya bağlandı.',
+  addProtest: 'Eylem eklendi; haber vakaya bağlandı.',
+  linkOnly: 'Haber vakaya bağlandı.',
+}
+
+function request() {
+  switch (action.value) {
+    case 'newCase':
+      return { action: action.value, case: toCaseInput(caseValue.value), protest: toProtestInput(protestValue.value) }
+    case 'addProtest':
+      return { action: action.value, resistanceId: resistanceId.value, protest: toProtestInput(protestValue.value) }
+    default:
+      return { action: action.value, resistanceId: resistanceId.value }
+  }
+}
+
+// Bring the first field with a message into view.
+async function showFirstError() {
+  await nextTick()
+  document.querySelector('.n-form-item-feedback--error, .field-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
 
 async function save() {
   if (!canSave.value) return
   saving.value = true
   fieldErrors.value = {}
   try {
-    const result = await saveReview(articleId.value, { action: action.value, resistanceId: resistanceId.value })
-    if (result.outcomeSent) message.success('Haber vakaya bağlandı.')
-    else message.warning('Haber vakaya bağlandı; işleme hattına daha sonra bildirilecek.')
+    const result = await saveReview(articleId.value, request())
+    if (result.outcomeSent) message.success(successText[action.value])
+    else message.warning(`${successText[action.value]} İşleme hattına daha sonra bildirilecek.`)
     await router.push('/inbox')
   } catch (error) {
     if (error instanceof ApiError && error.status === 400) {
       fieldErrors.value = error.fields
       message.error(error.message)
+      await showFirstError()
     } else if (error instanceof ApiError && error.status === 409) {
       message.warning(error.message)
       await router.push('/inbox')
@@ -208,12 +236,14 @@ async function onDismissed() {
         </n-alert>
         <div v-else-if="!formOptions" class="state"><n-spin /></div>
         <case-form v-else v-model="caseValue" :options="formOptions" :errors="fieldErrors" />
-        <n-alert type="info" :show-icon="false">
-          Eylem formu bir sonraki adımda eklenecek; “Kaydet” o zaman açılacak.
-        </n-alert>
       </template>
-      <n-alert v-else-if="action === 'addProtest'" type="info" :show-icon="false">
-        Eylem formu bir sonraki adımda buraya eklenecek.
+
+      <template v-if="needsProtest && formOptions">
+        <protest-form v-model="protestValue" :options="formOptions" :errors="fieldErrors" />
+      </template>
+      <n-alert v-else-if="needsProtest && formOptionsError && action === 'addProtest'" type="error" :show-icon="false">
+        Form listeleri yüklenemedi.
+        <n-button size="small" class="retry" @click="loadFormOptions">Tekrar dene</n-button>
       </n-alert>
 
       <div class="buttons">
