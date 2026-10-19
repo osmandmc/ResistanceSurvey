@@ -100,11 +100,22 @@ builder.Services.AddAuthentication("Bearer")
 var app = builder.Build();
 
 // Test environment (Azure) only: bring its copy of the database up to date on startup.
-// Production migrations stay a manual step.
+// Production migrations stay a manual step. The test database pauses when idle, so retry while it wakes.
 if (app.Environment.IsEnvironment("Test"))
 {
-    using var scope = app.Services.CreateScope();
-    scope.ServiceProvider.GetRequiredService<RSDBContext>().Database.Migrate();
+    for (var attempt = 1; ; attempt++)
+    {
+        try
+        {
+            using var scope = app.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<RSDBContext>().Database.Migrate();
+            break;
+        }
+        catch (Microsoft.Data.SqlClient.SqlException) when (attempt < 6)
+        {
+            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(20));
+        }
+    }
 }
 
 // Middleware Setup

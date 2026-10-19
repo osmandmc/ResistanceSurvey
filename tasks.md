@@ -26,7 +26,7 @@ Status: ☐ open · ◐ in progress · ☑ done
 |---|---|---|---|---|
 | ☑ R1 | Azure test environment | `infra/` (Bicep): resource group, App Service (F1), Azure SQL (free offer), app settings for secrets, budget alert; trust for this repo on the GitHub deploy identity | Resources exist; budget alert set | Claude writes, **you** run the one-time setup |
 | ☑ R2 | Database copy | Export of the live database (read-only) imported into Azure SQL. SmarterASP's `rsuser` user cannot exist in Azure SQL: export with `/p:VerifyExtraction=False`, then remove `rsuser` from the `.bacpac` before importing | Test app reads the copied data | **You** export, Claude guides |
-| ◐ R3 | Deploy workflow | GitHub Actions: push to `redesign` builds and deploys to the test app; secrets only in Azure | Current app runs on the test URL | Claude |
+| ☑ R3 | Deploy workflow | GitHub Actions: push to `redesign` builds and deploys to the test app; secrets only in Azure | Current app runs on the test URL | Claude |
 
 ## Phase B — New screens
 

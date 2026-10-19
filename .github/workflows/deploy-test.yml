@@ -50,11 +50,11 @@ jobs:
           app-name: ${{ steps.app.outputs.name }}
           package: publish
 
-      # The free tier sleeps when idle and the database pauses, so the first start can take a few minutes.
+      # The free tier sleeps when idle and the database pauses, so the first start can take several minutes.
       - name: Check the login page
         run: |
           url="https://${{ steps.app.outputs.host }}/Home/Login"
-          for i in $(seq 1 20); do
+          for i in $(seq 1 40); do
             code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$url" || true)
             echo "attempt $i: HTTP $code"
             if [ "$code" = "200" ]; then exit 0; fi
