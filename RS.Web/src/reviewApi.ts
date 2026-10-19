@@ -153,3 +153,16 @@ export function searchCompanies(query: string) {
 export function createCompany(company: { name: string; typeId: number | null; scaleId: number | null; worklineId: number | null }) {
   return api<CreateCompanyResult>('/api/review/companies', { method: 'POST', body: JSON.stringify(company) })
 }
+
+/** "Olası vakalar": a case of a company named in the article. */
+export interface CaseSuggestion {
+  case: CaseOption
+  matchedCompanyId: number
+  matchedCompany: string
+  /** The company is named in the title, not only in the text. */
+  inTitle: boolean
+}
+
+export function getSuggestions(articleId: string) {
+  return api<CaseSuggestion[]>(`/api/review/${encodeURIComponent(articleId)}/suggestions`)
+}

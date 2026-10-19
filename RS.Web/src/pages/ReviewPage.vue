@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSpin, useMessage } from 'naive-ui'
+import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSpin, NTag, useMessage } from 'naive-ui'
 import { ApiError } from '@/api'
 import { emptyCase, toCaseInput, type CaseFormValue } from '@/caseForm'
 import CaseFinder from '@/components/CaseFinder.vue'
@@ -14,9 +14,11 @@ import { getInbox } from '@/inboxApi'
 import {
   getFormOptions,
   getReviewArticle,
+  getSuggestions,
   saveReview,
   type CaseFormOptions,
   type CaseOption,
+  type CaseSuggestion,
   type ReviewAction,
   type ReviewArticle,
 } from '@/reviewApi'
@@ -94,6 +96,27 @@ function onUseExisting(existing: CaseOption) {
   finderCompanyName.value = existing.companyName
   resistanceId.value = existing.id
   void nextTick(() => document.getElementById('decision-heading')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+}
+
+// "Olası vakalar": cases of companies named in the article. Only a hint: failures show nothing.
+const suggestions = ref<CaseSuggestion[]>([])
+
+async function loadSuggestions() {
+  suggestions.value = []
+  try {
+    suggestions.value = await getSuggestions(articleId.value)
+  } catch {
+    // the researcher can still search
+  }
+}
+
+watch(articleId, () => loadSuggestions(), { immediate: true })
+
+function useSuggestion(suggestion: CaseSuggestion, next: 'addProtest' | 'linkOnly') {
+  action.value = next
+  finderCompanyId.value = suggestion.matchedCompanyId
+  finderCompanyName.value = suggestion.matchedCompany
+  resistanceId.value = suggestion.case.id
 }
 
 // A new article starts with a clean form.
@@ -226,6 +249,30 @@ async function onDismissed() {
     </article>
 
     <section class="decision panel" aria-labelledby="decision-heading">
+      <div v-if="suggestions.length" class="suggestions" aria-labelledby="suggestions-heading">
+        <h2 id="suggestions-heading" class="decision-heading">Olası vakalar</h2>
+        <p class="hint">Haberde geçen şirketlerin vakaları.</p>
+        <ul class="suggestion-list">
+          <li v-for="s in suggestions" :key="s.case.id" class="suggestion" :class="{ selected: resistanceId === s.case.id && action !== 'newCase' }">
+            <div class="suggestion-text">
+              <span class="suggestion-name">
+                {{ s.case.name || `Vaka #${s.case.id}` }}
+                <n-tag v-if="s.case.ongoing" size="small" type="success" :bordered="false">devam ediyor</n-tag>
+              </span>
+              <span class="suggestion-meta">
+                “{{ s.matchedCompany }}” {{ s.inTitle ? 'başlıkta' : 'metinde' }} geçiyor
+                · {{ s.case.protestCount }} eylem
+                <template v-if="s.case.lastProtestDate"> · son eylem {{ formatDate(s.case.lastProtestDate) }}</template>
+              </span>
+            </div>
+            <div class="suggestion-actions">
+              <n-button size="small" @click="useSuggestion(s, 'addProtest')">Eylem ekle</n-button>
+              <n-button size="small" quaternary @click="useSuggestion(s, 'linkOnly')">Sadece bağla</n-button>
+            </div>
+          </li>
+        </ul>
+      </div>
+
       <h2 id="decision-heading" class="decision-heading">Önerilen işlem</h2>
 
       <n-radio-group v-model:value="action" name="action" class="choices">
@@ -390,6 +437,55 @@ async function onDismissed() {
 }
 .next {
   margin-left: auto;
+}
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rs-border);
+}
+.suggestion-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.suggestion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+.suggestion.selected {
+  border-color: var(--rs-accent);
+  background: #f0f8f7;
+}
+.suggestion-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.suggestion-name {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.suggestion-meta {
+  font-size: 13px;
+  color: var(--rs-muted);
+}
+.suggestion-actions {
+  display: flex;
+  gap: 6px;
 }
 .hint {
   margin: 0;

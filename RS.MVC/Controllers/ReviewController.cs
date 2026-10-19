@@ -24,8 +24,23 @@ namespace RS.MVC.Controllers
         GetCaseFormOptionsHandler getFormOptions,
         SearchCompaniesHandler searchCompanies,
         CreateCompanyHandler createCompany,
+        SuggestCasesForArticleHandler suggestCases,
         ILogger<ReviewController> logger) : ControllerBase
     {
+        /// <summary>GET /api/review/{articleId}/suggestions — "Olası vakalar": cases of companies named in the article.</summary>
+        [HttpGet("{articleId}/suggestions")]
+        public async Task<ActionResult<IReadOnlyList<CaseSuggestion>>> Suggestions(string articleId)
+        {
+            try
+            {
+                return Ok(await suggestCases.Handle(new SuggestCasesForArticleQuery(articleId)));
+            }
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+            {
+                return PipelineUnavailable(ex);
+            }
+        }
+
         public record CreateCompanyRequest(string Name, int? TypeId, int? ScaleId, int? WorklineId);
 
         /// <summary>GET /api/review/form-options — every list the case form needs.</summary>
