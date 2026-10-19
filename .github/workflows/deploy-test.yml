@@ -27,6 +27,19 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      # The new front end (RS.Web) builds into RS.MVC/wwwroot/rsweb, which the publish step then includes.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: RS.Web/package-lock.json
+
+      - name: Build front end
+        working-directory: RS.Web
+        run: |
+          npm ci
+          npm run build
+
       - name: Publish
         run: dotnet publish RS.MVC/RS.MVC.csproj -c Release -o publish
 
@@ -57,12 +70,15 @@ jobs:
       # The free tier sleeps when idle and the database pauses, so the first start can take several minutes.
       - name: Check the app answers
         run: |
-          url="https://${{ steps.app.outputs.host }}/"
+          host="https://${{ steps.app.outputs.host }}"
           for i in $(seq 1 40); do
-            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$url" || true)
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$host/" || true)
             echo "attempt $i: HTTP $code"
-            if [ "$code" = "200" ]; then exit 0; fi
+            if [ "$code" = "200" ]; then break; fi
+            if [ "$i" = "40" ]; then echo "The app did not answer with 200 at $host/" >&2; exit 1; fi
             sleep 15
           done
-          echo "The app did not answer with 200 at $url" >&2
-          exit 1
+          # The new front end must be there too.
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$host/app/")
+          echo "new front end /app/: HTTP $code"
+          [ "$code" = "200" ]
