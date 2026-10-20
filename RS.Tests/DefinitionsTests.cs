@@ -178,4 +178,71 @@ public class DefinitionsTests
     [Fact]
     public async Task AValueCannotBeMergedIntoItself() =>
         Assert.Equal(MergeStatus.SameValue, (await Merge(DefinitionKind.Reasons, 1, 1)).Status);
+
+    [Theory]
+    [InlineData(DefinitionKind.Companies, "Lindsay Sulama San. Tic. A.Ş.", "LİNDSAY SULAMA")]
+    [InlineData(DefinitionKind.Companies, "Birleşik Kamu-İş", "Birleşik Kamu İş")]
+    [InlineData(DefinitionKind.Corporations, "TÜRKİYE KAMU-SEN TÜRK-SAĞLIK-SEN", "Türkiye Kamu-Sen Türk Sağlık Sen")]
+    [InlineData(DefinitionKind.Reasons, "Ücret gaspı", "ucret gaspi")]
+    public void LikelyDuplicatesShareAKey(DefinitionKind kind, string a, string b) =>
+        Assert.Equal(DuplicateKey.For(kind, a), DuplicateKey.For(kind, b));
+
+    [Fact]
+    public void LegalWordsAreIgnoredOnlyForCompanies() =>
+        Assert.NotEqual(DuplicateKey.For(DefinitionKind.Corporations, "Örnek Dernek A.Ş."), DuplicateKey.For(DefinitionKind.Corporations, "Örnek Dernek"));
+
+    [Fact]
+    public async Task DuplicatesComeInGroupsWithTheValueToKeepFirst()
+    {
+        var typo = new Corporation { Name = "kurumsuz" };
+        var kept = new Corporation { Name = "Kurumsuz", Approved = true };
+        _db.AddRange(typo, kept, new Corporation { Name = "Başka Kurum", Approved = true });
+        Case().ResistanceCorporations = [new ResistanceCorporation { Corporation = typo }, new ResistanceCorporation { Corporation = kept }];
+        await _db.SaveChangesAsync();
+
+        var group = Assert.Single(await new FindDuplicatesHandler(_db).Handle(DefinitionKind.Corporations));
+
+        Assert.Equal(["Kurumsuz", "kurumsuz"], group.Items.Select(i => i.Name)); // approved first
+        Assert.Equal([1, 1], group.Items.Select(i => i.Usage));
+    }
+
+    [Fact]
+    public async Task NotDuplicateGroupsAreNotSuggestedAgain()
+    {
+        var a = new Company { Name = "1 Mayıs: Trabzon" };
+        var b = new Company { Name = "1 Mayıs-Trabzon" };
+        _db.AddRange(a, b);
+        await _db.SaveChangesAsync();
+        var find = new FindDuplicatesHandler(_db);
+        Assert.Single(await find.Handle(DefinitionKind.Companies));
+
+        await new DismissDuplicatesHandler(_db).Handle(new DismissDuplicatesCommand(DefinitionKind.Companies, [b.Id, a.Id]));
+        await new DismissDuplicatesHandler(_db).Handle(new DismissDuplicatesCommand(DefinitionKind.Companies, [a.Id, b.Id])); // again: no second row
+
+        Assert.Empty(await find.Handle(DefinitionKind.Companies));
+        Assert.Single(_db.DefinitionNotDuplicate);
+        // A third look-alike brings the group back, with a pair nobody has judged yet.
+        _db.Company.Add(new Company { Name = "1 MAYIS TRABZON" });
+        await _db.SaveChangesAsync();
+        Assert.Equal(3, Assert.Single(await find.Handle(DefinitionKind.Companies)).Items.Count);
+    }
+
+    [Fact]
+    public async Task AGroupIsMergedIntoTheChosenValue()
+    {
+        var a = new Company { Name = "AKSA" };
+        var b = new Company { Name = "Aksa" };
+        var c = new Company { Name = "Aksa A.Ş." };
+        _db.AddRange(a, b, c);
+        var first = Case(company: b);
+        var second = Case(company: c);
+        await _db.SaveChangesAsync();
+        var handler = new MergeGroupHandler(_db, new MergeDefinitionsHandler(_db));
+
+        var result = await handler.Handle(new MergeGroupCommand(DefinitionKind.Companies, a.Id, [b.Id, c.Id, a.Id]));
+
+        Assert.Equal((MergeStatus.Ok, 2), (result.Status, result.Affected));
+        Assert.Equal((a.Id, a.Id), (first.CompanyId!.Value, second.CompanyId!.Value));
+        Assert.Equal([a.Id], _db.Company.Where(x => !x.Deleted).Select(x => x.Id));
+    }
 }

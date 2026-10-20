@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NCheckbox, NEmpty, NInput, NPopconfirm, NSelect, NSpin, NSwitch, NTag, useMessage } from 'naive-ui'
 import { ApiError, errorMessage } from '@/api'
+import DuplicateGroups from '@/components/DuplicateGroups.vue'
 import MergeDialog from '@/components/MergeDialog.vue'
 import {
   approveDefinition,
@@ -28,6 +29,8 @@ const kind = computed<DefinitionKind>(() => {
 })
 const meta = computed(() => definitionKinds.find((k) => k.kind === kind.value)!)
 
+// The list itself, or its likely duplicates (R12a-2).
+const view = ref<'list' | 'duplicates'>('list')
 const text = ref('')
 const pendingOnly = ref(false)
 const typeId = ref<number | null>(null)
@@ -62,6 +65,7 @@ async function load() {
 }
 
 watch(kind, () => {
+  view.value = 'list'
   text.value = ''
   pendingOnly.value = false
   typeId.value = null
@@ -170,6 +174,16 @@ function onMerged(affected: number) {
   </nav>
 
   <section class="panel">
+    <div class="views" role="group" aria-label="Görünüm">
+      <n-button size="small" :type="view === 'list' ? 'primary' : 'default'" :secondary="view !== 'list'" @click="view = 'list'">Liste</n-button>
+      <n-button size="small" :type="view === 'duplicates' ? 'primary' : 'default'" :secondary="view !== 'duplicates'" @click="view = 'duplicates'">
+        Olası tekrarlar
+      </n-button>
+    </div>
+
+    <duplicate-groups v-if="view === 'duplicates'" :kind="kind" :unit="meta.usageUnit" @changed="load()" />
+
+    <template v-else>
     <div class="filters">
       <n-input v-model:value="text" clearable placeholder="Ada göre ara" class="search" :input-props="{ id: 'definition-search', 'aria-label': 'Ada göre ara' }" />
       <n-select
@@ -273,6 +287,7 @@ function onMerged(affected: number) {
       <n-button size="small" :disabled="to >= total || loading" @click="page += 1">Sonraki</n-button>
     </div>
     <p v-else-if="items.length" class="count">{{ total }} değer · kullanım: {{ meta.usageUnit }} sayısı</p>
+    </template>
   </section>
 
   <merge-dialog :kind="kind" :from="mergeFrom" :suggested-into="mergeSuggestion" :unit="meta.usageUnit" @merged="onMerged" @close="mergeFrom = null" />
@@ -313,6 +328,11 @@ function onMerged(affected: number) {
   background: var(--rs-surface);
   border: 1px solid var(--rs-border);
   border-radius: 10px;
+}
+.views {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 0;
 }
 .filters {
   display: flex;

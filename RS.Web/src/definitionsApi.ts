@@ -89,3 +89,23 @@ export function mergePreview(kind: DefinitionKind, id: number) {
 export function mergeDefinitions(kind: DefinitionKind, fromId: number, intoId: number) {
   return api<{ affected: number }>(`/api/definitions/${kind}/${fromId}/merge`, { method: 'POST', body: JSON.stringify({ intoId }) })
 }
+
+/** Values whose names come down to the same key; the first item is the suggested one to keep. */
+export interface DuplicateGroup {
+  key: string
+  items: DefinitionItem[]
+}
+
+export function listDuplicates(kind: DefinitionKind) {
+  return api<DuplicateGroup[]>(`/api/definitions/${kind}/duplicates`)
+}
+
+/** All or nothing: every value in fromIds is merged into intoId. */
+export function mergeGroup(kind: DefinitionKind, intoId: number, fromIds: number[]) {
+  return api<{ affected: number }>(`/api/definitions/${kind}/duplicates/merge`, { method: 'POST', body: JSON.stringify({ intoId, fromIds }) })
+}
+
+/** "Aynı değil": not suggested together again. */
+export function dismissDuplicates(kind: DefinitionKind, ids: number[]) {
+  return api<void>(`/api/definitions/${kind}/duplicates/dismiss`, { method: 'POST', body: JSON.stringify({ ids }) })
+}

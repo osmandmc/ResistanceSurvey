@@ -47,6 +47,7 @@ namespace RS.EF
         public DbSet<TradeUnionConfederation> TradeUnionConfederation { get; set; }
         public DbSet<ProtestoCity> ProtestoCity { get; set; }
         public DbSet<ProtestoDistrict> ProtestoDistrict { get; set; }
+        public DbSet<DefinitionNotDuplicate> DefinitionNotDuplicate { get; set; }
 
        
         public const string TurkishCollation = "Turkish_CI_AS";
@@ -74,6 +75,12 @@ namespace RS.EF
                     .HasIndex(n => n.ArticleId)
                     .IsUnique()
                     .HasFilter("[ArticleId] IS NOT NULL");
+
+                 modelBuilder.Entity<DefinitionNotDuplicate>(e =>
+                 {
+                     e.Property(x => x.Kind).HasMaxLength(32).IsRequired();
+                     e.HasIndex(x => new { x.Kind, x.FirstId, x.SecondId }).IsUnique();
+                 });
 
                  // A hash in hex: compared exactly, kept in the database default collation (see ConfigureConventions).
                  modelBuilder.Entity<News>().Property(n => n.ArticleId).UseCollation(null);

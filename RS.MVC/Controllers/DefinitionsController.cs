@@ -23,13 +23,20 @@ namespace RS.MVC.Controllers
         UpdateDefinitionHandler update,
         ApproveDefinitionHandler approve,
         DeleteDefinitionHandler delete,
-        MergeDefinitionsHandler merge) : ControllerBase
+        MergeDefinitionsHandler merge,
+        FindDuplicatesHandler findDuplicates,
+        MergeGroupHandler mergeGroup,
+        DismissDuplicatesHandler dismissDuplicates) : ControllerBase
     {
         public record DefinitionOptions(IReadOnlyList<Option> CorporationTypes, IReadOnlyList<Option> CompanyTypes, IReadOnlyList<Option> CompanyScales, IReadOnlyList<Option> CompanyWorklines);
 
         public record UpdateRequest(string Name, int? TypeId, bool AgainstProduction, bool Simple, int? ScaleId, int? WorklineId);
 
         public record MergeRequest(int IntoId);
+
+        public record MergeGroupRequest(int IntoId, IReadOnlyList<int> FromIds);
+
+        public record DismissRequest(IReadOnlyList<int> Ids);
 
         /// <summary>GET /api/definitions/options — the choices for the lists' own fields.</summary>
         [HttpGet("options")]
@@ -99,6 +106,40 @@ namespace RS.MVC.Controllers
                 MergeStatus.SameValue => BadRequest(new { error = "Bir değer kendisiyle birleştirilemez." }),
                 _ => NotFound(new { error = "Değer bulunamadı." }),
             };
+        }
+
+        /// <summary>GET /api/definitions/{kind}/duplicates — groups of likely duplicates, biggest first.</summary>
+        [HttpGet("{kind}/duplicates")]
+        public async Task<ActionResult<IReadOnlyList<DuplicateGroup>>> Duplicates(string kind)
+        {
+            if (!DefinitionKinds.TryParse(kind, out var parsed))
+                return UnknownKind();
+            return Ok(await findDuplicates.Handle(parsed));
+        }
+
+        /// <summary>POST /api/definitions/{kind}/duplicates/merge { intoId, fromIds } — all in one go, or nothing.</summary>
+        [HttpPost("{kind}/duplicates/merge")]
+        public async Task<ActionResult<object>> MergeGroup(string kind, MergeGroupRequest request)
+        {
+            if (!DefinitionKinds.TryParse(kind, out var parsed))
+                return UnknownKind();
+            var result = await mergeGroup.Handle(new MergeGroupCommand(parsed, request?.IntoId ?? 0, request?.FromIds ?? []));
+            return result.Status switch
+            {
+                MergeStatus.Ok => new { affected = result.Affected },
+                MergeStatus.SameValue => BadRequest(new { error = "Birleştirilecek başka değer seçin." }),
+                _ => NotFound(new { error = "Değerlerden biri bulunamadı; liste yenilendi mi?" }),
+            };
+        }
+
+        /// <summary>POST /api/definitions/{kind}/duplicates/dismiss { ids } — "aynı değil".</summary>
+        [HttpPost("{kind}/duplicates/dismiss")]
+        public async Task<IActionResult> Dismiss(string kind, DismissRequest request)
+        {
+            if (!DefinitionKinds.TryParse(kind, out var parsed))
+                return UnknownKind();
+            await dismissDuplicates.Handle(new DismissDuplicatesCommand(parsed, request?.Ids ?? []));
+            return NoContent();
         }
 
         private IActionResult Answer(ChangeResult result) => result.Status switch

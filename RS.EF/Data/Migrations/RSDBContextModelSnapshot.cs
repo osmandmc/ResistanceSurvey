@@ -80,6 +80,34 @@ namespace RS.EF.Data.Migrations
                     b.ToTable("CompanyOutsourceCompany");
                 });
 
+            modelBuilder.Entity("RS.COMMON.Entities.DefinitionNotDuplicate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FirstId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<int>("SecondId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Kind", "FirstId", "SecondId")
+                        .IsUnique();
+
+                    b.ToTable("DefinitionNotDuplicate");
+                });
+
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.Category", b =>
                 {
                     b.Property<int>("Id")

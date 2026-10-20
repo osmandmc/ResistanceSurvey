@@ -53,15 +53,17 @@ namespace RS.MVC.Features.Review
         /// <summary>The words that identify the company, or null when the name is too short or generic to match on.</summary>
         public static string Core(string companyName)
         {
-            var words = Normalize(companyName).Split(' ', System.StringSplitOptions.RemoveEmptyEntries)
-                .Where(w => !LegalWords.Contains(w))
-                .ToList();
+            var words = CoreWords(companyName);
             if (words.Count == 0)
                 return null;
             if (words.Count == 1 && words[0].Length < MinSingleWordLength)
                 return null;
             return string.Join(' ', words);
         }
+
+        /// <summary>The name's words without legal-form words, in comparable form (also used to find duplicate companies).</summary>
+        public static List<string> CoreWords(string companyName) =>
+            Normalize(companyName).Split(' ', System.StringSplitOptions.RemoveEmptyEntries).Where(w => !LegalWords.Contains(w)).ToList();
 
         public record Match(int CompanyId, string CompanyName, bool InTitle);
 
