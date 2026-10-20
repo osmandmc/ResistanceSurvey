@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Updated EPPlus to the latest stable version. -->
-    <PackageReference Include="EPPlus" Version="7.5.3" />
+    <!-- Excel import and export. 7.7.4 brings the patched System.Security.Cryptography.Pkcs (F10). -->
+    <PackageReference Include="EPPlus" Version="7.7.4" />
 
     <!-- Updated Microsoft.AspNetCore.Authentication.JwtBearer to the latest version compati  ble with .NET 9. -->
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
@@ -26,10 +26,6 @@
     <!-- Updated IdentityModel libraries for JSON Web Tokens and Tokens. -->
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.3.1" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.3.1" />
-
-    <!-- Updated Code Generation Design tools to the latest version. -->
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Web.Deployment" Version="4.0.5" />
   </ItemGroup>
 
 </Project>
