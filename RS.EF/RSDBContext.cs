@@ -51,6 +51,11 @@ namespace RS.EF
        
         public const string TurkishCollation = "Turkish_CI_AS";
 
+        // All text follows Turkish rules, so "işçi" finds "İŞÇİ" and lists sort as in Turkish (F9). The database
+        // default (SQL_Latin1_General_CP1_CI_AS) ignores case only for Latin letters.
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) =>
+            configurationBuilder.Properties<string>().UseCollation(TurkishCollation);
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             
@@ -70,13 +75,8 @@ namespace RS.EF
                     .IsUnique()
                     .HasFilter("[ArticleId] IS NOT NULL");
 
-                 // Searched and sorted text follows Turkish rules, so "işçi" finds "İŞÇİ" (F9). The database default
-                 // (SQL_Latin1_General_CP1_CI_AS) ignores case only for Latin letters.
-                 modelBuilder.Entity<Resistance>().Property(r => r.Name).UseCollation(TurkishCollation);
-                 modelBuilder.Entity<Resistance>().Property(r => r.Description).UseCollation(TurkishCollation);
-                 modelBuilder.Entity<Company>().Property(c => c.Name).UseCollation(TurkishCollation);
-                 modelBuilder.Entity<Corporation>().Property(c => c.Name).UseCollation(TurkishCollation);
-                 modelBuilder.Entity<News>().Property(n => n.Header).UseCollation(TurkishCollation);
+                 // A hash in hex: compared exactly, kept in the database default collation (see ConfigureConventions).
+                 modelBuilder.Entity<News>().Property(n => n.ArticleId).UseCollation(null);
 
         }
     }
