@@ -53,7 +53,7 @@ Status: ☐ open · ◐ in progress · ☑ done
 | ☐ F4 | Per-person accounts | Instead of two shared logins with plain-text passwords in config: users table, hashed passwords, who-did-what. Needed before production uses the redesign |
 | ☐ F5 | Request models with ids only | 18 request models bind EF entities (over-posting; `{id: -1}` creates lookup values). New APIs already use ids |
 | ☐ F6 | Global error handling and logging | Exception handler middleware; no bare 500s |
-| ☐ F7 | Build and test on pull requests | Today only the deploy workflows build |
+| ☑ F7 | Build and test on pull requests | `ci.yml`: every pull request gets the front-end build (with type check) and `RS.Tests`, as `deploy-test` runs before deploying; no secrets. Make the `build-and-test` check required in the branch settings for `master` |
 | ☐ F9 | Text search and Turkish letters | Search uses the database collation; check it is Turkish and case-insensitive (`Turkish_CI_AS`), otherwise “işçi” does not find “İŞÇİ” |
 | ☐ F8 | Smaller clean-ups | Remove the unused .NET Framework package `Microsoft.Web.Deployment`; async EF calls where code is touched; Excel export out of the controller; one generic lookup admin instead of five near-identical controllers; named constants for intervention type 7 and corporation type 1; decide whether to switch on the configured tr-TR request localization |
 
