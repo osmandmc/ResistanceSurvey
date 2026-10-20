@@ -13,7 +13,7 @@ const props = defineProps<{
   suggestedInto?: { id: number; name: string } | null
   unit: 'vaka' | 'eylem'
 }>()
-const emit = defineEmits<{ merged: [affected: number]; close: [] }>()
+const emit = defineEmits<{ merged: [affected: number, intoId: number]; close: [] }>()
 
 const intoId = ref<number | null>(null)
 const options = ref<{ label: string; value: number }[]>([])
@@ -52,7 +52,7 @@ async function merge() {
   error.value = ''
   try {
     const result = await mergeDefinitions(props.kind, props.from.id, intoId.value)
-    emit('merged', result.affected)
+    emit('merged', result.affected, intoId.value)
   } catch (e) {
     error.value = errorMessage(e, 'Birleştirilemedi.')
   } finally {

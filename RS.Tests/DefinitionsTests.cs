@@ -245,4 +245,50 @@ public class DefinitionsTests
         Assert.Equal((a.Id, a.Id), (first.CompanyId!.Value, second.CompanyId!.Value));
         Assert.Equal([a.Id], _db.Company.Where(x => !x.Deleted).Select(x => x.Id));
     }
+
+    [Fact]
+    public async Task ACompanyShowsItsCasesAndRelations()
+    {
+        var main = new Company { Name = "Ana Firma" };
+        var company = new Company { Name = "Örnek Tekstil" };
+        var sub = new Company { Name = "Taşeron Ltd." };
+        var gone = new Company { Name = "Eski Taşeron", Deleted = true };
+        _db.AddRange(main, company, sub, gone);
+        var own = Case(company: company);
+        var ofSubcontractor = Case(company: sub, mainCompany: company);
+        Case(deleted: true, company: company);
+        await _db.SaveChangesAsync();
+        _db.CompanyOutsourceCompany.AddRange(
+            new CompanyOutsourceCompany { CompanyId = main.Id, OutsourceCompanyId = company.Id },
+            new CompanyOutsourceCompany { CompanyId = company.Id, OutsourceCompanyId = sub.Id },
+            new CompanyOutsourceCompany { CompanyId = company.Id, OutsourceCompanyId = gone.Id });
+        await _db.SaveChangesAsync();
+
+        var detail = await new GetCompanyHandler(_db).Handle(company.Id);
+
+        Assert.NotNull(detail);
+        Assert.Equal([(own.Id, false), (ofSubcontractor.Id, true)], detail.Cases.Select(c => (c.Id, c.AsMainCompany)).OrderBy(c => c.Item1));
+        Assert.Equal(["Ana Firma"], detail.MainCompanies.Select(c => c.Name));
+        Assert.Equal(["Taşeron Ltd."], detail.Subcontractors.Select(c => c.Name)); // the deleted one is left out
+        Assert.Null(await new GetCompanyHandler(_db).Handle(gone.Id));
+    }
+
+    [Fact]
+    public async Task SubcontractorLinksAreAddedOnceAndRemoved()
+    {
+        var main = new Company { Name = "Ana Firma" };
+        var sub = new Company { Name = "Taşeron Ltd." };
+        _db.AddRange(main, sub);
+        await _db.SaveChangesAsync();
+        var add = new AddCompanyLinkHandler(_db);
+
+        Assert.Equal(LinkStatus.Ok, await add.Handle(new CompanyLinkCommand(main.Id, sub.Id)));
+        Assert.Equal(LinkStatus.Ok, await add.Handle(new CompanyLinkCommand(main.Id, sub.Id)));
+        Assert.Equal(LinkStatus.SameCompany, await add.Handle(new CompanyLinkCommand(main.Id, main.Id)));
+        Assert.Equal(LinkStatus.NotFound, await add.Handle(new CompanyLinkCommand(main.Id, 999)));
+        Assert.Single(_db.CompanyOutsourceCompany);
+
+        Assert.Equal(LinkStatus.Ok, await new RemoveCompanyLinkHandler(_db).Handle(new CompanyLinkCommand(main.Id, sub.Id)));
+        Assert.Empty(_db.CompanyOutsourceCompany);
+    }
 }
