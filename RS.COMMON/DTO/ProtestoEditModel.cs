@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace RS.COMMON.DTO
         [DataType(DataType.Date)] 
         public DateTime? ProtestoEndDate { get; set; }
         public List<ProtestoPlace> ProtestoPlaceIds { get; set; }
-        public int GenderId { get; set; }
+        public int? GenderId { get; set; }
         public List<InterventionType> InterventionTypeIds { get; set; }
         public List<ProtestoCity> ProtestoCityIds { get; set; }
         public List<ProtestoDistrict> ProtestoDistrictIds { get; set; }

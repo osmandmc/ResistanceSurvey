@@ -29,8 +29,7 @@ public class FormOptionsAndCompanyTests
     [Fact]
     public async Task TheCasesUnionIsChosenFromCorporationsUnionsFirst()
     {
-        // The separate TradeUnion table must not be offered: the case's union points to a corporation.
-        _db.TradeUnion.Add(new TradeUnion { Id = 30, Name = "HAK-İş Öz Gıda-İş" });
+        // The case's union points to a corporation (the old TradeUnion table, whose ids meant other corporations, is gone).
         _db.Corporation.AddRange(
             new Corporation { Id = 30, Name = "TTB", CorporationTypeId = 3 },
             new Corporation { Id = 14, Name = "DİSK Genel-İş", CorporationTypeId = GetCaseFormOptionsHandler.TradeUnionCorporationTypeId },

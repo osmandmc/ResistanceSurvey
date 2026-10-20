@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using RS.COMMON.Entities;
 using RS.COMMON.Entities.LookupEntity;
@@ -42,9 +43,7 @@ namespace RS.EF
         public DbSet<ResistanceResistanceReason> ResistanceResistanceReason  { get; set; }
         public DbSet<ProtestoProtestoType> ProtestoProtestoType { get; set; }
         public DbSet<ProtestoInterventionType> ProtestoInterventionType { get; set; }
-        public DbSet<TradeUnion> TradeUnion { get; set; }
         public DbSet<TradeUnionAuthority> TradeUnionAuthority { get; set; }
-        public DbSet<TradeUnionConfederation> TradeUnionConfederation { get; set; }
         public DbSet<ProtestoCity> ProtestoCity { get; set; }
         public DbSet<ProtestoDistrict> ProtestoDistrict { get; set; }
         public DbSet<DefinitionNotDuplicate> DefinitionNotDuplicate { get; set; }
@@ -84,6 +83,26 @@ namespace RS.EF
 
                  // A hash in hex: compared exactly, kept in the database default collation (see ConfigureConventions).
                  modelBuilder.Entity<News>().Property(n => n.ArticleId).UseCollation(null);
+
+                 // Lengths as the database has them (F12): who entered or changed a case or protest; a protest location's place.
+                 foreach (var audited in new[] { typeof(Resistance), typeof(Protesto) })
+                 {
+                     modelBuilder.Entity(audited).Property(nameof(AuditEntity.Creator)).HasMaxLength(50);
+                     modelBuilder.Entity(audited).Property(nameof(AuditEntity.Updater)).HasMaxLength(50);
+                 }
+                 modelBuilder.Entity<ProtestoLocation>().Property(l => l.Place).HasMaxLength(500);
+                 modelBuilder.Entity<CorporationType>().Property(t => t.Name).HasMaxLength(100);
+
+                 // Delete rules (F12): a case or protest takes its own parts along (protests, links, locations); a list value
+                 // (category, city, corporation, company …) can only be deleted when nothing uses it. Before, deleting a
+                 // category deleted all its cases, and deleting a company type deleted its companies.
+                 foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+                 {
+                     var owner = foreignKey.PrincipalEntityType.ClrType;
+                     var ownsIt = owner == typeof(Resistance) || owner == typeof(Protesto)
+                         || (owner == typeof(News) && foreignKey.DeclaringEntityType.ClrType == typeof(ResistanceNews));
+                     foreignKey.DeleteBehavior = ownsIt ? DeleteBehavior.Cascade : DeleteBehavior.Restrict;
+                 }
 
         }
     }
