@@ -1,9 +1,11 @@
 name: Build and Deploy to Custom Web Server
 
+# Production (SmarterASP) runs the old app from the legacy branch; master holds the redesign,
+# which deploys to the Azure test environment until it replaces production (R14).
 on:
   push:
     branches:
-      - master
+      - legacy
 
 jobs:
   build-and-deploy:
