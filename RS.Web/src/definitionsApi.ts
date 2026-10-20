@@ -1,0 +1,91 @@
+import { api } from './api'
+
+/** The lists in Tanımlar; the slug is also the address (/definitions/corporations). */
+export type DefinitionKind = 'companies' | 'corporations' | 'reasons' | 'protest-types' | 'protest-places'
+
+export const definitionKinds: { kind: DefinitionKind; label: string; usageUnit: 'vaka' | 'eylem'; hasApproval: boolean }[] = [
+  { kind: 'companies', label: 'Şirketler', usageUnit: 'vaka', hasApproval: false },
+  { kind: 'corporations', label: 'Kurumlar', usageUnit: 'vaka', hasApproval: true },
+  { kind: 'reasons', label: 'Vaka nedenleri', usageUnit: 'vaka', hasApproval: true },
+  { kind: 'protest-types', label: 'Eylem türleri', usageUnit: 'eylem', hasApproval: true },
+  { kind: 'protest-places', label: 'Eylem mekanları', usageUnit: 'eylem', hasApproval: true },
+]
+
+export interface DefinitionItem {
+  id: number
+  name: string
+  /** null for companies (no approval). */
+  approved: boolean | null
+  /** Live cases (protests for protest types and places) that use it. */
+  usage: number
+  /** Corporation type, or company type. */
+  typeId: number | null
+  againstProduction: boolean | null
+  simple: boolean | null
+  scaleId: number | null
+  worklineId: number | null
+}
+
+export interface DefinitionPage {
+  items: DefinitionItem[]
+  total: number
+  page: number
+  pageSize: number
+  /** Values waiting for approval (whatever the filter). */
+  pendingCount: number
+}
+
+export interface Option {
+  id: number
+  name: string
+}
+
+export interface DefinitionOptions {
+  corporationTypes: Option[]
+  companyTypes: Option[]
+  companyScales: Option[]
+  companyWorklines: Option[]
+}
+
+export function getDefinitionOptions() {
+  return api<DefinitionOptions>('/api/definitions/options')
+}
+
+export function listDefinitions(kind: DefinitionKind, filter: { text?: string; pending?: boolean; typeId?: number | null; page?: number }) {
+  const params = new URLSearchParams()
+  if (filter.text) params.set('q', filter.text)
+  if (filter.pending) params.set('pending', 'true')
+  if (filter.typeId) params.set('typeId', String(filter.typeId))
+  if (filter.page && filter.page > 1) params.set('page', String(filter.page))
+  return api<DefinitionPage>(`/api/definitions/${kind}?${params}`)
+}
+
+export function updateDefinition(kind: DefinitionKind, item: DefinitionItem) {
+  return api<void>(`/api/definitions/${kind}/${item.id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      name: item.name,
+      typeId: item.typeId,
+      againstProduction: item.againstProduction ?? false,
+      simple: item.simple ?? false,
+      scaleId: item.scaleId,
+      worklineId: item.worklineId,
+    }),
+  })
+}
+
+export function approveDefinition(kind: DefinitionKind, id: number) {
+  return api<void>(`/api/definitions/${kind}/${id}/approve`, { method: 'POST' })
+}
+
+export function deleteDefinition(kind: DefinitionKind, id: number) {
+  return api<void>(`/api/definitions/${kind}/${id}`, { method: 'DELETE' })
+}
+
+export function mergePreview(kind: DefinitionKind, id: number) {
+  return api<{ affected: number }>(`/api/definitions/${kind}/${id}/merge-preview`)
+}
+
+export function mergeDefinitions(kind: DefinitionKind, fromId: number, intoId: number) {
+  return api<{ affected: number }>(`/api/definitions/${kind}/${fromId}/merge`, { method: 'POST', body: JSON.stringify({ intoId }) })
+}
