@@ -1,0 +1,40 @@
+name: ci
+
+# Builds and tests every pull request, the same way deploy-test does before deploying (F7).
+# Pushes to master are checked by deploy-test itself. No secrets, no Azure.
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true # a newer push to the pull request replaces a run still going
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: RS.Web/package-lock.json
+
+      # Type check (vue-tsc) and build of the new front end.
+      - name: Build front end
+        working-directory: RS.Web
+        run: |
+          npm ci
+          npm run build
+
+      - name: Test
+        run: dotnet test RS.Tests/RS.Tests.csproj -c Release
