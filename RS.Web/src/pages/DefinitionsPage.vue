@@ -247,7 +247,8 @@ function onMerged(affected: number) {
 
             <template v-else>
               <td class="name">
-                {{ item.name }}
+                <router-link v-if="kind === 'companies'" :to="`/definitions/companies/${item.id}`" class="name-link">{{ item.name }}</router-link>
+                <template v-else>{{ item.name }}</template>
                 <n-tag v-if="item.approved === false" size="small" type="warning" :bordered="false" class="tag">onay bekliyor</n-tag>
               </td>
               <td v-if="kind === 'corporations'">{{ nameOf(options.corporationTypes, item.typeId) }}</td>
@@ -387,6 +388,9 @@ function onMerged(affected: number) {
 }
 .tag {
   margin-left: 8px;
+}
+.name-link {
+  color: var(--rs-ink);
 }
 .num {
   text-align: right;
