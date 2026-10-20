@@ -32,9 +32,6 @@ param pipelineBaseUrl string = ''
 @description('Function key for the pipeline API. GitHub secret PIPELINE_FUNCTION_KEY.')
 param pipelineFunctionKey string = ''
 
-@description('First month served by the pipeline ("yyyy-MM"); empty = pipeline off.')
-param pipelineCutoverMonth string = ''
-
 @description('Monthly budget amount in the billing currency.')
 param monthlyBudget int = 10
 
@@ -132,7 +129,6 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
         { name: 'AppSettings__UserPass', value: userPassword }
         { name: 'Pipeline__BaseUrl', value: pipelineBaseUrl }
         { name: 'Pipeline__FunctionKey', value: pipelineFunctionKey }
-        { name: 'Pipeline__CutoverMonth', value: pipelineCutoverMonth }
       ]
     }
   }

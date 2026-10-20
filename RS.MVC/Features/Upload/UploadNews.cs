@@ -4,11 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OfficeOpenXml;
 using RS.COMMON.Entities;
-using RS.EF;
 using RS.MVC.Applications;
 using RS.MVC.Models;
 using static RS.COMMON.Constants.Enums;
@@ -16,21 +14,15 @@ using static RS.COMMON.Constants.Enums;
 namespace RS.MVC.Features.Upload
 {
     /// <summary>
-    /// An Excel file of one source's news for one month (columns: Link, Tarih, Başlık, Metin; first row is the
-    /// heading). From the cut-over month on, a pipeline source's rows go to the news pipeline; otherwise they are
-    /// imported into the app's News table as before.
+    /// An Excel file of one source's news (columns: Link, Tarih, Başlık, Metin; first row is the heading). Every row
+    /// goes to the news pipeline with its text and appears in the inbox under its own date (R12b; before, months
+    /// before a cut-over were imported into the app's News table).
     /// </summary>
-    public record UploadNewsCommand(Stream File, string FileName, long Length, int Source, int Year, int Month);
+    public record UploadNewsCommand(Stream File, string FileName, long Length, int Source);
 
-    /// <summary>
-    /// Pipeline: Accepted / Duplicate / Rejected from the pipeline. Local: Imported new rows; Kept rows already
-    /// handled (linked or dismissed) that the upload left alone and did not import again.
-    /// </summary>
+    /// <summary>Accepted / Duplicate / Rejected as the pipeline answered; Errors when the file was not sent at all.</summary>
     public record UploadResult(
-        bool ToPipeline,
         int Rows,
-        int Imported = 0,
-        int Kept = 0,
         int Accepted = 0,
         int Duplicate = 0,
         IReadOnlyList<string> Rejected = null,
@@ -39,7 +31,7 @@ namespace RS.MVC.Features.Upload
         public bool IsValid => Errors is not { Count: > 0 };
     }
 
-    public class UploadNewsHandler(RSDBContext db, IPipelineClient pipeline, IOptions<PipelineSettings> settings)
+    public class UploadNewsHandler(IPipelineClient pipeline, IOptions<PipelineSettings> settings)
     {
         public const long MaxBytes = 4 * 1024 * 1024;
         public const int MaxErrorsShown = 10;
@@ -50,10 +42,6 @@ namespace RS.MVC.Features.Upload
         private static readonly TimeSpan TurkeyOffset = TimeSpan.FromHours(3);
         private static readonly CultureInfo Turkish = CultureInfo.GetCultureInfo("tr-TR");
 
-        /// <summary>True when this source's rows for this month go to the pipeline.</summary>
-        public bool GoesToPipeline(int source, int year, int month) =>
-            year is >= 2000 and <= 2100 && month is >= 1 and <= 12 && settings.Value.UsesPipeline(source, new DateTime(year, month, 1));
-
         public async Task<UploadResult> Handle(UploadNewsCommand command)
         {
             var problems = new List<string>();
@@ -63,18 +51,15 @@ namespace RS.MVC.Features.Upload
                 problems.Add("Dosya boş ya da 4 MB’tan büyük.");
             if (!Sources.ContainsKey(command.Source))
                 problems.Add("Kaynak seçiniz.");
-            if (command.Year is < 2000 or > 2100 || command.Month is < 1 or > 12)
-                problems.Add("Yıl ve ay seçiniz.");
+            else if (!settings.Value.UsesPipeline(command.Source))
+                problems.Add("Bu kaynak işleme hattına bağlı değil.");
             if (problems.Count > 0)
-                return new UploadResult(false, 0, Errors: problems);
+                return new UploadResult(0, Errors: problems);
 
             var (rows, rowErrors) = ReadRows(command.File, command.Source);
             if (rowErrors.Count > 0)
-                return new UploadResult(false, rows.Count, Errors: rowErrors);
-
-            return GoesToPipeline(command.Source, command.Year, command.Month)
-                ? await SubmitToPipelineAsync(rows)
-                : await ImportLocallyAsync(rows, command.Source, command.Year, command.Month);
+                return new UploadResult(rows.Count, Errors: rowErrors);
+            return await SubmitToPipelineAsync(rows);
         }
 
         /// <summary>Every row is checked first; any problem stops the upload, listed by row number.</summary>
@@ -128,6 +113,10 @@ namespace RS.MVC.Features.Upload
             return (rows, errors);
         }
 
+        /// <summary>A news row as the pipeline takes it: its date is Turkey time, its text comes along so it is not fetched.</summary>
+        public static PipelineArticle ToPipelineArticle(News n) =>
+            new(n.Link, n.Header, new DateTimeOffset(DateTime.SpecifyKind(n.Date, DateTimeKind.Unspecified), TurkeyOffset), n.Content);
+
         private static DateTime? ReadDate(object value) => value switch
         {
             DateTime d => d,
@@ -137,35 +126,11 @@ namespace RS.MVC.Features.Upload
             _ => null,
         };
 
-        // Rows not yet handled are replaced (as before). Handled rows - linked to a case or dismissed - are kept, and
-        // the file's copies of them are not imported again (before, a re-upload reset dismissals and doubled links).
-        private async Task<UploadResult> ImportLocallyAsync(List<News> rows, int source, int year, int month)
-        {
-            var from = new DateTime(year, month, 1);
-            var to = from.AddMonths(1);
-            var existing = await db.News.Where(n => n.Source == source && n.Date >= from && n.Date < to).ToListAsync();
-            var existingIds = existing.Select(n => n.Id).ToList();
-            var linkedIds = (await db.ResistanceNews.Where(rn => existingIds.Contains(rn.NewsId)).Select(rn => rn.NewsId).ToListAsync()).ToHashSet();
-
-            var kept = existing.Where(n => linkedIds.Contains(n.Id) || n.Status != Status.Pending || n.ArticleId != null).ToList();
-            db.News.RemoveRange(existing.Except(kept));
-
-            var keptLinks = kept.Select(n => n.Link).ToHashSet();
-            var fresh = rows.Where(r => !keptLinks.Contains(r.Link)).GroupBy(r => r.Link).Select(g => g.First()).ToList();
-            db.News.AddRange(fresh);
-            await db.SaveChangesAsync();
-            return new UploadResult(false, rows.Count, Imported: fresh.Count, Kept: rows.Count - fresh.Count);
-        }
-
-        // From the cut-over: to the pipeline; nothing is stored in the app. Re-uploading is safe (known articles come back as Duplicate).
+        // Nothing is stored in the app. Re-uploading is safe (known articles come back as Duplicate).
         private async Task<UploadResult> SubmitToPipelineAsync(List<News> rows)
         {
-            var articles = rows
-                .Select(n => new PipelineArticle(n.Link, n.Header, new DateTimeOffset(DateTime.SpecifyKind(n.Date, DateTimeKind.Unspecified), TurkeyOffset), n.Content))
-                .ToList();
-            var results = await pipeline.SubmitAsync(articles, "Csv");
+            var results = await pipeline.SubmitAsync(rows.Select(ToPipelineArticle).ToList(), "Csv");
             return new UploadResult(
-                true,
                 rows.Count,
                 Accepted: results.Count(r => r.Status == "Accepted"),
                 Duplicate: results.Count(r => r.Status == "Duplicate"),

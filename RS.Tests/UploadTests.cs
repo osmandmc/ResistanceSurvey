@@ -16,8 +16,9 @@ public class UploadTests
 
     private readonly FakePipeline _pipeline = new();
 
-    private UploadNewsHandler Handler(string? cutover = null) =>
-        new(_db, _pipeline, Options.Create(new PipelineSettings { CutoverMonth = cutover, Sources = new() { [1] = "evrensel" } }));
+    private static readonly IOptions<PipelineSettings> Settings = Options.Create(new PipelineSettings { Sources = new() { [1] = "evrensel" } });
+
+    private UploadNewsHandler Handler() => new(_pipeline, Settings);
 
     /// <summary>An .xlsx like the researchers' files: heading row, then Link, Tarih, Başlık, Metin.</summary>
     private static MemoryStream Excel(params object?[][] rows)
@@ -32,19 +33,25 @@ public class UploadTests
         return new MemoryStream(package.GetAsByteArray());
     }
 
-    private Task<UploadResult> Upload(MemoryStream file, string? cutover = null, string name = "ekim.xlsx", int source = 1) =>
-        Handler(cutover).Handle(new UploadNewsCommand(file, name, file.Length, source, 2026, 10));
+    private Task<UploadResult> Upload(MemoryStream file, string name = "ekim.xlsx", int source = 1) =>
+        Handler().Handle(new UploadNewsCommand(file, name, file.Length, source));
 
     [Fact]
-    public async Task ImportsNewRowsReadingTextAndExcelDates()
+    public async Task RowsGoToThePipelineWithTheirTextAndTurkishDates()
     {
+        _pipeline.KnownUrls.Add("https://evrensel.net/2");
+
         var result = await Upload(Excel(
-            ["https://evrensel.net/1", "03.10.2026", "Birinci haber", "metin"],
-            ["https://evrensel.net/2", new DateTime(2026, 10, 4), "İkinci haber", null]));
+            ["https://evrensel.net/1", "03.10.2026", "Birinci", "metin"],
+            ["https://evrensel.net/2", new DateTime(2026, 10, 4), "İkinci"],
+            ["evrensel.net/3", "05.10.2026", "Bozuk bağlantı"]));
 
         Assert.True(result.IsValid);
-        Assert.Equal((false, 2, 2), (result.ToPipeline, result.Rows, result.Imported));
-        Assert.Equal([new DateTime(2026, 10, 3), new DateTime(2026, 10, 4)], _db.News.OrderBy(n => n.Date).Select(n => n.Date));
+        Assert.Equal((3, 1, 1), (result.Rows, result.Accepted, result.Duplicate));
+        Assert.Equal(["evrensel.net/3: Not an absolute http(s) URL"], result.Rejected);
+        Assert.Equal(new DateTimeOffset(2026, 10, 3, 0, 0, 0, TimeSpan.FromHours(3)), _pipeline.Submitted[0].PublishedAt);
+        Assert.Equal("metin", _pipeline.Submitted[0].Content);
+        Assert.Empty(_db.News); // nothing stored in the app
     }
 
     [Fact]
@@ -57,12 +64,13 @@ public class UploadTests
 
         Assert.False(result.IsValid);
         Assert.Equal(["Satır 3: bağlantı (A sütunu) boş.", "Satır 3: tarih (B sütunu) okunamadı.", "Satır 4: başlık (C sütunu) boş."], result.Errors);
-        Assert.Empty(_db.News);
+        Assert.Empty(_pipeline.Submitted);
     }
 
     [Theory]
     [InlineData("ekim.csv", 1, "Dosya .xlsx olmalı.")]
     [InlineData("ekim.xlsx", 9, "Kaynak seçiniz.")]
+    [InlineData("ekim.xlsx", 2, "Bu kaynak işleme hattına bağlı değil.")] // a known source missing from Pipeline:Sources
     public async Task WrongFileOrSourceIsRejected(string name, int source, string error)
     {
         var result = await Upload(Excel(["https://evrensel.net/1", "03.10.2026", "Haber"]), name: name, source: source);
@@ -81,50 +89,29 @@ public class UploadTests
     }
 
     [Fact]
-    public async Task ReUploadingKeepsHandledRowsAndDoesNotDoubleThem()
+    public async Task OldNeverTriagedNewsGoesToThePipelineInRuns()
     {
-        var linked = new News { Source = 1, Link = "https://evrensel.net/linked", Header = "Bağlı", Date = new DateTime(2026, 10, 2), Status = Status.Linked };
-        var dismissed = new News { Source = 1, Link = "https://evrensel.net/dismissed", Header = "İlgisiz", Date = new DateTime(2026, 10, 2), Status = Status.Passive };
-        var pending = new News { Source = 1, Link = "https://evrensel.net/pending", Header = "Bekleyen", Date = new DateTime(2026, 10, 2), Status = Status.Pending };
-        _db.News.AddRange(linked, dismissed, pending);
-        _db.ResistanceNews.Add(new ResistanceNews { News = linked, ResistanceId = 1 });
+        News Local(int day, Status status = Status.Pending, int source = 1, string? articleId = null) => new()
+        {
+            Source = source, Link = $"https://evrensel.net/haber/{day}-{status}-{source}", Header = $"Haber {day}", Content = $"Metin {day}",
+            Date = new DateTime(2024, 12, day), Status = status, ArticleId = articleId,
+        };
+        _db.News.AddRange(Local(1), Local(2), Local(3), Local(4, Status.Linked), Local(5, Status.Passive), Local(6, source: 7), Local(7, articleId: "abc"));
         await _db.SaveChangesAsync();
+        var handler = new SendLocalNewsToPipelineHandler(_db, _pipeline, Settings);
 
-        var result = await Upload(Excel(
-            ["https://evrensel.net/linked", "02.10.2026", "Bağlı"],
-            ["https://evrensel.net/dismissed", "02.10.2026", "İlgisiz"],
-            ["https://evrensel.net/pending", "02.10.2026", "Bekleyen"],
-            ["https://evrensel.net/new", "05.10.2026", "Yeni"]));
+        var preview = await handler.Handle(dryRun: true);
+        Assert.Equal((3, true, 0), (preview.Total, preview.DryRun, preview.Sent));
+        Assert.Equal(new LocalNewsYear(2024, 4, 3), Assert.Single(preview.Years)); // the unknown source is pending but not sendable; the one with an ArticleId is neither
+        Assert.Empty(_pipeline.Submitted);
 
-        Assert.Equal((2, 2), (result.Imported, result.Kept));
-        Assert.Equal(4, _db.News.Count());
-        Assert.Equal(Status.Passive, _db.News.Single(n => n.Link == "https://evrensel.net/dismissed").Status); // dismissal kept
-        Assert.Single(_db.News, n => n.Link == "https://evrensel.net/linked");
-    }
+        var first = await handler.Handle(dryRun: false, skip: 0, limit: 2);
+        var second = await handler.Handle(dryRun: false, skip: first.NextSkip!.Value, limit: 2);
 
-    [Fact]
-    public async Task FromTheCutOverAPipelineSourceGoesToThePipeline()
-    {
-        _pipeline.KnownUrls.Add("https://evrensel.net/2");
-
-        var result = await Upload(Excel(
-            ["https://evrensel.net/1", "03.10.2026", "Birinci", "metin"],
-            ["https://evrensel.net/2", "04.10.2026", "İkinci"],
-            ["evrensel.net/3", "05.10.2026", "Bozuk bağlantı"]), cutover: "2026-10");
-
-        Assert.Equal((true, 1, 1), (result.ToPipeline, result.Accepted, result.Duplicate));
-        Assert.Equal(["evrensel.net/3: Not an absolute http(s) URL"], result.Rejected);
-        Assert.Equal(new DateTimeOffset(2026, 10, 3, 0, 0, 0, TimeSpan.FromHours(3)), _pipeline.Submitted[0].PublishedAt);
-        Assert.Empty(_db.News); // nothing stored in the app
-    }
-
-    [Fact]
-    public void ASourceThePipelineDoesNotHandleStaysLocal()
-    {
-        var handler = Handler("2026-10");
-
-        Assert.True(handler.GoesToPipeline(1, 2026, 10));
-        Assert.False(handler.GoesToPipeline(2, 2026, 10)); // Kızılbayrak is not a pipeline source yet
-        Assert.False(handler.GoesToPipeline(1, 2026, 9)); // before the cut-over
+        Assert.Equal((2, 2), (first.Sent, first.NextSkip!.Value));
+        Assert.Equal((1, (int?)null), (second.Sent, second.NextSkip));
+        Assert.Equal(["Haber 3", "Haber 2", "Haber 1"], _pipeline.Submitted.Select(a => a.Title)); // newest first
+        Assert.Equal("Metin 3", _pipeline.Submitted[0].Content);
+        Assert.All(_db.News, n => Assert.True(n.Status != Status.Pending || n.ArticleId == null || n.ArticleId == "abc")); // rows untouched
     }
 }
