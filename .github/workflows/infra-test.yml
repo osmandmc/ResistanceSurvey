@@ -3,7 +3,7 @@ name: infra-test
 # Creates or updates the Azure test environment (infra/main.bicep). Production (SmarterASP) is not touched.
 on:
   push:
-    branches: [redesign]
+    branches: [master]
     paths: ['infra/**', '.github/workflows/infra-test.yml']
   workflow_dispatch:
 

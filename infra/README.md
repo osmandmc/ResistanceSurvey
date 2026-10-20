@@ -1,6 +1,6 @@
 # Azure test environment
 
-A test copy of the app for the redesign (tasks R1–R3). Production stays on SmarterASP and is not touched.
+A test copy of the app for the redesign (tasks R1–R3). Production stays on SmarterASP and is not touched: it runs the old app from the `legacy` branch.
 
 | Resource | Tier | Cost |
 |---|---|---|
@@ -20,7 +20,7 @@ Deleting the resource group removes everything.
 Open [Cloud Shell](https://shell.azure.com) (Bash) and run:
 
 ```bash
-git clone --branch redesign https://github.com/osmandmc/ResistanceSurvey.git
+git clone https://github.com/osmandmc/ResistanceSurvey.git
 cd ResistanceSurvey
 az deployment sub create --location swedencentral --template-file infra/bootstrap/main.bicep \
   --query properties.outputs
@@ -45,7 +45,7 @@ Create an environment named **`test`** and add these as its **environment** vari
 
 ### 3. Deploy the resources
 
-Actions → **infra-test** → Run workflow (branch `redesign`). Later runs happen on every push to `redesign` that changes `infra/`.
+Actions → **infra-test** → Run workflow (branch `master`). Later runs happen on every push to `master` that changes `infra/`.
 
 The deployment's outputs (Actions log or portal → resource group → Deployments) give the web app URL and the SQL server host.
 

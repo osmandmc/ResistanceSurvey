@@ -12,6 +12,7 @@ Status: ☐ open · ◐ in progress · ☑ done
 - **Pipeline access goes through the backend.** The browser never sees the pipeline's function key; `RS.MVC` calls the pipeline API and exposes its own JSON endpoints.
 - **Target screens:** see the mockup (Gelen Kutusu, İnceleme, Haber Arşivi, Durum Paneli, Vakalar, Yükleme): https://claude.ai/artifact/DhTuKR4eCcn2gdnBQjtUq8
 - **Test environment in Azure, production untouched.** The redesign is tried on a test app in Azure with a copy of the database. Production stays on SmarterASP until the redesign is proven.
+- **Branches.** `master` holds the redesign and deploys to the test environment (`deploy-test`, `infra-test`). The old app lives on `legacy`, which deploys to production on SmarterASP (`main.yml` there). New work goes to `master` through short branches and pull requests.
 
 ## Pipeline integration (moved from the pipeline's task list)
 
@@ -27,7 +28,7 @@ Status: ☐ open · ◐ in progress · ☑ done
 |---|---|---|---|---|
 | ☑ R1 | Azure test environment | `infra/` (Bicep): resource group, App Service (F1), Azure SQL (free offer), app settings for secrets, budget alert; trust for this repo on the GitHub deploy identity | Resources exist; budget alert set | Claude writes, **you** run the one-time setup |
 | ☑ R2 | Database copy | Export of the live database (read-only) imported into Azure SQL. SmarterASP's `rsuser` user cannot exist in Azure SQL: export with `/p:VerifyExtraction=False`, then remove `rsuser` from the `.bacpac` before importing | Test app reads the copied data | **You** export, Claude guides |
-| ☑ R3 | Deploy workflow | GitHub Actions: push to `redesign` builds and deploys to the test app; secrets only in Azure | Current app runs on the test URL | Claude |
+| ☑ R3 | Deploy workflow | GitHub Actions: push to `master` (was `redesign`) builds and deploys to the test app; secrets only in Azure | Current app runs on the test URL | Claude |
 
 ## Phase B — New screens
 

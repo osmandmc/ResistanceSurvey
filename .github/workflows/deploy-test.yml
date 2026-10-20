@@ -1,10 +1,10 @@
 name: deploy-test
 
 # Builds the app and deploys it to the Azure test web app (infra/main.bicep). Production (SmarterASP) is
-# deployed by main.yml from master and is not touched. Secrets come from the web app's settings, not from here.
+# deployed by main.yml on the legacy branch and is not touched. Secrets come from the web app's settings, not from here.
 on:
   push:
-    branches: [redesign]
+    branches: [master]
     paths-ignore: ['infra/**', '.github/workflows/infra-test.yml', '**.md']
   workflow_dispatch:
 
