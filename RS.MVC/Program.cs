@@ -80,10 +80,10 @@ builder.Services.Configure<RequestLocalizationOptions>(opts =>
     opts.SupportedUICultures = supportedCultures;
 });
 
-// News pipeline (empty CutoverMonth = off)
+// News pipeline: every news item enters through it (R12b)
 builder.Services.AddOptions<PipelineSettings>()
     .Bind(configuration.GetSection(PipelineSettings.SectionName))
-    .Validate(s => s.IsValid(), "Pipeline: CutoverMonth must be empty or \"yyyy-MM\", and BaseUrl and FunctionKey must be set when it is.")
+    .Validate(s => s.IsValid(), "Pipeline: BaseUrl must be a full URL and FunctionKey must be set with it.")
     .ValidateOnStart();
 builder.Services.AddHttpClient<IPipelineClient, PipelineClient>((sp, http) =>
 {

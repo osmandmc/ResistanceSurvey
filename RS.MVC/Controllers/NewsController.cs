@@ -73,16 +73,14 @@ namespace ResistanceSurvey.Controllers
                     {
                         try{
                             
-                            var upload = await uploadNews.Handle(new UploadNewsCommand(stream, file.FileName, file.Length, source, year, month));
+                            var upload = await uploadNews.Handle(new UploadNewsCommand(stream, file.FileName, file.Length, source));
                             if (!upload.IsValid)
                             {
                                 result.Success = false;
                                 result.ErrorMessages.Add(string.Join("\n", upload.Errors));
                                 return Json(ToJson(result));
                             }
-                            result.SuccessMessages.Add(upload.ToPipeline
-                                ? $"Haberler işleme hattına gönderildi: {upload.Accepted} yeni, {upload.Duplicate} zaten vardı, {upload.Rejected.Count} reddedildi."
-                                : $"Haberler başarıyla yüklendi: {upload.Imported} yeni, {upload.Kept} zaten işlenmişti.");
+                            result.SuccessMessages.Add($"Haberler işleme hattına gönderildi: {upload.Accepted} yeni, {upload.Duplicate} zaten vardı, {upload.Rejected.Count} reddedildi.");
                         }
                         catch(HttpRequestException ex)
                         {

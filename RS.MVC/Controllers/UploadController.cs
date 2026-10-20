@@ -12,7 +12,7 @@ namespace RS.MVC.Controllers
     [ApiController]
     [Route("api/upload")]
     [Authorize]
-    public class UploadController(UploadNewsHandler uploadNews, SubmitLinksHandler submitLinks) : ControllerBase
+    public class UploadController(UploadNewsHandler uploadNews, SubmitLinksHandler submitLinks, SendLocalNewsToPipelineHandler localNews) : ControllerBase
     {
         public record SubmitLinksRequest(string Text);
 
@@ -31,21 +31,17 @@ namespace RS.MVC.Controllers
             }
         }
 
-        /// <summary>GET /api/upload/target?source=1&amp;year=2026&amp;month=10 — where this month's rows will go.</summary>
-        [HttpGet("target")]
-        public object Target(int source, int year, int month) => new { toPipeline = uploadNews.GoesToPipeline(source, year, month) };
-
-        /// <summary>POST /api/upload (form: file, source, year, month).</summary>
+        /// <summary>POST /api/upload (form: file, source).</summary>
         [HttpPost]
         [RequestSizeLimit(UploadNewsHandler.MaxBytes + 64 * 1024)]
-        public async Task<ActionResult<UploadResult>> Upload([FromForm] IFormFile file, [FromForm] int source, [FromForm] int year, [FromForm] int month)
+        public async Task<ActionResult<UploadResult>> Upload([FromForm] IFormFile file, [FromForm] int source)
         {
             if (file == null)
                 return BadRequest(new { error = "Dosya seçiniz.", errors = new[] { "Dosya seçiniz." } });
             try
             {
                 await using var stream = file.OpenReadStream();
-                var result = await uploadNews.Handle(new UploadNewsCommand(stream, file.FileName, file.Length, source, year, month));
+                var result = await uploadNews.Handle(new UploadNewsCommand(stream, file.FileName, file.Length, source));
                 return result.IsValid ? result : BadRequest(new { error = result.Errors.First(), errors = result.Errors });
             }
             catch (HttpRequestException)
@@ -54,5 +50,16 @@ namespace RS.MVC.Controllers
                     new { error = "Haber işleme hattına ulaşılamadı. Dosyayı tekrar yüklemek güvenlidir." });
             }
         }
+    
+        /// <summary>
+        /// GET /api/upload/local-news — counts only. POST /api/upload/local-news?skip=0 — sends the next batch (R12b).
+        /// One-off for the move to the redesign (R14): the old, never triaged news of the database that stays go to the
+        /// pipeline. Not for the test copy: triage done there would not be in the real database.
+        /// </summary>
+        [HttpGet("local-news")]
+        public async Task<LocalNewsTransfer> LocalNews() => await localNews.Handle(dryRun: true);
+
+        [HttpPost("local-news")]
+        public async Task<LocalNewsTransfer> SendLocalNews(int skip = 0) => await localNews.Handle(dryRun: false, skip);
     }
 }
