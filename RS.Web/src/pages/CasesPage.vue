@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NCheckbox, NEmpty, NFormItem, NInput, NPagination, NSelect, NSpin, NTag } from 'naive-ui'
-import { ApiError } from '@/api'
+import { errorMessage } from '@/api'
 import { exportUrl, listCases, type CaseFilter, type CaseListItem } from '@/casesApi'
 import CompanyPicker from '@/components/CompanyPicker.vue'
 import { formatDate } from '@/format'
@@ -80,7 +80,7 @@ async function load() {
     total.value = result.total
     pageSize.value = result.pageSize
   } catch (error) {
-    loadError.value = error instanceof ApiError ? error.message : 'Vakalar yüklenemedi.'
+    loadError.value = errorMessage(error, 'Vakalar yüklenemedi.')
   } finally {
     loading.value = false
   }

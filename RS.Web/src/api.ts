@@ -16,6 +16,14 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * What to show for a failed call: the server's own message when it sent one (validation, "already handled", the
+ * pipeline unreachable, or an unexpected error with its error code), otherwise the screen's Turkish fallback.
+ */
+export function errorMessage(error: unknown, fallback: string) {
+  return error instanceof ApiError && typeof error.details?.error === 'string' ? error.details.error : fallback
+}
+
 let onUnauthorized: () => void = () => {}
 
 /** Called when the session has expired or is missing (any 401 outside /api/auth). */

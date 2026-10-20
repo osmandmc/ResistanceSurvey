@@ -143,11 +143,15 @@ builder.Services.AddAuthentication("Auto")
         };
     });
 
+// Errors no controller handled: JSON for /api (ApiExceptionHandler), the error page for the old pages (F6).
+builder.Services.AddExceptionHandler<RS.MVC.Infrastructure.ApiExceptionHandler>();
+
 // Build the App
 var app = builder.Build();
 
 
 // Middleware Setup
+app.UseExceptionHandler("/Home/Error");
 app.UseStaticFiles();
 
 // The new front end (RS.Web) is built into wwwroot/rsweb and served at /app. wwwroot/app holds the old pages'

@@ -40,9 +40,10 @@ namespace RS.MVC.Controllers
             }
             return Ok(result);
         }
+        // The old pages' error page (UseExceptionHandler); shows the same short error code the API errors give.
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel { RequestId = RS.MVC.Infrastructure.ApiExceptionHandler.ErrorCode(HttpContext) });
         }
     }
 }

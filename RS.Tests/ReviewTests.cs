@@ -226,7 +226,7 @@ public class ReviewTests
         var controller = new ReviewController(
             _getArticle, _searchCases, _createCase, _addProtest, _linkToCase,
             new GetCaseFormOptionsHandler(_db), new SearchCompaniesHandler(_db), new CreateCompanyHandler(_db),
-            new SuggestCasesForArticleHandler(_db, _pipeline, _searchCases), NullLogger<ReviewController>.Instance)
+            new SuggestCasesForArticleHandler(_db, _pipeline, _searchCases))
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
         };

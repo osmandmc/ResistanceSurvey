@@ -2,7 +2,7 @@
 import { nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { NAlert, NButton, NSpin, useMessage } from 'naive-ui'
-import { ApiError } from '@/api'
+import { ApiError, errorMessage } from '@/api'
 import { emptyCase, toCaseInput, type CaseFormValue } from '@/caseForm'
 import { createCase } from '@/casesApi'
 import CaseForm from '@/components/CaseForm.vue'
@@ -44,7 +44,7 @@ async function save() {
       await nextTick()
       document.querySelector('.n-form-item-feedback--error')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
-    message.error(error instanceof ApiError ? error.message : 'Vaka kaydedilemedi.')
+    message.error(errorMessage(error, 'Vaka kaydedilemedi.'))
   } finally {
     saving.value = false
   }

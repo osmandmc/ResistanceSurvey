@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { NAlert, NButton, NFormItem, NSelect, NSpin } from 'naive-ui'
-import { ApiError } from '@/api'
+import { errorMessage } from '@/api'
 import { formatDate, formatDateTime } from '@/format'
 import { getStatus, type StatusPage, type StatusSource } from '@/statusApi'
 
@@ -22,7 +22,7 @@ async function load() {
   try {
     status.value = await getStatus(days.value)
   } catch (error) {
-    loadError.value = error instanceof ApiError && error.status === 502 ? error.message : 'Durum bilgisi yüklenemedi.'
+    loadError.value = errorMessage(error, 'Durum bilgisi yüklenemedi.')
   } finally {
     loading.value = false
   }

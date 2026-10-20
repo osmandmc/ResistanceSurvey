@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using RS.MVC.Features.Review;
 using RS.MVC.Models;
 
@@ -24,21 +21,13 @@ namespace RS.MVC.Controllers
         GetCaseFormOptionsHandler getFormOptions,
         SearchCompaniesHandler searchCompanies,
         CreateCompanyHandler createCompany,
-        SuggestCasesForArticleHandler suggestCases,
-        ILogger<ReviewController> logger) : ControllerBase
+        SuggestCasesForArticleHandler suggestCases) : ControllerBase
     {
         /// <summary>GET /api/review/{articleId}/suggestions — "Olası vakalar": cases of companies named in the article.</summary>
         [HttpGet("{articleId}/suggestions")]
         public async Task<ActionResult<IReadOnlyList<CaseSuggestion>>> Suggestions(string articleId)
         {
-            try
-            {
-                return Ok(await suggestCases.Handle(new SuggestCasesForArticleQuery(articleId)));
-            }
-            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
-            {
-                return PipelineUnavailable(ex);
-            }
+            return Ok(await suggestCases.Handle(new SuggestCasesForArticleQuery(articleId)));
         }
 
         public record CreateCompanyRequest(string Name, int? TypeId, int? ScaleId, int? WorklineId);
@@ -76,60 +65,34 @@ namespace RS.MVC.Controllers
         [HttpGet("{articleId}")]
         public async Task<ActionResult<ReviewArticle>> Get(string articleId)
         {
-            try
+            var result = await getArticle.Handle(new GetReviewArticleQuery(articleId));
+            return result.Status switch
             {
-                var result = await getArticle.Handle(new GetReviewArticleQuery(articleId));
-                return result.Status switch
-                {
-                    ReviewStatus.Ok => result.Article,
-                    ReviewStatus.AlreadyHandled => Conflict(new { error = "Bu haber zaten işlendi." }),
-                    _ => NotFound(new { error = "Haber bulunamadı." }),
-                };
-            }
-            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
-            {
-                return PipelineUnavailable(ex);
-            }
+                ReviewStatus.Ok => result.Article,
+                ReviewStatus.AlreadyHandled => Conflict(new { error = "Bu haber zaten işlendi." }),
+                _ => NotFound(new { error = "Haber bulunamadı." }),
+            };
         }
 
         /// <summary>POST /api/review/{articleId} — new case, new protest on a case, or link only. 400 lists missing fields.</summary>
         [HttpPost("{articleId}")]
         public async Task<ActionResult<SaveResponse>> Save(string articleId, ReviewSaveRequest request)
         {
-            try
+            var userName = User.Identity?.Name;
+            var result = request?.Action switch
             {
-                var userName = User.Identity?.Name;
-                var result = request?.Action switch
-                {
-                    ReviewAction.NewCase => await createCase.Handle(new CreateCaseFromArticleCommand(articleId, request.Case, request.Protest, userName)),
-                    ReviewAction.AddProtest => await addProtest.Handle(new AddProtestFromArticleCommand(articleId, request.ResistanceId, request.Protest, userName)),
-                    ReviewAction.LinkOnly => await linkToCase.Handle(new LinkArticleToCaseCommand(articleId, request.ResistanceId)),
-                    _ => ReviewSaveResult.Invalid(new Dictionary<string, string> { ["action"] = "Lütfen bir işlem seçiniz." }),
-                };
-                return result.Status switch
-                {
-                    ReviewStatus.Ok => new SaveResponse(result.ResistanceId!.Value, result.OutcomeSent),
-                    ReviewStatus.Invalid => BadRequest(new { error = "Lütfen eksik alanları doldurun.", fields = result.Errors }),
-                    ReviewStatus.AlreadyHandled => Conflict(new { error = "Bu haber zaten işlendi." }),
-                    _ => NotFound(new { error = "Haber bulunamadı." }),
-                };
-            }
-            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
-            {
-                return PipelineUnavailable(ex);
-            }
-        }
-
-        private ObjectResult PipelineUnavailable(Exception ex)
-        {
-            var cause = ex switch
-            {
-                HttpRequestException { StatusCode: { } status } => $"HTTP {(int)status}",
-                TaskCanceledException => "zaman aşımı",
-                _ => "bağlantı hatası",
+                ReviewAction.NewCase => await createCase.Handle(new CreateCaseFromArticleCommand(articleId, request.Case, request.Protest, userName)),
+                ReviewAction.AddProtest => await addProtest.Handle(new AddProtestFromArticleCommand(articleId, request.ResistanceId, request.Protest, userName)),
+                ReviewAction.LinkOnly => await linkToCase.Handle(new LinkArticleToCaseCommand(articleId, request.ResistanceId)),
+                _ => ReviewSaveResult.Invalid(new Dictionary<string, string> { ["action"] = "Lütfen bir işlem seçiniz." }),
             };
-            logger.LogWarning(ex, "Pipeline unavailable for {Path}: {Cause}", Request.Path, cause);
-            return StatusCode(StatusCodes.Status502BadGateway, new { error = $"Haber işleme hattına ulaşılamadı ({cause})." });
+            return result.Status switch
+            {
+                ReviewStatus.Ok => new SaveResponse(result.ResistanceId!.Value, result.OutcomeSent),
+                ReviewStatus.Invalid => BadRequest(new { error = "Lütfen eksik alanları doldurun.", fields = result.Errors }),
+                ReviewStatus.AlreadyHandled => Conflict(new { error = "Bu haber zaten işlendi." }),
+                _ => NotFound(new { error = "Haber bulunamadı." }),
+            };
         }
     }
 }

@@ -2,7 +2,7 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NEmpty, NFormItem, NInput, NModal, NResult, NSelect, NSpin, useDialog, useMessage } from 'naive-ui'
-import { ApiError } from '@/api'
+import { ApiError, errorMessage } from '@/api'
 import { fromCaseInput, toCaseInput, type CaseFormValue } from '@/caseForm'
 import {
   attachArticle,
@@ -71,7 +71,7 @@ async function showFirstError() {
 }
 
 function errorText(error: unknown, fallback: string) {
-  return error instanceof ApiError ? error.message : fallback
+  return errorMessage(error, fallback)
 }
 
 // The case part.
