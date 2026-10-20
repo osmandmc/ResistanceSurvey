@@ -109,3 +109,37 @@ export function mergeGroup(kind: DefinitionKind, intoId: number, fromIds: number
 export function dismissDuplicates(kind: DefinitionKind, ids: number[]) {
   return api<void>(`/api/definitions/${kind}/duplicates/dismiss`, { method: 'POST', body: JSON.stringify({ ids }) })
 }
+
+export interface CompanyCase {
+  id: number
+  name: string
+  startDate: string
+  /** The company is the case's main company (the case is against its subcontractor). */
+  asMainCompany: boolean
+}
+
+export interface CompanyDetail {
+  id: number
+  name: string
+  typeId: number | null
+  scaleId: number | null
+  worklineId: number | null
+  cases: CompanyCase[]
+  /** It works for these as a subcontractor. */
+  mainCompanies: Option[]
+  /** These work for it. */
+  subcontractors: Option[]
+}
+
+export function getCompany(id: number) {
+  return api<CompanyDetail>(`/api/definitions/companies/${id}`)
+}
+
+/** relation: "subcontractors" (the other works for this one) or "main-companies" (this one works for the other). */
+export function addCompanyLink(id: number, relation: 'subcontractors' | 'main-companies', companyId: number) {
+  return api<void>(`/api/definitions/companies/${id}/${relation}`, { method: 'POST', body: JSON.stringify({ companyId }) })
+}
+
+export function removeCompanyLink(id: number, relation: 'subcontractors' | 'main-companies', companyId: number) {
+  return api<void>(`/api/definitions/companies/${id}/${relation}/${companyId}`, { method: 'DELETE' })
+}
