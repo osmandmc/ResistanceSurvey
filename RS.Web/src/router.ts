@@ -8,10 +8,10 @@ import CasesPage from './pages/CasesPage.vue'
 import InboxPage from './pages/InboxPage.vue'
 import LoginPage from './pages/LoginPage.vue'
 import ReviewPage from './pages/ReviewPage.vue'
+import StatusPage from './pages/StatusPage.vue'
 import UploadPage from './pages/UploadPage.vue'
 import NewCasePage from './pages/NewCasePage.vue'
 import NotFoundPage from './pages/NotFoundPage.vue'
-import PlaceholderPage from './pages/PlaceholderPage.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -19,8 +19,6 @@ declare module 'vue-router' {
     public?: boolean
     /** Page heading and browser tab title (shown to users, so Turkish). */
     title?: string
-    /** One line on what the page is for, until it is built. */
-    description?: string
   }
 }
 
@@ -39,11 +37,7 @@ export const router = createRouter({
         { path: 'cases', component: CasesPage, meta: { title: 'Vakalar' } },
         { path: 'cases/new', component: NewCasePage, meta: { title: 'Yeni vaka' } },
         { path: 'cases/:id(\\d+)', component: CaseDetailPage, meta: { title: 'Vaka' } },
-        {
-          path: 'status',
-          component: PlaceholderPage,
-          meta: { title: 'Durum Paneli', description: 'Haberlerin aşamalara göre sayıları ve hatalar.' },
-        },
+        { path: 'status', component: StatusPage, meta: { title: 'Durum Paneli' } },
         { path: 'upload', component: UploadPage, meta: { title: 'Yükleme' } },
         { path: ':pathMatch(.*)*', component: NotFoundPage, meta: { title: 'Sayfa bulunamadı' } },
       ],

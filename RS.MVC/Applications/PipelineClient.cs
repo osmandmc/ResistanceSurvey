@@ -20,6 +20,9 @@ namespace RS.MVC.Applications
         /// <summary>Null when the pipeline has no such article.</summary>
         Task<PipelineArticleDetail> GetArticleAsync(string articleId);
 
+        /// <summary>Counts for the last <paramref name="days"/> days (1–31).</summary>
+        Task<PipelineMetrics> GetMetricsAsync(int days);
+
         /// <summary>Safe to repeat; the latest decision wins. Throws HttpRequestException when the pipeline cannot be reached.</summary>
         Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome);
     }
@@ -78,6 +81,13 @@ namespace RS.MVC.Applications
                 return null;
             await EnsureSuccessAsync(response);
             return await response.Content.ReadFromJsonAsync<PipelineArticleDetail>();
+        }
+
+        public async Task<PipelineMetrics> GetMetricsAsync(int days)
+        {
+            var response = await _http.GetAsync("api/metrics?days=" + days);
+            await EnsureSuccessAsync(response);
+            return await response.Content.ReadFromJsonAsync<PipelineMetrics>();
         }
 
         public async Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome)

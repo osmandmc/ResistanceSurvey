@@ -45,6 +45,15 @@ internal sealed class FakePipeline : IPipelineClient
     public Task<PipelineArticleDetail> GetArticleAsync(string articleId) =>
         Task.FromResult(_articles.FirstOrDefault(a => a.ArticleId == articleId)!);
 
+    public PipelineMetrics Metrics { get; set; } = null!;
+    public List<int> MetricsRequests { get; } = [];
+
+    public Task<PipelineMetrics> GetMetricsAsync(int days)
+    {
+        MetricsRequests.Add(days);
+        return Task.FromResult(Metrics);
+    }
+
     public Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome)
     {
         if (FailOutcomes)

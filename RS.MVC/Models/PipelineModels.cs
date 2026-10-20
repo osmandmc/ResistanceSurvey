@@ -52,6 +52,21 @@ namespace RS.MVC.Models
     /// <summary>GET /api/articles/{id}: one article with its latest text (Body is null until parsed).</summary>
     public record PipelineArticleDetail(string ArticleId, string SourceId, string Url, string Title, DateTimeOffset? PublishedAt, string Body);
 
+    /// <summary>GET /api/metrics?days=14: per source, per day (Turkey time) and the latest failures.</summary>
+    public record PipelineMetrics(
+        DateOnly From,
+        DateOnly To,
+        IReadOnlyList<PipelineSourceMetrics> Sources,
+        IReadOnlyList<PipelineDailyMetrics> Days,
+        IReadOnlyList<PipelineFailure> RecentFailures);
+
+    /// <summary>LastReceivedAt: latest article in the period (null = none). Open: waiting in the inbox now. Origin: "Csv", "Collector", "Manual".</summary>
+    public record PipelineSourceMetrics(string SourceId, DateTimeOffset? LastReceivedAt, string LastReceivedOrigin, int Received, int Failed, int Open);
+
+    public record PipelineDailyMetrics(DateOnly Day, string SourceId, int Received, int Parsed, int Failed, int Digested, int Dismissed);
+
+    public record PipelineFailure(string ArticleId, string SourceId, string Url, string Title, string Stage, DateTimeOffset At, string Reason);
+
     /// <summary>Body of POST /api/articles/{id}/outcome. Kind: "Digested" (with ResistanceId) or "Dismissed".</summary>
     public record PipelineOutcomeRequest(string Kind, int? ResistanceId = null, string Reason = null);
 
