@@ -27,6 +27,22 @@ public class FormOptionsAndCompanyTests
     }
 
     [Fact]
+    public async Task TheCasesUnionIsChosenFromCorporationsUnionsFirst()
+    {
+        // The separate TradeUnion table must not be offered: the case's union points to a corporation.
+        _db.TradeUnion.Add(new TradeUnion { Id = 30, Name = "HAK-İş Öz Gıda-İş" });
+        _db.Corporation.AddRange(
+            new Corporation { Id = 30, Name = "TTB", CorporationTypeId = 3 },
+            new Corporation { Id = 14, Name = "DİSK Genel-İş", CorporationTypeId = GetCaseFormOptionsHandler.TradeUnionCorporationTypeId },
+            new Corporation { Id = 58, Name = "Bilinmiyor", CorporationTypeId = GetCaseFormOptionsHandler.TradeUnionCorporationTypeId });
+        await _db.SaveChangesAsync();
+
+        var options = await new GetCaseFormOptionsHandler(_db).Handle(new GetCaseFormOptionsQuery());
+
+        Assert.Equal([new Option(58, "Bilinmiyor"), new Option(14, "DİSK Genel-İş"), new Option(30, "TTB")], options.TradeUnions);
+    }
+
+    [Fact]
     public async Task CompanySearchLeavesOutDeletedCompanies()
     {
         _db.Company.AddRange(new Company { Name = "Örnek Tekstil" }, new Company { Name = "Eski Tekstil", Deleted = true }, new Company { Name = "Liman A.Ş." });
