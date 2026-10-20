@@ -49,6 +49,8 @@ namespace RS.EF
         public DbSet<ProtestoDistrict> ProtestoDistrict { get; set; }
 
        
+        public const string TurkishCollation = "Turkish_CI_AS";
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             
@@ -67,6 +69,14 @@ namespace RS.EF
                     .HasIndex(n => n.ArticleId)
                     .IsUnique()
                     .HasFilter("[ArticleId] IS NOT NULL");
+
+                 // Searched and sorted text follows Turkish rules, so "işçi" finds "İŞÇİ" (F9). The database default
+                 // (SQL_Latin1_General_CP1_CI_AS) ignores case only for Latin letters.
+                 modelBuilder.Entity<Resistance>().Property(r => r.Name).UseCollation(TurkishCollation);
+                 modelBuilder.Entity<Resistance>().Property(r => r.Description).UseCollation(TurkishCollation);
+                 modelBuilder.Entity<Company>().Property(c => c.Name).UseCollation(TurkishCollation);
+                 modelBuilder.Entity<Corporation>().Property(c => c.Name).UseCollation(TurkishCollation);
+                 modelBuilder.Entity<News>().Property(n => n.Header).UseCollation(TurkishCollation);
 
         }
     }
