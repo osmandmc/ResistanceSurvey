@@ -27,3 +27,18 @@ User-secrets are read when the app runs in the Development environment, and by t
 **Production** (SmarterASP): the deploy workflow (`.github/workflows/main.yml`) writes them into the published `appsettings.json` from the GitHub secrets `RS_CONNECTION_STRING`, `JWT_SECRET`, `ADMIN_PASSWORD` and `USER_PASSWORD`, and fails if any is missing.
 
 **Test environment** (Azure): see `infra/README.md`.
+
+## New front end (RS.Web)
+
+Vue 3 + TypeScript + Vite + [Naive UI](https://www.naiveui.com). Served by RS.MVC at `/app`; the old pages stay where they are until replaced. Needs Node 22.12+ (the current LTS is fine).
+
+```bash
+cd RS.Web
+npm install            # once, and after package changes
+npm run dev            # http://localhost:5173/app/ with hot reload; /api goes to RS.MVC on http://localhost:56455
+npm run build          # type check + build into RS.MVC/wwwroot/rsweb (not committed)
+```
+
+For `npm run dev`, start RS.MVC as well (`dotnet run --project RS.MVC`, profile "RS.MVC" listens on port 56455). Another port: `RS_API_URL=http://localhost:5000 npm run dev`.
+
+`RS.MVC/wwwroot/app` holds the old pages' scripts; the new app's build goes to `wwwroot/rsweb` and is served at `/app`.

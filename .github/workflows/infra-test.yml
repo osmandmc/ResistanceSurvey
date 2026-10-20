@@ -1,0 +1,43 @@
+name: infra-test
+
+# Creates or updates the Azure test environment (infra/main.bicep). Production (SmarterASP) is not touched.
+on:
+  push:
+    branches: [master]
+    paths: ['infra/**', '.github/workflows/infra-test.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency: infra-test
+
+jobs:
+  deploy:
+    # Azure values (AZURE_*) and secrets are kept on the "test" environment. A job-level `if:` cannot see
+    # environment variables (it is evaluated before the job enters the environment), so there is no guard here.
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy
+        env:
+          BUDGET_EMAIL: ${{ vars.BUDGET_EMAIL }}
+          PIPELINE_BASE_URL: ${{ vars.PIPELINE_BASE_URL }}
+          PIPELINE_CUTOVER_MONTH: ${{ vars.PIPELINE_CUTOVER_MONTH }}
+          SQL_ADMIN_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+          PIPELINE_FUNCTION_KEY: ${{ secrets.PIPELINE_FUNCTION_KEY }}
+        run: >
+          az deployment group create
+          --resource-group ${{ vars.AZURE_RESOURCE_GROUP }}
+          --parameters infra/main.bicepparam
+          --name "infra-test-${{ github.run_number }}"

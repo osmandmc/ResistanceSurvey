@@ -14,11 +14,11 @@ namespace RS.COMMON.Constants
         {
             [Description("Bilinmiyor")]
             Unknown = 0,
-            [Description("Tam Kazaným")]
+            [Description("Tam KazanÄ±m")]
             FullGain = 1,
-            [Description("Yarým Kazaným")]
+            [Description("YarÄ±m KazanÄ±m")]
             PartialGain = 2,
-            [Description("Sýfýr Kazaným")]
+            [Description("SÄ±fÄ±r KazanÄ±m")]
             ZeroGain = 3
         }
         

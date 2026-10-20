@@ -1,0 +1,18 @@
+/* Colours and type from the mockup. Naive UI components take theirs from src/theme.ts. */
+:root {
+  --rs-ink: #111827;
+  --rs-muted: #4b5563;
+  --rs-ground: #f3f4f6;
+  --rs-surface: #ffffff;
+  --rs-border: #e5e7eb;
+  --rs-brand: #102626;
+  --rs-accent: #0b5e5e;
+  --rs-font: 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--rs-ground);
+  color: var(--rs-ink);
+  font-family: var(--rs-font);
+}

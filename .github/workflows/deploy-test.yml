@@ -1,0 +1,87 @@
+name: deploy-test
+
+# Builds the app and deploys it to the Azure test web app (infra/main.bicep). Production (SmarterASP) is
+# deployed by main.yml on the legacy branch and is not touched. Secrets come from the web app's settings, not from here.
+on:
+  push:
+    branches: [master]
+    paths-ignore: ['infra/**', '.github/workflows/infra-test.yml', '**.md']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: true # a newer push replaces a deploy still running
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      # The new front end (RS.Web) builds into RS.MVC/wwwroot/rsweb, which the publish step then includes.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: RS.Web/package-lock.json
+
+      - name: Build front end
+        working-directory: RS.Web
+        run: |
+          npm ci
+          npm run build
+
+      - name: Test
+        run: dotnet test RS.Tests/RS.Tests.csproj -c Release
+
+      - name: Publish
+        run: dotnet publish RS.MVC/RS.MVC.csproj -c Release -o publish
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      # The web app's name carries a generated suffix; look it up instead of storing it.
+      - name: Find the web app
+        id: app
+        run: |
+          rg="${{ vars.AZURE_RESOURCE_GROUP }}"
+          name=$(az webapp list --resource-group "$rg" --query "[?starts_with(name, 'app-direnistakip-')] | [0].name" -o tsv)
+          if [ -z "$name" ]; then echo "No web app found; run infra-test first." >&2; exit 1; fi
+          host=$(az webapp show --resource-group "$rg" --name "$name" --query defaultHostName -o tsv)
+          echo "Web app: $name ($host)"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "host=$host" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ steps.app.outputs.name }}
+          package: publish
+
+      # The free tier sleeps when idle and the database pauses, so the first start can take several minutes.
+      - name: Check the app answers
+        run: |
+          host="https://${{ steps.app.outputs.host }}"
+          for i in $(seq 1 40); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$host/" || true)
+            echo "attempt $i: HTTP $code"
+            if [ "$code" = "200" ]; then break; fi
+            if [ "$i" = "40" ]; then echo "The app did not answer with 200 at $host/" >&2; exit 1; fi
+            sleep 15
+          done
+          # The new front end must be there too.
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$host/app/")
+          echo "new front end /app/: HTTP $code"
+          [ "$code" = "200" ]

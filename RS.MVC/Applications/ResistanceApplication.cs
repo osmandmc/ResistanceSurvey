@@ -16,7 +16,8 @@ namespace RS.MVC.Applications
         PagedResult<ResistanceIndexDto, ResistanceFilterModel> GetPaged(ResistanceFilterModel filter);
         IEnumerable<ResistanceIndexDto> GetAll();
         void Create(ResistanceForm model);
-        void Create(ResistanceModel model);
+        /// <summary>Creates the resistance with its first protest; returns the new resistance's id.</summary>
+        int Create(ResistanceModel model);
         Result<CompanyReturnDto> CreateCompany(CompanyCreateViewModel model);
         Resistance ExistingResistance(int companyId, int categoryId);
         ResistanceEditModel GetResistanceDetail(int id);
@@ -91,7 +92,7 @@ namespace RS.MVC.Applications
             db.Protesto.Add(protesto);
             db.SaveChanges();
         }
-        public void Create(ResistanceModel model)
+        public int Create(ResistanceModel model)
         {
             if(model.MainCompanyId != null)
                 db.CompanyOutsourceCompany.Add(
@@ -121,6 +122,7 @@ namespace RS.MVC.Applications
             resistance.Protestos.Add(protesto);
             db.Resistance.Add(resistance);
             db.SaveChanges();
+            return resistance.Id;
         }
         public Result<CompanyReturnDto> CreateCompany(CompanyCreateViewModel model)
         {
@@ -274,9 +276,6 @@ namespace RS.MVC.Applications
           
             var rNews = db.ResistanceNews.Where(r => r.ResistanceId == resistance.Id).ToList();
             db.ResistanceNews.RemoveRange(rNews);
-            //BindTradeUnionId(resistance, viewModel.TradeUnionId);
-            //BindCorporation(resistance, viewModel.CorporationIds);
-            //BindResistanceReason(resistance, viewModel.ResistanceReasonIds);
             db.Resistance.Update(resistance);
             db.SaveChanges();
         }
@@ -297,7 +296,6 @@ namespace RS.MVC.Applications
             resistance.Description = viewModel.ResistanceDescription;
             resistance.Note = viewModel.Note;
             resistance.ResistanceTargetType = viewModel.TargetType;
-            //resistance.LegalInterventionDesc = viewModel.LegalInterventionDesc;
             resistance.FiredEmployeeCountByProtesto = viewModel.FiredEmployeeCountByProtesto;
             resistance.DevelopRight = viewModel.DevelopRight;
             resistance.ResistanceResult = viewModel.ResistanceResult;
@@ -307,8 +305,6 @@ namespace RS.MVC.Applications
             resistance.ResistanceEmploymentTypes = new List<ResistanceEmploymentType>();
             resistance.ResistanceResistanceReasons = new List<ResistanceResistanceReason>();
             resistance.ResistanceNews = new List<ResistanceNews>();
-            // if (viewModel.AnyLegalIntervention == 1) resistance.AnyLegalIntervention = true;
-            // if (viewModel.AnyLegalIntervention == 2) resistance.AnyLegalIntervention = false;
             var rCorporations = db.ResistanceCorporation.Where(r => r.ResistanceId == resistance.Id).ToList();
             db.ResistanceCorporation.RemoveRange(rCorporations);
             

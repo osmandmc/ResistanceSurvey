@@ -110,6 +110,7 @@ namespace RS.MVC.Controllers
             db.SaveChanges();
             return Ok();
         }
+        [Authorize]
         [HttpPost]
         public ActionResult IsTradeUnion(List<int> corporationIds)
         {
@@ -117,6 +118,7 @@ namespace RS.MVC.Controllers
             var isTradeUnion = db.Corporation.Any(s => ids.Contains(s.Id) && s.CorporationTypeId == 1);
             return Json(isTradeUnion);
         }
+        [Authorize]
         [HttpGet]
         public ActionResult CheckTradeUnion(List<int> corporationIds)
         {
