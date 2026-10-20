@@ -16,7 +16,10 @@ namespace RS.MVC.Models
     /// <summary>Status: "Accepted", "Duplicate" or "Rejected" (with Reason).</summary>
     public record PipelineSubmitResult(string Url, string Status, string ArticleId, string Reason);
 
-    /// <summary>Filters for GET /api/articles. From/To are whole days (Turkey time); Status: parsed|failed|all; Outcome: open|handled|any.</summary>
+    /// <summary>
+    /// Filters for GET /api/articles. From/To are whole days (Turkey time); Status: parsed|failed|all; Outcome: open|handled|any.
+    /// Search matches titles (case and Turkish letters ignored); a link finds that one article whatever the other filters.
+    /// </summary>
     public record PipelineArticleQuery(
         DateOnly? From = null,
         DateOnly? To = null,
@@ -24,12 +27,27 @@ namespace RS.MVC.Models
         string Status = "parsed",
         string Outcome = "open",
         int PageSize = 50,
-        string Next = null);
+        string Next = null,
+        string Search = null);
 
     /// <summary>A page of GET /api/articles; pass Next back to load more (null = no more).</summary>
     public record PipelineArticleList(IReadOnlyList<PipelineArticleSummary> Items, string Next);
 
-    public record PipelineArticleSummary(string ArticleId, string SourceId, string Url, string Title, DateTimeOffset? PublishedAt);
+    /// <summary>Stages: stage name ("Submitted", "Fetched", "Parsed" …) → its result. Outcome: null while open.</summary>
+    public record PipelineArticleSummary(
+        string ArticleId,
+        string SourceId,
+        string Url,
+        string Title,
+        DateTimeOffset? PublishedAt,
+        IReadOnlyDictionary<string, PipelineStageResult> Stages = null,
+        PipelineOutcome Outcome = null);
+
+    /// <summary>Status: "Succeeded", "Failed" or "Skipped"; Reason says why it failed.</summary>
+    public record PipelineStageResult(string Status, DateTimeOffset At, string Version = null, string Reason = null);
+
+    /// <summary>The researchers' decision as the pipeline last heard it. Kind: "Digested" or "Dismissed".</summary>
+    public record PipelineOutcome(string Kind, DateTimeOffset At, int? ResistanceId = null, string Reason = null);
 
     /// <summary>GET /api/articles/{id}: one article with its latest text (Body is null until parsed).</summary>
     public record PipelineArticleDetail(string ArticleId, string SourceId, string Url, string Title, DateTimeOffset? PublishedAt, string Body);

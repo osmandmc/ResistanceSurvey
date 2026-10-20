@@ -30,10 +30,15 @@ internal sealed class FakePipeline : IPipelineClient
         return Task.FromResult(results);
     }
 
+    /// <summary>Stages and outcome per article, as the pipeline's list returns them.</summary>
+    public Dictionary<string, (IReadOnlyDictionary<string, PipelineStageResult> Stages, PipelineOutcome Outcome)> States { get; } = [];
+
     public Task<PipelineArticleList> ListArticlesAsync(PipelineArticleQuery query)
     {
         Queries.Add(query);
-        var items = _articles.Select(a => new PipelineArticleSummary(a.ArticleId, a.SourceId, a.Url, a.Title, a.PublishedAt)).ToList();
+        var items = _articles.Select(a => States.TryGetValue(a.ArticleId, out var state)
+            ? new PipelineArticleSummary(a.ArticleId, a.SourceId, a.Url, a.Title, a.PublishedAt, state.Stages, state.Outcome)
+            : new PipelineArticleSummary(a.ArticleId, a.SourceId, a.Url, a.Title, a.PublishedAt)).ToList();
         return Task.FromResult(new PipelineArticleList(items, null!));
     }
 

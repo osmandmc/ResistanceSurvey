@@ -64,6 +64,7 @@ namespace RS.MVC.Applications
             if (query.To is { } to) parameters.Add("to=" + to.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
             if (!string.IsNullOrEmpty(query.SourceId)) parameters.Add("source=" + Uri.EscapeDataString(query.SourceId));
             if (!string.IsNullOrEmpty(query.Next)) parameters.Add("next=" + Uri.EscapeDataString(query.Next));
+            if (!string.IsNullOrWhiteSpace(query.Search)) parameters.Add("q=" + Uri.EscapeDataString(query.Search.Trim()));
 
             var response = await _http.GetAsync("api/articles?" + string.Join("&", parameters));
             await EnsureSuccessAsync(response);
