@@ -2,26 +2,30 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using RS.COMMON.Entities;
-using RS.COMMON.Entities.LookupEntity;
 using RS.EF;
 
 namespace RS.Tests;
 
 public class CollationTests
 {
-    // The database default ignores case only for Latin letters; searched text must follow Turkish rules (F9).
-    [Theory]
-    [InlineData(typeof(Resistance), nameof(Resistance.Name))]
-    [InlineData(typeof(Resistance), nameof(Resistance.Description))]
-    [InlineData(typeof(Company), nameof(Company.Name))]
-    [InlineData(typeof(Corporation), nameof(Corporation.Name))]
-    [InlineData(typeof(News), nameof(News.Header))]
-    public void SearchedTextUsesTheTurkishCollation(Type entity, string property)
+    // Collations live in the design-time model (what migrations are made from), not the runtime one.
+    private static IModel DesignModel()
     {
-        using var db = new RSDBContext(new DbContextOptionsBuilder<RSDBContext>().UseSqlServer("Server=none;Database=none").Options);
+        var db = new RSDBContext(new DbContextOptionsBuilder<RSDBContext>().UseSqlServer("Server=none;Database=none").Options);
+        return db.GetService<IDesignTimeModel>().Model;
+    }
 
-        // Collations live in the design-time model (what migrations are made from), not the runtime one.
-        var model = db.GetService<IDesignTimeModel>().Model;
-        Assert.Equal(RSDBContext.TurkishCollation, model.FindEntityType(entity)!.FindProperty(property)!.GetCollation());
+    // The database default ignores case only for Latin letters; all text follows Turkish rules (F9).
+    [Fact]
+    public void EveryTextColumnUsesTheTurkishCollation()
+    {
+        var latin = DesignModel().GetEntityTypes()
+            .SelectMany(e => e.GetProperties().Where(p => p.ClrType == typeof(string)).Select(p => (Entity: e.ClrType.Name, Property: p)))
+            .Where(x => x.Property.GetCollation() != RSDBContext.TurkishCollation)
+            .Select(x => $"{x.Entity}.{x.Property.Name}")
+            .ToList();
+
+        // ArticleId is a hex hash, compared exactly.
+        Assert.Equal([$"{nameof(News)}.{nameof(News.ArticleId)}"], latin);
     }
 }

@@ -89,7 +89,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -105,7 +106,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -121,7 +123,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -137,10 +140,12 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -156,7 +161,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -197,7 +203,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -216,7 +223,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -234,7 +242,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -250,7 +259,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -266,7 +276,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -282,10 +293,12 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -301,7 +314,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -320,7 +334,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -342,7 +357,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<bool>("Simple")
                         .HasColumnType("bit");
@@ -364,7 +380,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -383,7 +400,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int?>("TradeUnionConfederationId")
                         .HasColumnType("int");
@@ -404,7 +422,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -420,7 +439,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -441,7 +461,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("varchar(64)");
 
                     b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -451,7 +472,8 @@ namespace RS.EF.Data.Migrations
                         .UseCollation("Turkish_CI_AS");
 
                     b.Property<string>("Link")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int>("Source")
                         .HasColumnType("int");
@@ -480,7 +502,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Creator")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int?>("CustodyCount")
                         .HasColumnType("int");
@@ -498,7 +521,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int?>("ProtestoEmployeeCountId")
                         .HasColumnType("int");
@@ -507,7 +531,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SimpleProtestoDescription")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -519,7 +544,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Updater")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -616,7 +642,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Place")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int>("ProtestoId")
                         .HasColumnType("int");
@@ -693,7 +720,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Code")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int?>("CompanyId")
                         .HasColumnType("int");
@@ -705,7 +733,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Creator")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
@@ -733,7 +762,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LegalInterventionDesc")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int?>("MainCompanyId")
                         .HasColumnType("int");
@@ -743,7 +773,8 @@ namespace RS.EF.Data.Migrations
                         .UseCollation("Turkish_CI_AS");
 
                     b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int>("ResistanceResult")
                         .HasColumnType("int");
@@ -764,7 +795,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Updater")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
