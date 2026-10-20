@@ -12,7 +12,7 @@ namespace RS.COMMON.Entities
         public DateTime? EndDate { get; set; }
         public int? EmployeeCountNumber { get; set; }
         public int? ProtestoEmployeeCountId { get; set; }
-        public int GenderId { get; set; }
+        public int? GenderId { get; set; }
         public int? CustodyCount { get; set; }
         public string Note { get; set; }
         public bool Deleted { get; set; }

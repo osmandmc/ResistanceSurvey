@@ -12,8 +12,8 @@ using RS.EF;
 namespace RS.EF.Data.Migrations
 {
     [DbContext(typeof(RSDBContext))]
-    [Migration("20250804124623_SyncWithModel")]
-    partial class SyncWithModel
+    [Migration("20261020222827_SchemaFixes")]
+    partial class SchemaFixes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,7 +46,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -82,6 +83,34 @@ namespace RS.EF.Data.Migrations
                     b.ToTable("CompanyOutsourceCompany");
                 });
 
+            modelBuilder.Entity("RS.COMMON.Entities.DefinitionNotDuplicate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FirstId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<int>("SecondId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Kind", "FirstId", "SecondId")
+                        .IsUnique();
+
+                    b.ToTable("DefinitionNotDuplicate");
+                });
+
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -91,7 +120,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -107,7 +137,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -123,7 +154,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -139,10 +171,12 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -158,7 +192,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -180,7 +215,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -198,7 +234,9 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -217,7 +255,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -235,7 +274,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -251,7 +291,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -267,7 +308,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -283,10 +325,12 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -302,7 +346,8 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -321,7 +366,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -343,7 +389,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<bool>("Simple")
                         .HasColumnType("bit");
@@ -365,35 +412,12 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
                     b.ToTable("ResistanceReason");
-                });
-
-            modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.TradeUnion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Approved")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("TradeUnionConfederationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TradeUnionConfederationId");
-
-                    b.ToTable("TradeUnion");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.TradeUnionAuthority", b =>
@@ -405,27 +429,12 @@ namespace RS.EF.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
                     b.ToTable("TradeUnionAuthority");
-                });
-
-            modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.TradeUnionConfederation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TradeUnionConfederation");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.News", b =>
@@ -436,17 +445,25 @@ namespace RS.EF.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ArticleId")
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)");
+
                     b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Header")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<string>("Link")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int>("Source")
                         .HasColumnType("int");
@@ -455,6 +472,10 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ArticleId")
+                        .IsUnique()
+                        .HasFilter("[ArticleId] IS NOT NULL");
 
                     b.ToTable("News");
                 });
@@ -471,7 +492,9 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Creator")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int?>("CustodyCount")
                         .HasColumnType("int");
@@ -485,11 +508,12 @@ namespace RS.EF.Data.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("GenderId")
+                    b.Property<int?>("GenderId")
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int?>("ProtestoEmployeeCountId")
                         .HasColumnType("int");
@@ -498,7 +522,8 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SimpleProtestoDescription")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -510,7 +535,9 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Updater")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
@@ -607,7 +634,9 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Place")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int>("ProtestoId")
                         .HasColumnType("int");
@@ -684,22 +713,29 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Code")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
-                    b.Property<int>("CompanyId")
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CorporationId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Creator")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<bool>("DevelopRight")
                         .HasColumnType("bit");
@@ -720,15 +756,24 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LegalInterventionDesc")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int?>("MainCompanyId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
+
                     b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.Property<int>("ResistanceResult")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResistanceTargetType")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -744,13 +789,17 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Updater")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .UseCollation("Turkish_CI_AS");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("CorporationId");
 
                     b.HasIndex("EmployeeCountId");
 
@@ -859,15 +908,18 @@ namespace RS.EF.Data.Migrations
                 {
                     b.HasOne("RS.COMMON.Entities.LookupEntity.CompanyScale", "CompanyScale")
                         .WithMany()
-                        .HasForeignKey("CompanyScaleId");
+                        .HasForeignKey("CompanyScaleId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.CompanyType", "CompanyType")
                         .WithMany()
-                        .HasForeignKey("CompanyTypeId");
+                        .HasForeignKey("CompanyTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.CompanyWorkLine", "CompanyWorkLine")
                         .WithMany()
-                        .HasForeignKey("CompanyWorkLineId");
+                        .HasForeignKey("CompanyWorkLineId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CompanyScale");
 
@@ -887,7 +939,7 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.Company", "OutsourceCompany")
                         .WithMany()
                         .HasForeignKey("OutsourceCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Company");
@@ -899,7 +951,8 @@ namespace RS.EF.Data.Migrations
                 {
                     b.HasOne("RS.COMMON.Entities.LookupEntity.CorporationType", "CorporationType")
                         .WithMany()
-                        .HasForeignKey("CorporationTypeId");
+                        .HasForeignKey("CorporationTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CorporationType");
                 });
@@ -909,19 +962,10 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("City");
-                });
-
-            modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.TradeUnion", b =>
-                {
-                    b.HasOne("RS.COMMON.Entities.LookupEntity.TradeUnionConfederation", "TradeUnionConfederation")
-                        .WithMany()
-                        .HasForeignKey("TradeUnionConfederationId");
-
-                    b.Navigation("TradeUnionConfederation");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.Protesto", b =>
@@ -929,12 +973,12 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.Gender", "Gender")
                         .WithMany()
                         .HasForeignKey("GenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.ProtestoEmployeeCount", "ProtestoEmployeeCount")
                         .WithMany()
-                        .HasForeignKey("ProtestoEmployeeCountId");
+                        .HasForeignKey("ProtestoEmployeeCountId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RS.COMMON.Entities.Resistance", "Resistance")
                         .WithMany("Protestos")
@@ -954,7 +998,7 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
@@ -973,7 +1017,7 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.District", "District")
                         .WithMany()
                         .HasForeignKey("DistrictId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
@@ -992,7 +1036,7 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.InterventionType", "InterventionType")
                         .WithMany()
                         .HasForeignKey("InterventionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
@@ -1011,12 +1055,13 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.District", "District")
                         .WithMany()
-                        .HasForeignKey("DistrictId");
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RS.COMMON.Entities.Protesto", "Protesto")
                         .WithMany("Locations")
@@ -1042,7 +1087,7 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.ProtestoPlace", "ProtestoPlace")
                         .WithMany()
                         .HasForeignKey("ProtestoPlaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Protesto");
@@ -1061,7 +1106,7 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.ProtestoType", "ProtestoType")
                         .WithMany()
                         .HasForeignKey("ProtestoTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Protesto");
@@ -1074,34 +1119,44 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Company", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.EmployeeCount", "EmployeeCount")
                         .WithMany()
-                        .HasForeignKey("EmployeeCountId");
+                        .HasForeignKey("EmployeeCountId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RS.COMMON.Entities.Company", "MainCompany")
                         .WithMany()
-                        .HasForeignKey("MainCompanyId");
+                        .HasForeignKey("MainCompanyId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.TradeUnionAuthority", "TradeUnionAuthority")
                         .WithMany()
-                        .HasForeignKey("TradeUnionAuthorityId");
+                        .HasForeignKey("TradeUnionAuthorityId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RS.COMMON.Entities.LookupEntity.Corporation", "TradeUnion")
                         .WithMany()
-                        .HasForeignKey("TradeUnionId");
+                        .HasForeignKey("TradeUnionId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Category");
 
                     b.Navigation("Company");
+
+                    b.Navigation("Corporation");
 
                     b.Navigation("EmployeeCount");
 
@@ -1117,7 +1172,7 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.Corporation", "Corporation")
                         .WithMany()
                         .HasForeignKey("CorporationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Resistance", "Resistance")
@@ -1136,7 +1191,7 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.EmploymentType", "EmploymentType")
                         .WithMany()
                         .HasForeignKey("EmploymentTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RS.COMMON.Entities.Resistance", "Resistance")
@@ -1180,7 +1235,7 @@ namespace RS.EF.Data.Migrations
                     b.HasOne("RS.COMMON.Entities.LookupEntity.ResistanceReason", "ResistanceReason")
                         .WithMany()
                         .HasForeignKey("ResistanceReasonId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Resistance");
