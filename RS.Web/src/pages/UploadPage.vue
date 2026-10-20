@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { NAlert, NButton, NFormItem, NInput, NSelect, NTabPane, NTabs, NTag } from 'naive-ui'
-import { ApiError } from '@/api'
+import { ApiError, errorMessage } from '@/api'
 import {
   isLink,
   maxLinks,
@@ -66,7 +66,7 @@ async function upload() {
     if (fileInput.value) fileInput.value.value = ''
   } catch (error) {
     const listed = error instanceof ApiError ? (error.details?.errors as string[] | undefined) : undefined
-    errors.value = listed ?? [error instanceof ApiError ? error.message : 'Dosya yüklenemedi.']
+    errors.value = listed ?? [errorMessage(error, 'Dosya yüklenemedi.')]
   } finally {
     uploading.value = false
   }
@@ -97,7 +97,7 @@ async function sendLinks() {
     linkResults.value = (await submitLinks(linksText.value)).links
     if (linkResults.value.every((r) => r.status !== 'Invalid' && r.status !== 'Rejected')) linksText.value = ''
   } catch (error) {
-    linksError.value = error instanceof ApiError ? error.message : 'Bağlantılar gönderilemedi.'
+    linksError.value = errorMessage(error, 'Bağlantılar gönderilemedi.')
   } finally {
     sendingLinks.value = false
   }

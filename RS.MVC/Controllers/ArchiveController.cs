@@ -1,10 +1,7 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using RS.MVC.Features.Archive;
 
 namespace RS.MVC.Controllers
@@ -13,7 +10,7 @@ namespace RS.MVC.Controllers
     [ApiController]
     [Route("api/archive")]
     [Authorize]
-    public class ArchiveController(GetArchiveHandler getArchive, ILogger<ArchiveController> logger) : ControllerBase
+    public class ArchiveController(GetArchiveHandler getArchive) : ControllerBase
     {
         /// <summary>GET /api/archive?month=2026-11&amp;source=evrensel&amp;q=işçi&amp;filter=failed&amp;next=… (all optional).</summary>
         [HttpGet]
@@ -33,18 +30,6 @@ namespace RS.MVC.Controllers
             catch (ArgumentException)
             {
                 return BadRequest(new { error = $"Arama en az {GetArchiveHandler.MinSearchLength} karakter olmalı." });
-            }
-            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
-            {
-                // Same message as the inbox: the cause (status, or connection/timeout) on screen and in the log.
-                var cause = ex switch
-                {
-                    HttpRequestException { StatusCode: { } status } => $"HTTP {(int)status}",
-                    TaskCanceledException => "zaman aşımı",
-                    _ => "bağlantı hatası",
-                };
-                logger.LogWarning(ex, "Pipeline unavailable for {Path}: {Cause}", Request.Path, cause);
-                return StatusCode(StatusCodes.Status502BadGateway, new { error = $"Haber işleme hattına ulaşılamadı ({cause})." });
             }
         }
     }

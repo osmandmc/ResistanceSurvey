@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NDatePicker, NEmpty, NFormItem, NInput, NSelect, NSpin, NTag } from 'naive-ui'
-import { ApiError } from '@/api'
+import { errorMessage } from '@/api'
 import { getArchive, minSearchLength, type ArchiveEvent, type ArchiveFilter, type ArchiveItem, type ArchiveState } from '@/archiveApi'
 import { formatDate, formatDateTime } from '@/format'
 
@@ -80,7 +80,7 @@ async function load(more = false) {
     // A link search finds one article: show its history straight away.
     if (!more && isLinkSearch.value && page.items.length === 1) expanded.value = new Set([page.items[0].articleId])
   } catch (error) {
-    loadError.value = error instanceof ApiError && (error.status === 502 || error.status === 400) ? error.message : 'Haberler yüklenemedi.'
+    loadError.value = errorMessage(error, 'Haberler yüklenemedi.')
   } finally {
     loading.value = false
     loadingMore.value = false

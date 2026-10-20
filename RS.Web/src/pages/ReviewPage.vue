@@ -2,7 +2,7 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSpin, NTag, useMessage } from 'naive-ui'
-import { ApiError } from '@/api'
+import { ApiError, errorMessage } from '@/api'
 import { emptyCase, toCaseInput, type CaseFormValue } from '@/caseForm'
 import CaseFinder from '@/components/CaseFinder.vue'
 import CaseForm from '@/components/CaseForm.vue'
@@ -46,7 +46,7 @@ async function loadArticle() {
     else if (error instanceof ApiError && error.status === 404) loadError.value = 'notFound'
     else {
       loadError.value = 'unavailable'
-      loadErrorText.value = error instanceof ApiError && error.status === 502 ? error.message : 'Haber yüklenemedi.'
+      loadErrorText.value = errorMessage(error, 'Haber yüklenemedi.')
     }
   } finally {
     loading.value = false
@@ -203,7 +203,7 @@ async function save() {
       message.warning(error.message)
       await goNext()
     } else {
-      message.error(error instanceof ApiError && error.status === 502 ? error.message : 'Kaydedilemedi.')
+      message.error(errorMessage(error, 'Kaydedilemedi.'))
     }
   } finally {
     saving.value = false

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { NButton, NFormItem, NInput, NModal, useMessage } from 'naive-ui'
-import { ApiError } from '@/api'
+import { ApiError, errorMessage } from '@/api'
 import { dismissArticle } from '@/inboxApi'
 
 /** "Not relevant" with an optional reason, for one article. Used by the inbox and the review screen. */
@@ -46,7 +46,7 @@ async function confirm() {
       message.warning(error.message)
       emit('handled', article.articleId)
     } else {
-      message.error(error instanceof ApiError && error.status === 502 ? error.message : 'İşaretlenemedi.')
+      message.error(errorMessage(error, 'İşaretlenemedi.'))
     }
   } finally {
     dismissing.value = false

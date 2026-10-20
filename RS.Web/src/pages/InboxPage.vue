@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NDatePicker, NEmpty, NFormItem, NSelect, NSpin, NTabPane, NTabs } from 'naive-ui'
-import { ApiError } from '@/api'
+import { errorMessage } from '@/api'
 import DismissDialog from '@/components/DismissDialog.vue'
 import { formatDate } from '@/format'
 import { getInbox, type InboxItem } from '@/inboxApi'
@@ -83,7 +83,7 @@ function onHandled(articleId: string) {
 }
 
 function errorText(error: unknown, fallback: string) {
-  return error instanceof ApiError && error.status === 502 ? error.message : fallback
+  return errorMessage(error, fallback)
 }
 </script>
 
