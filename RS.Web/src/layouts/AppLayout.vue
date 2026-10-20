@@ -13,6 +13,7 @@ const menu = [
   { path: '/cases', label: 'Vakalar' },
   { path: '/status', label: 'Durum Paneli' },
   { path: '/upload', label: 'Yükleme' },
+  { path: '/definitions', label: 'Tanımlar' },
 ]
 
 const userName = computed(() => (currentUser.value ? displayName(currentUser.value) : ''))

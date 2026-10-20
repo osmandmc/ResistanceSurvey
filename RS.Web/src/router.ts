@@ -5,6 +5,7 @@ import AppLayout from './layouts/AppLayout.vue'
 import ArchivePage from './pages/ArchivePage.vue'
 import CaseDetailPage from './pages/CaseDetailPage.vue'
 import CasesPage from './pages/CasesPage.vue'
+import DefinitionsPage from './pages/DefinitionsPage.vue'
 import InboxPage from './pages/InboxPage.vue'
 import LoginPage from './pages/LoginPage.vue'
 import ReviewPage from './pages/ReviewPage.vue'
@@ -39,6 +40,8 @@ export const router = createRouter({
         { path: 'cases/:id(\\d+)', component: CaseDetailPage, meta: { title: 'Vaka' } },
         { path: 'status', component: StatusPage, meta: { title: 'Durum Paneli' } },
         { path: 'upload', component: UploadPage, meta: { title: 'Yükleme' } },
+        { path: 'definitions', redirect: '/definitions/corporations' },
+        { path: 'definitions/:kind', component: DefinitionsPage, meta: { title: 'Tanımlar' } },
         { path: ':pathMatch(.*)*', component: NotFoundPage, meta: { title: 'Sayfa bulunamadı' } },
       ],
     },
