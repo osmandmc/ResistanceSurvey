@@ -26,7 +26,10 @@ namespace RS.MVC.Controllers
         MergeDefinitionsHandler merge,
         FindDuplicatesHandler findDuplicates,
         MergeGroupHandler mergeGroup,
-        DismissDuplicatesHandler dismissDuplicates) : ControllerBase
+        DismissDuplicatesHandler dismissDuplicates,
+        GetCompanyHandler getCompany,
+        AddCompanyLinkHandler addLink,
+        RemoveCompanyLinkHandler removeLink) : ControllerBase
     {
         public record DefinitionOptions(IReadOnlyList<Option> CorporationTypes, IReadOnlyList<Option> CompanyTypes, IReadOnlyList<Option> CompanyScales, IReadOnlyList<Option> CompanyWorklines);
 
@@ -37,6 +40,8 @@ namespace RS.MVC.Controllers
         public record MergeGroupRequest(int IntoId, IReadOnlyList<int> FromIds);
 
         public record DismissRequest(IReadOnlyList<int> Ids);
+
+        public record CompanyLinkRequest(int CompanyId);
 
         /// <summary>GET /api/definitions/options — the choices for the lists' own fields.</summary>
         [HttpGet("options")]
@@ -141,6 +146,36 @@ namespace RS.MVC.Controllers
             await dismissDuplicates.Handle(new DismissDuplicatesCommand(parsed, request?.Ids ?? []));
             return NoContent();
         }
+
+        /// <summary>GET /api/definitions/companies/{id} — the company with its cases and subcontractor relations.</summary>
+        [HttpGet("companies/{id:int}")]
+        public async Task<ActionResult<CompanyDetail>> Company(int id) =>
+            await getCompany.Handle(id) is { } company ? company : NotFound(new { error = "Şirket bulunamadı." });
+
+        /// <summary>POST /api/definitions/companies/{id}/subcontractors { companyId } — that company works for {id}.</summary>
+        [HttpPost("companies/{id:int}/subcontractors")]
+        public async Task<IActionResult> AddSubcontractor(int id, CompanyLinkRequest request) =>
+            LinkAnswer(await addLink.Handle(new CompanyLinkCommand(id, request?.CompanyId ?? 0)));
+
+        [HttpDelete("companies/{id:int}/subcontractors/{subcontractorId:int}")]
+        public async Task<IActionResult> RemoveSubcontractor(int id, int subcontractorId) =>
+            LinkAnswer(await removeLink.Handle(new CompanyLinkCommand(id, subcontractorId)));
+
+        /// <summary>POST /api/definitions/companies/{id}/main-companies { companyId } — {id} works for that company.</summary>
+        [HttpPost("companies/{id:int}/main-companies")]
+        public async Task<IActionResult> AddMainCompany(int id, CompanyLinkRequest request) =>
+            LinkAnswer(await addLink.Handle(new CompanyLinkCommand(request?.CompanyId ?? 0, id)));
+
+        [HttpDelete("companies/{id:int}/main-companies/{mainCompanyId:int}")]
+        public async Task<IActionResult> RemoveMainCompany(int id, int mainCompanyId) =>
+            LinkAnswer(await removeLink.Handle(new CompanyLinkCommand(mainCompanyId, id)));
+
+        private IActionResult LinkAnswer(LinkStatus status) => status switch
+        {
+            LinkStatus.Ok => NoContent(),
+            LinkStatus.SameCompany => BadRequest(new { error = "Bir şirket kendisinin taşeronu olamaz." }),
+            _ => NotFound(new { error = "Şirket ya da ilişki bulunamadı." }),
+        };
 
         private IActionResult Answer(ChangeResult result) => result.Status switch
         {
