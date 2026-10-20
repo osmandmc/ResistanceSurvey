@@ -45,7 +45,12 @@ namespace RS.MVC.Features.Review
             EmployeeCountRanges: await db.EmployeeCount.Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             Corporations: await db.Corporation.OrderBy(e => e.Name)
                 .Select(e => new CorporationOption(e.Id, e.Name, e.CorporationTypeId == TradeUnionCorporationTypeId)).ToListAsync(),
-            TradeUnions: await db.TradeUnion.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
+            // The case's union (Resistance.TradeUnionId) is a corporation, not a row of the separate TradeUnion table, whose
+            // ids mean other corporations from 21 upwards. Unions first; the rest stay selectable as in the old form
+            // (researchers used values like "Bilinmiyor").
+            TradeUnions: await db.Corporation
+                .OrderBy(e => e.CorporationTypeId == TradeUnionCorporationTypeId ? 0 : 1).ThenBy(e => e.Name)
+                .Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             TradeUnionAuthorities: await db.TradeUnionAuthority.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             EmploymentTypes: await db.EmploymentType.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             CompanyTypes: await db.CompanyType.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
