@@ -7,13 +7,13 @@ Purpose
 Big picture
 
 - ASP.NET Core MVC app with EF Core for the data access layer (`RS.EF/RSDBContext.cs`). The legacy `RS.DAL` project has been removed; rely on EF and application services instead of Dapper helpers.
-- Frontend: Razor Views plus the old Vue 3 SPA under `/Resistance/IndexVue` (fallback limited to that path in `RS.MVC/Program.cs`), and the new front end `RS.Web` (Vue 3 + TypeScript + Naive UI) served at `/app` from `wwwroot/rsweb`.
-- Services: application-level services live under `RS.MVC/Applications` (e.g., `ResistanceApplication.cs`) and are registered in `RS.MVC/Program.cs` / `Startup.cs` as scoped services.
+- Frontend: `RS.Web` (Vue 3 + TypeScript + Naive UI) served at `/app` from `wwwroot/rsweb`; the API is under `/api` (controllers in `RS.MVC/Controllers`, use cases in `RS.MVC/Features`). The old Razor pages are only in the `legacy` branch.
+- Services: application-level services live under `RS.MVC/Applications` (e.g., `ResistanceApplication.cs`) and are registered in `RS.MVC/Program.cs` as scoped services.
 
 How the pieces talk
 
 - EF Core (DbContext: `RS.EF/RSDBContext.cs`) is registered via connection string `RSConnectionString` in `RS.MVC/appsettings*.json`.
-- Authentication: JWT configured in `RS.MVC/Program.cs` and `Startup.cs` using `AppSettings.Secret` from configuration.
+- Authentication: an HttpOnly cookie (`/api/auth/login`), configured in `RS.MVC/Program.cs`; two fixed users with passwords from configuration until per-person accounts (F4).
 
 Build / run / CI
 

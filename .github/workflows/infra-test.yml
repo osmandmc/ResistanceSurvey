@@ -31,7 +31,6 @@ jobs:
           BUDGET_EMAIL: ${{ vars.BUDGET_EMAIL }}
           PIPELINE_BASE_URL: ${{ vars.PIPELINE_BASE_URL }}
           SQL_ADMIN_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
           PIPELINE_FUNCTION_KEY: ${{ secrets.PIPELINE_FUNCTION_KEY }}

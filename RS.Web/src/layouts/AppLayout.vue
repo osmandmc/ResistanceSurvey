@@ -33,8 +33,6 @@ async function onSignOut() {
       </router-link>
     </nav>
     <div class="account">
-      <!-- The old screens stay reachable until each is replaced. -->
-      <a class="old-screens" href="/Resistance/IndexVue">Eski ekranlar</a>
       <span class="user-name">{{ userName }}</span>
       <n-button size="small" secondary class="sign-out" @click="onSignOut">Çıkış</n-button>
     </div>
@@ -87,12 +85,6 @@ async function onSignOut() {
   gap: 8px 16px;
   color: #b8caca;
   font-size: 14px;
-}
-.old-screens {
-  color: #b8caca;
-}
-.old-screens:hover {
-  color: #fff;
 }
 .user-name {
   color: #fff;

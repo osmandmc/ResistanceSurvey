@@ -38,7 +38,6 @@ Create an environment named **`test`** and add these as its **environment** vari
 | Variable | `BUDGET_EMAIL` | Where budget alerts go |
 | Variable | `PIPELINE_BASE_URL` | The pipeline's Function App URL, e.g. `https://func-….azurewebsites.net` |
 | Secret | `SQL_ADMIN_PASSWORD` | New strong password, e.g. `openssl rand -base64 24` |
-| Secret | `JWT_SECRET` | New random value, e.g. `openssl rand -base64 48` (not the production one) |
 | Secret | `ADMIN_PASSWORD` `USER_PASSWORD` | Login passwords for `admin` and `user` on the test app |
 | Secret | `PIPELINE_FUNCTION_KEY` | Portal → pipeline Function App → App keys → `default` |
 

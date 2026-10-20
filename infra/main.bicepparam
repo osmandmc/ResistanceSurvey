@@ -8,7 +8,6 @@ param budgetStartDate = '2026-10-01'
 // Kept out of the repository; the infra-test workflow passes them from GitHub secrets and variables.
 param budgetContactEmail = readEnvironmentVariable('BUDGET_EMAIL', '')
 param sqlAdminPassword = readEnvironmentVariable('SQL_ADMIN_PASSWORD')
-param jwtSecret = readEnvironmentVariable('JWT_SECRET')
 param adminPassword = readEnvironmentVariable('ADMIN_PASSWORD')
 param userPassword = readEnvironmentVariable('USER_PASSWORD')
 param pipelineBaseUrl = readEnvironmentVariable('PIPELINE_BASE_URL', '')

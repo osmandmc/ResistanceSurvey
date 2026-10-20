@@ -9,7 +9,6 @@ No secrets are stored in this repository. The app refuses to start without these
 | Setting | What |
 |---|---|
 | `ConnectionStrings:RSConnectionString` | SQL Server connection string |
-| `AppSettings:Secret` | Signs login tokens (any long random string) |
 | `AppSettings:AdminPass` | Password of the `admin` user |
 | `AppSettings:UserPass` | Password of the `user` user |
 
@@ -17,20 +16,19 @@ No secrets are stored in this repository. The app refuses to start without these
 
 ```bash
 dotnet user-secrets --project RS.MVC set "ConnectionStrings:RSConnectionString" "<connection string>"
-dotnet user-secrets --project RS.MVC set "AppSettings:Secret" "$(openssl rand -base64 48)"
 dotnet user-secrets --project RS.MVC set "AppSettings:AdminPass" "<password>"
 dotnet user-secrets --project RS.MVC set "AppSettings:UserPass" "<password>"
 ```
 
-User-secrets are read when the app runs in the Development environment, and by the EF tools (`dotnet ef … --project RS.EF --startup-project RS.EF`). Environment variables work too (`ConnectionStrings__RSConnectionString`, `AppSettings__Secret`, …).
+User-secrets are read when the app runs in the Development environment, and by the EF tools (`dotnet ef … --project RS.EF --startup-project RS.EF`). Environment variables work too (`ConnectionStrings__RSConnectionString`, `AppSettings__AdminPass`, …).
 
-**Production** (SmarterASP): the deploy workflow (`.github/workflows/main.yml`) writes them into the published `appsettings.json` from the GitHub secrets `RS_CONNECTION_STRING`, `JWT_SECRET`, `ADMIN_PASSWORD` and `USER_PASSWORD`, and fails if any is missing.
+**Production** (SmarterASP) still runs the old app from the `legacy` branch: its deploy workflow (`.github/workflows/main.yml` on that branch) writes them into the published `appsettings.json` from the GitHub secrets `RS_CONNECTION_STRING`, `JWT_SECRET`, `ADMIN_PASSWORD` and `USER_PASSWORD`, and fails if any is missing.
 
 **Test environment** (Azure): see `infra/README.md`.
 
 ## New front end (RS.Web)
 
-Vue 3 + TypeScript + Vite + [Naive UI](https://www.naiveui.com). Served by RS.MVC at `/app`; the old pages stay where they are until replaced. Needs Node 22.12+ (the current LTS is fine).
+Vue 3 + TypeScript + Vite + [Naive UI](https://www.naiveui.com). Served by RS.MVC at `/app` (the site root redirects there); the old Razor pages were removed in R12c and live on only in the `legacy` branch. Needs Node 22.12+ (the current LTS is fine).
 
 ```bash
 cd RS.Web
