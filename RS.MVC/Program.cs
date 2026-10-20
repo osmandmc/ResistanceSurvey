@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
@@ -10,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using RS.EF;
 using RS.MVC.Applications;
 using RS.MVC.Features;
@@ -22,7 +20,6 @@ using System;
 using System.Linq;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using Microsoft.Extensions.FileProviders;
 using System.Threading.Tasks;
 
@@ -36,7 +33,6 @@ builder.Logging.AddAzureWebAppDiagnostics();
 
 // Add Services
 builder.Services.AddScoped<IResistanceApplication, ResistanceApplication>();
-builder.Services.AddScoped<INewsApplication, NewsApplication>();
 
 // Use cases of the new screens (commands and queries under Features/), and what they share.
 builder.Services.AddFeatureHandlers();
@@ -55,21 +51,8 @@ builder.Services.AddScoped<IUserApplication, UserApplication>();
 builder.Services.AddDbContext<RSDBContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("RSConnectionString")));
 
-// Add MVC for both Razor Views & API Controllers
+// API controllers, and the one view left: the error page.
 builder.Services.AddControllersWithViews();
-   
-
-// Enable CORS for Vue 3 Frontend
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("VuePolicy", policy =>
-    {
-        policy.WithOrigins("http://localhost:5173") // Vue dev server URL
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
-    });
-});
 
 // Localization Support
 builder.Services.Configure<RequestLocalizationOptions>(opts =>
@@ -95,28 +78,15 @@ builder.Services.AddHttpClient<IPipelineClient, PipelineClient>((sp, http) =>
 });
 
 // Secrets are not in the repository: user-secrets locally, written by the deploy in production. Fail fast if missing.
-var missing = new[] { "ConnectionStrings:RSConnectionString", "AppSettings:Secret", "AppSettings:AdminPass", "AppSettings:UserPass" }
+var missing = new[] { "ConnectionStrings:RSConnectionString", "AppSettings:AdminPass", "AppSettings:UserPass" }
     .Where(k => string.IsNullOrWhiteSpace(configuration[k]))
     .ToList();
 if (missing.Count > 0)
     throw new InvalidOperationException("Missing configuration: " + string.Join(", ", missing) + ". Locally use 'dotnet user-secrets'; see README.");
 
-// JWT Authentication
-var appSettingsSection = configuration.GetSection("AppSettings");
-builder.Services.Configure<AppSettings>(appSettingsSection);
-var appSettings = appSettingsSection.Get<AppSettings>();
-var key = Encoding.ASCII.GetBytes(appSettings.Secret);
-
-// Two ways to sign in: the new app (/app) uses an HttpOnly cookie; the existing Vue form sends a bearer token.
-// "Auto" picks the bearer scheme when an Authorization header is present, otherwise the cookie.
-builder.Services.AddAuthentication("Auto")
-    .AddPolicyScheme("Auto", "Cookie or bearer token", options =>
-    {
-        options.ForwardDefaultSelector = context =>
-            context.Request.Headers.Authorization.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
-                ? JwtBearerDefaults.AuthenticationScheme
-                : CookieAuthenticationDefaults.AuthenticationScheme;
-    })
+// Sign-in: an HttpOnly cookie set by /api/auth/login (the old pages' bearer token went with them, R12c).
+builder.Services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
         options.Cookie.Name = "rs.auth";
@@ -129,18 +99,6 @@ builder.Services.AddAuthentication("Auto")
         // An API answers 401/403; the front end decides where to go (there is no server-side login page).
         options.Events.OnRedirectToLogin = context => { context.Response.StatusCode = StatusCodes.Status401Unauthorized; return Task.CompletedTask; };
         options.Events.OnRedirectToAccessDenied = context => { context.Response.StatusCode = StatusCodes.Status403Forbidden; return Task.CompletedTask; };
-    })
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-    {
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = false,
-            ValidateAudience = false
-        };
     });
 
 // Errors no controller handled: JSON for /api (ApiExceptionHandler), the error page for the old pages (F6).
@@ -154,35 +112,22 @@ var app = builder.Build();
 app.UseExceptionHandler("/Home/Error");
 app.UseStaticFiles();
 
-// The new front end (RS.Web) is built into wwwroot/rsweb and served at /app. wwwroot/app holds the old pages'
-// scripts, which keep their /app/*.js addresses. Skipped when the front end has not been built.
+// The front end (RS.Web) is built into wwwroot/rsweb and served at /app. Skipped when it has not been built.
 var rsWebPath = Path.Combine(app.Environment.WebRootPath, "rsweb");
 var rsWebFiles = Directory.Exists(rsWebPath) ? new PhysicalFileProvider(rsWebPath) : null;
 if (rsWebFiles != null)
     app.UseStaticFiles(new StaticFileOptions { FileProvider = rsWebFiles, RequestPath = "/app" });
 
 app.UseRouting();
-app.UseCors("VuePolicy"); // Enable CORS for Vue 3
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Route Setup
-app.MapControllerRoute(
-    name: "news", // Explicit route for /News
-    pattern: "News/{action=Index}/{id?}",
-    defaults: new { controller = "News" });
-
-app.MapControllerRoute(
-    name: "default", // Default route for other Razor views
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+// API controllers use attribute routes; "/" and "/Home/Error" use the conventional one.
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}");
 
 // The new front end's own router handles the paths under /app.
 if (rsWebFiles != null)
     app.MapFallbackToFile("app/{*path:nonfile}", "index.html", new StaticFileOptions { FileProvider = rsWebFiles });
-
-// The old Vue app's own paths (e.g. /Resistance/IndexVue/edit/5) survive a page refresh.
-// Only its paths: any other unknown address is a 404, not the old Vue page.
-app.MapFallbackToController("Resistance/IndexVue/{*path:nonfile}", "IndexVue", "Resistance");
 
 
 app.Run();

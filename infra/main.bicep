@@ -14,10 +14,6 @@ param sqlAdminLogin string = 'rsadmin'
 param sqlAdminPassword string
 
 @secure()
-@description('Signs and verifies the app\'s login tokens (AppSettings:Secret). GitHub secret JWT_SECRET.')
-param jwtSecret string
-
-@secure()
 @description('Password of the app\'s "admin" login (AppSettings:AdminPass). GitHub secret ADMIN_PASSWORD.')
 param adminPassword string
 
@@ -124,7 +120,6 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
       ]
       appSettings: [
         { name: 'ASPNETCORE_ENVIRONMENT', value: 'Test' }
-        { name: 'AppSettings__Secret', value: jwtSecret }
         { name: 'AppSettings__AdminPass', value: adminPassword }
         { name: 'AppSettings__UserPass', value: userPassword }
         { name: 'Pipeline__BaseUrl', value: pipelineBaseUrl }

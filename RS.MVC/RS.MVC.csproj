@@ -15,17 +15,8 @@
   <ItemGroup>
     <!-- Excel import and export. 7.7.4 brings the patched System.Security.Cryptography.Pkcs (F10). -->
     <PackageReference Include="EPPlus" Version="7.7.4" />
-
-    <!-- Updated Microsoft.AspNetCore.Authentication.JwtBearer to the latest version compati  ble with .NET 9. -->
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
-
-    <!-- Updated Newtonsoft.Json support for ASP.NET Core to the latest version. -->
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.1" />
+    <!-- Logs to App Service's Log stream. -->
     <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="9.0.1" />
-
-    <!-- Updated IdentityModel libraries for JSON Web Tokens and Tokens. -->
-    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.3.1" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.3.1" />
   </ItemGroup>
 
 </Project>
