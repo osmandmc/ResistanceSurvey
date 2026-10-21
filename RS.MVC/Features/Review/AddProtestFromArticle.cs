@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using RS.EF;
+using RS.MVC.Features.Cases;
 using System.Threading.Tasks;
 using RS.MVC.Applications;
 using RS.MVC.Models;
@@ -7,7 +10,7 @@ namespace RS.MVC.Features.Review
     /// <summary>A new protest on an existing resistance, from an inbox article.</summary>
     public record AddProtestFromArticleCommand(string ArticleId, int? ResistanceId, ProtestInput Protest, string UserName);
 
-    public class AddProtestFromArticleHandler(ArticleCaseLinker linker, IResistanceApplication resistances)
+    public class AddProtestFromArticleHandler(ArticleCaseLinker linker, CaseWriter writer, RSDBContext db)
     {
         public async Task<ReviewSaveResult> Handle(AddProtestFromArticleCommand command)
         {
@@ -20,7 +23,8 @@ namespace RS.MVC.Features.Review
 
             return await linker.LinkAsync(command.ArticleId, async news =>
             {
-                resistances.AddProtesto(CaseMapping.ToProtestoAddModel(resistanceId, command.Protest, command.UserName));
+                var resistance = await db.Resistance.FirstAsync(r => r.Id == resistanceId);
+                await writer.AddProtestAsync(resistance, command.Protest, command.UserName);
                 await linker.AttachAsync(resistanceId, news.Id);
                 return resistanceId;
             });

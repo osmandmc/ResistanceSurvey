@@ -1,3 +1,4 @@
+using RS.MVC.Features.Cases;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -39,11 +40,11 @@ public class ReviewTests
         var settings = Options.Create(new PipelineSettings { Sources = new() { [1] = "evrensel" } });
         var articleNews = new ArticleNewsService(_db, settings);
         var linker = new ArticleCaseLinker(_db, _pipeline, articleNews, new OutcomeSender(_pipeline, NullLogger<OutcomeSender>.Instance));
-        var resistances = new ResistanceApplication(_db);
+        var writer = new CaseWriter(_db);
         _getArticle = new GetReviewArticleHandler(_pipeline, articleNews);
         _searchCases = new SearchCasesHandler(_db);
-        _createCase = new CreateCaseFromArticleHandler(linker, resistances, new ListValueResolver(_db));
-        _addProtest = new AddProtestFromArticleHandler(linker, resistances);
+        _createCase = new CreateCaseFromArticleHandler(linker, writer, new ListValueResolver(_db));
+        _addProtest = new AddProtestFromArticleHandler(linker, writer, _db);
         _linkToCase = new LinkArticleToCaseHandler(linker);
         _pipeline.Add("a1", ArticleUrl, "Bursa NEV Hastanesi’nde eylem", Oct19, "Hekimler ve sağlık çalışanları 6 aydır maaşlarını alamıyor.");
     }

@@ -7,6 +7,7 @@ export const strikeProtestTypeIds = [5, 6]
 export const simpleActionProtestTypeId = 35
 
 /** The intervention type "no intervention": with it there is no custody count. Same as the server's rule. */
+/** InterventionType "no intervention" (server: KnownListIds.NoInterventionType): no custody count needed. */
 export const noInterventionTypeId = 7
 
 export interface LocationValue {

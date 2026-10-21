@@ -2,12 +2,14 @@ using System.Threading.Tasks;
 using RS.MVC.Applications;
 using RS.MVC.Models;
 
+using RS.MVC.Features.Cases;
+
 namespace RS.MVC.Features.Review
 {
     /// <summary>A new resistance with its first protest, from an inbox article.</summary>
     public record CreateCaseFromArticleCommand(string ArticleId, CaseInput Case, ProtestInput Protest, string UserName);
 
-    public class CreateCaseFromArticleHandler(ArticleCaseLinker linker, IResistanceApplication resistances, ListValueResolver lists)
+    public class CreateCaseFromArticleHandler(ArticleCaseLinker linker, CaseWriter writer, ListValueResolver lists)
     {
         public async Task<ReviewSaveResult> Handle(CreateCaseFromArticleCommand command)
         {
@@ -20,7 +22,7 @@ namespace RS.MVC.Features.Review
                 // Typed values become list entries inside the same transaction as the case.
                 var reasonIds = await lists.ReasonIdsAsync(command.Case.ReasonIds, command.Case.NewReasonNames);
                 var corporationIds = await lists.CorporationIdsAsync(command.Case.CorporationIds, command.Case.NewCorporationNames);
-                return resistances.Create(CaseMapping.ToResistanceModel(command.Case, command.Protest, news, command.UserName, reasonIds, corporationIds));
+                return await writer.CreateCaseAsync(command.Case, command.Protest, command.UserName, reasonIds, corporationIds, news.Id);
             });
         }
     }

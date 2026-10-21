@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +17,6 @@ using RS.MVC.Models;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
-using System.Globalization;
 using System.IO;
 using Microsoft.Extensions.FileProviders;
 using System.Threading.Tasks;
@@ -32,7 +30,6 @@ var configuration = builder.Configuration;
 builder.Logging.AddAzureWebAppDiagnostics();
 
 // Add Services
-builder.Services.AddScoped<IResistanceApplication, ResistanceApplication>();
 
 // Use cases of the new screens (commands and queries under Features/), and what they share.
 builder.Services.AddFeatureHandlers();
@@ -53,15 +50,6 @@ builder.Services.AddDbContext<RSDBContext>(options =>
 
 // API controllers, and the one view left: the error page.
 builder.Services.AddControllersWithViews();
-
-// Localization Support
-builder.Services.Configure<RequestLocalizationOptions>(opts =>
-{
-    var supportedCultures = new[] { new CultureInfo("tr-TR") };
-    opts.DefaultRequestCulture = new RequestCulture("tr-TR");
-    opts.SupportedCultures = supportedCultures;
-    opts.SupportedUICultures = supportedCultures;
-});
 
 // News pipeline: every news item enters through it (R12b)
 builder.Services.AddOptions<PipelineSettings>()
