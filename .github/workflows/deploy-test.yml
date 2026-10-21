@@ -74,14 +74,15 @@ jobs:
       - name: Check the app answers
         run: |
           host="https://${{ steps.app.outputs.host }}"
+          # The app is at /app/ (the old pages are gone since R12c).
           for i in $(seq 1 40); do
-            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$host/" || true)
-            echo "attempt $i: HTTP $code"
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$host/app/" || true)
+            echo "attempt $i: /app/ HTTP $code"
             if [ "$code" = "200" ]; then break; fi
-            if [ "$i" = "40" ]; then echo "The app did not answer with 200 at $host/" >&2; exit 1; fi
+            if [ "$i" = "40" ]; then echo "The app did not answer with 200 at $host/app/" >&2; exit 1; fi
             sleep 15
           done
-          # The new front end must be there too.
-          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$host/app/")
-          echo "new front end /app/: HTTP $code"
-          [ "$code" = "200" ]
+          # The site root leads to the app.
+          location=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' --max-time 60 "$host/")
+          echo "/: $location"
+          [ "$location" = "302 $host/app/" ]

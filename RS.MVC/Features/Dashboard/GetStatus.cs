@@ -50,3 +50,21 @@ namespace RS.MVC.Features.Dashboard
         }
     }
 }
+
+namespace RS.MVC.Features.Dashboard
+{
+    /// <summary>What one feed brought in, with the source's name. Error: why it could not be read.</summary>
+    public record CollectedFeed(string SourceId, string SourceName, int Found, int Accepted, int Duplicate, int Rejected, string Error);
+
+    /// <summary>"Şimdi topla": the pipeline reads the feeds now instead of waiting for its two-hourly timer.</summary>
+    public class CollectFeedsHandler(RS.MVC.Applications.IPipelineClient pipeline)
+    {
+        public async Task<IReadOnlyList<CollectedFeed>> Handle()
+        {
+            var result = await pipeline.CollectFeedsAsync();
+            return result.Feeds
+                .Select(f => new CollectedFeed(f.SourceId, RS.MVC.Features.Articles.SourceCatalog.Name(f.SourceId), f.Found, f.Accepted, f.Duplicate, f.Rejected, f.Error))
+                .ToList();
+        }
+    }
+}

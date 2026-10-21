@@ -46,3 +46,19 @@ export interface StatusPage {
 export function getStatus(days: number) {
   return api<StatusPage>(`/api/status?days=${days}`)
 }
+
+/** What one feed brought in. error: why it could not be read (then the counts are 0). */
+export interface CollectedFeed {
+  sourceId: string
+  sourceName: string
+  found: number
+  accepted: number
+  duplicate: number
+  rejected: number
+  error: string | null
+}
+
+/** "Şimdi topla": the pipeline reads the feeds now instead of waiting for its two-hourly timer. */
+export function collectFeeds() {
+  return api<CollectedFeed[]>('/api/status/collect', { method: 'POST' })
+}

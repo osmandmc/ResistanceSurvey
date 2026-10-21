@@ -54,6 +54,10 @@ internal sealed class FakePipeline : IPipelineClient
         return Task.FromResult(Metrics);
     }
 
+    public PipelineCollectResponse Collected { get; set; } = new([]);
+
+    public Task<PipelineCollectResponse> CollectFeedsAsync() => Task.FromResult(Collected);
+
     public Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome)
     {
         if (FailOutcomes)

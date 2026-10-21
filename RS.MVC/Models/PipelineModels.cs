@@ -67,6 +67,11 @@ namespace RS.MVC.Models
 
     public record PipelineFailure(string ArticleId, string SourceId, string Url, string Title, string Stage, DateTimeOffset At, string Reason);
 
+    /// <summary>POST /api/collect: one run over the feeds. Error: why a feed could not be read (then the counts are 0).</summary>
+    public record PipelineFeedRun(string SourceId, int Found, int Accepted, int Duplicate, int Rejected, string Error);
+
+    public record PipelineCollectResponse(IReadOnlyList<PipelineFeedRun> Feeds);
+
     /// <summary>Body of POST /api/articles/{id}/outcome. Kind: "Digested" (with ResistanceId) or "Dismissed".</summary>
     public record PipelineOutcomeRequest(string Kind, int? ResistanceId = null, string Reason = null);
 
