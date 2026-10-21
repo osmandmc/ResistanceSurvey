@@ -1,3 +1,4 @@
+using RS.COMMON.Constants;
 using System.Collections.Generic;
 using System.Linq;
 using RS.COMMON.Entities;
@@ -13,7 +14,7 @@ namespace RS.MVC.Features.Review
     public static class ReviewValidation
     {
         /// <summary>The intervention type meaning "no intervention": with it, there is no custody count.</summary>
-        public const int NoInterventionTypeId = 7;
+        public const int NoInterventionTypeId = KnownListIds.NoInterventionType;
 
         public static Dictionary<string, string> ForNewCase(CaseInput caseInput, ProtestInput protest)
         {

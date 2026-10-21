@@ -26,9 +26,74 @@ namespace RS.MVC.Features.Cases
         public static CaseCommandResult Ok(int id) => new(CaseCommandStatus.Ok, id);
     }
 
-    /// <summary>What the case commands share: protest fields, link tables, the case's start date.</summary>
+    /// <summary>
+    /// The one save path for cases and protests (F2): creating a case (with or without an article), editing it, adding and
+    /// editing protests. Replaces ResistanceApplication's Create and AddProtesto.
+    /// </summary>
     public class CaseWriter(RSDBContext db)
     {
+        /// <summary>
+        /// A new case with its first protest, saved. Start and end come from that protest (as before); the article's News
+        /// row, when there is one, is linked. <paramref name="reasonIds"/> and <paramref name="corporationIds"/>: the case's
+        /// lists after typed values were resolved (ListValueResolver).
+        /// </summary>
+        public async Task<int> CreateCaseAsync(
+            CaseInput c, ProtestInput p, string userName, IReadOnlyList<int> reasonIds, IReadOnlyList<int> corporationIds, int? newsId = null)
+        {
+            var resistance = new Resistance { Creator = userName, CreateDate = DateTime.Now, StartDate = p.StartDate!.Value, EndDate = p.EndDate };
+            await ApplyCaseAsync(resistance, c, reasonIds, corporationIds);
+            var protest = new Protesto { Creator = userName, CreateDate = DateTime.Now };
+            await ApplyProtestAsync(protest, p);
+            resistance.Protestos = [protest];
+            resistance.ResistanceNews = newsId is { } id ? [new ResistanceNews { NewsId = id }] : [];
+            db.Resistance.Add(resistance);
+            await db.SaveChangesAsync();
+            return resistance.Id;
+        }
+
+        /// <summary>A new protest on the case, saved; the case's start date follows its earliest protest.</summary>
+        public async Task<int> AddProtestAsync(Resistance resistance, ProtestInput p, string userName)
+        {
+            var protest = new Protesto { ResistanceId = resistance.Id, Creator = userName, CreateDate = DateTime.Now };
+            await ApplyProtestAsync(protest, p);
+            db.Protesto.Add(protest);
+            await db.SaveChangesAsync();
+            await UpdateStartDateAsync(resistance);
+            await db.SaveChangesAsync();
+            return protest.Id;
+        }
+
+        /// <summary>Copies the form's case part onto the entity and replaces its reasons, corporations and employment types.</summary>
+        public async Task ApplyCaseAsync(Resistance r, CaseInput c, IReadOnlyList<int> reasonIds, IReadOnlyList<int> corporationIds)
+        {
+            var againstCompany = c.TargetType == ResistanceTargetType.Company;
+            r.Name = c.Name;
+            r.Description = c.Description;
+            r.CategoryId = c.CategoryId!.Value;
+            r.ResistanceTargetType = c.TargetType!.Value;
+            r.CompanyId = againstCompany ? c.CompanyId : null;
+            r.MainCompanyId = againstCompany && c.IsOutsource ? c.MainCompanyId : null;
+            r.CorporationId = againstCompany ? null : c.TargetCorporationId;
+            r.DevelopRight = c.DevelopRight!.Value;
+            r.EmployeeCountNumber = c.EmployeeCount;
+            r.EmployeeCountId = c.EmployeeCountRangeId;
+            r.TradeUnionAuthorityId = c.TradeUnionAuthorityId;
+            r.TradeUnionId = c.TradeUnionId;
+            r.FiredEmployeeCountByProtesto = c.FiredEmployeeCount ?? 0;
+            r.ResistanceResult = c.Result!.Value;
+
+            if (r.Id != 0)
+            {
+                db.ResistanceResistanceReason.RemoveRange(await db.ResistanceResistanceReason.Where(x => x.ResistanceId == r.Id).ToListAsync());
+                db.ResistanceCorporation.RemoveRange(await db.ResistanceCorporation.Where(x => x.ResistanceId == r.Id).ToListAsync());
+                db.ResistanceEmploymentType.RemoveRange(await db.ResistanceEmploymentType.Where(x => x.ResistanceId == r.Id).ToListAsync());
+            }
+            r.ResistanceResistanceReasons = reasonIds.Distinct().Select(id => new ResistanceResistanceReason { ResistanceReasonId = id }).ToList();
+            r.ResistanceCorporations = corporationIds.Distinct().Select(id => new ResistanceCorporation { CorporationId = id }).ToList();
+            r.ResistanceEmploymentTypes = c.EmploymentTypeIds.Distinct().Select(id => new ResistanceEmploymentType { EmploymentTypeId = id }).ToList();
+            await EnsureOutsourceRelationAsync(r.CompanyId, r.MainCompanyId);
+        }
+
         /// <summary>The case's start date follows its earliest protest (as in the old code).</summary>
         public async Task UpdateStartDateAsync(Resistance resistance)
         {
@@ -94,33 +159,11 @@ namespace RS.MVC.Features.Cases
 
             await using var transaction = await db.Database.BeginTransactionAsync();
             var c = command.Case;
-            var againstCompany = c.TargetType == ResistanceTargetType.Company;
-            r.Name = c.Name;
-            r.Description = c.Description;
-            r.CategoryId = c.CategoryId!.Value;
-            r.ResistanceTargetType = c.TargetType!.Value;
-            r.CompanyId = againstCompany ? c.CompanyId : null;
-            r.MainCompanyId = againstCompany && c.IsOutsource ? c.MainCompanyId : null;
-            r.CorporationId = againstCompany ? null : c.TargetCorporationId;
-            r.DevelopRight = c.DevelopRight!.Value;
-            r.EmployeeCountNumber = c.EmployeeCount;
-            r.EmployeeCountId = c.EmployeeCountRangeId;
-            r.TradeUnionAuthorityId = c.TradeUnionAuthorityId;
-            r.TradeUnionId = c.TradeUnionId;
-            r.FiredEmployeeCountByProtesto = c.FiredEmployeeCount ?? 0;
-            r.ResistanceResult = c.Result!.Value;
-            r.Updater = command.UserName;
-            r.UpdateDate = DateTime.Now;
-
             var reasonIds = await lists.ReasonIdsAsync(c.ReasonIds, c.NewReasonNames);
             var corporationIds = await lists.CorporationIdsAsync(c.CorporationIds, c.NewCorporationNames);
-            db.ResistanceResistanceReason.RemoveRange(await db.ResistanceResistanceReason.Where(x => x.ResistanceId == r.Id).ToListAsync());
-            db.ResistanceCorporation.RemoveRange(await db.ResistanceCorporation.Where(x => x.ResistanceId == r.Id).ToListAsync());
-            db.ResistanceEmploymentType.RemoveRange(await db.ResistanceEmploymentType.Where(x => x.ResistanceId == r.Id).ToListAsync());
-            db.ResistanceResistanceReason.AddRange(reasonIds.Select(id => new ResistanceResistanceReason { ResistanceId = r.Id, ResistanceReasonId = id }));
-            db.ResistanceCorporation.AddRange(corporationIds.Select(id => new ResistanceCorporation { ResistanceId = r.Id, CorporationId = id }));
-            db.ResistanceEmploymentType.AddRange(c.EmploymentTypeIds.Distinct().Select(id => new ResistanceEmploymentType { ResistanceId = r.Id, EmploymentTypeId = id }));
-            await writer.EnsureOutsourceRelationAsync(r.CompanyId, r.MainCompanyId);
+            await writer.ApplyCaseAsync(r, c, reasonIds, corporationIds);
+            r.Updater = command.UserName;
+            r.UpdateDate = DateTime.Now;
 
             await db.SaveChangesAsync();
             await transaction.CommitAsync();

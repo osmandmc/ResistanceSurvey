@@ -1,3 +1,4 @@
+using RS.COMMON.Constants;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace RS.MVC.Features.Review
     public class GetCaseFormOptionsHandler(RSDBContext db)
     {
         /// <summary>Corporation type meaning "union": selecting one shows the union-authority field.</summary>
-        public const int TradeUnionCorporationTypeId = 1;
+        public const int TradeUnionCorporationTypeId = KnownListIds.TradeUnionCorporationType;
 
         public async Task<CaseFormOptions> Handle(GetCaseFormOptionsQuery _) => new(
             Categories: await db.Category.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),

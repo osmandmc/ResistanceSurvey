@@ -8,7 +8,7 @@ Big picture
 
 - ASP.NET Core MVC app with EF Core for the data access layer (`RS.EF/RSDBContext.cs`). The legacy `RS.DAL` project has been removed; rely on EF and application services instead of Dapper helpers.
 - Frontend: `RS.Web` (Vue 3 + TypeScript + Naive UI) served at `/app` from `wwwroot/rsweb`; the API is under `/api` (controllers in `RS.MVC/Controllers`, use cases in `RS.MVC/Features`). The old Razor pages are only in the `legacy` branch.
-- Services: application-level services live under `RS.MVC/Applications` (e.g., `ResistanceApplication.cs`) and are registered in `RS.MVC/Program.cs` as scoped services.
+- Use cases: one handler per use case under `RS.MVC/Features/<area>` (classes ending in `Handler` are registered automatically by `AddFeatureHandlers`); no MediatR. Cases and protests are saved through `CaseWriter` (`Features/Cases/CaseCommands.cs`). `RS.MVC/Applications` holds only the pipeline client, sign-in users and the test-database migrator.
 
 How the pieces talk
 
@@ -27,22 +27,22 @@ Build / run / CI
 
 Conventions & patterns to follow
 
-- Dependency registration: application services are registered as scoped in `Program.cs` / `Startup.cs`. Follow this pattern for new services.
-- DTOs and ViewModels live under `RS.COMMON/DTO` and `RS.MVC/Models` respectively. Keep mapping and shape changes local to `RS.MVC/Applications`.
+- Dependency registration: handlers are picked up automatically; shared services are registered as scoped in `Program.cs`.
+- Request and response shapes are records next to their handler (or in `RS.MVC/Models` when shared); requests carry ids only, never entities.
 - Soft-delete: many entities use a `Deleted` boolean rather than removing rows. Preserve and respect this flag when querying (most queries filter with !Deleted).
-- Named lookups: simple lookup tables (City, District, Category, etc.) are pulled through the application layer; check `ResistanceApplication` helpers before adding direct queries.
-- DB changes: `RS.EF` contains the DbContext and entity definitions. There is no migrations folder in the repo — coordinate schema changes with maintainers; for local work use EF migrations aligned to the connection string.
+- Lists (corporations, reasons, protest types …): typed-in new values are resolved by `ListValueResolver` and kept clean in Tanımlar (`Features/Definitions`).
+- DB changes: `RS.EF` holds the DbContext and migrations (`RS.EF/Data/Migrations`, starting from `Baseline`). Every model change needs a migration (`dotnet ef migrations add … --project RS.EF --startup-project RS.EF`); `SchemaTests` fails otherwise. Text columns use `Turkish_CI_AS`; only an owner (case, protest) cascades on delete.
 
 Testing and safety
 
-- There are no automated unit tests in the repo. When adding tests, prefer xUnit and put them under a new test project following the solution conventions.
-- Avoid exposing secrets: `appsettings.development.json` currently contains a connection string; do not hardcode new credentials in this repo.
+- Tests: xUnit in `RS.Tests` (EF in-memory provider; SQL translation checked with `ToQueryString` against the SQL Server provider). Run `dotnet test RS.Tests`.
+- Avoid exposing secrets: the repository is public; secrets come from user-secrets locally and app settings in Azure.
 
 Where to look for examples
 
-- Application service patterns and entity mappings: `RS.MVC/Applications/ResistanceApplication.cs` (complex business logic, binding helper methods like BindCorporations).
+- Use cases: `RS.MVC/Features/` (e.g. `Review/CreateCaseFromArticle.cs`, `Cases/CaseCommands.cs`, `Definitions/MergeDefinitions.cs`).
 - DbContext and model registrations: `RS.EF/RSDBContext.cs` (DbSet list and OnModelCreating example).
-- Startup & runtime wiring: `RS.MVC/Program.cs` and `RS.MVC/Startup.cs`.
+- Startup & runtime wiring: `RS.MVC/Program.cs`.
 
 Quick tips for edits
 

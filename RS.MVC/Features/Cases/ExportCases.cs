@@ -1,3 +1,4 @@
+using RS.COMMON.Constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace RS.MVC.Features.Cases
             ("Kalkınma Hakkı", p => p.Resistance.DevelopRight ? "EVET" : "HAYIR"),
             ("Çalışan Sayısı", p => p.Resistance.EmployeeCount?.Name ?? ""),
             ("Çalışan Sayısı (Sayısal)", p => p.Resistance.EmployeeCountNumber),
-            ("Sendika Var mı", p => p.Resistance.ResistanceCorporations.Any(s => s.Corporation.CorporationTypeId == 1) ? "EVET" : "HAYIR"),
+            ("Sendika Var mı", p => p.Resistance.ResistanceCorporations.Any(s => s.Corporation.CorporationTypeId == KnownListIds.TradeUnionCorporationType) ? "EVET" : "HAYIR"),
             ("Sendika Otoritesi", p => p.Resistance.TradeUnionAuthority?.Name ?? ""),
             ("Direniş Nedenleri", p => string.Join("; ", p.Resistance.ResistanceResistanceReasons.Select(x => x.ResistanceReason.Name))),
             ("Kuruluşlar", p => string.Join("; ", p.Resistance.ResistanceCorporations?.Select(x => x.Corporation.Name) ?? NoNames)),

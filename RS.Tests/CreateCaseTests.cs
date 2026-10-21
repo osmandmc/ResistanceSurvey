@@ -15,7 +15,7 @@ public class CreateCaseTests
         .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
         .Options);
 
-    private CreateCaseHandler Handler() => new(_db, new ResistanceApplication(_db), new ListValueResolver(_db));
+    private CreateCaseHandler Handler() => new(_db, new CaseWriter(_db), new ListValueResolver(_db));
 
     [Fact]
     public async Task ACaseWithoutAnArticleGetsItsProtestAndNoArticle()

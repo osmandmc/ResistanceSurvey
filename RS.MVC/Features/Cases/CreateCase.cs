@@ -10,7 +10,7 @@ namespace RS.MVC.Features.Cases
     public record CreateCaseCommand(CaseInput Case, ProtestInput Protest, string UserName);
 
     /// <summary>Same rules and same save path as creating a case from an article, minus the article.</summary>
-    public class CreateCaseHandler(RSDBContext db, IResistanceApplication resistances, ListValueResolver lists)
+    public class CreateCaseHandler(RSDBContext db, CaseWriter writer, ListValueResolver lists)
     {
         public async Task<CaseCommandResult> Handle(CreateCaseCommand command)
         {
@@ -21,7 +21,7 @@ namespace RS.MVC.Features.Cases
             await using var transaction = await db.Database.BeginTransactionAsync();
             var reasonIds = await lists.ReasonIdsAsync(command.Case.ReasonIds, command.Case.NewReasonNames);
             var corporationIds = await lists.CorporationIdsAsync(command.Case.CorporationIds, command.Case.NewCorporationNames);
-            var id = resistances.Create(CaseMapping.ToResistanceModel(command.Case, command.Protest, null, command.UserName, reasonIds, corporationIds));
+            var id = await writer.CreateCaseAsync(command.Case, command.Protest, command.UserName, reasonIds, corporationIds);
             await transaction.CommitAsync();
             return CaseCommandResult.Ok(id);
         }
