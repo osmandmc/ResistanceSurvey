@@ -23,6 +23,9 @@ namespace RS.MVC.Applications
         /// <summary>Counts for the last <paramref name="days"/> days (1–31).</summary>
         Task<PipelineMetrics> GetMetricsAsync(int days);
 
+        /// <summary>Reads the sources' feeds now, as the pipeline's timer does.</summary>
+        Task<PipelineCollectResponse> CollectFeedsAsync();
+
         /// <summary>Safe to repeat; the latest decision wins. Throws HttpRequestException when the pipeline cannot be reached.</summary>
         Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome);
     }
@@ -88,6 +91,13 @@ namespace RS.MVC.Applications
             var response = await _http.GetAsync("api/metrics?days=" + days);
             await EnsureSuccessAsync(response);
             return await response.Content.ReadFromJsonAsync<PipelineMetrics>();
+        }
+
+        public async Task<PipelineCollectResponse> CollectFeedsAsync()
+        {
+            var response = await _http.PostAsync("api/collect", null);
+            await EnsureSuccessAsync(response);
+            return await response.Content.ReadFromJsonAsync<PipelineCollectResponse>();
         }
 
         public async Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome)

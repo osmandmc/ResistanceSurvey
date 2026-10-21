@@ -30,4 +30,18 @@ public class StatusTests
         Assert.Equal((5, 1, 3, "Collector"), (evrensel.Received, evrensel.Failed, evrensel.Open, evrensel.LastReceivedOrigin));
         Assert.Equal(("Evrensel", "Fetched", "HTTP 404"), (page.RecentFailures[0].SourceName, page.RecentFailures[0].Stage, page.RecentFailures[0].Reason));
     }
+
+    [Fact]
+    public async Task CollectingNowReportsEachFeedWithItsName()
+    {
+        _pipeline.Collected = new PipelineCollectResponse([
+            new PipelineFeedRun("evrensel", 100, 97, 3, 0, null!),
+            new PipelineFeedRun("kizilbayrak", 0, 0, 0, 0, "Feed answered HTTP 503."),
+        ]);
+
+        var feeds = await new CollectFeedsHandler(_pipeline).Handle();
+
+        Assert.Equal(new CollectedFeed("evrensel", "Evrensel", 100, 97, 3, 0, null!), feeds[0]);
+        Assert.Equal(("Kızılbayrak", "Feed answered HTTP 503."), (feeds[1].SourceName, feeds[1].Error));
+    }
 }

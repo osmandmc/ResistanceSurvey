@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ namespace RS.MVC.Controllers
     [ApiController]
     [Route("api/status")]
     [Authorize]
-    public class StatusController(GetStatusHandler getStatus) : ControllerBase
+    public class StatusController(GetStatusHandler getStatus, CollectFeedsHandler collectFeeds) : ControllerBase
     {
         /// <summary>GET /api/status?days=14 (1–31).</summary>
         [HttpGet]
@@ -20,5 +21,9 @@ namespace RS.MVC.Controllers
                 return BadRequest(new { error = $"'days' is a number from 1 to {GetStatusHandler.MaxDays}" });
             return await getStatus.Handle(days ?? GetStatusHandler.DefaultDays);
         }
+    
+        /// <summary>POST /api/status/collect — "Şimdi topla": the pipeline reads the feeds now; one result per feed.</summary>
+        [HttpPost("collect")]
+        public async Task<IReadOnlyList<CollectedFeed>> Collect() => await collectFeeds.Handle();
     }
 }

@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { NAlert, NButton, NFormItem, NSelect, NSpin } from 'naive-ui'
 import { errorMessage } from '@/api'
 import { formatDate, formatDateTime } from '@/format'
-import { getStatus, type StatusPage, type StatusSource } from '@/statusApi'
+import { collectFeeds, getStatus, type CollectedFeed, type StatusPage, type StatusSource } from '@/statusApi'
 
 const days = ref(14)
 const dayOptions = [
@@ -15,6 +15,25 @@ const dayOptions = [
 const status = ref<StatusPage | null>(null)
 const loading = ref(false)
 const loadError = ref('')
+
+// "Şimdi topla": the pipeline reads the feeds now instead of at its next two-hourly run.
+const collecting = ref(false)
+const collected = ref<CollectedFeed[] | null>(null)
+const collectError = ref('')
+
+async function collectNow() {
+  collecting.value = true
+  collected.value = null
+  collectError.value = ''
+  try {
+    collected.value = await collectFeeds()
+    await load()
+  } catch (error) {
+    collectError.value = errorMessage(error, 'Kaynaklar okunamadı.')
+  } finally {
+    collecting.value = false
+  }
+}
 
 async function load() {
   loading.value = true
@@ -71,10 +90,25 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
       <h1 class="heading">Durum Paneli</h1>
       <p class="description">Haber işleme hattına gelen haberler ve onlara ne olduğu, kaynak kaynak ve gün gün.</p>
     </div>
-    <n-form-item label="Dönem" label-placement="top" :show-feedback="false">
-      <n-select v-model:value="days" :options="dayOptions" class="period-select" />
-    </n-form-item>
+    <div class="head-actions">
+      <n-button :loading="collecting" @click="collectNow">Şimdi topla</n-button>
+      <n-form-item label="Dönem" label-placement="top" :show-feedback="false">
+        <n-select v-model:value="days" :options="dayOptions" class="period-select" />
+      </n-form-item>
+    </div>
   </div>
+
+  <n-alert v-if="collectError" type="error" :show-icon="false" class="collect-result" closable @close="collectError = ''">{{ collectError }}</n-alert>
+  <n-alert v-else-if="collected" type="info" :show-icon="false" class="collect-result" closable @close="collected = null">
+    <ul class="collect-list">
+      <li v-for="feed in collected" :key="feed.sourceId">
+        <strong>{{ feed.sourceName }}:</strong>
+        <template v-if="feed.error"> okunamadı ({{ feed.error }})</template>
+        <template v-else> beslemede {{ feed.found }} haber, {{ feed.accepted }} yeni, {{ feed.duplicate }} zaten vardı<template v-if="feed.rejected">, {{ feed.rejected }} reddedildi</template>.</template>
+      </li>
+    </ul>
+    <p v-if="collected.some((f) => f.accepted > 0)" class="collect-next">Yeni haberler okunduktan sonra <router-link to="/inbox">Gelen Kutusu’nda</router-link>.</p>
+  </n-alert>
 
   <div v-if="loading && !status" class="state"><n-spin /></div>
 
@@ -184,6 +218,21 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
   margin: 6px 0 0;
   color: var(--rs-muted);
   font-size: 16px;
+}
+.head-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+.collect-result {
+  margin-bottom: 16px;
+}
+.collect-list {
+  margin: 0;
+  padding-left: 18px;
+}
+.collect-next {
+  margin: 6px 0 0;
 }
 .period-select {
   min-width: 160px;
