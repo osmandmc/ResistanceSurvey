@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RS.EF;
@@ -69,6 +70,7 @@ namespace RS.MVC.Features.Review
 
     public record CheckAiAnswerCommand(string Answer);
 
+    [JsonConverter(typeof(JsonStringEnumConverter<AiItemStatus>))]
     public enum AiItemStatus
     {
         /// <summary>Found as written.</summary>

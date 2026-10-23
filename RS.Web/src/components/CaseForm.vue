@@ -16,6 +16,11 @@ const props = defineProps<{
   mainCompanyName?: string | null
   /** The duplicate warning, for a new case only (an existing case would find itself). */
   warnAboutExistingCases?: boolean
+  /** Fields still holding what "AI ile doldur" put there: marked "AI" so the researcher checks them. */
+  aiFields?: string[]
+  /** Companies the AI named that are not registered: offered as "add" under the pickers. */
+  suggestedCompanyName?: string | null
+  suggestedMainCompanyName?: string | null
 }>()
 
 const value = defineModel<CaseFormValue>({ required: true })
@@ -79,6 +84,8 @@ watch(
   },
 )
 
+const ai = (field: string) => (props.aiFields?.includes(field) ? 'ai' : undefined)
+
 function error(field: string) {
   return props.errors[`case.${field}`]
 }
@@ -95,29 +102,30 @@ function status(field: string) {
         <n-input v-model:value="value.name" placeholder="Örn. Örnek Tekstil işçilerinin ücret direnişi" />
       </n-form-item>
 
-      <n-form-item label="Kısa Açıklama" label-placement="top" class="wide" required :validation-status="status('description')" :feedback="error('description')">
+      <n-form-item :class="ai('description')" label="Kısa Açıklama" label-placement="top" class="wide" required :validation-status="status('description')" :feedback="error('description')">
         <n-input v-model:value="value.description" type="textarea" :autosize="{ minRows: 3, maxRows: 8 }" />
       </n-form-item>
 
-      <n-form-item label="Vaka Niteliği" label-placement="top" required :validation-status="status('categoryId')" :feedback="error('categoryId')">
+      <n-form-item :class="ai('categoryId')" label="Vaka Niteliği" label-placement="top" required :validation-status="status('categoryId')" :feedback="error('categoryId')">
         <n-select v-model:value="value.categoryId" :options="toOptions(options.categories)" filterable placeholder="Seçiniz" />
       </n-form-item>
 
-      <n-form-item label="Kime Karşı" label-placement="top" required :validation-status="status('targetType')" :feedback="error('targetType')">
+      <n-form-item :class="ai('targetType')" label="Kime Karşı" label-placement="top" required :validation-status="status('targetType')" :feedback="error('targetType')">
         <n-select v-model:value="value.targetType" :options="targetOptions" placeholder="Seçiniz" />
       </n-form-item>
 
       <template v-if="againstCompany">
-        <n-form-item label="Şirket Taşeron mu?" label-placement="top" :show-feedback="false">
+        <n-form-item :class="ai('isOutsource')" label="Şirket Taşeron mu?" label-placement="top" :show-feedback="false">
           <n-radio-group v-model:value="value.isOutsource" name="is-outsource">
             <n-radio-button v-for="o in yesNo" :key="o.label" :value="o.value" :label="o.label" />
           </n-radio-group>
         </n-form-item>
-        <n-form-item label="Şirket" label-placement="top" class="wide" :validation-status="status('companyId')" :feedback="error('companyId')">
+        <n-form-item :class="ai('companyId')" label="Şirket" label-placement="top" class="wide" :validation-status="status('companyId')" :feedback="error('companyId')">
           <company-picker
             v-model="value.companyId"
             input-id="company"
             :selected-name="props.companyName"
+            :suggested-name="props.suggestedCompanyName"
             add-label="Şirket Ekle"
             :company-types="options.companyTypes"
             :company-scales="options.companyScales"
@@ -139,11 +147,12 @@ function status(field: string) {
             </li>
           </ul>
         </n-alert>
-        <n-form-item v-if="value.isOutsource" label="Ana Şirket" label-placement="top" class="wide" required :validation-status="status('mainCompanyId')" :feedback="error('mainCompanyId')">
+        <n-form-item v-if="value.isOutsource" :class="ai('mainCompanyId')" label="Ana Şirket" label-placement="top" class="wide" required :validation-status="status('mainCompanyId')" :feedback="error('mainCompanyId')">
           <company-picker
             v-model="value.mainCompanyId"
             input-id="main-company"
             :selected-name="props.mainCompanyName"
+            :suggested-name="props.suggestedMainCompanyName"
             add-label="Ana Şirket Ekle"
             :company-types="options.companyTypes"
             :company-scales="options.companyScales"
@@ -153,11 +162,11 @@ function status(field: string) {
         </n-form-item>
       </template>
 
-      <n-form-item v-if="againstCorporation" label="Hedef Kurum" label-placement="top" class="wide" :show-feedback="false">
+      <n-form-item v-if="againstCorporation" :class="ai('targetCorporationId')" label="Hedef Kurum" label-placement="top" class="wide" :show-feedback="false">
         <n-select v-model:value="value.targetCorporationId" :options="toOptions(options.corporations)" filterable clearable placeholder="Seçiniz" />
       </n-form-item>
 
-      <n-form-item label="Vaka Nedeni" label-placement="top" class="wide" required :validation-status="status('reasonIds')" :feedback="error('reasonIds') || 'Listede yoksa yazıp Enter’a basarak ekleyebilirsiniz.'">
+      <n-form-item :class="ai('reasons')" label="Vaka Nedeni" label-placement="top" class="wide" required :validation-status="status('reasonIds')" :feedback="error('reasonIds') || 'Listede yoksa yazıp Enter’a basarak ekleyebilirsiniz.'">
         <n-select v-model:value="value.reasons" :options="toOptions(options.reasons)" multiple filterable tag placeholder="Seçiniz veya yazın" />
       </n-form-item>
 
@@ -171,7 +180,7 @@ function status(field: string) {
         <n-select v-model:value="value.result" :options="resultOptions" />
       </n-form-item>
 
-      <n-form-item label="İş Yerindeki İşçi Sayısı (Tam)" label-placement="top" :show-feedback="false">
+      <n-form-item :class="ai('employeeCount')" label="İş Yerindeki İşçi Sayısı (Tam)" label-placement="top" :show-feedback="false">
         <n-input-number v-model:value="value.employeeCount" :min="0" clearable class="full" />
       </n-form-item>
 
@@ -179,7 +188,7 @@ function status(field: string) {
         <n-select v-model:value="value.employeeCountRangeId" :options="toOptions(options.employeeCountRanges)" clearable placeholder="Seçiniz" />
       </n-form-item>
 
-      <n-form-item label="Kurumsallık" label-placement="top" class="wide" required :validation-status="status('corporationIds')" :feedback="error('corporationIds') || 'Listede yoksa yazıp Enter’a basarak ekleyebilirsiniz.'">
+      <n-form-item :class="ai('corporations')" label="Kurumsallık" label-placement="top" class="wide" required :validation-status="status('corporationIds')" :feedback="error('corporationIds') || 'Listede yoksa yazıp Enter’a basarak ekleyebilirsiniz.'">
         <n-select v-model:value="value.corporations" :options="toOptions(options.corporations)" multiple filterable tag placeholder="Seçiniz veya yazın" />
       </n-form-item>
 
@@ -191,11 +200,11 @@ function status(field: string) {
         <n-select v-model:value="value.tradeUnionId" :options="toOptions(options.tradeUnions)" filterable clearable placeholder="Seçiniz" />
       </n-form-item>
 
-      <n-form-item label="İstihdam Türü" label-placement="top" class="wide" required :validation-status="status('employmentTypeIds')" :feedback="error('employmentTypeIds')">
+      <n-form-item :class="ai('employmentTypeIds')" label="İstihdam Türü" label-placement="top" class="wide" required :validation-status="status('employmentTypeIds')" :feedback="error('employmentTypeIds')">
         <n-select v-model:value="value.employmentTypeIds" :options="toOptions(options.employmentTypes)" multiple filterable placeholder="Seçiniz" />
       </n-form-item>
 
-      <n-form-item label="Mücadele Ettiği için İşten Atılan İşçi Sayısı" label-placement="top" :show-feedback="false">
+      <n-form-item :class="ai('firedEmployeeCount')" label="Mücadele Ettiği için İşten Atılan İşçi Sayısı" label-placement="top" :show-feedback="false">
         <n-input-number v-model:value="value.firedEmployeeCount" :min="0" clearable class="full" />
       </n-form-item>
     </div>
@@ -203,6 +212,18 @@ function status(field: string) {
 </template>
 
 <style scoped>
+/* "AI" after the label of a field filled by "AI ile doldur" and not changed since. */
+.ai :deep(.n-form-item-label__text)::after {
+  content: 'AI';
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: #6d4bc4;
+}
 .section {
   border: 0;
   border-top: 1px solid var(--rs-border);
