@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { NAlert, NButton, NInput, NModal, NSpin, NStep, NSteps, NTag } from 'naive-ui'
 import { errorMessage } from '@/api'
-import { checkAiAnswer, getAiPrompt, type AiCheckResult, type AiItemStatus, type AiPrompt } from '@/aiFillApi'
+import { checkAiAnswer, getAiPrompt, type AiCheckResult, type AiItemStatus, type AiPrompt, type AiUse } from '@/aiFillApi'
 
 /**
  * "AI ile doldur" (R19): copy the prompt into your own AI chat, paste its answer, see what the app makes of it, then
@@ -14,6 +14,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+  /** An answer was read: kept by the page and sent with the decision (R19c). */
+  checked: [use: AiUse]
   apply: [result: AiCheckResult]
   /** The AI found the article not relevant. */
   notRelevant: [reason: string | null]
@@ -81,6 +83,7 @@ async function check() {
   checkError.value = ''
   try {
     const checked = await checkAiAnswer(answer.value)
+    emit('checked', { answer: answer.value, promptVersion: prompt.value?.version ?? null, applied: false })
     if (!checked.relevant) {
       emit('notRelevant', checked.relevanceReason)
       return

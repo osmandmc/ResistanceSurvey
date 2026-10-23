@@ -106,9 +106,9 @@ namespace RS.MVC.Controllers
             var userName = User.Identity?.Name;
             var result = request?.Action switch
             {
-                ReviewAction.NewCase => await createCase.Handle(new CreateCaseFromArticleCommand(articleId, request.Case, request.Protest, userName)),
-                ReviewAction.AddProtest => await addProtest.Handle(new AddProtestFromArticleCommand(articleId, request.ResistanceId, request.Protest, userName)),
-                ReviewAction.LinkOnly => await linkToCase.Handle(new LinkArticleToCaseCommand(articleId, request.ResistanceId)),
+                ReviewAction.NewCase => await createCase.Handle(new CreateCaseFromArticleCommand(articleId, request.Case, request.Protest, userName, request.Ai)),
+                ReviewAction.AddProtest => await addProtest.Handle(new AddProtestFromArticleCommand(articleId, request.ResistanceId, request.Protest, userName, request.Ai)),
+                ReviewAction.LinkOnly => await linkToCase.Handle(new LinkArticleToCaseCommand(articleId, request.ResistanceId, userName, request.Ai)),
                 _ => ReviewSaveResult.Invalid(new Dictionary<string, string> { ["action"] = "Lütfen bir işlem seçiniz." }),
             };
             return result.Status switch

@@ -1,10 +1,11 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using RS.COMMON.Entities;
 using RS.EF;
 using RS.MVC.Features.Articles;
 using RS.MVC.Features.Inbox;
+using RS.MVC.Features.Review;
 using RS.MVC.Models;
 using static RS.COMMON.Constants.Enums;
 
@@ -26,7 +27,7 @@ public class InboxTests
         var settings = Options.Create(new PipelineSettings { Sources = new() { [1] = "evrensel" } });
         var outcomes = new OutcomeSender(_pipeline, NullLogger<OutcomeSender>.Instance);
         _getInbox = new GetInboxHandler(_db, _pipeline, outcomes);
-        _dismiss = new DismissArticleHandler(_db, _pipeline, new ArticleNewsService(_db, settings), outcomes);
+        _dismiss = new DismissArticleHandler(_db, _pipeline, new ArticleNewsService(_db, settings), outcomes, new AiSuggestionRecorder(_db, new CheckAiAnswerHandler(_db)));
         _pipeline.Add("a1", "https://evrensel.net/haber/1/x", "Tekstil işçileri iş bıraktı", Nov3);
         _pipeline.Add("a2", "https://evrensel.net/haber/2/y", "Belediye işçileri eylemde", Nov3);
     }
@@ -151,4 +152,22 @@ public class InboxTests
     [Fact]
     public void AMalformedMonthIsRejected() =>
         Assert.Throws<FormatException>(() => GetInboxHandler.MonthRange("11/2026"));
+
+    [Fact]
+    public async Task DismissSendsTheKindWithTheReasonAndKeepsTheAiAnswer()
+    {
+        var ai = new AiUse { Answer = """{"relevant": false, "relevance_reason": "Eylem yok."}""", PromptVersion = "v2" };
+
+        var result = await _dismiss.Handle(new DismissArticleCommand("a1", " Önceki haberle aynı ", DismissKind.AlreadyRecorded, ai, "admin"));
+        await _dismiss.Handle(new DismissArticleCommand("a2", null, DismissKind.NotLabour));
+
+        Assert.Equal(DismissResult.Dismissed, result);
+        Assert.Equal(
+            [new PipelineOutcomeRequest("Dismissed", null, "Zaten kayıtlı / tekrar haber: Önceki haberle aynı"), new PipelineOutcomeRequest("Dismissed", null, "Emek hareketiyle ilgisiz")],
+            _pipeline.Outcomes.Select(o => o.Outcome));
+        var kept = Assert.Single(_db.AiSuggestion);
+        Assert.Equal((AiDecision.Dismissed, DismissKind.AlreadyRecorded, false, false, (string?)null, (int?)null),
+            (kept.Decision, kept.DismissKind, kept.Relevant, kept.Applied, kept.Suggested, kept.ResistanceId));
+        Assert.Equal(_db.News.Single(n => n.ArticleId == "a1").Id, kept.NewsId);
+    }
 }

@@ -1,4 +1,7 @@
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using RS.COMMON.Entities;
+using RS.MVC.Features.Review;
 using Microsoft.EntityFrameworkCore;
 using RS.EF;
 using RS.MVC.Applications;
@@ -8,8 +11,11 @@ using static RS.COMMON.Constants.Enums;
 
 namespace RS.MVC.Features.Inbox
 {
-    /// <summary>Mark an inbox article as not relevant, with an optional reason.</summary>
-    public record DismissArticleCommand(string ArticleId, string Reason);
+    /// <summary>
+    /// Mark an inbox article as not relevant: why (<paramref name="Kind"/>, R19c) and optional details; with the AI
+    /// answer checked for it, if any.
+    /// </summary>
+    public record DismissArticleCommand(string ArticleId, string Reason, DismissKind? Kind = null, AiUse Ai = null, string UserName = null);
 
     public enum DismissResult
     {
@@ -25,8 +31,17 @@ namespace RS.MVC.Features.Inbox
     }
 
     /// <summary>Saves the thin News row as Passive (the app's decision), then sends Dismissed to the pipeline.</summary>
-    public class DismissArticleHandler(RSDBContext db, IPipelineClient pipeline, ArticleNewsService articleNews, OutcomeSender outcomes)
+    public class DismissArticleHandler(RSDBContext db, IPipelineClient pipeline, ArticleNewsService articleNews, OutcomeSender outcomes, AiSuggestionRecorder ai)
     {
+        /// <summary>The kinds as researchers see them; sent to the pipeline in front of the reason (shown in Haber Arşivi).</summary>
+        public static readonly IReadOnlyDictionary<DismissKind, string> KindLabels = new Dictionary<DismissKind, string>
+        {
+            [DismissKind.NotLabour] = "Emek hareketiyle ilgisiz",
+            [DismissKind.AlreadyRecorded] = "Zaten kayıtlı / tekrar haber",
+            [DismissKind.OutOfScope] = "Kapsam dışı",
+            [DismissKind.Other] = "Diğer",
+        };
+
         public async Task<DismissResult> Handle(DismissArticleCommand command)
         {
             if (await articleNews.IsHandledAsync(command.ArticleId))
@@ -44,6 +59,7 @@ namespace RS.MVC.Features.Inbox
                 return DismissResult.AlreadyHandled;
             }
             news.Status = Status.Passive;
+            await ai.AddAsync(news, command.Ai, AiDecision.Dismissed, null, null, command.Kind, command.UserName);
 
             try
             {
@@ -58,7 +74,9 @@ namespace RS.MVC.Features.Inbox
                 throw;
             }
 
-            var reason = string.IsNullOrWhiteSpace(command.Reason) ? null : command.Reason.Trim();
+            var details = string.IsNullOrWhiteSpace(command.Reason) ? null : command.Reason.Trim();
+            var kind = command.Kind is { } k && KindLabels.TryGetValue(k, out var label) ? label : null;
+            var reason = kind != null && details != null ? $"{kind}: {details}" : kind ?? details;
             return await outcomes.TrySendAsync(command.ArticleId, new PipelineOutcomeRequest(PipelineOutcomeKind.Dismissed, Reason: reason))
                 ? DismissResult.Dismissed
                 : DismissResult.DismissedOutcomePending;

@@ -4,6 +4,14 @@ import { fromDay, noInterventionTypeId, strikeProtestTypeIds, type ProtestFormVa
 
 // "AI ile doldur" (R19): the prompt to copy, and the pasted answer checked by the server against the lists.
 
+/** An answer the researcher checked, sent with the decision so it is kept beside it (R19c). */
+export interface AiUse {
+  answer: string
+  promptVersion: string | null
+  /** "Forma uygula" was used. */
+  applied: boolean
+}
+
 export interface AiPrompt {
   text: string
   version: string

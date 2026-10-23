@@ -22,6 +22,73 @@ namespace RS.EF.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("RS.COMMON.Entities.AiSuggestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Answer")
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<bool>("Applied")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<int>("Decision")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DismissKind")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NewsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Origin")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<string>("PromptVersion")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<bool>("Relevant")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ResistanceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Saved")
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<string>("Suggested")
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NewsId")
+                        .IsUnique();
+
+                    b.HasIndex("ResistanceId");
+
+                    b.ToTable("AiSuggestion");
+                });
+
             modelBuilder.Entity("RS.COMMON.Entities.Company", b =>
                 {
                     b.Property<int>("Id")
@@ -899,6 +966,24 @@ namespace RS.EF.Data.Migrations
                     b.HasIndex("ResistanceReasonId");
 
                     b.ToTable("ResistanceResistanceReason");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.AiSuggestion", b =>
+                {
+                    b.HasOne("RS.COMMON.Entities.News", "News")
+                        .WithMany()
+                        .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RS.COMMON.Entities.Resistance", "Resistance")
+                        .WithMany()
+                        .HasForeignKey("ResistanceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("News");
+
+                    b.Navigation("Resistance");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.Company", b =>

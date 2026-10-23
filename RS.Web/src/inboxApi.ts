@@ -1,3 +1,4 @@
+import type { AiUse } from './aiFillApi'
 import { api } from './api'
 
 export interface InboxItem {
@@ -28,9 +29,19 @@ export function getInbox(month: string, source: string | null, next: string | nu
   return api<InboxPage>(`/api/inbox?${params}`)
 }
 
-export function dismissArticle(articleId: string, reason: string) {
+/** Why an article is dismissed; matches the server's DismissKind. */
+export const dismissKinds = [
+  { value: 1, label: 'Emek hareketiyle ilgisiz', hint: 'Bir işçi ya da emekçi eylemi anlatmıyor (görüş yazısı, kaza haberi, parti açıklaması …).' },
+  { value: 2, label: 'Zaten kayıtlı / tekrar haber', hint: 'Bu eylem ya da gelişme başka bir haberle kaydedildi.' },
+  { value: 3, label: 'Kapsam dışı', hint: 'Emek haberi, ama ekibin kaydetmediği türden.' },
+  { value: 4, label: 'Diğer', hint: 'Nedenini aşağıya yazın.' },
+] as const
+
+export type DismissKind = (typeof dismissKinds)[number]['value']
+
+export function dismissArticle(articleId: string, reason: string, kind: DismissKind, ai?: AiUse | null) {
   return api<DismissResponse>(`/api/inbox/${encodeURIComponent(articleId)}/dismiss`, {
     method: 'POST',
-    body: JSON.stringify({ reason }),
+    body: JSON.stringify({ reason, kind, ai: ai ?? null }),
   })
 }

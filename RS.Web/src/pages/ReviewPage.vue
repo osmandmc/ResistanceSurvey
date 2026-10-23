@@ -3,7 +3,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSpin, NTag, useMessage } from 'naive-ui'
 import { ApiError, errorMessage } from '@/api'
-import { aiCaseValues, aiProtestValues, unchangedFields, type AiCheckResult } from '@/aiFillApi'
+import { aiCaseValues, aiProtestValues, unchangedFields, type AiCheckResult, type AiUse } from '@/aiFillApi'
 import { emptyCase, toCaseInput, type CaseFormValue } from '@/caseForm'
 import AiFillDialog from '@/components/AiFillDialog.vue'
 import CaseFinder from '@/components/CaseFinder.vue'
@@ -128,6 +128,8 @@ const aiCompanyName = ref<string | null>(null)
 const aiMainCompanyName = ref<string | null>(null)
 /** The AI's reason when it found the article not relevant; the banner offers dismissing it. */
 const aiNotRelevant = ref<string | null>(null)
+/** The last answer checked for this article; sent with the save or the dismissal (R19c). */
+const aiUse = ref<AiUse | null>(null)
 const aiCaseFields = computed(() => unchangedFields(caseValue.value, aiApplied.value?.case ?? null))
 const aiProtestFields = computed(() => unchangedFields(protestValue.value, aiApplied.value?.protest ?? null))
 
@@ -137,6 +139,7 @@ function onAiApply(result: AiCheckResult) {
   caseValue.value = { ...caseValue.value, ...structuredClone(caseValues) }
   protestValue.value = { ...protestValue.value, ...structuredClone(protestValues) }
   aiApplied.value = { case: caseValues, protest: protestValues }
+  if (aiUse.value) aiUse.value = { ...aiUse.value, applied: true }
   aiCompanyName.value = result.case?.newCompanyName ?? null
   aiMainCompanyName.value = result.case?.newMainCompanyName ?? null
   aiNotRelevant.value = null
@@ -151,6 +154,7 @@ function onAiNotRelevant(reason: string | null) {
 }
 
 function clearAi() {
+  aiUse.value = null
   aiApplied.value = null
   aiCompanyName.value = null
   aiMainCompanyName.value = null
@@ -210,11 +214,11 @@ const successText: Record<ReviewAction, string> = {
 function request() {
   switch (action.value) {
     case 'newCase':
-      return { action: action.value, case: toCaseInput(caseValue.value), protest: toProtestInput(protestValue.value) }
+      return { action: action.value, case: toCaseInput(caseValue.value), protest: toProtestInput(protestValue.value), ai: aiUse.value }
     case 'addProtest':
-      return { action: action.value, resistanceId: resistanceId.value, protest: toProtestInput(protestValue.value) }
+      return { action: action.value, resistanceId: resistanceId.value, protest: toProtestInput(protestValue.value), ai: aiUse.value }
     default:
-      return { action: action.value, resistanceId: resistanceId.value }
+      return { action: action.value, resistanceId: resistanceId.value, ai: aiUse.value }
   }
 }
 
@@ -380,8 +384,8 @@ async function onDismissed() {
     </section>
   </div>
 
-  <dismiss-dialog :article="dismissTarget" :suggested-reason="aiNotRelevant" @handled="onDismissed" @close="dismissTarget = null" />
-  <ai-fill-dialog :article-id="aiDialogFor" @apply="onAiApply" @not-relevant="onAiNotRelevant" @close="aiDialogFor = null" />
+  <dismiss-dialog :article="dismissTarget" :suggested-reason="aiNotRelevant" :ai="aiUse" @handled="onDismissed" @close="dismissTarget = null" />
+  <ai-fill-dialog :article-id="aiDialogFor" @checked="aiUse = $event" @apply="onAiApply" @not-relevant="onAiNotRelevant" @close="aiDialogFor = null" />
 </template>
 
 <style scoped>
