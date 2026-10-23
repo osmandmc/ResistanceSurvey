@@ -19,4 +19,9 @@
     <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="9.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- "AI ile doldur" prompt (R19), a copy of the pipeline's docs/extraction/prompt.md. -->
+    <EmbeddedResource Include="Features\Review\AiPrompt.md" LogicalName="AiPrompt.md" />
+  </ItemGroup>
+
 </Project>

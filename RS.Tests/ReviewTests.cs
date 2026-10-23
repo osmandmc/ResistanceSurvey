@@ -1,4 +1,4 @@
-using RS.MVC.Features.Cases;
+﻿using RS.MVC.Features.Cases;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -227,7 +227,8 @@ public class ReviewTests
         var controller = new ReviewController(
             _getArticle, _searchCases, _createCase, _addProtest, _linkToCase,
             new GetCaseFormOptionsHandler(_db), new SearchCompaniesHandler(_db), new CreateCompanyHandler(_db),
-            new SuggestCasesForArticleHandler(_db, _pipeline, _searchCases))
+            new SuggestCasesForArticleHandler(_db, _pipeline, _searchCases),
+            new GetAiPromptHandler(_pipeline, _db), new CheckAiAnswerHandler(_db))
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
         };
