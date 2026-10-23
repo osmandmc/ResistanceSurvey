@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -21,8 +21,33 @@ namespace RS.MVC.Controllers
         GetCaseFormOptionsHandler getFormOptions,
         SearchCompaniesHandler searchCompanies,
         CreateCompanyHandler createCompany,
-        SuggestCasesForArticleHandler suggestCases) : ControllerBase
+        SuggestCasesForArticleHandler suggestCases,
+        GetAiPromptHandler getAiPrompt,
+        CheckAiAnswerHandler checkAiAnswer) : ControllerBase
     {
+        /// <summary>GET /api/review/{articleId}/ai-prompt — "AI ile doldur": the prompt with the article and the lists.</summary>
+        [HttpGet("{articleId}/ai-prompt")]
+        public async Task<ActionResult<AiPrompt>> AiPrompt(string articleId)
+        {
+            var result = await getAiPrompt.Handle(new GetAiPromptQuery(articleId));
+            return result.Status switch
+            {
+                ReviewStatus.Ok => result.Prompt,
+                ReviewStatus.Invalid => BadRequest(new { error = result.Error }),
+                _ => NotFound(new { error = "Haber bulunamadı." }),
+            };
+        }
+
+        public record AiCheckRequest(string Answer);
+
+        /// <summary>POST /api/review/ai-check — the pasted AI answer checked against the lists, as form values.</summary>
+        [HttpPost("ai-check")]
+        public async Task<ActionResult<AiCheckResult>> AiCheck(AiCheckRequest request)
+        {
+            var result = await checkAiAnswer.Handle(new CheckAiAnswerCommand(request?.Answer));
+            return result.Error == null ? result : BadRequest(new { error = result.Error });
+        }
+
         /// <summary>GET /api/review/{articleId}/suggestions — "Olası vakalar": cases of companies named in the article.</summary>
         [HttpGet("{articleId}/suggestions")]
         public async Task<ActionResult<IReadOnlyList<CaseSuggestion>>> Suggestions(string articleId)
