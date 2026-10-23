@@ -8,6 +8,8 @@ import { dismissArticle } from '@/inboxApi'
 const props = defineProps<{
   /** The article to dismiss; null closes the dialog. */
   article: { articleId: string; title: string | null } | null
+  /** A reason to start with (the AI's, from "AI ile doldur"); the researcher can change it. */
+  suggestedReason?: string | null
 }>()
 
 const emit = defineEmits<{
@@ -22,7 +24,7 @@ const dismissing = ref(false)
 
 watch(
   () => props.article,
-  () => (reason.value = ''),
+  () => (reason.value = props.suggestedReason ?? ''),
 )
 
 function close() {

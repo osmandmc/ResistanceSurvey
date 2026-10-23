@@ -16,6 +16,8 @@ const props = defineProps<{
   placeholder?: string
   /** Name of a company chosen elsewhere, so it can be shown before any search found it. */
   selectedName?: string | null
+  /** A name suggested elsewhere (the AI answer) that is not registered: offered as "add", never added on its own. */
+  suggestedName?: string | null
 }>()
 
 const companyId = defineModel<number | null>({ required: true })
@@ -57,8 +59,8 @@ const saving = ref(false)
 const newCompany = ref({ name: '', typeId: null as number | null, scaleId: null as number | null, worklineId: null as number | null })
 const nameError = ref('')
 
-function openAdd() {
-  newCompany.value = { name: '', typeId: null, scaleId: null, worklineId: null }
+function openAdd(name = '') {
+  newCompany.value = { name, typeId: null, scaleId: null, worklineId: null }
   nameError.value = ''
   adding.value = true
 }
@@ -86,21 +88,27 @@ const toOptions = (list: Option[] | undefined) => (list ?? []).map((o) => ({ lab
 </script>
 
 <template>
-  <div class="picker">
-    <n-select
-      v-model:value="companyId"
-      :options="options"
-      :loading="searching"
-      :status="props.status"
-      filterable
-      remote
-      clearable
-      :placeholder="props.placeholder ?? 'Şirket adıyla arayın'"
-      :input-props="{ id: props.inputId }"
-      class="select"
-      @search="search"
-    />
-    <n-button v-if="props.addLabel" @click="openAdd">{{ props.addLabel }}</n-button>
+  <div class="column">
+    <div class="picker">
+      <n-select
+        v-model:value="companyId"
+        :options="options"
+        :loading="searching"
+        :status="props.status"
+        filterable
+        remote
+        clearable
+        :placeholder="props.placeholder ?? 'Şirket adıyla arayın'"
+        :input-props="{ id: props.inputId }"
+        class="select"
+        @search="search"
+      />
+      <n-button v-if="props.addLabel" @click="openAdd()">{{ props.addLabel }}</n-button>
+    </div>
+    <div v-if="props.suggestedName && companyId === null" class="suggested">
+      <span>AI önerisi kayıtlı değil:</span>
+      <n-button size="small" secondary type="primary" @click="openAdd(props.suggestedName)">“{{ props.suggestedName }}” şirketini ekle</n-button>
+    </div>
   </div>
 
   <n-modal
@@ -132,6 +140,9 @@ const toOptions = (list: Option[] | undefined) => (list ?? []).map((o) => ({ lab
 </template>
 
 <style scoped>
+.column {
+  width: 100%;
+}
 .picker {
   display: flex;
   gap: 8px;
@@ -140,6 +151,15 @@ const toOptions = (list: Option[] | undefined) => (list ?? []).map((o) => ({ lab
 .select {
   flex: 1 1 auto;
   min-width: 0;
+}
+.suggested {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--rs-muted);
 }
 .actions {
   display: flex;

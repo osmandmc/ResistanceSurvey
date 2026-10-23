@@ -14,6 +14,8 @@ const props = defineProps<{
   options: CaseFormOptions
   /** Field path ("protest.startDate") → message, from the server. */
   errors: Record<string, string>
+  /** Fields still holding what "AI ile doldur" put there: marked "AI" so the researcher checks them. */
+  aiFields?: string[]
 }>()
 
 const value = defineModel<ProtestFormValue>({ required: true })
@@ -56,6 +58,10 @@ function onCityChange(index: number, cityId: number | null) {
 // The end date may not lie before the start date.
 const isBeforeStart = (timestamp: number) => value.value.startDate !== null && timestamp < value.value.startDate
 
+// The duration is three inputs; it is marked while any of them still holds the AI's value.
+const ai = (field: string) =>
+  (field === 'duration' ? ['durationDays', 'durationHours'] : [field]).some((f) => props.aiFields?.includes(f)) ? 'ai' : undefined
+
 function error(field: string) {
   return props.errors[`protest.${field}`]
 }
@@ -68,11 +74,11 @@ function status(field: string) {
   <fieldset class="section">
     <legend class="section-title">Eylem</legend>
     <div class="grid">
-      <n-form-item label="Eylem Türleri" label-placement="top" class="wide" required :validation-status="status('protestTypeIds')" :feedback="error('protestTypeIds')">
+      <n-form-item :class="ai('protestTypeIds')" label="Eylem Türleri" label-placement="top" class="wide" required :validation-status="status('protestTypeIds')" :feedback="error('protestTypeIds')">
         <n-select v-model:value="value.protestTypeIds" :options="toOptions(options.protestTypes)" multiple filterable placeholder="Seçiniz" />
       </n-form-item>
 
-      <n-form-item v-if="showDuration" label="Eylemin Süresi" label-placement="top" class="wide" :show-feedback="false">
+      <n-form-item v-if="showDuration" :class="ai('duration')" label="Eylemin Süresi" label-placement="top" class="wide" :show-feedback="false">
         <div class="duration">
           <n-input-number v-model:value="value.durationDays" :min="0" placeholder="Gün" clearable aria-label="Gün" />
           <n-input-number v-model:value="value.durationHours" :min="0" :max="23" placeholder="Saat" clearable aria-label="Saat" />
@@ -84,15 +90,15 @@ function status(field: string) {
         <n-input v-model:value="value.simpleDescription" />
       </n-form-item>
 
-      <n-form-item label="Başlangıç Tarihi" label-placement="top" required :validation-status="status('startDate')" :feedback="error('startDate')">
+      <n-form-item :class="ai('startDate')" label="Başlangıç Tarihi" label-placement="top" required :validation-status="status('startDate')" :feedback="error('startDate')">
         <n-date-picker v-model:value="value.startDate" type="date" format="dd.MM.yyyy" clearable class="full" />
       </n-form-item>
 
-      <n-form-item label="Bitiş Tarihi" label-placement="top" :show-feedback="false">
+      <n-form-item :class="ai('endDate')" label="Bitiş Tarihi" label-placement="top" :show-feedback="false">
         <n-date-picker v-model:value="value.endDate" type="date" format="dd.MM.yyyy" clearable :is-date-disabled="isBeforeStart" class="full" />
       </n-form-item>
 
-      <n-form-item label="Eylem Yerleri" label-placement="top" class="wide" required :validation-status="status('placeIds')" :feedback="error('placeIds')">
+      <n-form-item :class="ai('placeIds')" label="Eylem Yerleri" label-placement="top" class="wide" required :validation-status="status('placeIds')" :feedback="error('placeIds')">
         <n-select v-model:value="value.placeIds" :options="toOptions(options.protestPlaces)" multiple filterable placeholder="Seçiniz" />
       </n-form-item>
 
@@ -100,7 +106,7 @@ function status(field: string) {
         <n-select v-model:value="value.genderId" :options="toOptions(options.genders)" placeholder="Seçiniz" />
       </n-form-item>
 
-      <n-form-item label="Lokasyonlar" label-placement="top" class="wide" :validation-status="status('locations')" :feedback="error('locations')">
+      <n-form-item :class="ai('locations')" label="Lokasyonlar" label-placement="top" class="wide" :validation-status="status('locations')" :feedback="error('locations')">
         <div class="locations">
           <div v-for="(location, index) in value.locations" :key="index" class="location">
             <n-select
@@ -126,19 +132,19 @@ function status(field: string) {
         </div>
       </n-form-item>
 
-      <n-form-item label="Eylemdeki İşçi Sayısı (Tam)" label-placement="top" :show-feedback="false">
+      <n-form-item :class="ai('employeeCount')" label="Eylemdeki İşçi Sayısı (Tam)" label-placement="top" :show-feedback="false">
         <n-input-number v-model:value="value.employeeCount" :min="0" clearable class="full" />
       </n-form-item>
 
-      <n-form-item label="Eylemdeki İşçi Sayısı" label-placement="top" :show-feedback="false">
+      <n-form-item :class="ai('employeeCountRangeId')" label="Eylemdeki İşçi Sayısı" label-placement="top" :show-feedback="false">
         <n-select v-model:value="value.employeeCountRangeId" :options="toOptions(options.protestEmployeeCountRanges)" clearable placeholder="Seçiniz" />
       </n-form-item>
 
-      <n-form-item label="Müdahale Tipi" label-placement="top" class="wide" required :validation-status="status('interventionTypeIds')" :feedback="error('interventionTypeIds')">
+      <n-form-item :class="ai('interventionTypeIds')" label="Müdahale Tipi" label-placement="top" class="wide" required :validation-status="status('interventionTypeIds')" :feedback="error('interventionTypeIds')">
         <n-select v-model:value="value.interventionTypeIds" :options="toOptions(options.interventionTypes)" multiple filterable placeholder="Seçiniz" />
       </n-form-item>
 
-      <n-form-item v-if="showCustody" label="Gözaltı Sayısı" label-placement="top" required :validation-status="status('custodyCount')" :feedback="error('custodyCount') || 'Gözaltı yoksa 0 yazın.'">
+      <n-form-item v-if="showCustody" :class="ai('custodyCount')" label="Gözaltı Sayısı" label-placement="top" required :validation-status="status('custodyCount')" :feedback="error('custodyCount') || 'Gözaltı yoksa 0 yazın.'">
         <n-input-number v-model:value="value.custodyCount" :min="0" clearable class="full" />
       </n-form-item>
 
@@ -150,6 +156,18 @@ function status(field: string) {
 </template>
 
 <style scoped>
+/* "AI" after the label of a field filled by "AI ile doldur" and not changed since. */
+.ai :deep(.n-form-item-label__text)::after {
+  content: 'AI';
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: #6d4bc4;
+}
 .section {
   border: 0;
   border-top: 1px solid var(--rs-border);

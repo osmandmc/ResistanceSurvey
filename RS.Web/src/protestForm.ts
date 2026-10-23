@@ -85,7 +85,7 @@ export function toProtestInput(value: ProtestFormValue) {
 }
 
 /** "2026-09-10" or "2026-09-10T00:00:00" → that calendar day at local midnight (what the date picker shows). */
-function fromDay(value: string | null) {
+export function fromDay(value: string | null) {
   const match = value ? /^(\d{4})-(\d{2})-(\d{2})/.exec(value) : null
   return match ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])).getTime() : null
 }

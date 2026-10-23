@@ -3,7 +3,9 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSpin, NTag, useMessage } from 'naive-ui'
 import { ApiError, errorMessage } from '@/api'
+import { aiCaseValues, aiProtestValues, unchangedFields, type AiCheckResult } from '@/aiFillApi'
 import { emptyCase, toCaseInput, type CaseFormValue } from '@/caseForm'
+import AiFillDialog from '@/components/AiFillDialog.vue'
 import CaseFinder from '@/components/CaseFinder.vue'
 import CaseForm from '@/components/CaseForm.vue'
 import ProtestForm from '@/components/ProtestForm.vue'
@@ -119,8 +121,45 @@ function useSuggestion(suggestion: CaseSuggestion, next: 'addProtest' | 'linkOnl
   resistanceId.value = suggestion.case.id
 }
 
+// "AI ile doldur" (R19): what the answer put into the form, so those fields stay marked until changed.
+const aiDialogFor = ref<string | null>(null)
+const aiApplied = ref<{ case: Partial<CaseFormValue>; protest: Partial<ProtestFormValue> } | null>(null)
+const aiCompanyName = ref<string | null>(null)
+const aiMainCompanyName = ref<string | null>(null)
+/** The AI's reason when it found the article not relevant; the banner offers dismissing it. */
+const aiNotRelevant = ref<string | null>(null)
+const aiCaseFields = computed(() => unchangedFields(caseValue.value, aiApplied.value?.case ?? null))
+const aiProtestFields = computed(() => unchangedFields(protestValue.value, aiApplied.value?.protest ?? null))
+
+function onAiApply(result: AiCheckResult) {
+  const caseValues = result.case ? aiCaseValues(result.case) : {}
+  const protestValues = result.protest ? aiProtestValues(result.protest) : {}
+  caseValue.value = { ...caseValue.value, ...structuredClone(caseValues) }
+  protestValue.value = { ...protestValue.value, ...structuredClone(protestValues) }
+  aiApplied.value = { case: caseValues, protest: protestValues }
+  aiCompanyName.value = result.case?.newCompanyName ?? null
+  aiMainCompanyName.value = result.case?.newMainCompanyName ?? null
+  aiNotRelevant.value = null
+  aiDialogFor.value = null
+  if (action.value === 'linkOnly') action.value = 'newCase'
+  message.success('Form dolduruldu. “AI” işaretli alanları kontrol edin; kaydetmeden önce her şeyi değiştirebilirsiniz.')
+}
+
+function onAiNotRelevant(reason: string | null) {
+  aiDialogFor.value = null
+  aiNotRelevant.value = reason ?? 'Gerekçe yazılmadı.'
+}
+
+function clearAi() {
+  aiApplied.value = null
+  aiCompanyName.value = null
+  aiMainCompanyName.value = null
+  aiNotRelevant.value = null
+}
+
 // A new article starts with a clean form.
 watch(articleId, () => {
+  clearAi()
   action.value = 'newCase'
   caseValue.value = emptyCase()
   protestValue.value = emptyProtest()
@@ -273,6 +312,18 @@ async function onDismissed() {
         </ul>
       </div>
 
+      <n-alert v-if="aiNotRelevant" type="warning" :show-icon="false" class="ai-irrelevant">
+        <p class="ai-text"><strong>AI: ilgisiz görünüyor.</strong> {{ aiNotRelevant }}</p>
+        <div class="ai-actions">
+          <n-button size="small" @click="aiNotRelevant = null">Yine de incele</n-button>
+          <n-button size="small" type="primary" @click="dismissTarget = article">İlgisiz olarak işaretle</n-button>
+        </div>
+      </n-alert>
+      <div v-else-if="article.body && needsProtest" class="ai-bar">
+        <p class="ai-text">Formu bir AI sohbetinin yanıtıyla önceden doldurun.</p>
+        <n-button size="small" class="ai-button" @click="aiDialogFor = article.articleId">AI ile doldur</n-button>
+      </div>
+
       <h2 id="decision-heading" class="decision-heading">Önerilen işlem</h2>
 
       <n-radio-group v-model:value="action" name="action" class="choices">
@@ -299,11 +350,20 @@ async function onDismissed() {
           <n-button size="small" class="retry" @click="loadFormOptions">Tekrar dene</n-button>
         </n-alert>
         <div v-else-if="!formOptions" class="state"><n-spin /></div>
-        <case-form v-else v-model="caseValue" :options="formOptions" :errors="fieldErrors" @use-existing="onUseExisting" />
+        <case-form
+          v-else
+          v-model="caseValue"
+          :options="formOptions"
+          :errors="fieldErrors"
+          :ai-fields="aiCaseFields"
+          :suggested-company-name="aiCompanyName"
+          :suggested-main-company-name="aiMainCompanyName"
+          @use-existing="onUseExisting"
+        />
       </template>
 
       <template v-if="needsProtest && formOptions">
-        <protest-form v-model="protestValue" :options="formOptions" :errors="fieldErrors" />
+        <protest-form v-model="protestValue" :options="formOptions" :errors="fieldErrors" :ai-fields="aiProtestFields" />
       </template>
       <n-alert v-else-if="needsProtest && formOptionsError && action === 'addProtest'" type="error" :show-icon="false">
         Form listeleri yüklenemedi.
@@ -320,7 +380,8 @@ async function onDismissed() {
     </section>
   </div>
 
-  <dismiss-dialog :article="dismissTarget" @handled="onDismissed" @close="dismissTarget = null" />
+  <dismiss-dialog :article="dismissTarget" :suggested-reason="aiNotRelevant" @handled="onDismissed" @close="dismissTarget = null" />
+  <ai-fill-dialog :article-id="aiDialogFor" @apply="onAiApply" @not-relevant="onAiNotRelevant" @close="aiDialogFor = null" />
 </template>
 
 <style scoped>
@@ -486,6 +547,41 @@ async function onDismissed() {
 .suggestion-actions {
   display: flex;
   gap: 6px;
+}
+.ai-bar,
+.ai-irrelevant :deep(.n-alert-body__content) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.ai-bar {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #f5f2fc;
+}
+.ai-text {
+  margin: 0;
+  font-size: 14px;
+}
+.ai-actions {
+  display: flex;
+  gap: 8px;
+}
+.ai-button {
+  --n-color: #6d4bc4;
+  --n-color-hover: #7d5dd0;
+  --n-color-pressed: #5c3db0;
+  --n-color-focus: #7d5dd0;
+  --n-text-color: #fff;
+  --n-text-color-hover: #fff;
+  --n-text-color-pressed: #fff;
+  --n-text-color-focus: #fff;
+  --n-border: 1px solid #6d4bc4;
+  --n-border-hover: 1px solid #7d5dd0;
+  --n-border-pressed: 1px solid #5c3db0;
+  --n-border-focus: 1px solid #7d5dd0;
 }
 .hint {
   margin: 0;

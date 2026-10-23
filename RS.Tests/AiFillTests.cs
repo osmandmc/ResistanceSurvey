@@ -87,6 +87,19 @@ public class AiFillTests
     }
 
     [Fact]
+    public async Task TheBrowserGetsCamelCaseNamesAndTheStatusAsText()
+    {
+        await SeedAsync();
+        var result = await new CheckAiAnswerHandler(_db).Handle(new CheckAiAnswerCommand(Answer));
+
+        var json = System.Text.Json.JsonSerializer.Serialize(result, System.Text.Json.JsonSerializerOptions.Web);
+
+        Assert.Contains("\"status\":\"NotInList\"", json);
+        Assert.Contains("\"newCorporationNames\":[\"Gebze Dayan", json); // Turkish letters arrive \\u-escaped
+        Assert.Contains("\"startDate\":\"2026-10-14\"", json);
+    }
+
+    [Fact]
     public async Task ACompanyThatIsNotRegisteredComesAsANewName()
     {
         await SeedAsync();
