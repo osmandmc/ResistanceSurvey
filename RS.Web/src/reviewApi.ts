@@ -1,3 +1,4 @@
+import type { AiUse } from './aiFillApi'
 import { api } from './api'
 
 export interface ReviewArticle {
@@ -38,6 +39,8 @@ export interface SaveReviewRequest {
   resistanceId?: number | null
   case?: unknown
   protest?: unknown
+  /** The AI answer checked for this article, if any (R19c). */
+  ai?: AiUse | null
 }
 
 export interface SaveReviewResponse {

@@ -41,20 +41,21 @@ public class ReviewTests
         var articleNews = new ArticleNewsService(_db, settings);
         var linker = new ArticleCaseLinker(_db, _pipeline, articleNews, new OutcomeSender(_pipeline, NullLogger<OutcomeSender>.Instance));
         var writer = new CaseWriter(_db);
+        var ai = new AiSuggestionRecorder(_db, new CheckAiAnswerHandler(_db));
         _getArticle = new GetReviewArticleHandler(_pipeline, articleNews);
         _searchCases = new SearchCasesHandler(_db);
-        _createCase = new CreateCaseFromArticleHandler(linker, writer, new ListValueResolver(_db));
-        _addProtest = new AddProtestFromArticleHandler(linker, writer, _db);
-        _linkToCase = new LinkArticleToCaseHandler(linker);
+        _createCase = new CreateCaseFromArticleHandler(linker, writer, new ListValueResolver(_db), ai);
+        _addProtest = new AddProtestFromArticleHandler(linker, writer, _db, ai);
+        _linkToCase = new LinkArticleToCaseHandler(linker, ai);
         _pipeline.Add("a1", ArticleUrl, "Bursa NEV Hastanesi’nde eylem", Oct19, "Hekimler ve sağlık çalışanları 6 aydır maaşlarını alamıyor.");
     }
 
     // Dispatches by action, as ReviewController does.
     private Task<ReviewSaveResult> Save(string articleId, ReviewSaveRequest request, string userName) => request.Action switch
     {
-        ReviewAction.NewCase => _createCase.Handle(new CreateCaseFromArticleCommand(articleId, request.Case!, request.Protest!, userName)),
-        ReviewAction.AddProtest => _addProtest.Handle(new AddProtestFromArticleCommand(articleId, request.ResistanceId, request.Protest!, userName)),
-        _ => _linkToCase.Handle(new LinkArticleToCaseCommand(articleId, request.ResistanceId)),
+        ReviewAction.NewCase => _createCase.Handle(new CreateCaseFromArticleCommand(articleId, request.Case!, request.Protest!, userName, request.Ai)),
+        ReviewAction.AddProtest => _addProtest.Handle(new AddProtestFromArticleCommand(articleId, request.ResistanceId, request.Protest!, userName, request.Ai)),
+        _ => _linkToCase.Handle(new LinkArticleToCaseCommand(articleId, request.ResistanceId, userName, request.Ai)),
     };
 
     private Task<ReviewArticleResult> GetArticle(string articleId) => _getArticle.Handle(new GetReviewArticleQuery(articleId));
@@ -254,5 +255,35 @@ public class ReviewTests
         var hit = Assert.Single(byCompany);
         Assert.Equal(("Tekstil ücret direnişi", "Örnek Tekstil", new DateTime(2026, 10, 1)), (hit.Name, hit.CompanyName, hit.LastProtestDate));
         Assert.Equal(["Tekstil ücret direnişi", "Belediye işçileri direnişi"], all.Select(r => r.Name));
+    }
+
+    private const string AiAnswer = """Yanıt: {"relevant": true, "case": {"category": "İşletme/Kurum", "reasons": ["Ücret gaspı"]}, "protest": {"start_date": "2026-10-19"}}""";
+
+    [Fact]
+    public async Task ASaveKeepsTheCheckedAiAnswerBesideWhatWasSaved()
+    {
+        var request = ReviewValidationTests.CompleteNewCase();
+        request.Ai = new AiUse { Answer = AiAnswer, PromptVersion = "v2", Applied = true };
+
+        var result = await Save("a1", request, "admin");
+
+        Assert.Equal(ReviewStatus.Ok, result.Status);
+        var kept = Assert.Single(_db.AiSuggestion);
+        var news = Assert.Single(_db.News);
+        Assert.Equal((news.Id, AiDecision.NewCase, result.ResistanceId, "pasted", "v2", true, true, "admin"),
+            (kept.NewsId, kept.Decision, kept.ResistanceId, kept.Origin, kept.PromptVersion, kept.Relevant, kept.Applied, kept.CreatedBy));
+        Assert.Equal(AiAnswer, kept.Answer);
+        Assert.Contains("\"startDate\":\"2026-10-19\"", kept.Suggested);
+        Assert.Contains("\"protest\":{", kept.Saved);
+        Assert.Contains("\"case\":{", kept.Saved);
+    }
+
+    [Fact]
+    public async Task WithoutAnAiAnswerNothingExtraIsKept()
+    {
+        var result = await Save("a1", ReviewValidationTests.CompleteNewCase(), "admin");
+
+        Assert.Equal(ReviewStatus.Ok, result.Status);
+        Assert.Empty(_db.AiSuggestion);
     }
 }

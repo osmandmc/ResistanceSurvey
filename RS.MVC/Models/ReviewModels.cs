@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using RS.COMMON.Entities;
 using static RS.COMMON.Constants.Enums;
@@ -32,6 +32,21 @@ namespace RS.MVC.Models
 
         /// <summary>For NewCase and AddProtest.</summary>
         public ProtestInput Protest { get; set; }
+
+        /// <summary>The AI answer checked for this article ("AI ile doldur"), if any; kept with the decision (R19c).</summary>
+        public AiUse Ai { get; set; }
+    }
+
+    /// <summary>An AI answer the researcher checked on the review screen.</summary>
+    public class AiUse
+    {
+        /// <summary>The answer as pasted.</summary>
+        public string Answer { get; set; }
+
+        public string PromptVersion { get; set; }
+
+        /// <summary>"Forma uygula" was used.</summary>
+        public bool Applied { get; set; }
     }
 
     /// <summary>The "Vaka (Direniş)" part of the form.</summary>

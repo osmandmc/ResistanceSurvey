@@ -1,8 +1,10 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RS.COMMON.Entities;
 using RS.MVC.Features.Inbox;
+using RS.MVC.Models;
 
 namespace RS.MVC.Controllers
 {
@@ -12,7 +14,7 @@ namespace RS.MVC.Controllers
     [Authorize]
     public class InboxController(GetInboxHandler getInbox, DismissArticleHandler dismissArticle) : ControllerBase
     {
-        public record DismissRequest(string Reason);
+        public record DismissRequest(string Reason, DismissKind? Kind = null, AiUse Ai = null);
 
         public record DismissResponse(bool OutcomeSent);
 
@@ -33,7 +35,7 @@ namespace RS.MVC.Controllers
         [HttpPost("{articleId}/dismiss")]
         public async Task<ActionResult<DismissResponse>> Dismiss(string articleId, DismissRequest request)
         {
-            return await dismissArticle.Handle(new DismissArticleCommand(articleId, request?.Reason)) switch
+            return await dismissArticle.Handle(new DismissArticleCommand(articleId, request?.Reason, request?.Kind, request?.Ai, User.Identity?.Name)) switch
             {
                 DismissResult.Dismissed => new DismissResponse(OutcomeSent: true),
                 DismissResult.DismissedOutcomePending => new DismissResponse(OutcomeSent: false),

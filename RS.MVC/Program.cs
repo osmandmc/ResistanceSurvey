@@ -38,6 +38,7 @@ builder.Services.AddScoped<OutcomeSender>();
 builder.Services.AddScoped<ArticleCaseLinker>();
 builder.Services.AddScoped<ListValueResolver>();
 builder.Services.AddScoped<RS.MVC.Features.Cases.CaseWriter>();
+builder.Services.AddScoped<RS.MVC.Features.Review.AiSuggestionRecorder>();
 
 // Test environment (Azure) only: bring its copy of the database up to date in the background, after startup.
 if (builder.Environment.IsEnvironment("Test"))

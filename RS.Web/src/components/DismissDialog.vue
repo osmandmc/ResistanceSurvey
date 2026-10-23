@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { NButton, NFormItem, NInput, NModal, useMessage } from 'naive-ui'
+import { NButton, NFormItem, NInput, NModal, NRadio, NRadioGroup, useMessage } from 'naive-ui'
 import { ApiError, errorMessage } from '@/api'
-import { dismissArticle } from '@/inboxApi'
+import type { AiUse } from '@/aiFillApi'
+import { dismissArticle, dismissKinds, type DismissKind } from '@/inboxApi'
 
 /** "Not relevant" with an optional reason, for one article. Used by the inbox and the review screen. */
 const props = defineProps<{
@@ -10,6 +11,8 @@ const props = defineProps<{
   article: { articleId: string; title: string | null } | null
   /** A reason to start with (the AI's, from "AI ile doldur"); the researcher can change it. */
   suggestedReason?: string | null
+  /** The AI answer checked for this article, kept with the dismissal (R19c). */
+  ai?: AiUse | null
 }>()
 
 const emit = defineEmits<{
@@ -20,11 +23,16 @@ const emit = defineEmits<{
 
 const message = useMessage()
 const reason = ref('')
+// Chosen every time, never preselected: it tells "not labour news" from "already recorded" when the AI is measured.
+const kind = ref<DismissKind | null>(null)
 const dismissing = ref(false)
 
 watch(
   () => props.article,
-  () => (reason.value = props.suggestedReason ?? ''),
+  () => {
+    reason.value = props.suggestedReason ?? ''
+    kind.value = null
+  },
 )
 
 function close() {
@@ -33,10 +41,10 @@ function close() {
 
 async function confirm() {
   const article = props.article
-  if (!article) return
+  if (!article || kind.value === null) return
   dismissing.value = true
   try {
-    const result = await dismissArticle(article.articleId, reason.value)
+    const result = await dismissArticle(article.articleId, reason.value, kind.value, props.ai)
     if (result.outcomeSent) {
       message.success('İlgisiz olarak işaretlendi.')
     } else {
@@ -66,7 +74,15 @@ async function confirm() {
     @update:show="(show: boolean) => { if (!show) close() }"
   >
     <p class="title">{{ article?.title }}</p>
-    <n-form-item label="Neden (isteğe bağlı)" label-placement="top" :show-feedback="false">
+    <n-form-item label="Neden" label-placement="top" required :show-feedback="false">
+      <n-radio-group v-model:value="kind" name="dismiss-kind" class="kinds">
+        <n-radio v-for="k in dismissKinds" :key="k.value" :value="k.value" class="kind">
+          <span class="kind-label">{{ k.label }}</span>
+          <span class="kind-hint">{{ k.hint }}</span>
+        </n-radio>
+      </n-radio-group>
+    </n-form-item>
+    <n-form-item label="Açıklama (isteğe bağlı)" label-placement="top" :show-feedback="false">
       <n-input
         v-model:value="reason"
         type="textarea"
@@ -78,7 +94,7 @@ async function confirm() {
     <template #footer>
       <div class="actions">
         <n-button :disabled="dismissing" @click="close">Vazgeç</n-button>
-        <n-button type="primary" :loading="dismissing" @click="confirm">İlgisiz olarak işaretle</n-button>
+        <n-button type="primary" :loading="dismissing" :disabled="kind === null" @click="confirm">İlgisiz olarak işaretle</n-button>
       </div>
     </template>
   </n-modal>
@@ -88,6 +104,20 @@ async function confirm() {
 .title {
   margin: 0 0 16px;
   font-weight: 500;
+}
+.kinds {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.kind-label {
+  display: block;
+  font-weight: 500;
+}
+.kind-hint {
+  display: block;
+  font-size: 13px;
+  color: var(--rs-muted);
 }
 .actions {
   display: flex;
