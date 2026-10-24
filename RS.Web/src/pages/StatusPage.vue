@@ -3,7 +3,8 @@ import { computed, ref, watch } from 'vue'
 import { NAlert, NButton, NFormItem, NSelect, NSpin } from 'naive-ui'
 import { errorMessage } from '@/api'
 import { formatDate, formatDateTime } from '@/format'
-import { collectFeeds, getStatus, type CollectedFeed, type StatusPage, type StatusSource } from '@/statusApi'
+import { collectFeeds, getStatus, queueForAi, type CollectedFeed, type QueuedForAi, type StatusPage, type StatusSource } from '@/statusApi'
+import { verdictText } from '@/relevance'
 
 const days = ref(14)
 const dayOptions = [
@@ -34,6 +35,36 @@ async function collectNow() {
     collecting.value = false
   }
 }
+
+// "AI ile işle": the source's articles the AI has not handled go to it now (verdict, then a draft for relevant ones).
+const queuing = ref<string | null>(null)
+const queued = ref<QueuedForAi | null>(null)
+const queueError = ref('')
+
+async function processWithAi(source: StatusSource) {
+  queuing.value = source.sourceId
+  queued.value = null
+  queueError.value = ''
+  try {
+    queued.value = await queueForAi(source.sourceId)
+  } catch (error) {
+    queueError.value = errorMessage(error, 'Haberler AI’a gönderilemedi.')
+  } finally {
+    queuing.value = null
+  }
+}
+
+function minutes(count: number, spacingSeconds: number) {
+  return Math.max(1, Math.ceil((count * spacingSeconds) / 60))
+}
+
+/** Open articles without a draft that the AI did not reject: the İncelenecek tab. */
+function toReview(source: StatusSource) {
+  return Math.max(0, source.open - source.openWithDraft - source.openNotRelevant)
+}
+
+/** The AI's rejections and what researchers did with them: the number to trust it by. */
+const rejected = computed(() => status.value?.ai.agreement.find((a) => a.verdict === 'NotRelevant') ?? null)
 
 async function load() {
   loading.value = true
@@ -98,6 +129,16 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
     </div>
   </div>
 
+  <n-alert v-if="queueError" type="error" :show-icon="false" class="collect-result" closable @close="queueError = ''">{{ queueError }}</n-alert>
+  <n-alert v-else-if="queued" type="info" :show-icon="false" class="collect-result" closable @close="queued = null">
+    <template v-if="!queued.enabled">AI kapalı: işleme hattında anahtar tanımlı değil, hiçbir haber gönderilmedi.</template>
+    <template v-else-if="queued.toAssess + queued.toDraft === 0">{{ queued.sourceName }}: AI’ın işlemediği haber yok.</template>
+    <template v-else>
+      {{ queued.sourceName }}: {{ queued.toAssess }} haber ilgi kontrolüne, {{ queued.toDraft }} haber taslak için sıraya alındı;
+      yaklaşık {{ minutes(queued.toAssess + queued.toDraft, queued.spacingSeconds) }} dakika sürer. İlgili bulunanlar ayrıca taslağa gider.
+      <template v-if="queued.more"> Daha fazlası bekliyor: bunlar bitince tekrar tıklayın.</template>
+    </template>
+  </n-alert>
   <n-alert v-if="collectError" type="error" :show-icon="false" class="collect-result" closable @close="collectError = ''">{{ collectError }}</n-alert>
   <n-alert v-else-if="collected" type="info" :show-icon="false" class="collect-result" closable @close="collected = null">
     <ul class="collect-list">
@@ -119,6 +160,10 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
 
   <template v-else-if="status">
     <p class="period">{{ period }}</p>
+
+    <n-alert v-if="!status.ai.enabled" type="warning" :show-icon="false" class="collect-result">
+      AI kapalı: işleme hattında anahtar tanımlı değil. Haberler değerlendirilmiyor ve taslak hazırlanmıyor.
+    </n-alert>
 
     <section class="cards" aria-label="Kaynaklar">
       <article v-for="source in status.sources" :key="source.sourceId" class="card" :class="{ silent: isSilent(source) }">
@@ -146,6 +191,16 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
             </dd>
           </div>
         </dl>
+        <ul v-if="source.open > 0" class="split">
+          <li><router-link :to="{ path: '/inbox', query: { source: source.sourceId, part: 'draft' } }">{{ source.openWithDraft }} taslak hazır</router-link></li>
+          <li><router-link :to="{ path: '/inbox', query: { source: source.sourceId, part: 'other' } }">{{ toReview(source) }} incelenecek</router-link></li>
+          <li><router-link :to="{ path: '/inbox', query: { source: source.sourceId, part: 'notRelevant' } }">{{ source.openNotRelevant }} AI: ilgisiz</router-link></li>
+          <li :class="{ pending: source.openNotAssessed > 0 }">{{ source.openNotAssessed }} AI değerlendirmedi</li>
+        </ul>
+        <div v-if="status.ai.enabled" class="ai-row">
+          <n-button size="small" :loading="queuing === source.sourceId" :disabled="queuing !== null" @click="processWithAi(source)">AI ile işle</n-button>
+          <span class="muted small">Değerlendirilmeyenleri ve taslağı olmayan ilgili haberleri AI’a gönderir.</span>
+        </div>
       </article>
     </section>
 
@@ -161,6 +216,8 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
               <th class="num">Hata</th>
               <th class="num">Vakaya bağlanan</th>
               <th class="num">İlgisiz</th>
+              <th title="AI'ın o gün verdiği kararlar: ilgili · belirsiz · ilgisiz">AI kararı</th>
+              <th class="num">Taslak</th>
             </tr>
           </thead>
           <tbody>
@@ -176,6 +233,41 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
               <td class="num" :class="{ bad: day.failed > 0 }">{{ day.failed }}</td>
               <td class="num">{{ day.digested }}</td>
               <td class="num">{{ day.dismissed }}</td>
+              <td class="nowrap" :class="{ muted: day.assessedRelevant + day.assessedUncertain + day.assessedNotRelevant === 0 }">
+                {{ day.assessedRelevant }} · {{ day.assessedUncertain }} · {{ day.assessedNotRelevant }}
+              </td>
+              <td class="num">{{ day.drafted }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section v-if="status.ai.enabled || status.ai.agreement.some((a) => a.digested + a.dismissed > 0)" class="panel">
+      <h2 class="panel-title">AI ilgi kontrolü</h2>
+      <p class="pad">
+        Bu dönemde karar verilen haberler için AI’ın ne dediği ve araştırmacıların ne yaptığı.
+        <template v-if="rejected && rejected.digested + rejected.dismissed > 0">
+          AI’ın ilgisiz bulduğu haberler: {{ rejected.dismissed }} ilgisiz olarak kapatıldı,
+          <strong :class="{ bad: rejected.digested > 0 }">{{ rejected.digested }} vakaya bağlandı</strong>.
+          <template v-if="rejected.digested === 0"> AI’ın ilgisiz dedikleri şimdiye kadar güvenilir görünüyor.</template>
+          <template v-else> Bu haberler AI’ın kaçırdığı vakalar: ilgi kontrolü istemini gözden geçirmek gerekebilir.</template>
+        </template>
+      </p>
+      <div class="table-wrap">
+        <table class="days-table agreement">
+          <thead>
+            <tr>
+              <th>AI dedi ki</th>
+              <th class="num">Vakaya bağlanan</th>
+              <th class="num">İlgisiz bulunan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in status.ai.agreement" :key="row.verdict">
+              <td>{{ verdictText[row.verdict] }}</td>
+              <td class="num" :class="{ bad: row.verdict === 'NotRelevant' && row.digested > 0 }">{{ row.digested }}</td>
+              <td class="num">{{ row.dismissed }}</td>
             </tr>
           </tbody>
         </table>
@@ -302,6 +394,35 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
 }
 .bad {
   color: #b42318;
+}
+.split {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 13px;
+}
+.split a {
+  color: var(--rs-accent);
+}
+.split .pending {
+  color: #7a4d00;
+  font-weight: 600;
+}
+.ai-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.small {
+  font-size: 12px;
+}
+.agreement {
+  min-width: 360px;
 }
 .panel {
   background: var(--rs-surface);

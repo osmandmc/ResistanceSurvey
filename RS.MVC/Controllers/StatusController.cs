@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +11,7 @@ namespace RS.MVC.Controllers
     [ApiController]
     [Route("api/status")]
     [Authorize]
-    public class StatusController(GetStatusHandler getStatus, CollectFeedsHandler collectFeeds) : ControllerBase
+    public class StatusController(GetStatusHandler getStatus, CollectFeedsHandler collectFeeds, QueueForAiHandler queueForAi) : ControllerBase
     {
         /// <summary>GET /api/status?days=14 (1–31).</summary>
         [HttpGet]
@@ -25,5 +25,14 @@ namespace RS.MVC.Controllers
         /// <summary>POST /api/status/collect — "Şimdi topla": the pipeline reads the feeds now; one result per feed.</summary>
         [HttpPost("collect")]
         public async Task<IReadOnlyList<CollectedFeed>> Collect() => await collectFeeds.Handle();
+
+        /// <summary>POST /api/status/ai?source=evrensel — "AI ile işle": queue the source's articles the AI has not handled.</summary>
+        [HttpPost("ai")]
+        public async Task<ActionResult<QueuedForAi>> QueueForAi(string source)
+        {
+            if (string.IsNullOrWhiteSpace(source))
+                return BadRequest(new { error = "'source' is required" });
+            return await queueForAi.Handle(source);
+        }
     }
 }

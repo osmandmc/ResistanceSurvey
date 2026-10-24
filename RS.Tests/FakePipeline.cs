@@ -58,6 +58,14 @@ internal sealed class FakePipeline : IPipelineClient
 
     public Task<PipelineCollectResponse> CollectFeedsAsync() => Task.FromResult(Collected);
 
+    public List<string> QueuedForAi { get; } = [];
+
+    public Task<(PipelineQueueResponse Assess, PipelineQueueResponse Draft)> QueueForAiAsync(string sourceId)
+    {
+        QueuedForAi.Add(sourceId);
+        return Task.FromResult((new PipelineQueueResponse(3, 9, false, true), new PipelineQueueResponse(1, 10, false, true)));
+    }
+
     /// <summary>AI drafts per article (pipeline B12).</summary>
     public Dictionary<string, PipelineDraft> Drafts { get; } = [];
 

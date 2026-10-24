@@ -8,6 +8,11 @@ export interface StatusDay {
   failed: number
   digested: number
   dismissed: number
+  /** The AI's verdicts given that day, and the drafts it made. */
+  assessedRelevant: number
+  assessedUncertain: number
+  assessedNotRelevant: number
+  drafted: number
 }
 
 export interface StatusSource {
@@ -21,6 +26,10 @@ export interface StatusSource {
   failed: number
   /** Waiting in the inbox now. */
   open: number
+  /** Of those: with an AI draft, rejected by the AI, not assessed by the AI yet. */
+  openWithDraft: number
+  openNotRelevant: number
+  openNotAssessed: number
   /** Newest day first. */
   days: StatusDay[]
 }
@@ -41,6 +50,29 @@ export interface StatusPage {
   to: string
   sources: StatusSource[]
   recentFailures: StatusFailure[]
+  ai: StatusAi
+}
+
+/** The AI: whether a key is configured, and what it said about the articles researchers decided in the period. */
+export interface StatusAi {
+  enabled: boolean
+  agreement: { verdict: 'Relevant' | 'NotRelevant' | 'Uncertain'; digested: number; dismissed: number }[]
+}
+
+/** "AI ile işle": articles queued for a verdict and for a draft, spacingSeconds apart. */
+export interface QueuedForAi {
+  sourceId: string
+  sourceName: string
+  toAssess: number
+  toDraft: number
+  /** More were waiting than one call queues: click again once these are done. */
+  more: boolean
+  enabled: boolean
+  spacingSeconds: number
+}
+
+export function queueForAi(sourceId: string) {
+  return api<QueuedForAi>(`/api/status/ai?source=${encodeURIComponent(sourceId)}`, { method: 'POST' })
 }
 
 export function getStatus(days: number) {
