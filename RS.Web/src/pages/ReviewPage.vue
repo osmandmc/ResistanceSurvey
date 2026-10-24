@@ -3,7 +3,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSpin, NTag, useMessage } from 'naive-ui'
 import { ApiError, errorMessage } from '@/api'
-import { aiCaseValues, aiProtestValues, unchangedFields, type AiCheckResult, type AiUse } from '@/aiFillApi'
+import { aiCaseValues, aiProtestValues, getAiDraft, unchangedFields, type AiCheckResult, type AiDraft, type AiUse } from '@/aiFillApi'
 import { emptyCase, toCaseInput, type CaseFormValue } from '@/caseForm'
 import AiFillDialog from '@/components/AiFillDialog.vue'
 import CaseFinder from '@/components/CaseFinder.vue'
@@ -124,6 +124,10 @@ function useSuggestion(suggestion: CaseSuggestion, next: 'addProtest' | 'linkOnl
 
 // "AI ile doldur" (R19): what the answer put into the form, so those fields stay marked until changed.
 const aiDialogFor = ref<string | null>(null)
+/** The pipeline's draft for this article (R11); null when it has none. */
+const aiDraft = ref<AiDraft | null>(null)
+/** The dialog shows the draft (true) or the copy-paste steps (false). */
+const aiDialogShowsDraft = ref(false)
 const aiApplied = ref<{ case: Partial<CaseFormValue>; protest: Partial<ProtestFormValue> } | null>(null)
 const aiCompanyName = ref<string | null>(null)
 const aiMainCompanyName = ref<string | null>(null)
@@ -154,7 +158,27 @@ function onAiNotRelevant(reason: string | null) {
   aiNotRelevant.value = reason ?? 'Gerekçe yazılmadı.'
 }
 
+function openAiDialog(showDraft: boolean) {
+  aiDialogShowsDraft.value = showDraft
+  aiDialogFor.value = articleId.value
+}
+
+/** "Forma uygula" on the pipeline's draft, without opening the check table. */
+function applyDraft() {
+  if (aiDraft.value) onAiApply(aiDraft.value.check)
+}
+
+// The pipeline's draft is kept with the decision even when not applied (R19c): that it was ignored says something too.
+async function loadDraft() {
+  const id = articleId.value
+  const draft = await getAiDraft(id)
+  if (id !== articleId.value) return
+  aiDraft.value = draft
+  if (draft) aiUse.value = { answer: draft.answer, promptVersion: 'v2', applied: false, origin: draft.origin }
+}
+
 function clearAi() {
+  aiDraft.value = null
   aiUse.value = null
   aiApplied.value = null
   aiCompanyName.value = null
@@ -174,10 +198,14 @@ watch(articleId, () => {
   fieldErrors.value = {}
 })
 
+// After the reset above, also for the first article opened.
+watch(articleId, () => void loadDraft(), { immediate: true })
+
 // The inbox's filters travel along, so "next" and "back" stay in the same month and source.
 const inboxQuery = computed(() => ({
   ...(typeof route.query.month === 'string' ? { month: route.query.month } : {}),
   ...(typeof route.query.source === 'string' ? { source: route.query.source } : {}),
+  ...(typeof route.query.part === 'string' ? { part: route.query.part } : {}),
 }))
 
 function currentMonth() {
@@ -188,8 +216,9 @@ function currentMonth() {
 /** The next open article in the inbox (after this one when it is still open), or back to the inbox. */
 async function goNext() {
   try {
-    // The articles to review, without the AI's rejections (they wait in their own tab, R21).
-    const page = await getInbox(inboxQuery.value.month ?? currentMonth(), inboxQuery.value.source ?? null, null, 'other')
+    // The next article of the tab the researcher came from (drafts, or the rest to review); never the AI's rejections.
+    const part = inboxQuery.value.part === 'draft' ? 'draft' : 'other'
+    const page = await getInbox(inboxQuery.value.month ?? currentMonth(), inboxQuery.value.source ?? null, null, part)
     const index = page.items.findIndex((i) => i.articleId === articleId.value)
     const next = index >= 0 ? page.items[index + 1] : page.items[0]
     if (next) {
@@ -329,9 +358,20 @@ async function onDismissed() {
           <n-button size="small" type="primary" @click="dismissTarget = article">İlgisiz olarak işaretle</n-button>
         </div>
       </n-alert>
+      <div v-else-if="aiDraft?.check.relevant && needsProtest" class="ai-bar">
+        <p class="ai-text">
+          <strong>AI taslağı hazır.</strong>
+          <span class="ai-origin">{{ aiDraft.origin }}</span>
+        </p>
+        <div class="ai-actions">
+          <n-button size="small" @click="openAiDialog(true)">Kontrolü göster</n-button>
+          <n-button size="small" class="ai-button" @click="applyDraft">Forma uygula</n-button>
+          <n-button size="small" quaternary @click="openAiDialog(false)">Kendi AI sohbetimle doldur</n-button>
+        </div>
+      </div>
       <div v-else-if="article.body && needsProtest" class="ai-bar">
         <p class="ai-text">Formu bir AI sohbetinin yanıtıyla önceden doldurun.</p>
-        <n-button size="small" class="ai-button" @click="aiDialogFor = article.articleId">AI ile doldur</n-button>
+        <n-button size="small" class="ai-button" @click="openAiDialog(false)">AI ile doldur</n-button>
       </div>
 
       <h2 id="decision-heading" class="decision-heading">Önerilen işlem</h2>
@@ -391,7 +431,7 @@ async function onDismissed() {
   </div>
 
   <dismiss-dialog :article="dismissTarget" :suggested-reason="aiNotRelevant" :ai="aiUse" @handled="onDismissed" @close="dismissTarget = null" />
-  <ai-fill-dialog :article-id="aiDialogFor" @checked="aiUse = $event" @apply="onAiApply" @not-relevant="onAiNotRelevant" @close="aiDialogFor = null" />
+  <ai-fill-dialog :article-id="aiDialogFor" :draft="aiDialogShowsDraft ? aiDraft?.check : null" @checked="aiUse = $event" @apply="onAiApply" @not-relevant="onAiNotRelevant" @close="aiDialogFor = null" />
 </template>
 
 <style scoped>
@@ -586,6 +626,11 @@ async function onDismissed() {
   padding: 10px 14px;
   border-radius: 8px;
   background: #f5f2fc;
+}
+.ai-origin {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--rs-muted);
 }
 .ai-text {
   margin: 0;

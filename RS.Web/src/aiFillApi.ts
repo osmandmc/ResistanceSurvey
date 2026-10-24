@@ -10,6 +10,17 @@ export interface AiUse {
   promptVersion: string | null
   /** "Forma uygula" was used. */
   applied: boolean
+  /** What made the answer: null when pasted; the pipeline's for a draft (R11). */
+  origin?: string | null
+}
+
+/** The pipeline's AI draft (R11), checked against the lists as a pasted answer is. */
+export interface AiDraft {
+  answer: string
+  /** "pipeline · prompt-v2 · model" */
+  origin: string
+  createdAt: string
+  check: AiCheckResult
 }
 
 export interface AiPrompt {
@@ -80,6 +91,15 @@ export interface AiCheckResult {
 
 export function getAiPrompt(articleId: string) {
   return api<AiPrompt>(`/api/review/${encodeURIComponent(articleId)}/ai-prompt`)
+}
+
+/** Null when the article has no draft, or when it cannot be loaded (the paste route still works). */
+export async function getAiDraft(articleId: string): Promise<AiDraft | null> {
+  try {
+    return await api<AiDraft>(`/api/review/${encodeURIComponent(articleId)}/ai-draft`)
+  } catch {
+    return null
+  }
 }
 
 export function checkAiAnswer(answer: string) {

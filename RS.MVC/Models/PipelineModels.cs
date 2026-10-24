@@ -20,6 +20,7 @@ namespace RS.MVC.Models
     /// Filters for GET /api/articles. From/To are whole days (Turkey time); Status: parsed|failed|all; Outcome: open|handled|any.
     /// Search matches titles (case and Turkish letters ignored); a link finds that one article whatever the other filters.
     /// Relevance (pipeline B10): "notRelevant" = what the AI judged not relevant; "other" = everything else; null = all.
+    /// Draft (pipeline B12): "ready" = an AI draft with a labour action; "none" = no such draft; null = all.
     /// </summary>
     public record PipelineArticleQuery(
         DateOnly? From = null,
@@ -30,7 +31,8 @@ namespace RS.MVC.Models
         int PageSize = 50,
         string Next = null,
         string Search = null,
-        string Relevance = null);
+        string Relevance = null,
+        string Draft = null);
 
     /// <summary>A page of GET /api/articles; pass Next back to load more (null = no more).</summary>
     public record PipelineArticleList(IReadOnlyList<PipelineArticleSummary> Items, string Next);
@@ -58,6 +60,12 @@ namespace RS.MVC.Models
     public record PipelineArticleDetail(
         string ArticleId, string SourceId, string Url, string Title, DateTimeOffset? PublishedAt, string Body,
         IReadOnlyDictionary<string, PipelineStageResult> Stages = null);
+
+    /// <summary>
+    /// GET /api/articles/{id}/draft (pipeline B12): the model's JSON in the shape of the extraction prompt, checked by the
+    /// app like a pasted answer. Version: prompt · model. Relevant false: the model found no labour action.
+    /// </summary>
+    public record PipelineDraft(string ArticleId, string Version, string Answer, bool Relevant, string Summary, DateTimeOffset CreatedAt);
 
     /// <summary>GET /api/metrics?days=14: per source, per day (Turkey time) and the latest failures.</summary>
     public record PipelineMetrics(

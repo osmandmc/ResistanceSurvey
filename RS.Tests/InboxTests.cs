@@ -191,5 +191,22 @@ public class InboxTests
         Assert.Equal(new AiRelevance("NotRelevant", "Spor haberi."), page.Items.Single(i => i.ArticleId == "a1").Ai);
         Assert.Null(page.Items.Single(i => i.ArticleId == "a2").Ai); // a failed assessment is no verdict
     }
+
+    [Fact]
+    public async Task TheDraftPartAsksForArticlesWithADraftAndShowsItsSummary()
+    {
+        _pipeline.States["a1"] = (new Dictionary<string, PipelineStageResult>
+        {
+            ["Parsed"] = new("Succeeded", Nov3),
+            ["Extracted"] = new("Succeeded", Nov3, "prompt-v2 · gemini", "Örnek Metal · Fiili grev · Kocaeli · 2026-11-03", "Draft"),
+        }, null!);
+
+        var drafts = await _getInbox.Handle(new GetInboxQuery("2026-11", null, null, "draft"));
+        await _getInbox.Handle(new GetInboxQuery("2026-11", null, null, "other"));
+
+        Assert.Equal([(null, "ready"), ("other", "none")], _pipeline.Queries.Select(q => (q.Relevance, q.Draft)));
+        Assert.Equal("Örnek Metal · Fiili grev · Kocaeli · 2026-11-03", drafts.Items.Single(i => i.ArticleId == "a1").Draft);
+        Assert.Null(drafts.Items.Single(i => i.ArticleId == "a2").Draft);
+    }
 }
 

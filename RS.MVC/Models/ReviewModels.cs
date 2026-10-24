@@ -47,6 +47,9 @@ namespace RS.MVC.Models
 
         /// <summary>"Forma uygula" was used.</summary>
         public bool Applied { get; set; }
+
+        /// <summary>What made the answer: null when pasted from the researcher's AI chat, the pipeline's for a draft (R11).</summary>
+        public string Origin { get; set; }
     }
 
     /// <summary>The "Vaka (Direniş)" part of the form.</summary>

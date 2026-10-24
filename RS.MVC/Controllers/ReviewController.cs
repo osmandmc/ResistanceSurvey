@@ -23,8 +23,14 @@ namespace RS.MVC.Controllers
         CreateCompanyHandler createCompany,
         SuggestCasesForArticleHandler suggestCases,
         GetAiPromptHandler getAiPrompt,
-        CheckAiAnswerHandler checkAiAnswer) : ControllerBase
+        CheckAiAnswerHandler checkAiAnswer,
+        GetAiDraftHandler getAiDraft) : ControllerBase
     {
+        /// <summary>GET /api/review/{articleId}/ai-draft — the pipeline's AI draft, checked against the lists (404 when none).</summary>
+        [HttpGet("{articleId}/ai-draft")]
+        public async Task<ActionResult<AiDraft>> AiDraft(string articleId) =>
+            await getAiDraft.Handle(new GetAiDraftQuery(articleId)) is { } draft ? draft : NotFound(new { error = "Bu haber için AI taslağı yok." });
+
         /// <summary>GET /api/review/{articleId}/ai-prompt — "AI ile doldur": the prompt with the article and the lists.</summary>
         [HttpGet("{articleId}/ai-prompt")]
         public async Task<ActionResult<AiPrompt>> AiPrompt(string articleId)

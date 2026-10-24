@@ -20,13 +20,14 @@ namespace RS.MVC.Controllers
 
         /// <summary>
         /// GET /api/inbox?month=2026-11&amp;source=evrensel&amp;relevance=other&amp;next=… (month defaults to the current one;
-        /// relevance: "other" or "notRelevant", the AI's rejections; leave out for all).
+        /// relevance: "draft" (with an AI draft), "other" (the rest to review) or "notRelevant" (the AI's rejections);
+        /// leave out for all).
         /// </summary>
         [HttpGet]
         public async Task<ActionResult<InboxPage>> Get(string month, string source, string next, string relevance)
         {
-            if (relevance is not (null or "" or "other" or "notRelevant"))
-                return BadRequest(new { error = "'relevance' is 'other' or 'notRelevant'" });
+            if (relevance is not (null or "" or "draft" or "other" or "notRelevant"))
+                return BadRequest(new { error = "'relevance' is 'draft', 'other' or 'notRelevant'" });
             try
             {
                 return await getInbox.Handle(new GetInboxQuery(month, source, next, string.IsNullOrEmpty(relevance) ? null : relevance));
