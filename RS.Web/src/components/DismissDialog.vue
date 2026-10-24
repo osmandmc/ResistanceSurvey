@@ -13,6 +13,11 @@ const props = defineProps<{
   suggestedReason?: string | null
   /** The AI answer checked for this article, kept with the dismissal (R19c). */
   ai?: AiUse | null
+  /**
+   * A reason chosen in advance: only where the researcher acts on the pipeline's own rejection (the inbox's "AI:
+   * ilgisiz görünüyor" list, R21). Everywhere else nothing is preselected.
+   */
+  presetKind?: DismissKind | null
 }>()
 
 const emit = defineEmits<{
@@ -31,7 +36,7 @@ watch(
   () => props.article,
   () => {
     reason.value = props.suggestedReason ?? ''
-    kind.value = null
+    kind.value = props.presetKind ?? null
   },
 )
 

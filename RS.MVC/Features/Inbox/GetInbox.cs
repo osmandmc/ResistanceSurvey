@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -12,10 +12,14 @@ using static RS.COMMON.Constants.Enums;
 
 namespace RS.MVC.Features.Inbox
 {
-    /// <summary>Open, parsed articles for a month ("yyyy-MM"; empty = this month) and optionally one source.</summary>
-    public record GetInboxQuery(string Month, string SourceId, string Next);
+    /// <summary>
+    /// Open, parsed articles for a month ("yyyy-MM"; empty = this month) and optionally one source. Relevance (R21):
+    /// "notRelevant" = what the AI judged not relevant; "other" = the rest; null = all.
+    /// </summary>
+    public record GetInboxQuery(string Month, string SourceId, string Next, string Relevance = null);
 
-    public record InboxItem(string ArticleId, string Title, string SourceId, string SourceName, DateTimeOffset? PublishedAt, string Url);
+    /// <param name="Ai">The AI's verdict and reason; null when not assessed.</param>
+    public record InboxItem(string ArticleId, string Title, string SourceId, string SourceName, DateTimeOffset? PublishedAt, string Url, AiRelevance Ai = null);
 
     public record InboxPage(IReadOnlyList<InboxItem> Items, string Next);
 
@@ -33,7 +37,7 @@ namespace RS.MVC.Features.Inbox
         public async Task<InboxPage> Handle(GetInboxQuery query)
         {
             var (from, to) = MonthRange(query.Month);
-            var page = await pipeline.ListArticlesAsync(new PipelineArticleQuery(from, to, query.SourceId, PageSize: PageSize, Next: query.Next));
+            var page = await pipeline.ListArticlesAsync(new PipelineArticleQuery(from, to, query.SourceId, PageSize: PageSize, Next: query.Next, Relevance: query.Relevance));
 
             var ids = page.Items.Select(i => i.ArticleId).ToList();
             var handled = await db.News
@@ -49,7 +53,7 @@ namespace RS.MVC.Features.Inbox
             var handledIds = handled.Select(h => h.ArticleId).ToHashSet();
             var items = page.Items
                 .Where(i => !handledIds.Contains(i.ArticleId))
-                .Select(i => new InboxItem(i.ArticleId, i.Title, i.SourceId, SourceCatalog.Name(i.SourceId), i.PublishedAt, i.Url))
+                .Select(i => new InboxItem(i.ArticleId, i.Title, i.SourceId, SourceCatalog.Name(i.SourceId), i.PublishedAt, i.Url, AiRelevance.From(i.Stages)))
                 .ToList();
             return new InboxPage(items, page.Next);
         }

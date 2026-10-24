@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NDatePicker, NEmpty, NFormItem, NSelect, NSpin, NTabPane, NTabs } from 'naive-ui'
 import { errorMessage } from '@/api'
 import DismissDialog from '@/components/DismissDialog.vue'
-import { formatDate } from '@/format'
-import { getInbox, type InboxItem } from '@/inboxApi'
+import InboxTable from '@/components/InboxTable.vue'
+import { getInbox, type InboxItem, type InboxPart } from '@/inboxApi'
 
 const route = useRoute()
 const router = useRouter()
@@ -31,35 +31,45 @@ const monthParam = computed(() => {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
 })
 
-// Until AI drafts exist (phase 3), every open article needs a manual review.
-const tab = ref<'draft' | 'manual'>('manual')
+// Until AI drafts exist (phase 3), every open article needs a manual review. The AI's relevance verdicts (pipeline B9)
+// split it: what it judged not relevant waits in its own tab, never hidden (R21).
+const tab = ref<'draft' | 'review' | 'notRelevant'>('review')
 
-const items = ref<InboxItem[]>([])
-const next = ref<string | null>(null)
-const loading = ref(false)
-const loadingMore = ref(false)
-const loadError = ref('')
+/** One part of the inbox, loaded page by page. */
+function inboxPart(part: InboxPart) {
+  const items = ref<InboxItem[]>([])
+  const next = ref<string | null>(null)
+  const loading = ref(false)
+  const loadingMore = ref(false)
+  const loadError = ref('')
 
-async function load(more = false) {
-  if (more) {
-    loadingMore.value = true
-  } else {
-    loading.value = true
-    items.value = []
-    next.value = null
+  async function load(more = false) {
+    if (more) {
+      loadingMore.value = true
+    } else {
+      loading.value = true
+      items.value = []
+      next.value = null
+    }
+    loadError.value = ''
+    try {
+      const page = await getInbox(monthParam.value, source.value || null, more ? next.value : null, part)
+      items.value = more ? [...items.value, ...page.items] : page.items
+      next.value = page.next
+    } catch (error) {
+      loadError.value = errorText(error, 'Haberler yüklenemedi.')
+    } finally {
+      loading.value = false
+      loadingMore.value = false
+    }
   }
-  loadError.value = ''
-  try {
-    const page = await getInbox(monthParam.value, source.value || null, more ? next.value : null)
-    items.value = more ? [...items.value, ...page.items] : page.items
-    next.value = page.next
-  } catch (error) {
-    loadError.value = errorText(error, 'Haberler yüklenemedi.')
-  } finally {
-    loading.value = false
-    loadingMore.value = false
-  }
+
+  const count = computed(() => `${items.value.length}${next.value ? '+' : ''}`)
+  return reactive({ items, next, loading, loadingMore, loadError, load, count })
 }
+
+const toReview = inboxPart('other')
+const notRelevant = inboxPart('notRelevant')
 
 const filterQuery = computed(() => ({ month: monthParam.value, ...(source.value ? { source: source.value } : {}) }))
 
@@ -67,18 +77,25 @@ watch(
   [monthParam, source],
   () => {
     void router.replace({ query: filterQuery.value })
-    void load()
+    void toReview.load()
+    void notRelevant.load()
   },
   { immediate: true },
 )
 
-const manualCount = computed(() => `${items.value.length}${next.value ? '+' : ''}`)
-
-// Dismissing happens in DismissDialog; a handled article leaves the list.
+// Dismissing happens in DismissDialog; a handled article leaves the list. From the AI's list the reason "Emek
+// hareketiyle ilgisiz" is chosen in advance, with the AI's reason as the details; the researcher can change both.
 const dismissTarget = ref<InboxItem | null>(null)
+const dismissFromAiList = ref(false)
+
+function dismiss(item: InboxItem, fromAiList: boolean) {
+  dismissFromAiList.value = fromAiList
+  dismissTarget.value = item
+}
 
 function onHandled(articleId: string) {
-  items.value = items.value.filter((i) => i.articleId !== articleId)
+  toReview.items = toReview.items.filter((i) => i.articleId !== articleId)
+  notRelevant.items = notRelevant.items.filter((i) => i.articleId !== articleId)
   dismissTarget.value = null
 }
 
@@ -112,57 +129,50 @@ function errorText(error: unknown, fallback: string) {
         </div>
       </n-tab-pane>
 
-      <n-tab-pane name="manual" :tab="`Elle incelenmeli · ${manualCount}`" display-directive="show">
-        <div v-if="loading" class="state"><n-spin /></div>
+      <n-tab-pane
+        v-for="pane in [
+          { name: 'review', part: toReview, label: 'İncelenecek', empty: 'Bu ay için karar bekleyen haber yok.' },
+          { name: 'notRelevant', part: notRelevant, label: 'AI: ilgisiz görünüyor', empty: 'AI’ın ilgisiz bulduğu, karar bekleyen haber yok.' },
+        ]"
+        :key="pane.name"
+        :name="pane.name"
+        :tab="`${pane.label} · ${pane.part.count}`"
+        display-directive="show"
+      >
+        <p v-if="pane.name === 'notRelevant'" class="hint">
+          Yapay zekânın emek direnişiyle ilgisiz bulduğu haberler. Göz atıp “İlgisiz” ile kapatabilir ya da açıp inceleyebilirsiniz.
+        </p>
 
-        <div v-else-if="loadError" class="state">
+        <div v-if="pane.part.loading" class="state"><n-spin /></div>
+
+        <div v-else-if="pane.part.loadError" class="state">
           <n-alert type="error" :show-icon="false">
-            {{ loadError }}
-            <n-button size="small" class="retry" @click="load()">Tekrar dene</n-button>
+            {{ pane.part.loadError }}
+            <n-button size="small" class="retry" @click="pane.part.load()">Tekrar dene</n-button>
           </n-alert>
         </div>
 
-        <div v-else-if="items.length === 0" class="state">
-          <n-empty description="Bu ay için karar bekleyen haber yok." />
+        <div v-else-if="pane.part.items.length === 0" class="state">
+          <n-empty :description="pane.empty" />
         </div>
 
         <template v-else>
-          <div class="table-wrap">
-            <table class="inbox-table">
-              <thead>
-                <tr>
-                  <th>Başlık</th>
-                  <th>Kaynak</th>
-                  <th>Tarih</th>
-                  <th><span class="visually-hidden">İşlemler</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in items" :key="item.articleId">
-                  <td class="title">
-                    <a :href="item.url" target="_blank" rel="noopener">{{ item.title || item.url }}</a>
-                  </td>
-                  <td>{{ item.sourceName }}</td>
-                  <td class="nowrap">{{ formatDate(item.publishedAt) }}</td>
-                  <td class="actions">
-                    <router-link :to="{ path: `/review/${encodeURIComponent(item.articleId)}`, query: filterQuery }" custom v-slot="{ navigate }">
-                      <n-button type="primary" size="small" @click="navigate">Aç</n-button>
-                    </router-link>
-                    <n-button size="small" @click="dismissTarget = item">İlgisiz</n-button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div v-if="next" class="more">
-            <n-button :loading="loadingMore" @click="load(true)">Daha fazla yükle</n-button>
+          <inbox-table :items="pane.part.items" :query="filterQuery" @dismiss="(item) => dismiss(item, pane.name === 'notRelevant')" />
+          <div v-if="pane.part.next" class="more">
+            <n-button :loading="pane.part.loadingMore" @click="pane.part.load(true)">Daha fazla yükle</n-button>
           </div>
         </template>
       </n-tab-pane>
     </n-tabs>
   </section>
 
-  <dismiss-dialog :article="dismissTarget" @handled="onHandled" @close="dismissTarget = null" />
+  <dismiss-dialog
+    :article="dismissTarget"
+    :preset-kind="dismissFromAiList ? 1 : null"
+    :suggested-reason="dismissFromAiList ? dismissTarget?.ai?.reason : null"
+    @handled="onHandled"
+    @close="dismissTarget = null"
+  />
 </template>
 
 <style scoped>
@@ -202,63 +212,17 @@ function errorText(error: unknown, fallback: string) {
 .state {
   padding: 40px 16px;
 }
+.hint {
+  margin: 12px 16px 0;
+  font-size: 14px;
+  color: var(--rs-muted);
+}
 .retry {
   margin-left: 12px;
-}
-.table-wrap {
-  overflow-x: auto;
-}
-.inbox-table {
-  width: 100%;
-  min-width: 720px;
-  border-collapse: collapse;
-}
-.inbox-table th {
-  text-align: left;
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--rs-muted);
-  font-weight: 600;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--rs-border);
-}
-.inbox-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #eef0f2;
-  font-size: 15px;
-  vertical-align: middle;
-}
-.title {
-  font-weight: 500;
-}
-.title a {
-  color: var(--rs-ink);
-  text-decoration: none;
-}
-.title a:hover {
-  text-decoration: underline;
-}
-.nowrap {
-  white-space: nowrap;
-}
-.actions {
-  white-space: nowrap;
-  text-align: right;
-}
-.actions > * + * {
-  margin-left: 8px;
 }
 .more {
   display: flex;
   justify-content: center;
   padding: 16px;
-}
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
 }
 </style>

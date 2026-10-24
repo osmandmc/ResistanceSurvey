@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { verdictText, type AiVerdict } from '@/relevance'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NDatePicker, NEmpty, NFormItem, NInput, NSelect, NSpin, NTag } from 'naive-ui'
@@ -130,6 +131,7 @@ function eventText(event: ArchiveEvent) {
   const step = stepLabel[event.step] ?? event.step
   if (event.status === 'Failed') return `${step}: başarısız`
   if (event.status === 'Skipped') return `${step}: atlandı`
+  if (event.answer && event.answer in verdictText) return `${step}: ${verdictText[event.answer as AiVerdict]}`
   return step
 }
 

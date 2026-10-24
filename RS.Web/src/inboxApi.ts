@@ -1,5 +1,6 @@
 import type { AiUse } from './aiFillApi'
 import { api } from './api'
+import type { AiRelevance } from './relevance'
 
 export interface InboxItem {
   articleId: string
@@ -8,6 +9,8 @@ export interface InboxItem {
   sourceName: string
   publishedAt: string | null
   url: string
+  /** The AI's verdict (pipeline Relevance stage); null when not assessed. */
+  ai: AiRelevance | null
 }
 
 export interface InboxPage {
@@ -21,10 +24,14 @@ export interface DismissResponse {
   outcomeSent: boolean
 }
 
+/** Which part of the inbox: what the AI judged not relevant, or everything else. */
+export type InboxPart = 'other' | 'notRelevant'
+
 /** month: "yyyy-MM"; source: pipeline source id, or null for all. */
-export function getInbox(month: string, source: string | null, next: string | null) {
+export function getInbox(month: string, source: string | null, next: string | null, part: InboxPart | null = null) {
   const params = new URLSearchParams({ month })
   if (source) params.set('source', source)
+  if (part) params.set('relevance', part)
   if (next) params.set('next', next)
   return api<InboxPage>(`/api/inbox?${params}`)
 }

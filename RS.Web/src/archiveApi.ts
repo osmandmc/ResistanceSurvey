@@ -12,6 +12,8 @@ export interface ArchiveEvent {
   status: string
   at: string
   reason: string | null
+  /** What the stage concluded: the AI's verdict for "Relevance". */
+  answer: string | null
 }
 
 export interface ArchiveItem {

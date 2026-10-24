@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace RS.MVC.Models
@@ -19,6 +19,7 @@ namespace RS.MVC.Models
     /// <summary>
     /// Filters for GET /api/articles. From/To are whole days (Turkey time); Status: parsed|failed|all; Outcome: open|handled|any.
     /// Search matches titles (case and Turkish letters ignored); a link finds that one article whatever the other filters.
+    /// Relevance (pipeline B10): "notRelevant" = what the AI judged not relevant; "other" = everything else; null = all.
     /// </summary>
     public record PipelineArticleQuery(
         DateOnly? From = null,
@@ -28,7 +29,8 @@ namespace RS.MVC.Models
         string Outcome = "open",
         int PageSize = 50,
         string Next = null,
-        string Search = null);
+        string Search = null,
+        string Relevance = null);
 
     /// <summary>A page of GET /api/articles; pass Next back to load more (null = no more).</summary>
     public record PipelineArticleList(IReadOnlyList<PipelineArticleSummary> Items, string Next);
@@ -43,14 +45,19 @@ namespace RS.MVC.Models
         IReadOnlyDictionary<string, PipelineStageResult> Stages = null,
         PipelineOutcome Outcome = null);
 
-    /// <summary>Status: "Succeeded", "Failed" or "Skipped"; Reason says why it failed.</summary>
-    public record PipelineStageResult(string Status, DateTimeOffset At, string Version = null, string Reason = null);
+    /// <summary>
+    /// Status: "Succeeded", "Failed" or "Skipped"; Reason says why it failed, or why the stage concluded what it did.
+    /// Answer: what the stage concluded; for "Relevance" the AI's verdict ("Relevant", "NotRelevant", "Uncertain").
+    /// </summary>
+    public record PipelineStageResult(string Status, DateTimeOffset At, string Version = null, string Reason = null, string Answer = null);
 
     /// <summary>The researchers' decision as the pipeline last heard it. Kind: "Digested" or "Dismissed".</summary>
     public record PipelineOutcome(string Kind, DateTimeOffset At, int? ResistanceId = null, string Reason = null);
 
     /// <summary>GET /api/articles/{id}: one article with its latest text (Body is null until parsed).</summary>
-    public record PipelineArticleDetail(string ArticleId, string SourceId, string Url, string Title, DateTimeOffset? PublishedAt, string Body);
+    public record PipelineArticleDetail(
+        string ArticleId, string SourceId, string Url, string Title, DateTimeOffset? PublishedAt, string Body,
+        IReadOnlyDictionary<string, PipelineStageResult> Stages = null);
 
     /// <summary>GET /api/metrics?days=14: per source, per day (Turkey time) and the latest failures.</summary>
     public record PipelineMetrics(

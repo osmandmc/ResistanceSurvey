@@ -170,4 +170,26 @@ public class InboxTests
             (kept.Decision, kept.DismissKind, kept.Relevant, kept.Applied, kept.Suggested, kept.ResistanceId));
         Assert.Equal(_db.News.Single(n => n.ArticleId == "a1").Id, kept.NewsId);
     }
+
+    [Fact]
+    public async Task ItemsCarryTheAiVerdictAndTheFilterGoesToThePipeline()
+    {
+        _pipeline.States["a1"] = (new Dictionary<string, PipelineStageResult>
+        {
+            ["Parsed"] = new("Succeeded", Nov3),
+            ["Relevance"] = new("Succeeded", Nov3, "relevance-v1 · gemini", "Spor haberi.", "NotRelevant"),
+        }, null!);
+        _pipeline.States["a2"] = (new Dictionary<string, PipelineStageResult>
+        {
+            ["Parsed"] = new("Succeeded", Nov3),
+            ["Relevance"] = new("Failed", Nov3, "relevance-v1", "No JSON"),
+        }, null!);
+
+        var page = await _getInbox.Handle(new GetInboxQuery("2026-11", null, null, "notRelevant"));
+
+        Assert.Equal("notRelevant", Assert.Single(_pipeline.Queries).Relevance);
+        Assert.Equal(new AiRelevance("NotRelevant", "Spor haberi."), page.Items.Single(i => i.ArticleId == "a1").Ai);
+        Assert.Null(page.Items.Single(i => i.ArticleId == "a2").Ai); // a failed assessment is no verdict
+    }
 }
+

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -45,8 +45,11 @@ namespace RS.MVC.Features.Archive
 
     public record ArchiveCase(int Id, string Name);
 
-    /// <summary>One step of an article's history. Step: a pipeline stage ("Submitted", "Fetched", "Parsed" …) or "Outcome".</summary>
-    public record ArchiveEvent(string Step, string Status, DateTimeOffset At, string Reason);
+    /// <summary>
+    /// One step of an article's history. Step: a pipeline stage ("Submitted", "Fetched", "Parsed" …) or "Outcome".
+    /// Answer: what the stage concluded (the AI's verdict for "Relevance").
+    /// </summary>
+    public record ArchiveEvent(string Step, string Status, DateTimeOffset At, string Reason, string Answer = null);
 
     /// <summary>Reason: why it failed or why it was dismissed.</summary>
     public record ArchiveItem(
@@ -150,7 +153,7 @@ namespace RS.MVC.Features.Archive
             var events = (article.Stages ?? new Dictionary<string, PipelineStageResult>())
                 .OrderBy(s => Array.IndexOf(StageOrder, s.Key) is var i and >= 0 ? i : StageOrder.Length)
                 .ThenBy(s => s.Value.At)
-                .Select(s => new ArchiveEvent(s.Key, s.Value.Status, s.Value.At, s.Value.Reason))
+                .Select(s => new ArchiveEvent(s.Key, s.Value.Status, s.Value.At, s.Value.Reason, s.Value.Answer))
                 .ToList();
             if (article.Outcome is { } outcome)
                 events.Add(new ArchiveEvent("Outcome", outcome.Kind, outcome.At, outcome.Reason));
