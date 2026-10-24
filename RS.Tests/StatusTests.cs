@@ -1,4 +1,4 @@
-using RS.MVC.Features.Dashboard;
+﻿using RS.MVC.Features.Dashboard;
 using RS.MVC.Models;
 
 namespace RS.Tests;
@@ -44,4 +44,28 @@ public class StatusTests
         Assert.Equal(new CollectedFeed("evrensel", "Evrensel", 100, 97, 3, 0, null!), feeds[0]);
         Assert.Equal(("Kızılbayrak", "Feed answered HTTP 503."), (feeds[1].SourceName, feeds[1].Error));
     }
+
+    [Fact]
+    public async Task TheAisWorkComesWithEachSourceAndTheAgreement()
+    {
+        var at = new DateTimeOffset(2026, 10, 20, 8, 0, 0, TimeSpan.FromHours(3));
+        _pipeline.Metrics = new PipelineMetrics(
+            new DateOnly(2026, 10, 20), new DateOnly(2026, 10, 20),
+            [new PipelineSourceMetrics("evrensel", at, "Collector", 5, 0, 10, 4, 3, 1)],
+            [new PipelineDailyMetrics(new DateOnly(2026, 10, 20), "evrensel", 5, 5, 0, 0, 0, 2, 1, 2, 2)],
+            [],
+            new PipelineAiMetrics(true, [new PipelineVerdictAgreement("NotRelevant", 1, 30)]));
+
+        var page = await new GetStatusHandler(_pipeline).Handle(1);
+        var queued = await new QueueForAiHandler(_pipeline).Handle("evrensel");
+
+        var evrensel = Assert.Single(page.Sources);
+        Assert.Equal((10, 4, 3, 1), (evrensel.Open, evrensel.OpenWithDraft, evrensel.OpenNotRelevant, evrensel.OpenNotAssessed));
+        Assert.Equal((2, 1, 2, 2), Assert.Single(evrensel.Days) is var d ? (d.AssessedRelevant, d.AssessedUncertain, d.AssessedNotRelevant, d.Drafted) : default);
+        Assert.Equal(new StatusAgreement("NotRelevant", 1, 30), Assert.Single(page.Ai.Agreement));
+        Assert.True(page.Ai.Enabled);
+        Assert.Equal(new QueuedForAi("evrensel", "Evrensel", 3, 1, false, true, 10), queued);
+        Assert.Equal(["evrensel"], _pipeline.QueuedForAi);
+    }
 }
+

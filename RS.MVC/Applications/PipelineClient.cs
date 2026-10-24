@@ -29,6 +29,9 @@ namespace RS.MVC.Applications
         /// <summary>Reads the sources' feeds now, as the pipeline's timer does.</summary>
         Task<PipelineCollectResponse> CollectFeedsAsync();
 
+        /// <summary>Queues the source's open articles the AI has not handled: for a verdict, and the relevant ones for a draft.</summary>
+        Task<(PipelineQueueResponse Assess, PipelineQueueResponse Draft)> QueueForAiAsync(string sourceId);
+
         /// <summary>Safe to repeat; the latest decision wins. Throws HttpRequestException when the pipeline cannot be reached.</summary>
         Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome);
     }
@@ -112,6 +115,17 @@ namespace RS.MVC.Applications
             var response = await _http.PostAsync("api/collect", null);
             await EnsureSuccessAsync(response);
             return await response.Content.ReadFromJsonAsync<PipelineCollectResponse>();
+        }
+
+        public async Task<(PipelineQueueResponse Assess, PipelineQueueResponse Draft)> QueueForAiAsync(string sourceId)
+        {
+            async Task<PipelineQueueResponse> Queue(string path)
+            {
+                var response = await _http.PostAsync($"api/articles/{path}?source={Uri.EscapeDataString(sourceId)}", null);
+                await EnsureSuccessAsync(response);
+                return await response.Content.ReadFromJsonAsync<PipelineQueueResponse>();
+            }
+            return (await Queue("assess"), await Queue("draft"));
         }
 
         public async Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome)

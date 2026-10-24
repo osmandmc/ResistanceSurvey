@@ -73,12 +73,28 @@ namespace RS.MVC.Models
         DateOnly To,
         IReadOnlyList<PipelineSourceMetrics> Sources,
         IReadOnlyList<PipelineDailyMetrics> Days,
-        IReadOnlyList<PipelineFailure> RecentFailures);
+        IReadOnlyList<PipelineFailure> RecentFailures,
+        PipelineAiMetrics Ai = null);
 
     /// <summary>LastReceivedAt: latest article in the period (null = none). Open: waiting in the inbox now. Origin: "Csv", "Collector", "Manual".</summary>
-    public record PipelineSourceMetrics(string SourceId, DateTimeOffset? LastReceivedAt, string LastReceivedOrigin, int Received, int Failed, int Open);
+    /// OpenWithDraft, OpenNotRelevant, OpenNotAssessed (pipeline B11): of the open ones, with an AI draft, rejected by the AI, not assessed yet.
+    public record PipelineSourceMetrics(
+        string SourceId, DateTimeOffset? LastReceivedAt, string LastReceivedOrigin, int Received, int Failed, int Open,
+        int OpenWithDraft = 0, int OpenNotRelevant = 0, int OpenNotAssessed = 0);
 
-    public record PipelineDailyMetrics(DateOnly Day, string SourceId, int Received, int Parsed, int Failed, int Digested, int Dismissed);
+    /// <summary>Assessed…: the AI's verdicts given that day; Drafted: AI drafts made that day (pipeline B11).</summary>
+    public record PipelineDailyMetrics(
+        DateOnly Day, string SourceId, int Received, int Parsed, int Failed, int Digested, int Dismissed,
+        int AssessedRelevant = 0, int AssessedUncertain = 0, int AssessedNotRelevant = 0, int Drafted = 0);
+
+    /// <summary>Enabled: a model key is configured. Agreement: per verdict, how many decided articles were linked or dismissed.</summary>
+    public record PipelineAiMetrics(bool Enabled, IReadOnlyList<PipelineVerdictAgreement> Agreement);
+
+    /// <summary>Verdict: "Relevant", "NotRelevant", "Uncertain".</summary>
+    public record PipelineVerdictAgreement(string Verdict, int Digested, int Dismissed);
+
+    /// <summary>POST /api/articles/assess and /api/articles/draft: articles queued for the AI, SpacingSeconds apart.</summary>
+    public record PipelineQueueResponse(int Queued, int SpacingSeconds, bool More, bool ModelConfigured);
 
     public record PipelineFailure(string ArticleId, string SourceId, string Url, string Title, string Stage, DateTimeOffset At, string Reason);
 
