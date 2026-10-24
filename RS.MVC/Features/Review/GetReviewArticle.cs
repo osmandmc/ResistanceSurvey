@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using RS.MVC.Applications;
 using RS.MVC.Features.Articles;
 using RS.MVC.Models;
@@ -21,7 +21,8 @@ namespace RS.MVC.Features.Review
             return article == null
                 ? new ReviewArticleResult(ReviewStatus.NotFound)
                 : new ReviewArticleResult(ReviewStatus.Ok, new ReviewArticle(
-                    article.ArticleId, article.Title, article.Url, SourceCatalog.Name(article.SourceId), article.PublishedAt, article.Body));
+                    article.ArticleId, article.Title, article.Url, SourceCatalog.Name(article.SourceId), article.PublishedAt, article.Body,
+                    AiRelevance.From(article.Stages)));
         }
     }
 }

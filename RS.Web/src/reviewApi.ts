@@ -1,5 +1,6 @@
 import type { AiUse } from './aiFillApi'
 import { api } from './api'
+import type { AiRelevance } from './relevance'
 
 export interface ReviewArticle {
   articleId: string
@@ -9,6 +10,8 @@ export interface ReviewArticle {
   publishedAt: string | null
   /** Full text from the pipeline; null until it has been read. */
   body: string | null
+  /** The AI's verdict (pipeline Relevance stage); null when not assessed. */
+  ai: AiRelevance | null
 }
 
 export interface CaseOption {

@@ -12,6 +12,7 @@ import ProtestForm from '@/components/ProtestForm.vue'
 import { emptyProtest, toProtestInput, type ProtestFormValue } from '@/protestForm'
 import DismissDialog from '@/components/DismissDialog.vue'
 import { formatDate } from '@/format'
+import { verdictText } from '@/relevance'
 import { getInbox } from '@/inboxApi'
 import {
   getFormOptions,
@@ -187,7 +188,8 @@ function currentMonth() {
 /** The next open article in the inbox (after this one when it is still open), or back to the inbox. */
 async function goNext() {
   try {
-    const page = await getInbox(inboxQuery.value.month ?? currentMonth(), inboxQuery.value.source ?? null, null)
+    // The articles to review, without the AI's rejections (they wait in their own tab, R21).
+    const page = await getInbox(inboxQuery.value.month ?? currentMonth(), inboxQuery.value.source ?? null, null, 'other')
     const index = page.items.findIndex((i) => i.articleId === articleId.value)
     const next = index >= 0 ? page.items[index + 1] : page.items[0]
     if (next) {
@@ -287,6 +289,10 @@ async function onDismissed() {
         <a :href="article.url" target="_blank" rel="noopener">Kaynağa git ↗</a>
       </div>
       <h1 class="article-title">{{ article.title || article.url }}</h1>
+      <p v-if="article.ai" class="ai-verdict" :class="article.ai.verdict">
+        <strong>AI: {{ verdictText[article.ai.verdict] }}.</strong>
+        <span v-if="article.ai.reason"> {{ article.ai.reason }}</span>
+      </p>
       <p v-if="article.body" class="body">{{ article.body }}</p>
       <p v-else class="no-body">Haberin metni henüz okunmadı; kaynağa giderek okuyabilirsiniz.</p>
     </article>
@@ -551,6 +557,22 @@ async function onDismissed() {
 .suggestion-actions {
   display: flex;
   gap: 6px;
+}
+.ai-verdict {
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #f3f4f6;
+  color: var(--rs-muted);
+}
+.ai-verdict.Uncertain {
+  background: #fdf3e1;
+  color: #7a4a00;
+}
+.ai-verdict.Relevant {
+  background: #e8f4ec;
+  color: #1f5b33;
 }
 .ai-bar,
 .ai-irrelevant :deep(.n-alert-body__content) {

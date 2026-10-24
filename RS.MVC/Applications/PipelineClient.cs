@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
@@ -71,6 +71,7 @@ namespace RS.MVC.Applications
             if (!string.IsNullOrEmpty(query.SourceId)) parameters.Add("source=" + Uri.EscapeDataString(query.SourceId));
             if (!string.IsNullOrEmpty(query.Next)) parameters.Add("next=" + Uri.EscapeDataString(query.Next));
             if (!string.IsNullOrWhiteSpace(query.Search)) parameters.Add("q=" + Uri.EscapeDataString(query.Search.Trim()));
+            if (!string.IsNullOrEmpty(query.Relevance)) parameters.Add("relevance=" + Uri.EscapeDataString(query.Relevance));
 
             var response = await _http.GetAsync("api/articles?" + string.Join("&", parameters));
             await EnsureSuccessAsync(response);

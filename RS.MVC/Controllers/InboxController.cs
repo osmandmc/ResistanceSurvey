@@ -18,13 +18,18 @@ namespace RS.MVC.Controllers
 
         public record DismissResponse(bool OutcomeSent);
 
-        /// <summary>GET /api/inbox?month=2026-11&amp;source=evrensel&amp;next=… (month defaults to the current one).</summary>
+        /// <summary>
+        /// GET /api/inbox?month=2026-11&amp;source=evrensel&amp;relevance=other&amp;next=… (month defaults to the current one;
+        /// relevance: "other" or "notRelevant", the AI's rejections; leave out for all).
+        /// </summary>
         [HttpGet]
-        public async Task<ActionResult<InboxPage>> Get(string month, string source, string next)
+        public async Task<ActionResult<InboxPage>> Get(string month, string source, string next, string relevance)
         {
+            if (relevance is not (null or "" or "other" or "notRelevant"))
+                return BadRequest(new { error = "'relevance' is 'other' or 'notRelevant'" });
             try
             {
-                return await getInbox.Handle(new GetInboxQuery(month, source, next));
+                return await getInbox.Handle(new GetInboxQuery(month, source, next, string.IsNullOrEmpty(relevance) ? null : relevance));
             }
             catch (FormatException)
             {

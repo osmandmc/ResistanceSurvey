@@ -106,7 +106,9 @@ namespace RS.MVC.Models
     }
 
     /// <summary>The article shown beside the form: its full text from the pipeline.</summary>
-    public record ReviewArticle(string ArticleId, string Title, string Url, string SourceName, DateTimeOffset? PublishedAt, string Body);
+    /// <param name="Ai">The pipeline's AI verdict on the article; null when not assessed.</param>
+    public record ReviewArticle(string ArticleId, string Title, string Url, string SourceName, DateTimeOffset? PublishedAt, string Body,
+        RS.MVC.Features.Articles.AiRelevance Ai = null);
 
     /// <summary>
     /// An existing resistance to add a protest to, or to link the article to. Ongoing: its latest protest has no end
