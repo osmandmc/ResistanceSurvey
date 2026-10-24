@@ -229,7 +229,7 @@ public class ReviewTests
             _getArticle, _searchCases, _createCase, _addProtest, _linkToCase,
             new GetCaseFormOptionsHandler(_db), new SearchCompaniesHandler(_db), new CreateCompanyHandler(_db),
             new SuggestCasesForArticleHandler(_db, _pipeline, _searchCases),
-            new GetAiPromptHandler(_pipeline, _db), new CheckAiAnswerHandler(_db))
+            new GetAiPromptHandler(_pipeline, _db), new CheckAiAnswerHandler(_db), new GetAiDraftHandler(_pipeline, new CheckAiAnswerHandler(_db)))
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
         };
@@ -286,4 +286,24 @@ public class ReviewTests
         Assert.Equal(ReviewStatus.Ok, result.Status);
         Assert.Empty(_db.AiSuggestion);
     }
+
+    [Fact]
+    public async Task ThePipelinesDraftIsCheckedLikeAPastedAnswerAndKeptWithItsOrigin()
+    {
+        _pipeline.Drafts["a1"] = new PipelineDraft("a1", "prompt-v2 · gemini-3.5-flash-lite", AiAnswer, true, "…", Oct19);
+        var handler = new GetAiDraftHandler(_pipeline, new CheckAiAnswerHandler(_db));
+
+        var draft = await handler.Handle(new GetAiDraftQuery("a1"));
+        var none = await handler.Handle(new GetAiDraftQuery("no-draft"));
+
+        Assert.Null(none);
+        Assert.Equal(("pipeline · prompt-v2 · gemini-3.5-flash-lite", true, "2026-10-19"), (draft!.Origin, draft.Check.Relevant, draft.Check.Protest.StartDate));
+
+        var request = ReviewValidationTests.CompleteNewCase();
+        request.Ai = new AiUse { Answer = draft.Answer, PromptVersion = "v2", Applied = true, Origin = draft.Origin };
+        await Save("a1", request, "admin");
+
+        Assert.Equal("pipeline · prompt-v2 · gemini-3.5-flash-lite", Assert.Single(_db.AiSuggestion).Origin);
+    }
 }
+

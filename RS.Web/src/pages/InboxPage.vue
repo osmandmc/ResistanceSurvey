@@ -31,9 +31,10 @@ const monthParam = computed(() => {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
 })
 
-// Until AI drafts exist (phase 3), every open article needs a manual review. The AI's relevance verdicts (pipeline B9)
-// split it: what it judged not relevant waits in its own tab, never hidden (R21).
-const tab = ref<'draft' | 'review' | 'notRelevant'>('review')
+// Three parts, by what the pipeline's AI did: articles with a draft to check (R11), the rest to review, and what it
+// judged not relevant, in its own tab and never hidden (R21).
+const parts: InboxPart[] = ['draft', 'other', 'notRelevant']
+const tab = ref<InboxPart>(parts.includes(route.query.part as InboxPart) ? (route.query.part as InboxPart) : 'draft')
 
 /** One part of the inbox, loaded page by page. */
 function inboxPart(part: InboxPart) {
@@ -68,6 +69,7 @@ function inboxPart(part: InboxPart) {
   return reactive({ items, next, loading, loadingMore, loadError, load, count })
 }
 
+const drafts = inboxPart('draft')
 const toReview = inboxPart('other')
 const notRelevant = inboxPart('notRelevant')
 
@@ -77,6 +79,7 @@ watch(
   [monthParam, source],
   () => {
     void router.replace({ query: filterQuery.value })
+    void drafts.load()
     void toReview.load()
     void notRelevant.load()
   },
@@ -94,6 +97,7 @@ function dismiss(item: InboxItem, fromAiList: boolean) {
 }
 
 function onHandled(articleId: string) {
+  drafts.items = drafts.items.filter((i) => i.articleId !== articleId)
   toReview.items = toReview.items.filter((i) => i.articleId !== articleId)
   notRelevant.items = notRelevant.items.filter((i) => i.articleId !== articleId)
   dismissTarget.value = null
@@ -123,15 +127,10 @@ function errorText(error: unknown, fallback: string) {
   <section class="panel">
     <n-tabs v-model:value="tab" type="line" animated class="tabs">
       <!-- display-directive="show" keeps each pane mounted, so tab switches never patch one pane's components with the other's static props. -->
-      <n-tab-pane name="draft" tab="Taslak hazır · 0" display-directive="show">
-        <div class="state">
-          <n-empty description="Yapay zekâ taslakları henüz yok; bu özellik bir sonraki aşamada gelecek." />
-        </div>
-      </n-tab-pane>
-
       <n-tab-pane
         v-for="pane in [
-          { name: 'review', part: toReview, label: 'İncelenecek', empty: 'Bu ay için karar bekleyen haber yok.' },
+          { name: 'draft', part: drafts, label: 'Taslak hazır', empty: 'AI taslağı hazır, karar bekleyen haber yok.' },
+          { name: 'other', part: toReview, label: 'İncelenecek', empty: 'Bu ay için karar bekleyen haber yok.' },
           { name: 'notRelevant', part: notRelevant, label: 'AI: ilgisiz görünüyor', empty: 'AI’ın ilgisiz bulduğu, karar bekleyen haber yok.' },
         ]"
         :key="pane.name"
@@ -139,6 +138,9 @@ function errorText(error: unknown, fallback: string) {
         :tab="`${pane.label} · ${pane.part.count}`"
         display-directive="show"
       >
+        <p v-if="pane.name === 'draft'" class="hint">
+          Yapay zekânın formu önceden doldurduğu haberler. Açınca taslağı kontrol edip forma uygulayabilirsiniz; hiçbir şey onayınız olmadan kaydedilmez.
+        </p>
         <p v-if="pane.name === 'notRelevant'" class="hint">
           Yapay zekânın emek direnişiyle ilgisiz bulduğu haberler. Göz atıp “İlgisiz” ile kapatabilir ya da açıp inceleyebilirsiniz.
         </p>
@@ -157,7 +159,7 @@ function errorText(error: unknown, fallback: string) {
         </div>
 
         <template v-else>
-          <inbox-table :items="pane.part.items" :query="filterQuery" @dismiss="(item) => dismiss(item, pane.name === 'notRelevant')" />
+          <inbox-table :items="pane.part.items" :query="{ ...filterQuery, part: pane.name }" @dismiss="(item) => dismiss(item, pane.name === 'notRelevant')" />
           <div v-if="pane.part.next" class="more">
             <n-button :loading="pane.part.loadingMore" @click="pane.part.load(true)">Daha fazla yükle</n-button>
           </div>

@@ -38,7 +38,7 @@ namespace RS.MVC.Features.Review
                 Decision = decision,
                 DismissKind = decision == AiDecision.Dismissed ? dismissKind : null,
                 ResistanceId = resistanceId,
-                Origin = PastedOrigin,
+                Origin = Trim(ai.Origin, 100) ?? PastedOrigin,
                 PromptVersion = Trim(ai.PromptVersion, 20),
                 Answer = ai.Answer,
                 Relevant = answer.Relevant,

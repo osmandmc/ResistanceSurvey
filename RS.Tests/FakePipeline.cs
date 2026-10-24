@@ -58,6 +58,11 @@ internal sealed class FakePipeline : IPipelineClient
 
     public Task<PipelineCollectResponse> CollectFeedsAsync() => Task.FromResult(Collected);
 
+    /// <summary>AI drafts per article (pipeline B12).</summary>
+    public Dictionary<string, PipelineDraft> Drafts { get; } = [];
+
+    public Task<PipelineDraft> GetDraftAsync(string articleId) => Task.FromResult(Drafts.GetValueOrDefault(articleId)!);
+
     public Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome)
     {
         if (FailOutcomes)

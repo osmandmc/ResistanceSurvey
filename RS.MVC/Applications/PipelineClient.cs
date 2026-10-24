@@ -20,6 +20,9 @@ namespace RS.MVC.Applications
         /// <summary>Null when the pipeline has no such article.</summary>
         Task<PipelineArticleDetail> GetArticleAsync(string articleId);
 
+        /// <summary>The article's latest AI draft (pipeline B12); null when it has none.</summary>
+        Task<PipelineDraft> GetDraftAsync(string articleId);
+
         /// <summary>Counts for the last <paramref name="days"/> days (1–31).</summary>
         Task<PipelineMetrics> GetMetricsAsync(int days);
 
@@ -72,6 +75,7 @@ namespace RS.MVC.Applications
             if (!string.IsNullOrEmpty(query.Next)) parameters.Add("next=" + Uri.EscapeDataString(query.Next));
             if (!string.IsNullOrWhiteSpace(query.Search)) parameters.Add("q=" + Uri.EscapeDataString(query.Search.Trim()));
             if (!string.IsNullOrEmpty(query.Relevance)) parameters.Add("relevance=" + Uri.EscapeDataString(query.Relevance));
+            if (!string.IsNullOrEmpty(query.Draft)) parameters.Add("draft=" + Uri.EscapeDataString(query.Draft));
 
             var response = await _http.GetAsync("api/articles?" + string.Join("&", parameters));
             await EnsureSuccessAsync(response);
@@ -85,6 +89,15 @@ namespace RS.MVC.Applications
                 return null;
             await EnsureSuccessAsync(response);
             return await response.Content.ReadFromJsonAsync<PipelineArticleDetail>();
+        }
+
+        public async Task<PipelineDraft> GetDraftAsync(string articleId)
+        {
+            var response = await _http.GetAsync("api/articles/" + Uri.EscapeDataString(articleId) + "/draft");
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return null;
+            await EnsureSuccessAsync(response);
+            return await response.Content.ReadFromJsonAsync<PipelineDraft>();
         }
 
         public async Task<PipelineMetrics> GetMetricsAsync(int days)

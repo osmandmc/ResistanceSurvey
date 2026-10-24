@@ -13,13 +13,16 @@ using static RS.COMMON.Constants.Enums;
 namespace RS.MVC.Features.Inbox
 {
     /// <summary>
-    /// Open, parsed articles for a month ("yyyy-MM"; empty = this month) and optionally one source. Relevance (R21):
-    /// "notRelevant" = what the AI judged not relevant; "other" = the rest; null = all.
+    /// Open, parsed articles for a month ("yyyy-MM"; empty = this month) and optionally one source. Part: "draft" = with
+    /// an AI draft (R11); "other" = the rest to review (no draft, not rejected by the AI); "notRelevant" = what the AI
+    /// judged not relevant (R21); null = all.
     /// </summary>
-    public record GetInboxQuery(string Month, string SourceId, string Next, string Relevance = null);
+    public record GetInboxQuery(string Month, string SourceId, string Next, string Part = null);
 
     /// <param name="Ai">The AI's verdict and reason; null when not assessed.</param>
-    public record InboxItem(string ArticleId, string Title, string SourceId, string SourceName, DateTimeOffset? PublishedAt, string Url, AiRelevance Ai = null);
+    /// <param name="Draft">The AI draft's one-line summary ("company · protest type · city · date"); null without a draft.</param>
+    public record InboxItem(string ArticleId, string Title, string SourceId, string SourceName, DateTimeOffset? PublishedAt, string Url,
+        AiRelevance Ai = null, string Draft = null);
 
     public record InboxPage(IReadOnlyList<InboxItem> Items, string Next);
 
@@ -37,7 +40,15 @@ namespace RS.MVC.Features.Inbox
         public async Task<InboxPage> Handle(GetInboxQuery query)
         {
             var (from, to) = MonthRange(query.Month);
-            var page = await pipeline.ListArticlesAsync(new PipelineArticleQuery(from, to, query.SourceId, PageSize: PageSize, Next: query.Next, Relevance: query.Relevance));
+            var (relevance, draft) = query.Part switch
+            {
+                "draft" => (null, "ready"),
+                "other" => ("other", "none"),
+                "notRelevant" => ("notRelevant", (string)null),
+                _ => ((string)null, (string)null),
+            };
+            var page = await pipeline.ListArticlesAsync(new PipelineArticleQuery(
+                from, to, query.SourceId, PageSize: PageSize, Next: query.Next, Relevance: relevance, Draft: draft));
 
             var ids = page.Items.Select(i => i.ArticleId).ToList();
             var handled = await db.News
@@ -53,10 +64,17 @@ namespace RS.MVC.Features.Inbox
             var handledIds = handled.Select(h => h.ArticleId).ToHashSet();
             var items = page.Items
                 .Where(i => !handledIds.Contains(i.ArticleId))
-                .Select(i => new InboxItem(i.ArticleId, i.Title, i.SourceId, SourceCatalog.Name(i.SourceId), i.PublishedAt, i.Url, AiRelevance.From(i.Stages)))
+                .Select(i => new InboxItem(i.ArticleId, i.Title, i.SourceId, SourceCatalog.Name(i.SourceId), i.PublishedAt, i.Url,
+                    AiRelevance.From(i.Stages), DraftSummary(i.Stages)))
                 .ToList();
             return new InboxPage(items, page.Next);
         }
+
+        /// <summary>The Extract stage leaves "Draft" with the summary as its reason (pipeline B12).</summary>
+        private static string DraftSummary(IReadOnlyDictionary<string, PipelineStageResult> stages) =>
+            stages != null && stages.TryGetValue("Extracted", out var stage) && stage.Status == "Succeeded" && stage.Answer == "Draft"
+                ? stage.Reason ?? "Taslak hazır"
+                : null;
 
         private async Task ResendOutcomeAsync(int newsId, string articleId, Status status)
         {

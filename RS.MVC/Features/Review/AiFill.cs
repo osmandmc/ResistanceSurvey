@@ -423,4 +423,25 @@ namespace RS.MVC.Features.Review
 
         private static AiItem[] Plain(string value) => value == null ? [] : [new AiItem(value, value, AiItemStatus.Matched)];
     }
+
+    public record GetAiDraftQuery(string ArticleId);
+
+    /// <param name="Answer">The draft's JSON, sent back with the decision so it is kept beside it (R19c).</param>
+    /// <param name="Origin">"pipeline · prompt-v2 · model": what made the draft.</param>
+    /// <param name="Check">The draft checked against the lists now, exactly as a pasted answer.</param>
+    public record AiDraft(string Answer, string Origin, DateTimeOffset CreatedAt, AiCheckResult Check);
+
+    /// <summary>The pipeline's AI draft of the case form for an article (R11, pipeline B12); null when it has none.</summary>
+    public class GetAiDraftHandler(IPipelineClient pipeline, CheckAiAnswerHandler check)
+    {
+        public async Task<AiDraft> Handle(GetAiDraftQuery query)
+        {
+            var draft = await pipeline.GetDraftAsync(query.ArticleId);
+            if (draft == null || string.IsNullOrWhiteSpace(draft.Answer))
+                return null;
+            var result = await check.Handle(new CheckAiAnswerCommand(draft.Answer));
+            return result.Error != null ? null : new AiDraft(draft.Answer, "pipeline · " + draft.Version, draft.CreatedAt, result);
+        }
+    }
 }
+

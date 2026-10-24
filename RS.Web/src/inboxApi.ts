@@ -11,6 +11,8 @@ export interface InboxItem {
   url: string
   /** The AI's verdict (pipeline Relevance stage); null when not assessed. */
   ai: AiRelevance | null
+  /** The AI draft's one-line summary ("company · protest type · city · date"); null without a draft. */
+  draft: string | null
 }
 
 export interface InboxPage {
@@ -24,8 +26,10 @@ export interface DismissResponse {
   outcomeSent: boolean
 }
 
-/** Which part of the inbox: what the AI judged not relevant, or everything else. */
-export type InboxPart = 'other' | 'notRelevant'
+/**
+ * Which part of the inbox: with an AI draft (R11), what the AI judged not relevant (R21), or the rest to review.
+ */
+export type InboxPart = 'draft' | 'other' | 'notRelevant'
 
 /** month: "yyyy-MM"; source: pipeline source id, or null for all. */
 export function getInbox(month: string, source: string | null, next: string | null, part: InboxPart | null = null) {
