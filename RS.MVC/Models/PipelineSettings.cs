@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -22,10 +22,13 @@ namespace RS.MVC.Models
         /// <summary>App source number → pipeline source id, for the sources handled by the pipeline (e.g. 1 → "evrensel").</summary>
         public Dictionary<int, string> Sources { get; set; } = new();
 
-        /// <summary>When the pipeline address is set, it must be a full URL and come with its key.</summary>
+        /// <summary>
+        /// When the pipeline address is set, it must be a full URL and come with its key; a pipeline running on this
+        /// machine (func start, F11) needs no key.
+        /// </summary>
         public bool IsValid() =>
             string.IsNullOrWhiteSpace(BaseUrl)
-            || (Uri.TryCreate(BaseUrl, UriKind.Absolute, out _) && !string.IsNullOrWhiteSpace(FunctionKey));
+            || (Uri.TryCreate(BaseUrl, UriKind.Absolute, out var url) && (url.IsLoopback || !string.IsNullOrWhiteSpace(FunctionKey)));
 
         /// <summary>True when the news of this app source goes to the pipeline (all news does since R12b; the source must be mapped).</summary>
         public bool UsesPipeline(int source) => Sources.ContainsKey(source);
