@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RS.COMMON.Entities;
 using RS.COMMON.Entities.LookupEntity;
 using RS.EF;
@@ -102,4 +102,36 @@ public class ArchiveTests
     [Fact]
     public async Task TooShortSearchIsRefused() =>
         await Assert.ThrowsAsync<ArgumentException>(() => List(search: " a "));
+
+    [Fact]
+    public async Task TheAisWorkShowsAndCanBeListedButAnAiFailureIsNoReadingError()
+    {
+        Add("rejected", new Dictionary<string, PipelineStageResult>
+        {
+            ["Submitted"] = Ok(0), ["Parsed"] = Ok(1),
+            ["Relevance"] = new("Succeeded", Nov3.AddMinutes(2), "relevance-v1", "Spor haberi.", "NotRelevant"),
+        });
+        Add("drafted", new Dictionary<string, PipelineStageResult>
+        {
+            ["Submitted"] = Ok(0), ["Parsed"] = Ok(1),
+            ["Relevance"] = new("Succeeded", Nov3.AddMinutes(2), "relevance-v1", "Grev.", "Relevant"),
+            ["Extracted"] = new("Succeeded", Nov3.AddMinutes(3), "prompt-v2", "Örnek Metal · Fiili grev", "Draft"),
+        });
+        Add("aiFailed", new Dictionary<string, PipelineStageResult>
+        {
+            ["Submitted"] = Ok(0), ["Parsed"] = Ok(1),
+            ["Relevance"] = new("Failed", Nov3.AddMinutes(2), "relevance-v1", "No JSON object in the answer."),
+        });
+
+        var all = (await List()).Items.ToDictionary(i => i.ArticleId);
+        await List(ArchiveFilter.AiNotRelevant);
+        await List(ArchiveFilter.AiDraft);
+
+        Assert.Equal(new RS.MVC.Features.Articles.AiRelevance("NotRelevant", "Spor haberi."), all["rejected"].Ai);
+        Assert.Equal("Örnek Metal · Fiili grev", all["drafted"].Draft);
+        Assert.Equal(ArchiveState.Open, all["aiFailed"].State); // still readable and waiting in the inbox
+        Assert.Equal([("notRelevant", (string?)null, "any"), (null, "ready", "any")],
+            _pipeline.Queries.Skip(1).Select(q => (q.Relevance, q.Draft, q.Outcome)));
+    }
 }
+
