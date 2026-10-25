@@ -61,6 +61,7 @@ public class AiFillTests
         Assert.True(result.Relevant);
         var c = result.Case;
         Assert.Equal((1, 1, 10, (string?)null, false), (c.CategoryId, c.TargetType, c.CompanyId, c.NewCompanyName, c.IsOutsource));
+        Assert.Equal("Örnek Metal Sanayi ve Ticaret A.Ş.", c.CompanyName); // the registered name, for the form to show
         Assert.Equal([20], c.CorporationIds);
         Assert.Equal(["Gebze Dayanışma Platformu"], c.NewCorporationNames);
         Assert.Equal([30], c.ReasonIds);
