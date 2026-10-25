@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using RS.COMMON.Entities;
@@ -35,4 +35,16 @@ public class SchemaTests
         // A case its protests and links, a protest its links and locations, a news item its case links. Never a list value.
         Assert.Equal([nameof(News), nameof(Protesto), nameof(Resistance)], cascades);
     }
+
+    [Fact]
+    public void TheUnionNamesAreKeptBeforeSchemaFixesDropsTheirTable()
+    {
+        using var db = SqlServer();
+
+        var migrations = db.Database.GetMigrations().ToList();
+
+        // N2: production runs migrations in this order, so the names are copied while TradeUnion still exists.
+        Assert.Equal(migrations.IndexOf("20261020222827_SchemaFixes") - 1, migrations.IndexOf("20261020222826_KeepTradeUnionNames"));
+    }
 }
+
