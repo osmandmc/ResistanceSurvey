@@ -1,0 +1,20 @@
+# A local SQL Server for running the app on your machine (F11): see "Local database" in README.md.
+#   docker compose up -d     start (the data stays in a Docker volume)
+#   docker compose down      stop
+# The password only protects this local container; set LOCAL_SQL_PASSWORD to choose your own.
+services:
+  sql:
+    # Azure SQL Edge: the SQL Server engine, native on Apple silicon (SQL Server 2022's image is Intel-only and crashes
+    # under Docker's emulation). Retired by Microsoft, but the image still works; fine for a local copy.
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${LOCAL_SQL_PASSWORD:-Local-dev-only-1}"
+      MSSQL_COLLATION: Turkish_CI_AS
+    ports:
+      - "127.0.0.1:1433:1433"
+    volumes:
+      - sql-data:/var/opt/mssql
+
+volumes:
+  sql-data:

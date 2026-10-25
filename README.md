@@ -26,6 +26,24 @@ User-secrets are read when the app runs in the Development environment, and by t
 
 **Test environment** (Azure): see `infra/README.md`.
 
+## Local database
+
+A local run must not touch a real database: in Development the app refuses to start unless the database is on this
+machine (`LocalDev:AllowRemoteDatabase=true` overrides it). Use a local copy of the Azure **test** database:
+
+```bash
+docker compose up -d                                      # SQL Edge (the SQL Server engine, native on Apple silicon)
+SOURCE_DB='<test database connection string>' tools/copy-test-db.sh
+```
+
+The script exports the test database (read only) to `~/.direnistakip/test-copy.bacpac`, imports it into the local
+server and points the app's user-secrets at it; run it again to refresh the copy. The copy holds real data: it stays in
+your home folder, never in the repository. Needs `sqlpackage` (`dotnet tool install -g microsoft.sqlpackage`).
+
+In Development the app talks to a pipeline running on this machine (`http://localhost:7071`, no key; see the pipeline's
+README, "Local development"). To use the Azure test pipeline instead, set `Pipeline:BaseUrl` and `Pipeline:FunctionKey`
+in user-secrets.
+
 ## New front end (RS.Web)
 
 Vue 3 + TypeScript + Vite + [Naive UI](https://www.naiveui.com). Served by RS.MVC at `/app` (the site root redirects there); the old Razor pages were removed in R12c and live on only in the `legacy` branch. Needs Node 22.12+ (the current LTS is fine).

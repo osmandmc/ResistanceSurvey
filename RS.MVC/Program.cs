@@ -73,6 +73,13 @@ var missing = new[] { "ConnectionStrings:RSConnectionString", "AppSettings:Admin
 if (missing.Count > 0)
     throw new InvalidOperationException("Missing configuration: " + string.Join(", ", missing) + ". Locally use 'dotnet user-secrets'; see README.");
 
+// F11: a local run must not write to a real database (it once used production's). In Development the database has to
+// be on this machine, e.g. the copy made by tools/copy-test-db.sh; LocalDev:AllowRemoteDatabase=true overrides.
+if (builder.Environment.IsDevelopment() && !configuration.GetValue<bool>("LocalDev:AllowRemoteDatabase")
+    && !RS.MVC.Infrastructure.LocalDatabase.IsLocal(configuration.GetConnectionString("RSConnectionString")))
+    throw new InvalidOperationException(
+        "Development uses a database on another machine (possibly production). Make a local copy with tools/copy-test-db.sh; see README, \"Local database\".");
+
 // Sign-in: an HttpOnly cookie set by /api/auth/login (the old pages' bearer token went with them, R12c).
 builder.Services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
