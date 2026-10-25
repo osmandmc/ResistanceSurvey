@@ -1,9 +1,11 @@
 import { api } from './api'
+import type { AiRelevance } from './relevance'
 
 /** Where an article stands; the app's decision comes first. */
 export type ArchiveState = 'Processing' | 'Failed' | 'Open' | 'Linked' | 'Dismissed'
 
-export type ArchiveFilter = 'all' | 'open' | 'handled' | 'failed'
+/** aiNotRelevant: judged not relevant by the AI; aiDraft: with an AI draft (whatever researchers decided). */
+export type ArchiveFilter = 'all' | 'open' | 'handled' | 'failed' | 'aiNotRelevant' | 'aiDraft'
 
 export interface ArchiveEvent {
   /** A pipeline stage ("Submitted", "Fetched", "Parsed" …) or "Outcome". */
@@ -28,6 +30,10 @@ export interface ArchiveItem {
   reason: string | null
   cases: { id: number; name: string }[]
   timeline: ArchiveEvent[]
+  /** The AI's verdict; null when not assessed. */
+  ai: AiRelevance | null
+  /** The AI draft's one-line summary; null without a draft. */
+  draft: string | null
 }
 
 export interface ArchivePage {

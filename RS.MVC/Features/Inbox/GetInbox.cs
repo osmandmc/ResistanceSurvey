@@ -65,16 +65,10 @@ namespace RS.MVC.Features.Inbox
             var items = page.Items
                 .Where(i => !handledIds.Contains(i.ArticleId))
                 .Select(i => new InboxItem(i.ArticleId, i.Title, i.SourceId, SourceCatalog.Name(i.SourceId), i.PublishedAt, i.Url,
-                    AiRelevance.From(i.Stages), DraftSummary(i.Stages)))
+                    AiRelevance.From(i.Stages), AiRelevance.DraftSummary(i.Stages)))
                 .ToList();
             return new InboxPage(items, page.Next);
         }
-
-        /// <summary>The Extract stage leaves "Draft" with the summary as its reason (pipeline B12).</summary>
-        private static string DraftSummary(IReadOnlyDictionary<string, PipelineStageResult> stages) =>
-            stages != null && stages.TryGetValue("Extracted", out var stage) && stage.Status == "Succeeded" && stage.Answer == "Draft"
-                ? stage.Reason ?? "Taslak hazır"
-                : null;
 
         private async Task ResendOutcomeAsync(int newsId, string articleId, Status status)
         {

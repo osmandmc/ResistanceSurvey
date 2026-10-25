@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { verdictText, type AiVerdict } from '@/relevance'
+import { verdictText, verdictType, type AiVerdict } from '@/relevance'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NDatePicker, NEmpty, NFormItem, NInput, NSelect, NSpin, NTag } from 'naive-ui'
@@ -20,7 +20,7 @@ function initialMonth() {
 }
 const month = ref<number | null>(initialMonth())
 const source = ref(text('source'))
-const filter = ref<ArchiveFilter>((['all', 'open', 'handled', 'failed'] as const).find((f) => f === text('filter')) ?? 'all')
+const filter = ref<ArchiveFilter>((['all', 'open', 'handled', 'failed', 'aiNotRelevant', 'aiDraft'] as const).find((f) => f === text('filter')) ?? 'all')
 const searchInput = ref(text('q'))
 // The search runs on Enter or "Ara", not on every key: each search reads the whole archive.
 const search = ref(searchInput.value.trim())
@@ -35,6 +35,8 @@ const filterOptions: { label: string; value: ArchiveFilter }[] = [
   { label: 'Gelen kutusunda', value: 'open' },
   { label: 'İşlendi (vaka ya da ilgisiz)', value: 'handled' },
   { label: 'Hata', value: 'failed' },
+  { label: 'AI: ilgisiz bulduğu', value: 'aiNotRelevant' },
+  { label: 'AI: taslak hazırladığı', value: 'aiDraft' },
 ]
 const monthParam = computed(() => {
   if (month.value === null) return null
@@ -195,6 +197,7 @@ const emptyText = computed(() =>
               <th>Kaynak</th>
               <th>Tarih</th>
               <th>Durum</th>
+              <th>AI</th>
               <th><span class="visually-hidden">İşlemler</span></th>
             </tr>
           </thead>
@@ -213,6 +216,11 @@ const emptyText = computed(() =>
                 <td class="nowrap">
                   <n-tag size="small" :type="stateLabel[item.state].type" :bordered="false">{{ stateLabel[item.state].text }}</n-tag>
                 </td>
+                <td class="ai-cell" :title="[item.ai?.reason, item.draft ? `Taslak: ${item.draft}` : null].filter(Boolean).join('\n') || undefined">
+                  <n-tag v-if="item.ai" size="small" :type="verdictType[item.ai.verdict]" :bordered="false">{{ verdictText[item.ai.verdict] }}</n-tag>
+                  <span v-else class="muted-text">—</span>
+                  <n-tag v-if="item.draft" size="small" :bordered="false" class="draft-tag">taslak</n-tag>
+                </td>
                 <td class="actions">
                   <router-link v-if="item.state === 'Open'" :to="`/review/${encodeURIComponent(item.articleId)}`" custom v-slot="{ navigate }">
                     <n-button type="primary" size="small" @click="navigate">İncele</n-button>
@@ -223,7 +231,7 @@ const emptyText = computed(() =>
                 </td>
               </tr>
               <tr v-if="expanded.has(item.articleId)" class="timeline-row">
-                <td colspan="5">
+                <td colspan="6">
                   <ol class="timeline">
                     <li v-for="(event, i) in item.timeline" :key="i" :class="{ failed: event.status === 'Failed' }">
                       <span class="when">{{ formatDateTime(event.at) }}</span>
@@ -245,6 +253,19 @@ const emptyText = computed(() =>
 </template>
 
 <style scoped>
+.ai-cell {
+  white-space: nowrap;
+}
+.ai-cell > * + * {
+  margin-left: 4px;
+}
+.draft-tag {
+  --n-color: #efeafb;
+  --n-text-color: #5c3db0;
+}
+.muted-text {
+  color: var(--rs-muted);
+}
 .page-head {
   margin-bottom: 16px;
 }

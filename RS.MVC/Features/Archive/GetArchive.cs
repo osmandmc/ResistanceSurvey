@@ -26,6 +26,12 @@ namespace RS.MVC.Features.Archive
 
         /// <summary>A pipeline stage failed (download, reading the page …).</summary>
         Failed,
+
+        /// <summary>Judged not relevant by the AI (pipeline B9), whatever researchers decided: to check the AI (R23).</summary>
+        AiNotRelevant,
+
+        /// <summary>With an AI draft (pipeline B12), whatever researchers decided.</summary>
+        AiDraft,
     }
 
     /// <summary>Where an article stands, the app's decision first (D-010). Sent as its name.</summary>
@@ -51,7 +57,7 @@ namespace RS.MVC.Features.Archive
     /// </summary>
     public record ArchiveEvent(string Step, string Status, DateTimeOffset At, string Reason, string Answer = null);
 
-    /// <summary>Reason: why it failed or why it was dismissed.</summary>
+    /// <summary>Reason: why it failed or why it was dismissed. Ai: the AI's verdict; Draft: its draft's summary (R23).</summary>
     public record ArchiveItem(
         string ArticleId,
         string Title,
@@ -62,7 +68,9 @@ namespace RS.MVC.Features.Archive
         ArchiveState State,
         string Reason,
         IReadOnlyList<ArchiveCase> Cases,
-        IReadOnlyList<ArchiveEvent> Timeline);
+        IReadOnlyList<ArchiveEvent> Timeline,
+        AiRelevance Ai = null,
+        string Draft = null);
 
     public record ArchivePage(IReadOnlyList<ArchiveItem> Items, string Next);
 
@@ -95,10 +103,13 @@ namespace RS.MVC.Features.Archive
                 ArchiveFilter.Open => ("parsed", "open"),
                 ArchiveFilter.Handled => ("all", "handled"),
                 ArchiveFilter.Failed => ("failed", "any"),
+                ArchiveFilter.AiNotRelevant or ArchiveFilter.AiDraft => ("parsed", "any"),
                 _ => ("all", "any"),
             };
             var page = await pipeline.ListArticlesAsync(
-                new PipelineArticleQuery(from, to, query.SourceId, status, outcome, PageSize, query.Next, search));
+                new PipelineArticleQuery(from, to, query.SourceId, status, outcome, PageSize, query.Next, search,
+                    Relevance: query.Filter == ArchiveFilter.AiNotRelevant ? "notRelevant" : null,
+                    Draft: query.Filter == ArchiveFilter.AiDraft ? "ready" : null));
 
             var ids = page.Items.Select(i => i.ArticleId).ToList();
             var decisions = await db.News
@@ -119,7 +130,8 @@ namespace RS.MVC.Features.Archive
                 var (state, reason) = StateOf(article, decision?.Status);
                 return new ArchiveItem(
                     article.ArticleId, article.Title, article.Url, article.SourceId, SourceCatalog.Name(article.SourceId), article.PublishedAt,
-                    state, reason, decision == null ? [] : cases[decision.Id].ToList(), Timeline(article));
+                    state, reason, decision == null ? [] : cases[decision.Id].ToList(), Timeline(article),
+                    AiRelevance.From(article.Stages), AiRelevance.DraftSummary(article.Stages));
             }).ToList();
             return new ArchivePage(items, page.Next);
         }
@@ -139,8 +151,10 @@ namespace RS.MVC.Features.Archive
                     return (ArchiveState.Dismissed, dismissReason);
             }
 
+            // Only the steps that keep an article out of the inbox make it "failed"; an AI step that failed (an unreadable
+            // answer) leaves it readable and open, and shows in its history.
             var stages = article.Stages ?? new Dictionary<string, PipelineStageResult>();
-            var failed = stages.Where(s => s.Value.Status == "Failed").OrderByDescending(s => s.Value.At).Select(s => s.Value).FirstOrDefault();
+            var failed = stages.Where(s => s.Value.Status == "Failed" && s.Key is "Submitted" or "Fetched" or "Parsed").OrderByDescending(s => s.Value.At).Select(s => s.Value).FirstOrDefault();
             if (failed != null)
                 return (ArchiveState.Failed, failed.Reason);
             return stages.TryGetValue("Parsed", out var parsed) && parsed.Status == "Succeeded"
