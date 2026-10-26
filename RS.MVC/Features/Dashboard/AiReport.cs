@@ -70,9 +70,10 @@ namespace RS.MVC.Features.Dashboard
         public static readonly string[] DismissColumns = ["NotLabour", "AlreadyRecorded", "OutOfScope", "Other", "Unknown"];
         public static readonly string[] Verdicts = ["Relevant", "Uncertain", "NotRelevant", "NotAssessed"];
 
-        private record Suggested(AiCaseValues Case, AiProtestValues Protest);
+        internal record Suggested(AiCaseValues Case, AiProtestValues Protest);
 
-        private record Saved(CaseInput Case, ProtestInput Protest);
+        /// <summary>What was saved with an AI answer (AiSuggestion.Saved): the case for a new case, and the protest.</summary>
+        internal record Saved(CaseInput Case, ProtestInput Protest);
 
         public async Task<AiReport> Handle(AiReportQuery query)
         {
@@ -111,7 +112,7 @@ namespace RS.MVC.Features.Dashboard
                 fields.Result(), await RelevanceAsync(from, to, query.RelevanceVersion));
         }
 
-        private static T Read<T>(string json) where T : class
+        internal static T Read<T>(string json) where T : class
         {
             try
             {
@@ -182,7 +183,7 @@ namespace RS.MVC.Features.Dashboard
         }
 
         /// <summary>Names of the list values, for the items of list fields.</summary>
-        private sealed class Names
+        internal sealed class Names
         {
             public Dictionary<int, string> Companies { get; private init; }
             public Dictionary<string, Dictionary<int, string>> Lists { get; private init; }
@@ -205,9 +206,13 @@ namespace RS.MVC.Features.Dashboard
             public string Of(string list, int id) => Lists[list].TryGetValue(id, out var name) ? name : $"#{id}";
         }
 
-        /// <summary>Counts per field; the fields in the order of the form.</summary>
-        private sealed class FieldTally(Names names)
+        /// <summary>
+        /// Counts per field; the fields in the order of the form. With a parent, everything counted is counted there too
+        /// (one article's tally inside a total).
+        /// </summary>
+        internal sealed class FieldTally(Names names, FieldTally parent = null)
         {
+            private readonly Names _names = names ?? parent!._names;
             private readonly Dictionary<string, Counter> _fields = new();
             private readonly List<(string Field, string Label, bool IsList)> _order =
             [
@@ -244,6 +249,7 @@ namespace RS.MVC.Features.Dashboard
 
             private void Scalar<T>(string field, T suggested, T saved)
             {
+                parent?.Scalar(field, suggested, saved);
                 var hasSuggested = suggested is not null && !Equals(suggested, "");
                 var hasSaved = saved is not null && !Equals(saved, "");
                 var counter = Field(field);
@@ -260,6 +266,7 @@ namespace RS.MVC.Features.Dashboard
             {
                 var s = (suggested ?? []).Where(x => x != null).ToHashSet();
                 var v = (saved ?? []).Where(x => x != null).ToHashSet();
+                parent?.List(field, s, v);
                 var counter = Field(field);
                 foreach (var item in s.Union(v))
                 {
@@ -271,11 +278,11 @@ namespace RS.MVC.Features.Dashboard
             }
 
             // List items by name, so an id and the same typed-in name count as one.
-            private IEnumerable<string> Ids(string list, IEnumerable<int> ids) => (ids ?? []).Select(id => names.Of(list, id));
+            private IEnumerable<string> Ids(string list, IEnumerable<int> ids) => (ids ?? []).Select(id => _names.Of(list, id));
 
             // Compared as Tanımlar' "Olası tekrarlar" does: case, Turkish letters and legal-form words ignored.
             private string CompanyName(int? id, string newName) =>
-                id is { } i ? (names.Companies.TryGetValue(i, out var n) ? Key(n) : $"#{i}")
+                id is { } i ? (_names.Companies.TryGetValue(i, out var n) ? Key(n) : $"#{i}")
                 : string.IsNullOrWhiteSpace(newName) ? null : Key(newName);
 
             private static string Key(string name) => DuplicateKey.For(DefinitionKind.Companies, name);
@@ -314,6 +321,10 @@ namespace RS.MVC.Features.Dashboard
             }
 
             private static string Day(string value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim()[..Math.Min(10, value.Trim().Length)];
+
+            /// <summary>Over all fields: values (or list items) the AI gave that were kept, and all it gave.</summary>
+            public (int Kept, int Given) Totals() =>
+                (_fields.Values.Sum(c => c.Kept), _fields.Values.Sum(c => c.Kept + c.Changed + c.Removed));
 
             public IReadOnlyList<AiReportField> Result() => _order
                 .Where(f => _fields.TryGetValue(f.Field, out var c) && c.Kept + c.Changed + c.Removed + c.Added > 0) // never filled by either

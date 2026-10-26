@@ -46,14 +46,34 @@ namespace RS.MVC.Features.Review
 
             var lists = await AiLists.LoadAsync(db);
             var listText = string.Join("\n\n", lists.Select(l => $"### {l.Title}\n" + string.Join('\n', l.Values.Select(v => "- " + v))));
+            var (template, version) = await TemplateAsync();
 
-            var text = Template.Value
+            var text = template
                 .Replace("{{LISTS}}", listText)
                 .Replace("{{SOURCE}}", SourceCatalog.Name(article.SourceId))
                 .Replace("{{DATE}}", article.PublishedAt?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "bilinmiyor")
                 .Replace("{{TITLE}}", article.Title ?? "")
                 .Replace("{{TEXT}}", article.Body.Trim());
-            return new AiPromptResult(ReviewStatus.Ok, new AiPrompt(text, Version));
+            return new AiPromptResult(ReviewStatus.Ok, new AiPrompt(text, version));
+        }
+
+        /// <summary>
+        /// The extraction prompt edited and activated in the app (R28) when there is one, so pasted answers and the
+        /// pipeline's drafts come from the same prompt; otherwise (or when the pipeline cannot be reached) the copy here.
+        /// </summary>
+        private async Task<(string Template, string Version)> TemplateAsync()
+        {
+            try
+            {
+                var extraction = (await pipeline.GetPromptsAsync()).Prompts.FirstOrDefault(p => p.Name == "extraction");
+                if (extraction is { Builtin: not null } && extraction.Version != extraction.Builtin && !string.IsNullOrWhiteSpace(extraction.Text))
+                    return (extraction.Text, extraction.Version);
+            }
+            catch (System.Net.Http.HttpRequestException)
+            {
+                // the copy below
+            }
+            return (Template.Value, Version);
         }
     }
 

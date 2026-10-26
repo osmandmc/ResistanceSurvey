@@ -22,7 +22,7 @@ export interface ActivityPage {
   usernames: string[]
 }
 
-export type ActivityArea = 'inbox' | 'cases' | 'definitions' | 'users' | 'uploads'
+export type ActivityArea = 'inbox' | 'cases' | 'definitions' | 'users' | 'uploads' | 'prompts'
 
 export const areas: { value: ActivityArea; label: string }[] = [
   { value: 'inbox', label: 'Gelen Kutusu' },
@@ -30,6 +30,7 @@ export const areas: { value: ActivityArea; label: string }[] = [
   { value: 'definitions', label: 'Tanımlar' },
   { value: 'users', label: 'Kullanıcılar' },
   { value: 'uploads', label: 'Yükleme' },
+  { value: 'prompts', label: 'AI istemleri' },
 ]
 
 /** What was done, as people read it. */
@@ -64,6 +65,9 @@ const actionLabels: Record<string, string> = {
   'upload.excel': 'Excel yükledi',
   'upload.links': 'Bağlantı gönderdi',
   'upload.local-news': 'Eski haberleri gönderdi',
+  'prompt.create': 'İstem sürümü kaydetti',
+  'prompt.try': 'İstemi denedi',
+  'prompt.activate': 'İstemi etkinleştirdi',
 }
 
 export const actionLabel = (action: string) => actionLabels[action] ?? action
@@ -74,6 +78,7 @@ export function activityLink(row: ActivityRow): string | null {
   if (row.subject === 'companies' && row.subjectId) return `/definitions/companies/${row.subjectId}`
   if (row.subject === 'user') return '/definitions/users'
   if (row.subject && row.action.startsWith('definition.')) return `/definitions/${row.subject}`
+  if (row.action.startsWith('prompt.')) return '/definitions/prompts'
   return null
 }
 

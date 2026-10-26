@@ -12,7 +12,8 @@ namespace RS.MVC.Controllers
     [Route("api/status")]
     [Authorize]
     public class StatusController(GetStatusHandler getStatus, CollectFeedsHandler collectFeeds, QueueForAiHandler queueForAi, GetAiPromptsHandler getPrompts,
-        RS.MVC.Features.Review.ListsPublisher lists, AiReportHandler aiReport) : ControllerBase
+        RS.MVC.Features.Review.ListsPublisher lists, AiReportHandler aiReport, CreatePromptVersionHandler createPrompt,
+        TryPromptHandler tryPrompt, ActivatePromptHandler activatePrompt) : ControllerBase
     {
         /// <summary>GET /api/status?days=14 (1–31).</summary>
         [HttpGet]
@@ -42,6 +43,45 @@ namespace RS.MVC.Controllers
         /// <summary>GET /api/status/prompts — "AI istemleri": the prompts the pipeline's AI stages run now.</summary>
         [HttpGet("prompts")]
         public async Task<AiPrompts> Prompts() => await getPrompts.Handle();
+
+        public record PromptVersionRequest(string Text, string Note);
+
+        public record PromptActivateRequest(string Version);
+
+        /// <summary>POST /api/status/prompts/{name}/versions — an edited prompt saved as a new version, not active yet (R28, yönetici).</summary>
+        [HttpPost("prompts/{name}/versions")]
+        [Authorize(Roles = RS.COMMON.Constants.Role.Admin)]
+        public async Task<ActionResult<PromptVersionResult>> CreatePromptVersion(string name, PromptVersionRequest request)
+        {
+            if (!PromptNames.IsKnown(name))
+                return NotFound(new { error = "Bilinmeyen istem." });
+            var result = await createPrompt.Handle(new CreatePromptVersionCommand(name, request?.Text, request?.Note, User.Identity?.Name));
+            return result.Error == null ? result : BadRequest(new { error = result.Error });
+        }
+
+        /// <summary>POST /api/status/prompts/{name}/versions/{version}/try — "Dene": the version on up to 10 decided articles (R28, yönetici).</summary>
+        [HttpPost("prompts/{name}/versions/{version}/try")]
+        [Authorize(Roles = RS.COMMON.Constants.Role.Admin)]
+        public async Task<ActionResult<PromptTry>> TryPrompt(string name, string version)
+        {
+            if (!PromptNames.IsKnown(name))
+                return NotFound(new { error = "Bilinmeyen istem." });
+            return await tryPrompt.Handle(name, version, User.Identity?.Name) is { } result
+                ? result
+                : NotFound(new { error = "Bu sürüm işleme hattında yok." });
+        }
+
+        /// <summary>POST /api/status/prompts/{name}/active — { version } (or "builtin"): the pipeline runs it from now on (R28, yönetici).</summary>
+        [HttpPost("prompts/{name}/active")]
+        [Authorize(Roles = RS.COMMON.Constants.Role.Admin)]
+        public async Task<IActionResult> ActivatePrompt(string name, PromptActivateRequest request)
+        {
+            if (!PromptNames.IsKnown(name) || string.IsNullOrWhiteSpace(request?.Version))
+                return NotFound(new { error = "Bilinmeyen istem ya da sürüm." });
+            return await activatePrompt.Handle(new ActivatePromptCommand(name, request.Version.Trim(), User.Identity?.Name))
+                ? NoContent()
+                : NotFound(new { error = "Bu sürüm işleme hattında yok." });
+        }
 
         /// <summary>POST /api/status/lists — "Listeleri şimdi gönder": the app's list values to the pipeline now (R30).</summary>
         [HttpPost("lists")]

@@ -15,7 +15,7 @@ namespace RS.MVC.Features.Activity
             new(e.Id, DateTime.SpecifyKind(e.At, DateTimeKind.Utc), e.Username, e.Action, e.CaseId, e.ArticleId, e.Subject, e.SubjectId, e.Summary);
     }
 
-    /// <summary>Area: "inbox", "cases", "definitions", "users" or "uploads" (null: all).</summary>
+    /// <summary>Area: "inbox", "cases", "definitions", "users", "uploads" or "prompts" (null: all).</summary>
     public record ListActivityQuery(string Username = null, string Area = null, int Page = 1);
 
     /// <summary>Usernames: everyone who appears in the log, for the person filter.</summary>
@@ -33,6 +33,7 @@ namespace RS.MVC.Features.Activity
             ["definitions"] = ["definition."],
             ["users"] = ["user."],
             ["uploads"] = ["upload."],
+            ["prompts"] = ["prompt."],
         };
 
         public static bool IsArea(string area) => area == null || Areas.ContainsKey(area);
