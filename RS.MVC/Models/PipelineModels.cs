@@ -104,8 +104,26 @@ namespace RS.MVC.Models
     /// <summary>PUT /api/lists (pipeline B16): Changed false when the pipeline already had these lists.</summary>
     public record PipelineListsResponse(DateTimeOffset UpdatedAt, bool Changed, IReadOnlyDictionary<string, int> Counts);
 
-    /// <summary>Name: "relevance" or "extraction". Text: the prompt with its placeholders.</summary>
-    public record PipelinePrompt(string Name, string Version, string Model, string Text);
+    /// <summary>
+    /// Name: "relevance" or "extraction". Text: the prompt with its placeholders. Builtin: the repository's version (used
+    /// when no edited one is active); Versions: those saved in the app (pipeline B17), newest first.
+    /// </summary>
+    public record PipelinePrompt(string Name, string Version, string Model, string Text, string Builtin = null,
+        IReadOnlyList<PipelinePromptVersion> Versions = null);
+
+    /// <summary>A prompt version saved in the app (pipeline B17). Active: the stage runs it now.</summary>
+    public record PipelinePromptVersion(string Version, string Text, string Note, string CreatedBy, DateTimeOffset CreatedAt,
+        DateTimeOffset? ActivatedAt, bool Active);
+
+    /// <summary>
+    /// POST /api/prompts/{name}/versions/{version}/try (pipeline B17). Answer: the verdict or the extraction JSON; Reason:
+    /// the verdict's reason or the draft's summary ("NoEvent" without a labour action); Current…: what the running prompt
+    /// concluded. Error: "NoText", "RateLimited", "NotConfigured" or "Unreadable: …".
+    /// </summary>
+    public record PipelinePromptTryResult(string ArticleId, string Title, string Answer, string Reason, string Error,
+        string CurrentAnswer, string CurrentReason, string CurrentVersion);
+
+    public record PipelinePromptTry(string Version, string Model, IReadOnlyList<PipelinePromptTryResult> Results);
 
     /// <summary>POST /api/articles/assess and /api/articles/draft: articles queued for the AI, SpacingSeconds apart.</summary>
     public record PipelineQueueResponse(int Queued, int SpacingSeconds, bool More, bool ModelConfigured);

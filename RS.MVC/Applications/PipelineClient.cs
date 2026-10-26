@@ -41,6 +41,15 @@ namespace RS.MVC.Applications
         /// <summary>Sends the list values the drafts offer (pipeline B16): list name → values.</summary>
         Task<PipelineListsResponse> PutListsAsync(IReadOnlyDictionary<string, IReadOnlyList<string>> lists);
 
+        /// <summary>A new prompt version (pipeline B17); Error: the pipeline's reason when it refused (e.g. a placeholder missing).</summary>
+        Task<(PipelinePromptVersion Version, string Error)> CreatePromptVersionAsync(string name, string text, string note, string by);
+
+        /// <summary>Runs a version (or "builtin") on up to 10 articles; nothing is saved. Null when the version does not exist.</summary>
+        Task<PipelinePromptTry> TryPromptVersionAsync(string name, string version, IReadOnlyList<string> articleIds);
+
+        /// <summary>Activates a version, or "builtin" for the repository's prompt. False when the version does not exist.</summary>
+        Task<bool> ActivatePromptAsync(string name, string version, string by);
+
         /// <summary>Safe to repeat; the latest decision wins. Throws HttpRequestException when the pipeline cannot be reached.</summary>
         Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome);
     }
@@ -132,6 +141,36 @@ namespace RS.MVC.Applications
             await EnsureSuccessAsync(response);
             return await response.Content.ReadFromJsonAsync<PipelineListsResponse>();
         }
+
+        public async Task<(PipelinePromptVersion Version, string Error)> CreatePromptVersionAsync(string name, string text, string note, string by)
+        {
+            var response = await _http.PostAsJsonAsync($"api/prompts/{Uri.EscapeDataString(name)}/versions", new { text, note, by });
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                return (null, (await response.Content.ReadFromJsonAsync<PipelineError>())?.Error ?? "The pipeline refused the version.");
+            await EnsureSuccessAsync(response);
+            return (await response.Content.ReadFromJsonAsync<PipelinePromptVersion>(), null);
+        }
+
+        public async Task<PipelinePromptTry> TryPromptVersionAsync(string name, string version, IReadOnlyList<string> articleIds)
+        {
+            var response = await _http.PostAsJsonAsync(
+                $"api/prompts/{Uri.EscapeDataString(name)}/versions/{Uri.EscapeDataString(version)}/try", new { articleIds });
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return null;
+            await EnsureSuccessAsync(response);
+            return await response.Content.ReadFromJsonAsync<PipelinePromptTry>();
+        }
+
+        public async Task<bool> ActivatePromptAsync(string name, string version, string by)
+        {
+            var response = await _http.PostAsJsonAsync($"api/prompts/{Uri.EscapeDataString(name)}/active", new { version, by });
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return false;
+            await EnsureSuccessAsync(response);
+            return true;
+        }
+
+        private record PipelineError(string Error);
 
         public async Task<PipelinePrompts> GetPromptsAsync()
         {

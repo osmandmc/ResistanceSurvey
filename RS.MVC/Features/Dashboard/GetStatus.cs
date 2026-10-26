@@ -116,14 +116,19 @@ namespace RS.MVC.Features.Dashboard
     public record AiPrompts(IReadOnlyList<AiPromptInfo> Prompts, int OpenWithOlderVerdict, DateTimeOffset? ListsUpdatedAt = null);
 
     /// <param name="Name">"relevance" or "extraction".</param>
-    public record AiPromptInfo(string Name, string Version, string Model, string Text);
+    /// <param name="Builtin">The repository's version, used when no edited version is active.</param>
+    /// <param name="Versions">Versions edited in the app (R28), newest first.</param>
+    public record AiPromptInfo(string Name, string Version, string Model, string Text, string Builtin = null,
+        IReadOnlyList<PipelinePromptVersion> Versions = null);
 
     public class GetAiPromptsHandler(RS.MVC.Applications.IPipelineClient pipeline)
     {
         public async Task<AiPrompts> Handle()
         {
             var prompts = await pipeline.GetPromptsAsync();
-            return new AiPrompts(prompts.Prompts.Select(p => new AiPromptInfo(p.Name, p.Version, p.Model, p.Text)).ToList(), prompts.OpenWithOlderVerdict, prompts.ListsUpdatedAt);
+            return new AiPrompts(
+                prompts.Prompts.Select(p => new AiPromptInfo(p.Name, p.Version, p.Model, p.Text, p.Builtin ?? p.Version, p.Versions ?? [])).ToList(),
+                prompts.OpenWithOlderVerdict, prompts.ListsUpdatedAt);
         }
     }
 }
