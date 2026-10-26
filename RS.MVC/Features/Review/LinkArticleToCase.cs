@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using RS.COMMON.Entities;
+using RS.EF;
+using RS.MVC.Features.Activity;
 using RS.MVC.Models;
 
 namespace RS.MVC.Features.Review
@@ -7,7 +9,7 @@ namespace RS.MVC.Features.Review
     /// <summary>Only attach an inbox article to an existing resistance (no new protest).</summary>
     public record LinkArticleToCaseCommand(string ArticleId, int? ResistanceId, string UserName = null, AiUse Ai = null);
 
-    public class LinkArticleToCaseHandler(ArticleCaseLinker linker, AiSuggestionRecorder ai)
+    public class LinkArticleToCaseHandler(ArticleCaseLinker linker, AiSuggestionRecorder ai, RSDBContext db)
     {
         public async Task<ReviewSaveResult> Handle(LinkArticleToCaseCommand command)
         {
@@ -22,6 +24,8 @@ namespace RS.MVC.Features.Review
             {
                 await linker.AttachAsync(resistanceId, news.Id);
                 await ai.SaveAsync(news, command.Ai, AiDecision.LinkOnly, resistanceId, null, command.UserName);
+                db.LogActivity(Actions.ArticleLink, news.Header, resistanceId, command.ArticleId);
+                await db.SaveChangesAsync();
                 return resistanceId;
             });
         }

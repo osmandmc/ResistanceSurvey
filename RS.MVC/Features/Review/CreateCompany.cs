@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RS.COMMON.Entities;
 using RS.EF;
+using RS.MVC.Features.Activity;
 
 namespace RS.MVC.Features.Review
 {
@@ -34,6 +35,8 @@ namespace RS.MVC.Features.Review
                 CompanyWorkLineId = command.WorklineId,
             };
             db.Company.Add(company);
+            await db.SaveChangesAsync();
+            db.LogActivity(Actions.CompanyCreate, $"Şirket {ActivityLog.Quoted(name)}", subject: "companies", subjectId: company.Id);
             await db.SaveChangesAsync();
             return new CreateCompanyResult(new Option(company.Id, company.Name), Existed: false);
         }

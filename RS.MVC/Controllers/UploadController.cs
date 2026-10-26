@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RS.EF;
+using RS.MVC.Features.Activity;
 using RS.MVC.Features.Upload;
 
 namespace RS.MVC.Controllers
@@ -12,7 +14,8 @@ namespace RS.MVC.Controllers
     [ApiController]
     [Route("api/upload")]
     [Authorize]
-    public class UploadController(UploadNewsHandler uploadNews, SubmitLinksHandler submitLinks, SendLocalNewsToPipelineHandler localNews) : ControllerBase
+    public class UploadController(UploadNewsHandler uploadNews, SubmitLinksHandler submitLinks, SendLocalNewsToPipelineHandler localNews, RSDBContext db)
+        : ControllerBase
     {
         public record SubmitLinksRequest(string Text);
 
@@ -23,7 +26,12 @@ namespace RS.MVC.Controllers
             try
             {
                 var result = await submitLinks.Handle(new SubmitLinksCommand(request?.Text));
-                return result.Error == null ? result : BadRequest(new { error = result.Error });
+                if (result.Error != null)
+                    return BadRequest(new { error = result.Error });
+                var count = (string status) => result.Links.Count(l => l.Status == status);
+                await LogAsync(Actions.UploadLinks,
+                    $"{result.Links.Count} bağlantı: {count("Accepted")} yeni, {count("Duplicate")} zaten vardı, {count("Rejected") + count("Invalid")} alınmadı");
+                return result;
             }
             catch (HttpRequestException)
             {
@@ -42,7 +50,11 @@ namespace RS.MVC.Controllers
             {
                 await using var stream = file.OpenReadStream();
                 var result = await uploadNews.Handle(new UploadNewsCommand(stream, file.FileName, file.Length, source));
-                return result.IsValid ? result : BadRequest(new { error = result.Errors.First(), errors = result.Errors });
+                if (!result.IsValid)
+                    return BadRequest(new { error = result.Errors.First(), errors = result.Errors });
+                await LogAsync(Actions.UploadExcel,
+                    $"{file.FileName}: {result.Rows} satır, {result.Accepted} yeni, {result.Duplicate} zaten vardı, {result.Rejected?.Count ?? 0} alınmadı");
+                return result;
             }
             catch (HttpRequestException)
             {
@@ -60,6 +72,18 @@ namespace RS.MVC.Controllers
         public async Task<LocalNewsTransfer> LocalNews() => await localNews.Handle(dryRun: true);
 
         [HttpPost("local-news")]
-        public async Task<LocalNewsTransfer> SendLocalNews(int skip = 0) => await localNews.Handle(dryRun: false, skip);
+        public async Task<LocalNewsTransfer> SendLocalNews(int skip = 0)
+        {
+            var result = await localNews.Handle(dryRun: false, skip);
+            await LogAsync(Actions.UploadLocalNews, $"{result.Sent} eski haber gönderildi: {result.Accepted} yeni, {result.Duplicate} zaten vardı");
+            return result;
+        }
+
+        // Uploads change nothing in the app's database (the news go to the pipeline); the log still says who sent them.
+        private async Task LogAsync(string action, string summary)
+        {
+            db.LogActivity(action, summary);
+            await db.SaveChangesAsync();
+        }
     }
 }

@@ -11,6 +11,7 @@ using RS.EF;
 using RS.MVC.Applications;
 using RS.MVC.Controllers;
 using RS.MVC.Features.Articles;
+using RS.MVC.Features.Activity;
 using RS.MVC.Features.Review;
 using RS.MVC.Models;
 using static RS.COMMON.Constants.Enums;
@@ -23,7 +24,7 @@ public class ReviewTests
     private const string ArticleUrl = "https://www.evrensel.net/haber/6005665/bursa-nev-hastanesinde-eylem";
 
     // The in-memory database has no transactions; the code still uses one (real SQL Server in the app).
-    private readonly RSDBContext _db = new(new DbContextOptionsBuilder<RSDBContext>()
+    private readonly RSDBContext _db = new(new TestUser { Name = "admin" }.Track(new DbContextOptionsBuilder<RSDBContext>())
         .UseInMemoryDatabase(Guid.NewGuid().ToString())
         .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
         .Options);
@@ -44,9 +45,9 @@ public class ReviewTests
         var ai = new AiSuggestionRecorder(_db, new CheckAiAnswerHandler(_db));
         _getArticle = new GetReviewArticleHandler(_pipeline, articleNews);
         _searchCases = new SearchCasesHandler(_db);
-        _createCase = new CreateCaseFromArticleHandler(linker, writer, new ListValueResolver(_db), ai);
+        _createCase = new CreateCaseFromArticleHandler(linker, writer, new ListValueResolver(_db), ai, _db);
         _addProtest = new AddProtestFromArticleHandler(linker, writer, _db, ai);
-        _linkToCase = new LinkArticleToCaseHandler(linker, ai);
+        _linkToCase = new LinkArticleToCaseHandler(linker, ai, _db);
         _pipeline.Add("a1", ArticleUrl, "Bursa NEV Hastanesi’nde eylem", Oct19, "Hekimler ve sağlık çalışanları 6 aydır maaşlarını alamıyor.");
     }
 
@@ -108,6 +109,11 @@ public class ReviewTests
 
         var news = Assert.Single(_db.News);
         Assert.Equal(("a1", Status.Linked, ArticleUrl), (news.ArticleId, news.Status, news.Link));
+
+        // F4b: who decided, on which case and article.
+        var logged = Assert.Single(_db.ActivityEntry);
+        Assert.Equal(("admin", Actions.ArticleNewCase, result.ResistanceId, "a1", "Bursa NEV Hastanesi’nde eylem"),
+            (logged.Username, logged.Action, logged.CaseId, logged.ArticleId, logged.Summary));
         Assert.Equal(news.Id, Assert.Single(resistance.ResistanceNews).NewsId);
         Assert.Equal(("a1", new PipelineOutcomeRequest("Digested", resistance.Id)), Assert.Single(_pipeline.Outcomes));
     }

@@ -174,6 +174,7 @@ function onMerged(affected: number) {
     </router-link>
     <router-link to="/definitions/prompts" class="kind-link">AI istemleri</router-link>
     <router-link v-if="isAdmin" to="/definitions/users" class="kind-link">Kullanıcılar</router-link>
+    <router-link v-if="isAdmin" to="/definitions/activity" class="kind-link">Kayıtlar</router-link>
   </nav>
 
   <section class="panel">

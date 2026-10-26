@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using RS.COMMON.Entities;
 using RS.COMMON.Entities.LookupEntity;
 using RS.EF;
+using RS.MVC.Features.Activity;
 using RS.MVC.Features.Cases;
 using RS.MVC.Features.Review;
 using RS.MVC.Models;
@@ -12,15 +13,17 @@ namespace RS.Tests;
 
 public class CaseDetailTests
 {
-    private readonly RSDBContext _db = new(new DbContextOptionsBuilder<RSDBContext>()
-        .UseInMemoryDatabase(Guid.NewGuid().ToString())
-        .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-        .Options);
+    private readonly TestUser _user = new();
+    private readonly RSDBContext _db;
 
     private readonly Resistance _case;
 
     public CaseDetailTests()
     {
+        _db = new(_user.Track(new DbContextOptionsBuilder<RSDBContext>())
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
+            .Options);
         _db.City.Add(new City { Id = 16, Name = "Bursa" });
         _db.ResistanceReason.Add(new ResistanceReason { Id = 3, Name = "Ücret alacağı" });
         _db.Company.AddRange(new Company { Id = 10, Name = "Örnek Tekstil" }, new Company { Id = 11, Name = "Örnek Holding" });
@@ -136,6 +139,28 @@ public class CaseDetailTests
         Assert.Equal([4], _db.ProtestoProtestoType.Where(t => t.ProtestoId == first.Id).Select(t => t.ProtestoTypeId));
         Assert.Empty(_db.ProtestoLocation.Where(l => l.ProtestoId == first.Id));
         Assert.Equal(new DateTime(2026, 9, 12), _db.Resistance.Single(x => x.Id == _case.Id).StartDate); // earliest remaining
+    }
+
+    [Fact]
+    public async Task TheCaseHistoryNamesWhoDidWhatNewestFirst()
+    {
+        var protest = ReviewValidationTests.CompleteProtest();
+        protest.StartDate = new DateTime(2026, 9, 12);
+        var first = _case.Protestos.Single(p => p.StartDate == new DateTime(2026, 9, 10));
+
+        _user.Name = "ayse";
+        await new UpdateCaseHandler(_db, new CaseWriter(_db), new ListValueResolver(_db)).Handle(new UpdateCaseCommand(_case.Id, ValidCase(), "ayse"));
+        _user.Name = "mehmet";
+        await new SaveProtestHandler(_db, new CaseWriter(_db)).Handle(new SaveProtestCommand(_case.Id, first.Id, protest, "mehmet"));
+        _user.Name = "ayse";
+        await new DeleteCaseHandler(_db).Handle(new DeleteCaseCommand(_case.Id, "ayse"));
+
+        var history = await new CaseActivityHandler(_db).Handle(_case.Id);
+        Assert.Equal(
+            [("ayse", Actions.CaseDelete), ("mehmet", Actions.ProtestUpdate), ("ayse", Actions.CaseUpdate)],
+            history.Select(h => (h.Username, h.Action)));
+        Assert.Equal("12.09.2026 eylemi", history[1].Summary);
+        Assert.Equal(DateTimeKind.Utc, history[0].At.Kind);
     }
 
     [Fact]

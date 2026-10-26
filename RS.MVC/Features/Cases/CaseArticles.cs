@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RS.COMMON.Entities;
 using RS.EF;
+using RS.MVC.Features.Activity;
 using static RS.COMMON.Constants.Enums;
 
 namespace RS.MVC.Features.Cases
@@ -50,6 +51,7 @@ namespace RS.MVC.Features.Cases
             if (!await db.ResistanceNews.AnyAsync(rn => rn.ResistanceId == command.CaseId && rn.NewsId == command.NewsId))
                 db.ResistanceNews.Add(new ResistanceNews { ResistanceId = command.CaseId, NewsId = command.NewsId });
             news.Status = Status.Linked;
+            db.LogActivity(Actions.CaseAttachArticle, news.Header, command.CaseId, news.ArticleId);
             await db.SaveChangesAsync();
             return CaseCommandResult.Ok(command.NewsId);
         }
@@ -66,6 +68,8 @@ namespace RS.MVC.Features.Cases
             if (links.Count == 0)
                 return CaseCommandResult.NotFound;
             db.ResistanceNews.RemoveRange(links);
+            var news = await db.News.Where(n => n.Id == command.NewsId).Select(n => new { n.Header, n.ArticleId }).FirstOrDefaultAsync();
+            db.LogActivity(Actions.CaseDetachArticle, news?.Header, command.CaseId, news?.ArticleId);
             await db.SaveChangesAsync();
             return CaseCommandResult.Ok(command.NewsId);
         }

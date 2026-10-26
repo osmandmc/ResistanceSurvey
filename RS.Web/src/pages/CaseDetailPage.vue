@@ -18,6 +18,7 @@ import {
   type ProtestDetail,
 } from '@/casesApi'
 import CaseForm from '@/components/CaseForm.vue'
+import CaseHistory from '@/components/CaseHistory.vue'
 import ProtestForm from '@/components/ProtestForm.vue'
 import { formatDate } from '@/format'
 import { emptyProtest, fromProtestInput, toProtestInput, type ProtestFormValue } from '@/protestForm'
@@ -330,6 +331,8 @@ function confirmDetach(newsId: number, title: string | null) {
         </li>
       </ul>
     </section>
+
+    <case-history :case-id="caseId" :version="detail" />
 
     <n-modal v-model:show="addingArticle" preset="card" title="Haber ekle" :style="{ width: 'min(680px, calc(100vw - 32px))' }">
       <p class="sub">Uygulamadaki haberler. İşleme hattından gelen ve henüz işlenmemiş haberler Gelen Kutusu’ndan bağlanır.</p>

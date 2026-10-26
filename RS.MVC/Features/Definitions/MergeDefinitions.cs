@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RS.EF;
+using RS.MVC.Features.Activity;
 
 namespace RS.MVC.Features.Definitions
 {
@@ -43,6 +44,12 @@ namespace RS.MVC.Features.Definitions
                 return new MergeResult(MergeStatus.NotFound);
 
             var affected = await PreviewAsync(command.Kind, command.FromId);
+            var fromName = await DefinitionKinds.NameAsync(db, command.Kind, command.FromId);
+            var intoName = await DefinitionKinds.NameAsync(db, command.Kind, command.IntoId);
+            var used = DefinitionKinds.CountsProtests(command.Kind) ? "eylem" : "vaka";
+            db.LogActivity(Actions.DefinitionMerge,
+                $"{DefinitionKinds.Label(command.Kind)} {ActivityLog.Quoted(fromName)} → {ActivityLog.Quoted(intoName)} ({affected} {used})",
+                subject: DefinitionKinds.Slug(command.Kind), subjectId: command.IntoId);
             switch (command.Kind)
             {
                 case DefinitionKind.Companies:

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RS.COMMON.Entities.LookupEntity;
 using RS.EF;
+using RS.MVC.Features.Activity;
 
 namespace RS.MVC.Features.Definitions
 {
@@ -46,6 +47,7 @@ namespace RS.MVC.Features.Definitions
             var name = command.Name?.Trim();
             if (string.IsNullOrEmpty(name))
                 return new ChangeResult(ChangeStatus.Invalid);
+            var oldName = await DefinitionKinds.NameAsync(db, command.Kind, command.Id);
 
             if (command.Kind == DefinitionKind.Companies)
             {
@@ -80,6 +82,9 @@ namespace RS.MVC.Features.Definitions
                         break;
                 }
             }
+            var summary = oldName != name ? $"{DefinitionKinds.Label(command.Kind)} {ActivityLog.Quoted(oldName)} → {ActivityLog.Quoted(name)}"
+                : $"{DefinitionKinds.Label(command.Kind)} {ActivityLog.Quoted(name)}";
+            db.LogActivity(Actions.DefinitionUpdate, summary, subject: DefinitionKinds.Slug(command.Kind), subjectId: command.Id);
             await db.SaveChangesAsync();
             return ChangeResult.Ok;
         }
@@ -97,6 +102,8 @@ namespace RS.MVC.Features.Definitions
             if (value == null)
                 return ChangeResult.NotFound;
             value.Approved = command.Approved;
+            db.LogActivity(command.Approved ? Actions.DefinitionApprove : Actions.DefinitionUnapprove,
+                $"{DefinitionKinds.Label(command.Kind)} {ActivityLog.Quoted(value.Name)}", subject: DefinitionKinds.Slug(command.Kind), subjectId: command.Id);
             await db.SaveChangesAsync();
             return ChangeResult.Ok;
         }
@@ -113,6 +120,7 @@ namespace RS.MVC.Features.Definitions
         public async Task<ChangeResult> Handle(DeleteDefinitionCommand command)
         {
             var usage = (await DefinitionUsage.CountAsync(db, command.Kind, [command.Id])).GetValueOrDefault(command.Id);
+            var name = await DefinitionKinds.NameAsync(db, command.Kind, command.Id);
             if (command.Kind == DefinitionKind.Companies)
             {
                 var company = await db.Company.FirstOrDefaultAsync(c => c.Id == command.Id && !c.Deleted);
@@ -133,6 +141,9 @@ namespace RS.MVC.Features.Definitions
                     return new ChangeResult(ChangeStatus.InUse, Usage: usage);
                 db.Remove(value);
             }
+            db.LogActivity(Actions.DefinitionDelete,
+                $"{DefinitionKinds.Label(command.Kind)} {ActivityLog.Quoted(name)}",
+                subject: DefinitionKinds.Slug(command.Kind), subjectId: command.Id);
             await db.SaveChangesAsync();
             return ChangeResult.Ok;
         }

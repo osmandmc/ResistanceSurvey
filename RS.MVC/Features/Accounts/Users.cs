@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RS.COMMON.Constants;
 using RS.COMMON.Entities;
 using RS.EF;
+using RS.MVC.Features.Activity;
 
 namespace RS.MVC.Features.Accounts
 {
@@ -18,9 +19,12 @@ namespace RS.MVC.Features.Accounts
             : u.InviteTokenHash != null && u.InviteExpiresAt > now ? "invited"
             : u.PasswordHash == null ? "linkExpired"
             : "active",
-            u.LastSignInAt,
-            u.InviteTokenHash != null && u.InviteExpiresAt > now ? u.InviteExpiresAt : null,
-            u.CreatedAt, u.CreatedBy);
+            Utc(u.LastSignInAt),
+            u.InviteTokenHash != null && u.InviteExpiresAt > now ? Utc(u.InviteExpiresAt) : null,
+            Utc(u.CreatedAt).Value, u.CreatedBy);
+
+        // Stored as UTC; the database gives them back without a kind, and the browser would read them as local time.
+        private static DateTime? Utc(DateTime? value) => value is { } v ? DateTime.SpecifyKind(v, DateTimeKind.Utc) : null;
     }
 
     /// <summary>The account and its new link's token (shown once; only its hash is kept), or why not.</summary>
@@ -59,11 +63,15 @@ namespace RS.MVC.Features.Accounts
             var token = Accounts.OpenLink(user, now);
             db.AppUser.Add(user);
             await db.SaveChangesAsync();
+            db.LogActivity(Actions.UserCreate, $"{ActivityLog.Quoted(username)} ({RoleLabel(command.Role)})", subject: "user", subjectId: user.Id);
+            await db.SaveChangesAsync();
             return new LinkResult(UserRow.Of(user, now), token, null);
         }
 
         internal static string RoleProblem(string role) =>
             role is Role.Admin or Role.User ? null : "Rol yönetici ya da araştırmacı olmalı.";
+
+        internal static string RoleLabel(string role) => role == Role.Admin ? "yönetici" : "araştırmacı";
     }
 
     /// <summary>
@@ -81,6 +89,7 @@ namespace RS.MVC.Features.Accounts
                 return new LinkResult(null, null, "Devre dışı bir hesaba bağlantı verilemez; önce etkinleştirin.");
             var now = clock.GetUtcNow().UtcDateTime;
             var token = Accounts.OpenLink(user, now);
+            db.LogActivity(Actions.UserLink, ActivityLog.Quoted(user.Username), subject: "user", subjectId: user.Id);
             await db.SaveChangesAsync();
             return new LinkResult(UserRow.Of(user, now), token, null);
         }
@@ -99,11 +108,14 @@ namespace RS.MVC.Features.Accounts
                 return null;
             if (user.Id == command.ActingUserId)
                 return new LinkResult(null, null, "Kendi hesabınızın rolünü ya da durumunu değiştiremezsiniz.");
-            if (command.Role != null)
+            var who = ActivityLog.Quoted(user.Username);
+            if (command.Role != null && command.Role != user.Role)
             {
                 var problem = CreateUserHandler.RoleProblem(command.Role);
                 if (problem != null)
                     return new LinkResult(null, null, problem);
+                db.LogActivity(Actions.UserRole,
+                    $"{who}: {CreateUserHandler.RoleLabel(user.Role)} → {CreateUserHandler.RoleLabel(command.Role)}", subject: "user", subjectId: user.Id);
                 user.Role = command.Role;
             }
             if (command.Disabled == true && !user.Disabled)
@@ -111,10 +123,12 @@ namespace RS.MVC.Features.Accounts
                 user.Disabled = true;
                 user.SecurityStamp = Accounts.NewStamp();
                 Accounts.CloseLink(user);
+                db.LogActivity(Actions.UserDisable, who, subject: "user", subjectId: user.Id);
             }
-            else if (command.Disabled == false)
+            else if (command.Disabled == false && user.Disabled)
             {
                 user.Disabled = false;
+                db.LogActivity(Actions.UserEnable, who, subject: "user", subjectId: user.Id);
             }
             await db.SaveChangesAsync();
             return new LinkResult(UserRow.Of(user, clock.GetUtcNow().UtcDateTime), null, null);

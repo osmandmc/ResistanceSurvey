@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RS.COMMON.Entities;
 using RS.MVC.Features.Accounts;
+using RS.MVC.Features.Activity;
 
 namespace RS.MVC.Controllers
 {
@@ -25,6 +26,7 @@ namespace RS.MVC.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
+        [NotLogged("Sign-in only updates the account's own counters and last sign-in time.")]
         public async Task<ActionResult<CurrentUser>> Login(LoginRequest request)
         {
             var result = await signIn.Handle(request.Username, request.Password);

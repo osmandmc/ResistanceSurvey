@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RS.COMMON.Entities;
 using RS.EF;
+using RS.MVC.Features.Activity;
 
 namespace RS.MVC.Features.Accounts
 {
@@ -53,6 +54,7 @@ namespace RS.MVC.Features.Accounts
             user.FailedSignIns = 0;
             user.LockedUntil = null;
             user.LastSignInAt = now;
+            db.LogActivity(Actions.UserPassword, ActivityLog.Quoted(user.Username), subject: "user", subjectId: user.Id, username: user.Username);
             await db.SaveChangesAsync();
             return new AcceptResult(user, null);
         }

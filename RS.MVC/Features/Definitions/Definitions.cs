@@ -29,6 +29,24 @@ namespace RS.MVC.Features.Definitions
 
         public static bool TryParse(string slug, out DefinitionKind kind) => Slugs.TryGetValue(slug ?? "", out kind);
 
+        public static string Slug(DefinitionKind kind) => Slugs.First(s => s.Value == kind).Key;
+
+        /// <summary>One value of the kind, as the activity log names it (shown to users).</summary>
+        public static string Label(DefinitionKind kind) => kind switch
+        {
+            DefinitionKind.Companies => "Şirket",
+            DefinitionKind.Corporations => "Kurum",
+            DefinitionKind.Reasons => "Vaka nedeni",
+            DefinitionKind.ProtestTypes => "Eylem türü",
+            _ => "Eylem mekânı",
+        };
+
+        /// <summary>The value's name (companies also when marked deleted), or null.</summary>
+        public static async Task<string> NameAsync(RSDBContext db, DefinitionKind kind, int id) =>
+            kind == DefinitionKind.Companies
+                ? await db.Company.Where(c => c.Id == id).Select(c => c.Name).FirstOrDefaultAsync()
+                : (await DefinitionValues.FindAsync(db, kind, id))?.Name;
+
         /// <summary>Companies have no approval: they are added on purpose with "Şirket Ekle".</summary>
         public static bool HasApproval(DefinitionKind kind) => kind != DefinitionKind.Companies;
 

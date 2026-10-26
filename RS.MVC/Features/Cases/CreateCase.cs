@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using RS.EF;
+using RS.MVC.Features.Activity;
 using RS.MVC.Applications;
 using RS.MVC.Features.Review;
 using RS.MVC.Models;
@@ -22,6 +23,8 @@ namespace RS.MVC.Features.Cases
             var reasonIds = await lists.ReasonIdsAsync(command.Case.ReasonIds, command.Case.NewReasonNames);
             var corporationIds = await lists.CorporationIdsAsync(command.Case.CorporationIds, command.Case.NewCorporationNames);
             var id = await writer.CreateCaseAsync(command.Case, command.Protest, command.UserName, reasonIds, corporationIds);
+            db.LogActivity(Actions.CaseCreate, command.Case.Name, id);
+            await db.SaveChangesAsync();
             await transaction.CommitAsync();
             return CaseCommandResult.Ok(id);
         }
