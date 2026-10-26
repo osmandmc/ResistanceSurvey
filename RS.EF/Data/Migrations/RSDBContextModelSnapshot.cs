@@ -89,6 +89,77 @@ namespace RS.EF.Data.Migrations
                     b.ToTable("AiSuggestion");
                 });
 
+            modelBuilder.Entity("RS.COMMON.Entities.AppUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<bool>("Disabled")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("FailedSignIns")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("InviteExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("InviteTokenHash")
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime?>("LastSignInAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LockedUntil")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PasswordHash")
+                        .HasMaxLength(200)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<string>("SecurityStamp")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InviteTokenHash")
+                        .IsUnique()
+                        .HasFilter("[InviteTokenHash] IS NOT NULL");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("AppUser");
+                });
+
             modelBuilder.Entity("RS.COMMON.Entities.Company", b =>
                 {
                     b.Property<int>("Id")

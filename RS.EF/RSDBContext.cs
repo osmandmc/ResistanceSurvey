@@ -48,6 +48,7 @@ namespace RS.EF
         public DbSet<ProtestoDistrict> ProtestoDistrict { get; set; }
         public DbSet<DefinitionNotDuplicate> DefinitionNotDuplicate { get; set; }
         public DbSet<AiSuggestion> AiSuggestion { get; set; }
+        public DbSet<AppUser> AppUser { get; set; }
 
        
         public const string TurkishCollation = "Turkish_CI_AS";
@@ -88,6 +89,19 @@ namespace RS.EF
                      e.HasIndex(x => x.NewsId).IsUnique();
                      e.Property(x => x.Origin).HasMaxLength(100).IsRequired();
                      e.Property(x => x.PromptVersion).HasMaxLength(20);
+                     e.Property(x => x.CreatedBy).HasMaxLength(50);
+                 });
+
+                 // Accounts (F4a). Hashes are compared exactly, so they keep the database default collation.
+                 modelBuilder.Entity<AppUser>(e =>
+                 {
+                     e.Property(x => x.Username).HasMaxLength(50).IsRequired();
+                     e.HasIndex(x => x.Username).IsUnique();
+                     e.Property(x => x.Role).HasMaxLength(20).IsRequired();
+                     e.Property(x => x.PasswordHash).HasMaxLength(200).IsUnicode(false).UseCollation(null);
+                     e.Property(x => x.InviteTokenHash).HasMaxLength(64).IsUnicode(false).UseCollation(null);
+                     e.HasIndex(x => x.InviteTokenHash).IsUnique().HasFilter("[InviteTokenHash] IS NOT NULL");
+                     e.Property(x => x.SecurityStamp).HasMaxLength(64).IsUnicode(false).UseCollation(null).IsRequired();
                      e.Property(x => x.CreatedBy).HasMaxLength(50);
                  });
 

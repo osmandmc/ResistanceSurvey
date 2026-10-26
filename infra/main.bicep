@@ -14,12 +14,8 @@ param sqlAdminLogin string = 'rsadmin'
 param sqlAdminPassword string
 
 @secure()
-@description('Password of the app\'s "admin" login (AppSettings:AdminPass). GitHub secret ADMIN_PASSWORD.')
+@description('The very first sign-in as "admin", while the app has no account yet (AppSettings:AdminPass; F4a). GitHub secret ADMIN_PASSWORD.')
 param adminPassword string
-
-@secure()
-@description('Password of the app\'s "user" login (AppSettings:UserPass). GitHub secret USER_PASSWORD.')
-param userPassword string
 
 @description('News pipeline Function App root, e.g. https://func-xyz.azurewebsites.net. Empty leaves the pipeline off.')
 param pipelineBaseUrl string = ''
@@ -121,7 +117,6 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
       appSettings: [
         { name: 'ASPNETCORE_ENVIRONMENT', value: 'Test' }
         { name: 'AppSettings__AdminPass', value: adminPassword }
-        { name: 'AppSettings__UserPass', value: userPassword }
         { name: 'Pipeline__BaseUrl', value: pipelineBaseUrl }
         { name: 'Pipeline__FunctionKey', value: pipelineFunctionKey }
       ]

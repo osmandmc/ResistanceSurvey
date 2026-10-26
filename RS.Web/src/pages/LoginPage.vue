@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NCard, NForm, NFormItem, NInput } from 'naive-ui'
-import { ApiError } from '@/api'
+import { ApiError, errorMessage as serverMessage } from '@/api'
 import { loadCurrentUser, signIn } from '@/auth'
 
 const route = useRoute()
@@ -34,7 +34,7 @@ async function onSubmit() {
   } catch (error) {
     errorMessage.value =
       error instanceof ApiError && error.status === 401
-        ? 'Kullanıcı adı veya şifre hatalı.'
+        ? serverMessage(error, 'Kullanıcı adı veya şifre hatalı.')
         : 'Giriş yapılamadı. Lütfen biraz sonra tekrar deneyin.'
   } finally {
     signingIn.value = false
