@@ -3,7 +3,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSpin, NTag, useMessage } from 'naive-ui'
 import { ApiError, errorMessage } from '@/api'
-import { aiCaseValues, aiProtestValues, getAiDraft, unchangedFields, type AiCheckResult, type AiDraft, type AiUse } from '@/aiFillApi'
+import { aiCaseValues, aiProtestValues, getAiDraft, matchAiCases, unchangedFields, type AiCaseMatch, type AiCaseMatches, type AiCheckResult, type AiDraft, type AiUse } from '@/aiFillApi'
 import { emptyCase, toCaseInput, type CaseFormValue } from '@/caseForm'
 import AiFillDialog from '@/components/AiFillDialog.vue'
 import CaseFinder from '@/components/CaseFinder.vue'
@@ -141,6 +141,31 @@ const aiNotRelevant = ref<string | null>(null)
 const aiUse = ref<AiUse | null>(null)
 const aiCaseFields = computed(() => unchangedFields(caseValue.value, aiApplied.value?.case ?? null))
 const aiProtestFields = computed(() => unchangedFields(protestValue.value, aiApplied.value?.protest ?? null))
+
+// R20: with an AI answer (a draft or a pasted one), the existing cases it points to replace the name-based suggestions.
+const aiMatches = ref<AiCaseMatches | null>(null)
+const aiMatchesShown = computed(() => !!aiMatches.value && aiMatches.value.likely.length + aiMatches.value.older.length > 0)
+watch(
+  () => aiUse.value?.answer,
+  async (answer) => {
+    aiMatches.value = null
+    if (!answer) return
+    const id = articleId.value
+    try {
+      const matches = await matchAiCases(id, answer)
+      if (id === articleId.value && aiUse.value?.answer === answer) aiMatches.value = matches
+    } catch {
+      // only a hint: the name-based suggestions and the case search remain
+    }
+  },
+)
+
+function useAiMatch(match: AiCaseMatch, next: 'addProtest' | 'linkOnly') {
+  action.value = next
+  finderCompanyId.value = match.companyId
+  finderCompanyName.value = match.case.companyName
+  resistanceId.value = match.case.id
+}
 
 // Evidence (R27): the AI's quotes for the fields it filled, highlighted in the article while those fields still hold
 // its values; the "Kanıtlar" row jumps to each one.
@@ -391,7 +416,51 @@ async function onDismissed() {
     </article>
 
     <section class="decision panel" aria-labelledby="decision-heading">
-      <div v-if="suggestions.length" class="suggestions" aria-labelledby="suggestions-heading">
+      <div v-if="aiMatchesShown" class="suggestions" aria-labelledby="ai-suggestions-heading">
+        <h2 id="ai-suggestions-heading" class="decision-heading">Olası vakalar</h2>
+        <p class="hint">AI’ın bulduğu şirkete, örgüte ve ile göre; neden önerildiği her vakanın altında.</p>
+        <ul class="suggestion-list">
+          <li v-for="m in aiMatches!.likely" :key="m.case.id" class="suggestion" :class="{ selected: resistanceId === m.case.id && action !== 'newCase', recorded: !!m.recorded }">
+            <div class="suggestion-text">
+              <span class="suggestion-name">
+                {{ m.case.name || `Vaka #${m.case.id}` }}
+                <n-tag v-if="m.case.ongoing" size="small" type="success" :bordered="false">devam ediyor</n-tag>
+              </span>
+              <span class="suggestion-meta">{{ m.reasons.join(' · ') }} · {{ m.case.protestCount }} eylem</span>
+              <span v-if="m.recorded" class="recorded">
+                Bu eylem kayıtlı görünüyor: {{ formatDate(m.recorded.startDate) }} · {{ m.recorded.cities.join(', ') }} · {{ m.recorded.types.join(', ') }}
+              </span>
+            </div>
+            <div class="suggestion-actions">
+              <template v-if="m.recorded">
+                <n-button size="small" type="primary" @click="useAiMatch(m, 'linkOnly')">Sadece bağla</n-button>
+                <n-button size="small" quaternary @click="useAiMatch(m, 'addProtest')">Eylem ekle</n-button>
+              </template>
+              <template v-else>
+                <n-button size="small" @click="useAiMatch(m, 'addProtest')">Eylem ekle</n-button>
+                <n-button size="small" quaternary @click="useAiMatch(m, 'linkOnly')">Sadece bağla</n-button>
+              </template>
+            </div>
+          </li>
+        </ul>
+        <p v-if="aiMatches!.likely.length === 0" class="hint">Bu şirketin yakın zamanda süren bir vakası yok; yeni vaka olabilir.</p>
+        <details v-if="aiMatches!.older.length" class="older-cases">
+          <summary>Şirketin önceki vakaları ({{ aiMatches!.older.length }})</summary>
+          <ul class="suggestion-list">
+            <li v-for="m in aiMatches!.older" :key="m.case.id" class="suggestion" :class="{ selected: resistanceId === m.case.id && action !== 'newCase' }">
+              <div class="suggestion-text">
+                <span class="suggestion-name">{{ m.case.name || `Vaka #${m.case.id}` }}</span>
+                <span class="suggestion-meta">{{ m.reasons.join(' · ') }}<template v-if="m.case.lastProtestDate"> · son eylem {{ formatDate(m.case.lastProtestDate) }}</template></span>
+              </div>
+              <div class="suggestion-actions">
+                <n-button size="small" @click="useAiMatch(m, 'addProtest')">Eylem ekle</n-button>
+                <n-button size="small" quaternary @click="useAiMatch(m, 'linkOnly')">Sadece bağla</n-button>
+              </div>
+            </li>
+          </ul>
+        </details>
+      </div>
+      <div v-else-if="suggestions.length" class="suggestions" aria-labelledby="suggestions-heading">
         <h2 id="suggestions-heading" class="decision-heading">Olası vakalar</h2>
         <p class="hint">Haberde geçen şirketlerin vakaları.</p>
         <ul class="suggestion-list">
@@ -639,6 +708,20 @@ async function onDismissed() {
   padding: 10px 12px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
+}
+.suggestion.recorded {
+  border-color: #e0b84c;
+}
+.recorded {
+  font-size: 13px;
+  font-weight: 500;
+  color: #7a4a00;
+}
+.older-cases summary {
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--rs-muted);
+  margin: 4px 0 6px;
 }
 .suggestion.selected {
   border-color: var(--rs-accent);

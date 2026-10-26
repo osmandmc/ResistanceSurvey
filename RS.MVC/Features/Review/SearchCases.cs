@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +18,8 @@ namespace RS.MVC.Features.Review
         int? CompanyId = null,
         int? CityId = null,
         DateTime? LastProtestSince = null,
-        IReadOnlyCollection<int> CompanyIds = null);
+        IReadOnlyCollection<int> CompanyIds = null,
+        IReadOnlyCollection<int> CaseIds = null);
 
     public class SearchCasesHandler(RSDBContext db)
     {
@@ -45,6 +46,8 @@ namespace RS.MVC.Features.Review
             if (query.CompanyIds is { Count: > 0 } companyIds)
                 cases = cases.Where(r => (r.CompanyId != null && companyIds.Contains(r.CompanyId.Value))
                     || (r.MainCompanyId != null && companyIds.Contains(r.MainCompanyId.Value)));
+            if (query.CaseIds is { Count: > 0 } caseIds)
+                cases = cases.Where(r => caseIds.Contains(r.Id));
             if (text != "")
                 cases = cases.Where(r => r.Name.Contains(text) || r.Description.Contains(text)
                     || (r.Company != null && r.Company.Name.Contains(text)));
