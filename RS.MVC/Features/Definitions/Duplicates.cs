@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RS.COMMON.Entities;
 using RS.EF;
+using RS.MVC.Features.Activity;
 using RS.MVC.Features.Review;
 
 namespace RS.MVC.Features.Definitions
@@ -117,6 +118,10 @@ namespace RS.MVC.Features.Definitions
                 .Select(x => (x.FirstId, x.SecondId)).ToHashSet();
             foreach (var (first, second) in FindDuplicatesHandler.Pairs(command.Ids ?? []).Where(p => !known.Contains(p)))
                 db.DefinitionNotDuplicate.Add(new DefinitionNotDuplicate { Kind = slug, FirstId = first, SecondId = second });
+            var names = new List<string>();
+            foreach (var id in (command.Ids ?? []).Distinct())
+                names.Add(ActivityLog.Quoted(await DefinitionKinds.NameAsync(db, command.Kind, id)));
+            db.LogActivity(Actions.DefinitionNotDuplicate, $"{DefinitionKinds.Label(command.Kind)}: {string.Join(", ", names)}", subject: slug);
             await db.SaveChangesAsync();
         }
     }

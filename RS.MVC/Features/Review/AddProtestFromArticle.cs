@@ -2,6 +2,7 @@
 using RS.COMMON.Entities;
 using RS.EF;
 using RS.MVC.Features.Cases;
+using RS.MVC.Features.Activity;
 using System.Threading.Tasks;
 using RS.MVC.Applications;
 using RS.MVC.Models;
@@ -28,6 +29,8 @@ namespace RS.MVC.Features.Review
                 await writer.AddProtestAsync(resistance, command.Protest, command.UserName);
                 await linker.AttachAsync(resistanceId, news.Id);
                 await ai.SaveAsync(news, command.Ai, AiDecision.AddProtest, resistanceId, new { command.Protest }, command.UserName);
+                db.LogActivity(Actions.ArticleAddProtest, news.Header, resistanceId, command.ArticleId);
+                await db.SaveChangesAsync();
                 return resistanceId;
             });
         }

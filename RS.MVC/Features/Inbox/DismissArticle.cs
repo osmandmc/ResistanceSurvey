@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using RS.COMMON.Entities;
 using RS.MVC.Features.Review;
+using RS.MVC.Features.Activity;
 using Microsoft.EntityFrameworkCore;
 using RS.EF;
 using RS.MVC.Applications;
@@ -60,6 +61,8 @@ namespace RS.MVC.Features.Inbox
             }
             news.Status = Status.Passive;
             await ai.AddAsync(news, command.Ai, AiDecision.Dismissed, null, null, command.Kind, command.UserName);
+            var why = command.Kind is { } dismissKind && KindLabels.TryGetValue(dismissKind, out var kindLabel) ? $" ({kindLabel})" : "";
+            db.LogActivity(Actions.ArticleDismiss, news.Header + why, articleId: command.ArticleId);
 
             try
             {

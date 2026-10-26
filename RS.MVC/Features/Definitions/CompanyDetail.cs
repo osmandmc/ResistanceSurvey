@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RS.COMMON.Entities;
 using RS.EF;
+using RS.MVC.Features.Activity;
 using RS.MVC.Features.Review;
 
 namespace RS.MVC.Features.Definitions
@@ -82,6 +83,7 @@ namespace RS.MVC.Features.Definitions
             if (!await db.CompanyOutsourceCompany.AnyAsync(l => l.CompanyId == command.MainCompanyId && l.OutsourceCompanyId == command.SubcontractorId))
             {
                 db.CompanyOutsourceCompany.Add(new CompanyOutsourceCompany { CompanyId = command.MainCompanyId, OutsourceCompanyId = command.SubcontractorId });
+                db.LogActivity(Actions.CompanyLinkAdd, await CompanyLinks.SummaryAsync(db, command), subject: "companies", subjectId: command.MainCompanyId);
                 await db.SaveChangesAsync();
             }
             return LinkStatus.Ok;
@@ -102,8 +104,17 @@ namespace RS.MVC.Features.Definitions
             if (links.Count == 0)
                 return LinkStatus.NotFound;
             db.CompanyOutsourceCompany.RemoveRange(links);
+            db.LogActivity(Actions.CompanyLinkRemove, await CompanyLinks.SummaryAsync(db, command), subject: "companies", subjectId: command.MainCompanyId);
             await db.SaveChangesAsync();
             return LinkStatus.Ok;
         }
+    }
+
+    internal static class CompanyLinks
+    {
+        /// <summary>"“Taşeron” → ana şirket “Ana”".</summary>
+        public static async Task<string> SummaryAsync(RSDBContext db, CompanyLinkCommand command) =>
+            $"{ActivityLog.Quoted(await DefinitionKinds.NameAsync(db, DefinitionKind.Companies, command.SubcontractorId))} → ana şirket "
+            + ActivityLog.Quoted(await DefinitionKinds.NameAsync(db, DefinitionKind.Companies, command.MainCompanyId));
     }
 }

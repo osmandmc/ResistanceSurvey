@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { setUnauthorizedHandler } from './api'
 import { forgetCurrentUser, loadCurrentUser } from './auth'
 import AppLayout from './layouts/AppLayout.vue'
+import ActivityPage from './pages/ActivityPage.vue'
 import ArchivePage from './pages/ArchivePage.vue'
 import CaseDetailPage from './pages/CaseDetailPage.vue'
 import CasesPage from './pages/CasesPage.vue'
@@ -51,6 +52,7 @@ export const router = createRouter({
         { path: 'definitions/companies/:id(\\d+)', component: CompanyPage, meta: { title: 'Şirket' } },
         { path: 'definitions/prompts', component: PromptsPage, meta: { title: 'AI istemleri' } },
         { path: 'definitions/users', component: UsersPage, meta: { title: 'Kullanıcılar', admin: true } },
+        { path: 'definitions/activity', component: ActivityPage, meta: { title: 'Kayıtlar', admin: true } },
         { path: 'definitions/:kind', component: DefinitionsPage, meta: { title: 'Tanımlar' } },
         { path: ':pathMatch(.*)*', component: NotFoundPage, meta: { title: 'Sayfa bulunamadı' } },
       ],

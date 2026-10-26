@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RS.COMMON.Entities;
 using RS.EF;
+using RS.MVC.Features.Activity;
 using RS.MVC.Features.Review;
 using RS.MVC.Models;
 
@@ -164,6 +165,7 @@ namespace RS.MVC.Features.Cases
             await writer.ApplyCaseAsync(r, c, reasonIds, corporationIds);
             r.Updater = command.UserName;
             r.UpdateDate = DateTime.Now;
+            db.LogActivity(Actions.CaseUpdate, r.Name, r.Id);
 
             await db.SaveChangesAsync();
             await transaction.CommitAsync();
@@ -205,6 +207,8 @@ namespace RS.MVC.Features.Cases
             await writer.ApplyProtestAsync(protest, command.Protest);
             await db.SaveChangesAsync();
             await writer.UpdateStartDateAsync(resistance);
+            db.LogActivity(command.ProtestId == null ? Actions.ProtestAdd : Actions.ProtestUpdate,
+                $"{ActivityLog.Day(protest.StartDate)} eylemi", command.CaseId, subject: "protest", subjectId: protest.Id);
             await db.SaveChangesAsync();
             await transaction.CommitAsync();
             return CaseCommandResult.Ok(protest.Id);
@@ -226,6 +230,8 @@ namespace RS.MVC.Features.Cases
             protest.Deleted = true;
             protest.Updater = command.UserName;
             protest.UpdateDate = DateTime.Now;
+            db.LogActivity(Actions.ProtestDelete, $"{ActivityLog.Day(protest.StartDate)} eylemi", command.CaseId,
+                subject: "protest", subjectId: protest.Id);
             await db.SaveChangesAsync();
             await writer.UpdateStartDateAsync(resistance);
             await db.SaveChangesAsync();
@@ -246,6 +252,7 @@ namespace RS.MVC.Features.Cases
             r.Deleted = true;
             r.Updater = command.UserName;
             r.UpdateDate = DateTime.Now;
+            db.LogActivity(Actions.CaseDelete, r.Name, r.Id);
             await db.SaveChangesAsync();
             return CaseCommandResult.Ok(r.Id);
         }

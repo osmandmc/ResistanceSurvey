@@ -49,6 +49,7 @@ namespace RS.EF
         public DbSet<DefinitionNotDuplicate> DefinitionNotDuplicate { get; set; }
         public DbSet<AiSuggestion> AiSuggestion { get; set; }
         public DbSet<AppUser> AppUser { get; set; }
+        public DbSet<ActivityEntry> ActivityEntry { get; set; }
 
        
         public const string TurkishCollation = "Turkish_CI_AS";
@@ -103,6 +104,19 @@ namespace RS.EF
                      e.HasIndex(x => x.InviteTokenHash).IsUnique().HasFilter("[InviteTokenHash] IS NOT NULL");
                      e.Property(x => x.SecurityStamp).HasMaxLength(64).IsUnicode(false).UseCollation(null).IsRequired();
                      e.Property(x => x.CreatedBy).HasMaxLength(50);
+                 });
+
+                 // Activity log (F4b): read newest first, by case, by person.
+                 modelBuilder.Entity<ActivityEntry>(e =>
+                 {
+                     e.Property(x => x.Username).HasMaxLength(50);
+                     e.Property(x => x.Action).HasMaxLength(40).IsUnicode(false).UseCollation(null).IsRequired();
+                     e.Property(x => x.ArticleId).HasMaxLength(64).IsUnicode(false).UseCollation(null);
+                     e.Property(x => x.Subject).HasMaxLength(40).IsUnicode(false).UseCollation(null);
+                     e.Property(x => x.Summary).HasMaxLength(500);
+                     e.HasIndex(x => x.At);
+                     e.HasIndex(x => x.CaseId);
+                     e.HasIndex(x => new { x.Username, x.At });
                  });
 
                  // A hash in hex: compared exactly, kept in the database default collation (see ConfigureConventions).
