@@ -96,7 +96,10 @@ namespace RS.MVC.Features.Review
     /// <param name="Field">Form field, e.g. "case.reasons" or "protest.locations".</param>
     public record AiField(string Field, string Label, IReadOnlyList<AiItem> Items);
 
-    /// <summary>Case form values from the answer; a company not registered yet comes as a name only.</summary>
+    /// <summary>
+    /// Case form values from the answer; a company not registered yet comes as a name only (New…Name). CompanyName and
+    /// MainCompanyName are the registered companies' names, so the form can show them (it only knows ids).
+    /// </summary>
     public record AiCaseValues(
         int? CategoryId,
         int? TargetType,
@@ -112,7 +115,9 @@ namespace RS.MVC.Features.Review
         IReadOnlyList<int> EmploymentTypeIds,
         int? EmployeeCount,
         int? FiredEmployeeCount,
-        string Description);
+        string Description,
+        string CompanyName = null,
+        string MainCompanyName = null);
 
     public record AiLocation(int CityId, int? DistrictId, string Place);
 
@@ -245,7 +250,9 @@ namespace RS.MVC.Features.Review
                 EmploymentTypeIds: Ids(employmentTypes),
                 EmployeeCount: employeeCount,
                 FiredEmployeeCount: firedCount,
-                Description: description);
+                Description: description,
+                CompanyName: company?.Id != null ? company.Item.Value : null,
+                MainCompanyName: mainCompany?.Id != null ? mainCompany.Item.Value : null);
             var protestValues = new AiProtestValues(
                 ProtestTypeIds: Ids(types),
                 StartDate: startDate,

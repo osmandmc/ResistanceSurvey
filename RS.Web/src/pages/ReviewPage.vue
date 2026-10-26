@@ -130,6 +130,9 @@ const aiDraft = ref<AiDraft | null>(null)
 const aiDialogShowsDraft = ref(false)
 const aiApplied = ref<{ case: Partial<CaseFormValue>; protest: Partial<ProtestFormValue> } | null>(null)
 const aiCompanyName = ref<string | null>(null)
+/** Names of the registered companies the answer chose: the company pickers show them instead of a bare id. */
+const aiChosenCompanyName = ref<string | null>(null)
+const aiChosenMainCompanyName = ref<string | null>(null)
 const aiMainCompanyName = ref<string | null>(null)
 /** The AI's reason when it found the article not relevant; the banner offers dismissing it. */
 const aiNotRelevant = ref<string | null>(null)
@@ -146,6 +149,8 @@ function onAiApply(result: AiCheckResult) {
   aiApplied.value = { case: caseValues, protest: protestValues }
   if (aiUse.value) aiUse.value = { ...aiUse.value, applied: true }
   aiCompanyName.value = result.case?.newCompanyName ?? null
+  aiChosenCompanyName.value = result.case?.companyName ?? null
+  aiChosenMainCompanyName.value = result.case?.mainCompanyName ?? null
   aiMainCompanyName.value = result.case?.newMainCompanyName ?? null
   aiNotRelevant.value = null
   aiDialogFor.value = null
@@ -182,6 +187,8 @@ function clearAi() {
   aiUse.value = null
   aiApplied.value = null
   aiCompanyName.value = null
+  aiChosenCompanyName.value = null
+  aiChosenMainCompanyName.value = null
   aiMainCompanyName.value = null
   aiNotRelevant.value = null
 }
@@ -406,6 +413,8 @@ async function onDismissed() {
           :options="formOptions"
           :errors="fieldErrors"
           :ai-fields="aiCaseFields"
+          :company-name="aiChosenCompanyName"
+          :main-company-name="aiChosenMainCompanyName"
           :suggested-company-name="aiCompanyName"
           :suggested-main-company-name="aiMainCompanyName"
           @use-existing="onUseExisting"

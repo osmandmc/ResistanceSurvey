@@ -64,6 +64,9 @@ export interface AiCaseValues {
   employeeCount: number | null
   firedEmployeeCount: number | null
   description: string | null
+  /** The registered companies' names, so the form shows them (it only knows ids). */
+  companyName: string | null
+  mainCompanyName: string | null
 }
 
 export interface AiProtestValues {
