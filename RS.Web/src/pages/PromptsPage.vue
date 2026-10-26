@@ -72,7 +72,8 @@ async function reassess() {
   <h1 class="heading">AI istemleri</h1>
   <p class="description">
     İşleme hattındaki yapay zekânın şu an kullandığı istemler. Bir istem, ölçülüp denendikten sonra işleme hattının
-    deposunda (<code>docs/extraction/</code>) değiştirilir; burada yalnızca görüntülenir.
+    deposunda (<code>docs/extraction/</code>) değiştirilir; burada yalnızca görüntülenir. Değerlerin ne kadarının korunduğu:
+    <router-link to="/status/ai-report">AI raporu</router-link>.
   </p>
 
   <n-alert v-if="loadError" type="error" :show-icon="false">
