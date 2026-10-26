@@ -9,6 +9,5 @@ param budgetStartDate = '2026-10-01'
 param budgetContactEmail = readEnvironmentVariable('BUDGET_EMAIL', '')
 param sqlAdminPassword = readEnvironmentVariable('SQL_ADMIN_PASSWORD')
 param adminPassword = readEnvironmentVariable('ADMIN_PASSWORD')
-param userPassword = readEnvironmentVariable('USER_PASSWORD')
 param pipelineBaseUrl = readEnvironmentVariable('PIPELINE_BASE_URL', '')
 param pipelineFunctionKey = readEnvironmentVariable('PIPELINE_FUNCTION_KEY', '')

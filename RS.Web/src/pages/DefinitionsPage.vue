@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NCheckbox, NEmpty, NInput, NPopconfirm, NSelect, NSpin, NSwitch, NTag, useMessage } from 'naive-ui'
 import { ApiError, errorMessage } from '@/api'
+import { isAdmin } from '@/auth'
 import DuplicateGroups from '@/components/DuplicateGroups.vue'
 import MergeDialog from '@/components/MergeDialog.vue'
 import {
@@ -172,6 +173,7 @@ function onMerged(affected: number) {
       {{ k.label }}
     </router-link>
     <router-link to="/definitions/prompts" class="kind-link">AI istemleri</router-link>
+    <router-link v-if="isAdmin" to="/definitions/users" class="kind-link">Kullanıcılar</router-link>
   </nav>
 
   <section class="panel">

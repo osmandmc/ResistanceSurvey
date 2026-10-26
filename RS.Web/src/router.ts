@@ -12,6 +12,8 @@ import LoginPage from './pages/LoginPage.vue'
 import ReviewPage from './pages/ReviewPage.vue'
 import StatusPage from './pages/StatusPage.vue'
 import UploadPage from './pages/UploadPage.vue'
+import UsersPage from './pages/UsersPage.vue'
+import WelcomePage from './pages/WelcomePage.vue'
 import NewCasePage from './pages/NewCasePage.vue'
 import NotFoundPage from './pages/NotFoundPage.vue'
 import PromptsPage from './pages/PromptsPage.vue'
@@ -20,6 +22,8 @@ declare module 'vue-router' {
   interface RouteMeta {
     /** Reachable without signing in. */
     public?: boolean
+    /** Yönetici only (F4a). */
+    admin?: boolean
     /** Page heading and browser tab title (shown to users, so Turkish). */
     title?: string
   }
@@ -29,6 +33,7 @@ export const router = createRouter({
   history: createWebHistory('/app/'),
   routes: [
     { path: '/login', component: LoginPage, meta: { public: true, title: 'Giriş' } },
+    { path: '/welcome', component: WelcomePage, meta: { public: true, title: 'Şifre belirleme' } },
     {
       path: '/',
       component: AppLayout,
@@ -45,6 +50,7 @@ export const router = createRouter({
         { path: 'definitions', redirect: '/definitions/corporations' },
         { path: 'definitions/companies/:id(\\d+)', component: CompanyPage, meta: { title: 'Şirket' } },
         { path: 'definitions/prompts', component: PromptsPage, meta: { title: 'AI istemleri' } },
+        { path: 'definitions/users', component: UsersPage, meta: { title: 'Kullanıcılar', admin: true } },
         { path: 'definitions/:kind', component: DefinitionsPage, meta: { title: 'Tanımlar' } },
         { path: ':pathMatch(.*)*', component: NotFoundPage, meta: { title: 'Sayfa bulunamadı' } },
       ],
@@ -52,13 +58,14 @@ export const router = createRouter({
   ],
 })
 
-// Every page except the login page needs a signed-in user.
+// Every page except the login and welcome pages needs a signed-in user; Kullanıcılar a yönetici.
 router.beforeEach(async (to) => {
   if (to.meta.public) {
     return true
   }
   const user = await loadCurrentUser()
-  return user ? true : { path: '/login', query: { returnTo: to.fullPath } }
+  if (!user) return { path: '/login', query: { returnTo: to.fullPath } }
+  return to.meta.admin && user.role !== 'Admin' ? '/definitions' : true
 })
 
 router.afterEach((to) => {

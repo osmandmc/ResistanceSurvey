@@ -2,7 +2,8 @@
 import { ref } from 'vue'
 import { NAlert, NButton, NSpin, useMessage } from 'naive-ui'
 import { errorMessage } from '@/api'
-import { getAiPrompts, queueForAi, type AiPrompts } from '@/statusApi'
+import { getAiPrompts, queueForAi, sendLists, type AiPrompts } from '@/statusApi'
+import { formatDateTime } from '@/format'
 
 // "AI istemleri" (R25): what the pipeline's AI stages run now. Read only: a prompt changes through the pipeline
 // repository (docs/extraction/), measured before it is merged.
@@ -34,6 +35,22 @@ void load()
 
 // The pipeline's sources with an inbox (as the inbox's source filter).
 const sources = ['evrensel', 'kizilbayrak']
+
+// The drafts offer the app's lists; the app sends them when they change (every 15 minutes at most) or here at once.
+const sendingLists = ref(false)
+
+async function sendListsNow() {
+  sendingLists.value = true
+  try {
+    const result = await sendLists()
+    message.success(result.changed ? 'Listeler gönderildi; yeni taslaklar bunları kullanacak.' : 'İşleme hattındaki listeler zaten güncel.')
+    await load()
+  } catch (error) {
+    message.error(errorMessage(error, 'Listeler gönderilemedi.'))
+  } finally {
+    sendingLists.value = false
+  }
+}
 
 async function reassess() {
   reassessing.value = true
@@ -77,6 +94,12 @@ async function reassess() {
         <span class="version">{{ p.version }} · {{ p.model }}</span>
       </div>
       <p class="what">{{ titles[p.name]?.what }}</p>
+      <p v-if="p.name === 'extraction'" class="lists">
+        Listeler (nedenler, eylem türleri, iller …):
+        <strong>{{ prompts.listsUpdatedAt ? formatDateTime(prompts.listsUpdatedAt) : '21.10.2026 tarihli ilk kopya' }}</strong>.
+        Tanımlar’daki değişiklikler en geç 15 dakikada iletilir.
+        <n-button size="tiny" :loading="sendingLists" class="retry" @click="sendListsNow">Listeleri şimdi gönder</n-button>
+      </p>
       <details>
         <summary>İstemin metni</summary>
         <pre class="prompt">{{ p.text }}</pre>
@@ -142,6 +165,11 @@ async function reassess() {
 .what {
   margin: 8px 0 12px;
   font-size: 14px;
+}
+.lists {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--rs-muted);
 }
 summary {
   cursor: pointer;

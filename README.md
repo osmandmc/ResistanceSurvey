@@ -4,20 +4,20 @@ ASP.NET Core 9 app for recording labour resistances and protests from news artic
 
 ## Secrets
 
-No secrets are stored in this repository. The app refuses to start without these settings:
+No secrets are stored in this repository. The app needs these settings (it refuses to start without the connection string):
 
 | Setting | What |
 |---|---|
 | `ConnectionStrings:RSConnectionString` | SQL Server connection string |
-| `AppSettings:AdminPass` | Password of the `admin` user |
-| `AppSettings:UserPass` | Password of the `user` user |
+| `AppSettings:AdminPass` | Only for the very first sign-in: while the database has no account, `admin` with this password creates the first yönetici. Ignored once an account exists |
+
+**Accounts** (F4a): everyone signs in with their own account. A yönetici invites people in Tanımlar → Kullanıcılar, which gives a one-time link (`/app/welcome?token=…`, 7 days) to send them directly; they set their own password through it. A forgotten password gets a new link the same way. Passwords and links are stored only as hashes.
 
 **Locally**, keep them in .NET user-secrets (stored in your home folder, outside the repository). From the repository root:
 
 ```bash
 dotnet user-secrets --project RS.MVC set "ConnectionStrings:RSConnectionString" "<connection string>"
 dotnet user-secrets --project RS.MVC set "AppSettings:AdminPass" "<password>"
-dotnet user-secrets --project RS.MVC set "AppSettings:UserPass" "<password>"
 ```
 
 User-secrets are read when the app runs in the Development environment, and by the EF tools (`dotnet ef … --project RS.EF --startup-project RS.EF`). Environment variables work too (`ConnectionStrings__RSConnectionString`, `AppSettings__AdminPass`, …).
