@@ -41,6 +41,7 @@ builder.Services.AddScoped<ListValueResolver>();
 builder.Services.AddScoped<RS.MVC.Features.Cases.CaseWriter>();
 builder.Services.AddScoped<RS.MVC.Features.Review.ListsPublisher>();
 builder.Services.AddScoped<RS.MVC.Features.Review.AiSuggestionRecorder>();
+builder.Services.AddScoped<RS.MVC.Features.Inbox.SiblingFinder>();
 
 // Test environment (Azure) only: bring its copy of the database up to date in the background, after startup.
 if (builder.Environment.IsEnvironment("Test"))

@@ -38,6 +38,11 @@ const review = (item: InboxItem): RouteLocationRaw => ({ path: `/review/${encode
               <span v-if="item.ai.verdict !== 'Relevant' && item.ai.reason" class="reason">{{ item.ai.reason }}</span>
             </div>
             <div v-else class="ai"><span class="reason">AI değerlendirmedi</span></div>
+            <div v-if="item.sibling" class="sibling" :title="item.sibling.title ?? undefined">
+              Benzer bir haber
+              <router-link :to="`/cases/${item.sibling.caseId}`">{{ item.sibling.caseName || `Vaka #${item.sibling.caseId}` }}</router-link>
+              vakasına bağlandı ({{ item.sibling.reason }}). Aynı olaysa “Sadece bağla” yeterli olabilir.
+            </div>
           </td>
           <td>{{ item.sourceName }}</td>
           <td class="nowrap">{{ formatDate(item.publishedAt) }}</td>
@@ -95,6 +100,17 @@ const review = (item: InboxItem): RouteLocationRaw => ({ path: `/review/${encode
   gap: 4px 8px;
   margin-top: 4px;
   font-weight: 400;
+}
+.sibling {
+  margin-top: 6px;
+  padding: 4px 8px;
+  border-left: 3px solid #d4a72c;
+  background: #fff8e5;
+  font-size: 13px;
+  font-weight: 400;
+}
+.sibling a {
+  color: var(--rs-accent);
 }
 .draft {
   margin-top: 4px;

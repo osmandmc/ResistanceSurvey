@@ -21,8 +21,9 @@ namespace RS.MVC.Features.Inbox
 
     /// <param name="Ai">The AI's verdict and reason; null when not assessed.</param>
     /// <param name="Draft">The AI draft's one-line summary ("company · protest type · city · date"); null without a draft.</param>
+    /// <param name="Sibling">An article of the same days already linked to a case that looks like the same event (R29).</param>
     public record InboxItem(string ArticleId, string Title, string SourceId, string SourceName, DateTimeOffset? PublishedAt, string Url,
-        AiRelevance Ai = null, string Draft = null);
+        AiRelevance Ai = null, string Draft = null, InboxSibling Sibling = null);
 
     public record InboxPage(IReadOnlyList<InboxItem> Items, string Next);
 
@@ -30,7 +31,7 @@ namespace RS.MVC.Features.Inbox
     /// Lists open articles from the pipeline. Articles already handled in the app (its database decides, D-010) are
     /// left out: the pipeline still lists them only because an outcome call failed, so the outcome is re-sent here.
     /// </summary>
-    public class GetInboxHandler(RSDBContext db, IPipelineClient pipeline, OutcomeSender outcomes)
+    public class GetInboxHandler(RSDBContext db, IPipelineClient pipeline, OutcomeSender outcomes, SiblingFinder siblings)
     {
         public const int PageSize = 50;
 
@@ -68,6 +69,8 @@ namespace RS.MVC.Features.Inbox
                 .Select(i => new InboxItem(i.ArticleId, i.Title, i.SourceId, SourceCatalog.Name(i.SourceId), i.PublishedAt, i.Url,
                     AiRelevance.From(i.Stages), AiRelevance.DraftSummary(i.Stages)))
                 .ToList();
+            var found = await siblings.FindAsync(items);
+            items = items.Select(i => found.TryGetValue(i.ArticleId, out var sibling) ? i with { Sibling = sibling } : i).ToList();
             return new InboxPage(items, page.Next);
         }
 
