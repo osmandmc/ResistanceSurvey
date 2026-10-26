@@ -80,7 +80,7 @@ namespace RS.MVC.Models
     /// OpenWithDraft, OpenNotRelevant, OpenNotAssessed (pipeline B11): of the open ones, with an AI draft, rejected by the AI, not assessed yet.
     public record PipelineSourceMetrics(
         string SourceId, DateTimeOffset? LastReceivedAt, string LastReceivedOrigin, int Received, int Failed, int Open,
-        int OpenWithDraft = 0, int OpenNotRelevant = 0, int OpenNotAssessed = 0);
+        int OpenWithDraft = 0, int OpenNotRelevant = 0, int OpenNotAssessed = 0, int OpenWithOlderVerdict = 0);
 
     /// <summary>Assessed…: the AI's verdicts given that day; Drafted: AI drafts made that day (pipeline B11).</summary>
     public record PipelineDailyMetrics(
@@ -92,6 +92,12 @@ namespace RS.MVC.Models
 
     /// <summary>Verdict: "Relevant", "NotRelevant", "Uncertain".</summary>
     public record PipelineVerdictAgreement(string Verdict, int Digested, int Dismissed);
+
+    /// <summary>GET /api/prompts (pipeline B13): the prompts the AI stages run, and open articles judged by an older relevance prompt.</summary>
+    public record PipelinePrompts(IReadOnlyList<PipelinePrompt> Prompts, int OpenWithOlderVerdict);
+
+    /// <summary>Name: "relevance" or "extraction". Text: the prompt with its placeholders.</summary>
+    public record PipelinePrompt(string Name, string Version, string Model, string Text);
 
     /// <summary>POST /api/articles/assess and /api/articles/draft: articles queued for the AI, SpacingSeconds apart.</summary>
     public record PipelineQueueResponse(int Queued, int SpacingSeconds, bool More, bool ModelConfigured);

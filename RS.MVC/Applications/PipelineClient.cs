@@ -29,8 +29,14 @@ namespace RS.MVC.Applications
         /// <summary>Reads the sources' feeds now, as the pipeline's timer does.</summary>
         Task<PipelineCollectResponse> CollectFeedsAsync();
 
-        /// <summary>Queues the source's open articles the AI has not handled: for a verdict, and the relevant ones for a draft.</summary>
-        Task<(PipelineQueueResponse Assess, PipelineQueueResponse Draft)> QueueForAiAsync(string sourceId);
+        /// <summary>
+        /// Queues the source's open articles the AI has not handled: for a verdict, and the relevant ones for a draft. Again:
+        /// instead, those judged by an older relevance prompt, to be judged with the current one (no drafts queued).
+        /// </summary>
+        Task<(PipelineQueueResponse Assess, PipelineQueueResponse Draft)> QueueForAiAsync(string sourceId, bool again = false);
+
+        /// <summary>The prompts the AI stages run now (pipeline B13).</summary>
+        Task<PipelinePrompts> GetPromptsAsync();
 
         /// <summary>Safe to repeat; the latest decision wins. Throws HttpRequestException when the pipeline cannot be reached.</summary>
         Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome);
@@ -117,15 +123,24 @@ namespace RS.MVC.Applications
             return await response.Content.ReadFromJsonAsync<PipelineCollectResponse>();
         }
 
-        public async Task<(PipelineQueueResponse Assess, PipelineQueueResponse Draft)> QueueForAiAsync(string sourceId)
+        public async Task<PipelinePrompts> GetPromptsAsync()
         {
-            async Task<PipelineQueueResponse> Queue(string path)
+            var response = await _http.GetAsync("api/prompts");
+            await EnsureSuccessAsync(response);
+            return await response.Content.ReadFromJsonAsync<PipelinePrompts>();
+        }
+
+        public async Task<(PipelineQueueResponse Assess, PipelineQueueResponse Draft)> QueueForAiAsync(string sourceId, bool again = false)
+        {
+            async Task<PipelineQueueResponse> Queue(string path, string extra = "")
             {
-                var response = await _http.PostAsync($"api/articles/{path}?source={Uri.EscapeDataString(sourceId)}", null);
+                var response = await _http.PostAsync($"api/articles/{path}?source={Uri.EscapeDataString(sourceId)}{extra}", null);
                 await EnsureSuccessAsync(response);
                 return await response.Content.ReadFromJsonAsync<PipelineQueueResponse>();
             }
-            return (await Queue("assess"), await Queue("draft"));
+            return again
+                ? (await Queue("assess", "&again=true"), new PipelineQueueResponse(0, 0, false, true))
+                : (await Queue("assess"), await Queue("draft"));
         }
 
         public async Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome)

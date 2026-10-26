@@ -55,7 +55,7 @@ namespace RS.MVC.Features.Archive
     /// One step of an article's history. Step: a pipeline stage ("Submitted", "Fetched", "Parsed" …) or "Outcome".
     /// Answer: what the stage concluded (the AI's verdict for "Relevance").
     /// </summary>
-    public record ArchiveEvent(string Step, string Status, DateTimeOffset At, string Reason, string Answer = null);
+    public record ArchiveEvent(string Step, string Status, DateTimeOffset At, string Reason, string Answer = null, string Version = null);
 
     /// <summary>Reason: why it failed or why it was dismissed. Ai: the AI's verdict; Draft: its draft's summary (R23).</summary>
     public record ArchiveItem(
@@ -167,7 +167,7 @@ namespace RS.MVC.Features.Archive
             var events = (article.Stages ?? new Dictionary<string, PipelineStageResult>())
                 .OrderBy(s => Array.IndexOf(StageOrder, s.Key) is var i and >= 0 ? i : StageOrder.Length)
                 .ThenBy(s => s.Value.At)
-                .Select(s => new ArchiveEvent(s.Key, s.Value.Status, s.Value.At, s.Value.Reason, s.Value.Answer))
+                .Select(s => new ArchiveEvent(s.Key, s.Value.Status, s.Value.At, s.Value.Reason, s.Value.Answer, s.Value.Version))
                 .ToList();
             if (article.Outcome is { } outcome)
                 events.Add(new ArchiveEvent("Outcome", outcome.Kind, outcome.At, outcome.Reason));

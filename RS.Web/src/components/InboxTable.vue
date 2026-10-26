@@ -33,7 +33,7 @@ const review = (item: InboxItem): RouteLocationRaw => ({ path: `/review/${encode
           <td class="title">
             <a :href="item.url" target="_blank" rel="noopener">{{ item.title || item.url }}</a>
             <div v-if="item.draft" class="draft">Taslak: {{ item.draft }}</div>
-            <div v-if="item.ai" class="ai" :title="item.ai.reason ?? undefined">
+            <div v-if="item.ai" class="ai" :title="[item.ai.reason, item.ai.version].filter(Boolean).join('\n') || undefined">
               <n-tag :type="verdictType[item.ai.verdict]" size="small" :bordered="false">AI: {{ verdictText[item.ai.verdict] }}</n-tag>
               <span v-if="item.ai.verdict !== 'Relevant' && item.ai.reason" class="reason">{{ item.ai.reason }}</span>
             </div>

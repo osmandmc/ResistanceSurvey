@@ -171,6 +171,7 @@ function onMerged(affected: number) {
     <router-link v-for="k in definitionKinds" :key="k.kind" :to="`/definitions/${k.kind}`" class="kind-link" :class="{ active: k.kind === kind }">
       {{ k.label }}
     </router-link>
+    <router-link to="/definitions/prompts" class="kind-link">AI istemleri</router-link>
   </nav>
 
   <section class="panel">

@@ -42,7 +42,8 @@ namespace RS.MVC.Features.Inbox
             var (from, to) = MonthRange(query.Month);
             var (relevance, draft) = query.Part switch
             {
-                "draft" => (null, "ready"),
+                // Not "notRelevant": a newer prompt may have rejected an article whose earlier draft is still stored.
+                "draft" => ("other", "ready"),
                 "other" => ("other", "none"),
                 "notRelevant" => ("notRelevant", (string)null),
                 _ => ((string)null, (string)null),

@@ -188,7 +188,7 @@ public class InboxTests
         var page = await _getInbox.Handle(new GetInboxQuery("2026-11", null, null, "notRelevant"));
 
         Assert.Equal("notRelevant", Assert.Single(_pipeline.Queries).Relevance);
-        Assert.Equal(new AiRelevance("NotRelevant", "Spor haberi."), page.Items.Single(i => i.ArticleId == "a1").Ai);
+        Assert.Equal(new AiRelevance("NotRelevant", "Spor haberi.", "relevance-v1 · gemini"), page.Items.Single(i => i.ArticleId == "a1").Ai);
         Assert.Null(page.Items.Single(i => i.ArticleId == "a2").Ai); // a failed assessment is no verdict
     }
 
@@ -204,7 +204,7 @@ public class InboxTests
         var drafts = await _getInbox.Handle(new GetInboxQuery("2026-11", null, null, "draft"));
         await _getInbox.Handle(new GetInboxQuery("2026-11", null, null, "other"));
 
-        Assert.Equal([(null, "ready"), ("other", "none")], _pipeline.Queries.Select(q => (q.Relevance, q.Draft)));
+        Assert.Equal([("other", "ready"), ("other", "none")], _pipeline.Queries.Select(q => (q.Relevance, q.Draft)));
         Assert.Equal("Örnek Metal · Fiili grev · Kocaeli · 2026-11-03", drafts.Items.Single(i => i.ArticleId == "a1").Draft);
         Assert.Null(drafts.Items.Single(i => i.ArticleId == "a2").Draft);
     }

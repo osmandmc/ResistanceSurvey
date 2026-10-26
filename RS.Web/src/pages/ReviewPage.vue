@@ -321,6 +321,7 @@ async function onDismissed() {
       <p v-if="article.ai" class="ai-verdict" :class="article.ai.verdict">
         <strong>AI: {{ verdictText[article.ai.verdict] }}.</strong>
         <span v-if="article.ai.reason"> {{ article.ai.reason }}</span>
+        <span v-if="article.ai.version" class="ai-origin">{{ article.ai.version }}</span>
       </p>
       <p v-if="article.body" class="body">{{ article.body }}</p>
       <p v-else class="no-body">Haberin metni henüz okunmadı; kaynağa giderek okuyabilirsiniz.</p>

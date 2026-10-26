@@ -6,7 +6,12 @@ export type AiVerdict = 'Relevant' | 'NotRelevant' | 'Uncertain'
 export interface AiRelevance {
   verdict: AiVerdict
   reason: string | null
+  /** The prompt and model that judged it: "relevance-v3.1 · gemini-…". */
+  version: string | null
 }
+
+/** The prompt part of a version ("relevance-v3.1 · gemini-…" → "relevance-v3.1"). */
+export const promptOf = (version: string | null | undefined) => version?.split(' · ')[0] ?? null
 
 export const verdictText: Record<AiVerdict, string> = {
   Relevant: 'ilgili',
