@@ -38,6 +38,7 @@ builder.Services.AddScoped<OutcomeSender>();
 builder.Services.AddScoped<ArticleCaseLinker>();
 builder.Services.AddScoped<ListValueResolver>();
 builder.Services.AddScoped<RS.MVC.Features.Cases.CaseWriter>();
+builder.Services.AddScoped<RS.MVC.Features.Review.ListsPublisher>();
 builder.Services.AddScoped<RS.MVC.Features.Review.AiSuggestionRecorder>();
 
 // Test environment (Azure) only: bring its copy of the database up to date in the background, after startup.
@@ -48,6 +49,10 @@ builder.Services.AddScoped<IUserApplication, UserApplication>();
 // Database Context
 builder.Services.AddDbContext<RSDBContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("RSConnectionString")));
+
+// R30: the pipeline's drafts offer the app's current lists (sent at startup and when they change).
+if (!string.IsNullOrWhiteSpace(configuration["Pipeline:BaseUrl"]))
+    builder.Services.AddHostedService<RS.MVC.Features.Review.ListsSync>();
 
 // API controllers, and the one view left: the error page.
 builder.Services.AddControllersWithViews();

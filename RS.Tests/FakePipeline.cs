@@ -68,6 +68,14 @@ internal sealed class FakePipeline : IPipelineClient
 
     public PipelinePrompts Prompts { get; set; } = new([], 0);
 
+    public List<IReadOnlyDictionary<string, IReadOnlyList<string>>> SentLists { get; } = [];
+
+    public Task<PipelineListsResponse> PutListsAsync(IReadOnlyDictionary<string, IReadOnlyList<string>> lists)
+    {
+        SentLists.Add(lists);
+        return Task.FromResult(new PipelineListsResponse(DateTimeOffset.UtcNow, true, lists.ToDictionary(l => l.Key, l => l.Value.Count)));
+    }
+
     public Task<PipelinePrompts> GetPromptsAsync() => Task.FromResult(Prompts);
 
     /// <summary>AI drafts per article (pipeline B12).</summary>

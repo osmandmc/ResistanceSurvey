@@ -96,6 +96,13 @@ export interface AiPrompts {
   prompts: { name: 'relevance' | 'extraction'; version: string; model: string; text: string }[]
   /** Open articles judged by an older relevance prompt. */
   openWithOlderVerdict: number
+  /** When the drafts' list values were last updated by the app; null: the pipeline's snapshot of 21.10.2026. */
+  listsUpdatedAt: string | null
+}
+
+/** "Listeleri şimdi gönder": the app's list values to the pipeline now. changed: false when it already had them. */
+export function sendLists() {
+  return api<{ updatedAt: string; changed: boolean; counts: Record<string, number> }>('/api/status/lists', { method: 'POST' })
 }
 
 export function getAiPrompts() {
