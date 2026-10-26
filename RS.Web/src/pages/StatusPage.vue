@@ -41,12 +41,12 @@ const queuing = ref<string | null>(null)
 const queued = ref<QueuedForAi | null>(null)
 const queueError = ref('')
 
-async function processWithAi(source: StatusSource) {
+async function processWithAi(source: StatusSource, again = false) {
   queuing.value = source.sourceId
   queued.value = null
   queueError.value = ''
   try {
-    queued.value = await queueForAi(source.sourceId)
+    queued.value = await queueForAi(source.sourceId, again)
   } catch (error) {
     queueError.value = errorMessage(error, 'Haberler AI’a gönderilemedi.')
   } finally {
@@ -196,9 +196,16 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
           <li><router-link :to="{ path: '/inbox', query: { source: source.sourceId, part: 'other' } }">{{ toReview(source) }} incelenecek</router-link></li>
           <li><router-link :to="{ path: '/inbox', query: { source: source.sourceId, part: 'notRelevant' } }">{{ source.openNotRelevant }} AI: ilgisiz</router-link></li>
           <li :class="{ pending: source.openNotAssessed > 0 }">{{ source.openNotAssessed }} AI değerlendirmedi</li>
+          <li v-if="source.openWithOlderVerdict > 0" class="older">
+            {{ source.openWithOlderVerdict }} eski istemle değerlendirildi
+            <router-link to="/definitions/prompts">(istemler)</router-link>
+          </li>
         </ul>
         <div v-if="status.ai.enabled" class="ai-row">
           <n-button size="small" :loading="queuing === source.sourceId" :disabled="queuing !== null" @click="processWithAi(source)">AI ile işle</n-button>
+          <n-button v-if="source.openWithOlderVerdict > 0" size="small" quaternary :disabled="queuing !== null" @click="processWithAi(source, true)">
+            Yeni istemle yeniden değerlendir
+          </n-button>
           <span class="muted small">Değerlendirilmeyenleri ve taslağı olmayan ilgili haberleri AI’a gönderir.</span>
         </div>
       </article>
@@ -406,6 +413,9 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
 }
 .split a {
   color: var(--rs-accent);
+}
+.split .older {
+  color: var(--rs-muted);
 }
 .split .pending {
   color: #7a4d00;

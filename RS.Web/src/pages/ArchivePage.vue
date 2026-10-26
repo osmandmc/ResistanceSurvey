@@ -216,7 +216,7 @@ const emptyText = computed(() =>
                 <td class="nowrap">
                   <n-tag size="small" :type="stateLabel[item.state].type" :bordered="false">{{ stateLabel[item.state].text }}</n-tag>
                 </td>
-                <td class="ai-cell" :title="[item.ai?.reason, item.draft ? `Taslak: ${item.draft}` : null].filter(Boolean).join('\n') || undefined">
+                <td class="ai-cell" :title="[item.ai?.reason, item.ai?.version, item.draft ? `Taslak: ${item.draft}` : null].filter(Boolean).join('\n') || undefined">
                   <n-tag v-if="item.ai" size="small" :type="verdictType[item.ai.verdict]" :bordered="false">{{ verdictText[item.ai.verdict] }}</n-tag>
                   <span v-else class="muted-text">—</span>
                   <n-tag v-if="item.draft" size="small" :bordered="false" class="draft-tag">taslak</n-tag>
@@ -237,6 +237,7 @@ const emptyText = computed(() =>
                       <span class="when">{{ formatDateTime(event.at) }}</span>
                       <span>{{ eventText(event) }}</span>
                       <span v-if="event.reason" class="reason">{{ event.reason }}</span>
+                      <span v-if="event.version && (event.step === 'Relevance' || event.step === 'Extracted')" class="reason">{{ event.version }}</span>
                     </li>
                   </ol>
                 </td>

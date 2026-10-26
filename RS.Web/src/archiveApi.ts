@@ -16,6 +16,8 @@ export interface ArchiveEvent {
   reason: string | null
   /** What the stage concluded: the AI's verdict for "Relevance". */
   answer: string | null
+  /** Parser, prompt or model version that did the step. */
+  version: string | null
 }
 
 export interface ArchiveItem {

@@ -127,7 +127,7 @@ public class ArchiveTests
         await List(ArchiveFilter.AiNotRelevant);
         await List(ArchiveFilter.AiDraft);
 
-        Assert.Equal(new RS.MVC.Features.Articles.AiRelevance("NotRelevant", "Spor haberi."), all["rejected"].Ai);
+        Assert.Equal(new RS.MVC.Features.Articles.AiRelevance("NotRelevant", "Spor haberi.", "relevance-v1"), all["rejected"].Ai);
         Assert.Equal("Örnek Metal · Fiili grev", all["drafted"].Draft);
         Assert.Equal(ArchiveState.Open, all["aiFailed"].State); // still readable and waiting in the inbox
         Assert.Equal([("notRelevant", (string?)null, "any"), (null, "ready", "any")],

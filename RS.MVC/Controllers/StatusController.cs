@@ -11,7 +11,7 @@ namespace RS.MVC.Controllers
     [ApiController]
     [Route("api/status")]
     [Authorize]
-    public class StatusController(GetStatusHandler getStatus, CollectFeedsHandler collectFeeds, QueueForAiHandler queueForAi) : ControllerBase
+    public class StatusController(GetStatusHandler getStatus, CollectFeedsHandler collectFeeds, QueueForAiHandler queueForAi, GetAiPromptsHandler getPrompts) : ControllerBase
     {
         /// <summary>GET /api/status?days=14 (1–31).</summary>
         [HttpGet]
@@ -26,13 +26,20 @@ namespace RS.MVC.Controllers
         [HttpPost("collect")]
         public async Task<IReadOnlyList<CollectedFeed>> Collect() => await collectFeeds.Handle();
 
-        /// <summary>POST /api/status/ai?source=evrensel — "AI ile işle": queue the source's articles the AI has not handled.</summary>
+        /// <summary>
+        /// POST /api/status/ai?source=evrensel — "AI ile işle": queue the source's articles the AI has not handled;
+        /// &amp;again=true: those judged by an older relevance prompt, to be judged with the current one.
+        /// </summary>
         [HttpPost("ai")]
-        public async Task<ActionResult<QueuedForAi>> QueueForAi(string source)
+        public async Task<ActionResult<QueuedForAi>> QueueForAi(string source, bool again = false)
         {
             if (string.IsNullOrWhiteSpace(source))
                 return BadRequest(new { error = "'source' is required" });
-            return await queueForAi.Handle(source);
+            return await queueForAi.Handle(source, again);
         }
+
+        /// <summary>GET /api/status/prompts — "AI istemleri": the prompts the pipeline's AI stages run now.</summary>
+        [HttpGet("prompts")]
+        public async Task<AiPrompts> Prompts() => await getPrompts.Handle();
     }
 }

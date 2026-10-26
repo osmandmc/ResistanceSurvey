@@ -30,6 +30,8 @@ export interface StatusSource {
   openWithDraft: number
   openNotRelevant: number
   openNotAssessed: number
+  /** Judged by an older relevance prompt: can be judged again with the current one. */
+  openWithOlderVerdict: number
   /** Newest day first. */
   days: StatusDay[]
 }
@@ -71,8 +73,20 @@ export interface QueuedForAi {
   spacingSeconds: number
 }
 
-export function queueForAi(sourceId: string) {
-  return api<QueuedForAi>(`/api/status/ai?source=${encodeURIComponent(sourceId)}`, { method: 'POST' })
+/** again: instead, the articles judged by an older relevance prompt, judged again with the current one. */
+export function queueForAi(sourceId: string, again = false) {
+  return api<QueuedForAi>(`/api/status/ai?source=${encodeURIComponent(sourceId)}${again ? '&again=true' : ''}`, { method: 'POST' })
+}
+
+/** "AI istemleri": the prompts the pipeline's AI stages run now. */
+export interface AiPrompts {
+  prompts: { name: 'relevance' | 'extraction'; version: string; model: string; text: string }[]
+  /** Open articles judged by an older relevance prompt. */
+  openWithOlderVerdict: number
+}
+
+export function getAiPrompts() {
+  return api<AiPrompts>('/api/status/prompts')
 }
 
 export function getStatus(days: number) {

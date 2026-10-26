@@ -14,6 +14,7 @@ import StatusPage from './pages/StatusPage.vue'
 import UploadPage from './pages/UploadPage.vue'
 import NewCasePage from './pages/NewCasePage.vue'
 import NotFoundPage from './pages/NotFoundPage.vue'
+import PromptsPage from './pages/PromptsPage.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -43,6 +44,7 @@ export const router = createRouter({
         { path: 'upload', component: UploadPage, meta: { title: 'Yükleme' } },
         { path: 'definitions', redirect: '/definitions/corporations' },
         { path: 'definitions/companies/:id(\\d+)', component: CompanyPage, meta: { title: 'Şirket' } },
+        { path: 'definitions/prompts', component: PromptsPage, meta: { title: 'AI istemleri' } },
         { path: 'definitions/:kind', component: DefinitionsPage, meta: { title: 'Tanımlar' } },
         { path: ':pathMatch(.*)*', component: NotFoundPage, meta: { title: 'Sayfa bulunamadı' } },
       ],

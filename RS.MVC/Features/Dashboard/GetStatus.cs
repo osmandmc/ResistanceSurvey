@@ -23,6 +23,7 @@ namespace RS.MVC.Features.Dashboard
         int OpenWithDraft,
         int OpenNotRelevant,
         int OpenNotAssessed,
+        int OpenWithOlderVerdict,
         IReadOnlyList<StatusDay> Days);
 
     /// <summary>The AI (R22): whether a key is configured, and per verdict how many decided articles were linked or dismissed.</summary>
@@ -46,7 +47,7 @@ namespace RS.MVC.Features.Dashboard
             var sources = metrics.Sources
                 .Select(s => new StatusSource(
                     s.SourceId, SourceCatalog.Name(s.SourceId), s.LastReceivedAt, s.LastReceivedOrigin, s.Received, s.Failed, s.Open,
-                    s.OpenWithDraft, s.OpenNotRelevant, s.OpenNotAssessed,
+                    s.OpenWithDraft, s.OpenNotRelevant, s.OpenNotAssessed, s.OpenWithOlderVerdict,
                     metrics.Days
                         .Where(d => d.SourceId == s.SourceId)
                         .OrderByDescending(d => d.Day)
@@ -94,11 +95,31 @@ namespace RS.MVC.Features.Dashboard
     /// </summary>
     public class QueueForAiHandler(RS.MVC.Applications.IPipelineClient pipeline)
     {
-        public async Task<QueuedForAi> Handle(string sourceId)
+        /// <param name="again">Instead: the articles judged by an older relevance prompt, judged again with the current one.</param>
+        public async Task<QueuedForAi> Handle(string sourceId, bool again = false)
         {
-            var (assess, draft) = await pipeline.QueueForAiAsync(sourceId);
+            var (assess, draft) = await pipeline.QueueForAiAsync(sourceId, again);
             return new QueuedForAi(sourceId, SourceCatalog.Name(sourceId), assess.Queued, draft.Queued, assess.More || draft.More,
                 assess.ModelConfigured, Math.Max(assess.SpacingSeconds, draft.SpacingSeconds));
         }
     }
 }
+
+namespace RS.MVC.Features.Dashboard
+{
+    /// <summary>"AI istemleri" (R25): the prompts the pipeline's AI stages run now.</summary>
+    public record AiPrompts(IReadOnlyList<AiPromptInfo> Prompts, int OpenWithOlderVerdict);
+
+    /// <param name="Name">"relevance" or "extraction".</param>
+    public record AiPromptInfo(string Name, string Version, string Model, string Text);
+
+    public class GetAiPromptsHandler(RS.MVC.Applications.IPipelineClient pipeline)
+    {
+        public async Task<AiPrompts> Handle()
+        {
+            var prompts = await pipeline.GetPromptsAsync();
+            return new AiPrompts(prompts.Prompts.Select(p => new AiPromptInfo(p.Name, p.Version, p.Model, p.Text)).ToList(), prompts.OpenWithOlderVerdict);
+        }
+    }
+}
+
