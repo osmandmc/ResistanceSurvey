@@ -78,6 +78,34 @@ internal sealed class FakePipeline : IPipelineClient
 
     public Task<PipelinePrompts> GetPromptsAsync() => Task.FromResult(Prompts);
 
+    public List<(string Name, string Text, string Note, string By)> CreatedVersions { get; } = [];
+
+    public Task<(PipelinePromptVersion Version, string Error)> CreatePromptVersionAsync(string name, string text, string note, string by)
+    {
+        CreatedVersions.Add((name, text, note, by));
+        return Task.FromResult(text.Contains("{{TEXT}}")
+            ? (new PipelinePromptVersion($"{name}-e{CreatedVersions.Count}", text, note, by, DateTimeOffset.UtcNow, null, false), (string)null!)
+            : ((PipelinePromptVersion)null!, "The text must keep these placeholders: {{TEXT}}"));
+    }
+
+    /// <summary>What a try answers, per article id; the ids asked are kept in Tried.</summary>
+    public Func<string, PipelinePromptTryResult> TryAnswer { get; set; } = id => new(id, id, null!, null!, "NoText", null!, null!, null!);
+    public List<IReadOnlyList<string>> Tried { get; } = [];
+
+    public Task<PipelinePromptTry> TryPromptVersionAsync(string name, string version, IReadOnlyList<string> articleIds)
+    {
+        Tried.Add(articleIds);
+        return Task.FromResult(new PipelinePromptTry(version, "gemini", articleIds.Select(TryAnswer).ToList()));
+    }
+
+    public List<(string Name, string Version, string By)> Activated { get; } = [];
+
+    public Task<bool> ActivatePromptAsync(string name, string version, string by)
+    {
+        Activated.Add((name, version, by));
+        return Task.FromResult(true);
+    }
+
     /// <summary>AI drafts per article (pipeline B12).</summary>
     public Dictionary<string, PipelineDraft> Drafts { get; } = [];
 

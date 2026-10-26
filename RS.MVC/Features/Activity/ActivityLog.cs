@@ -42,6 +42,10 @@ namespace RS.MVC.Features.Activity
         public const string UploadExcel = "upload.excel";
         public const string UploadLinks = "upload.links";
         public const string UploadLocalNews = "upload.local-news";
+
+        public const string PromptCreate = "prompt.create";
+        public const string PromptTry = "prompt.try";
+        public const string PromptActivate = "prompt.activate";
     }
 
     public static class ActivityLog

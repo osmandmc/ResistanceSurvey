@@ -92,8 +92,31 @@ export function queueForAi(sourceId: string, again = false) {
 }
 
 /** "AI istemleri": the prompts the pipeline's AI stages run now. */
+/** A prompt version edited in the app (R28). active: the pipeline runs it now. */
+export interface PromptVersion {
+  version: string
+  text: string
+  note: string | null
+  createdBy: string | null
+  createdAt: string
+  activatedAt: string | null
+  active: boolean
+}
+
+export type PromptName = 'relevance' | 'extraction'
+
+export interface AiPromptInfo {
+  name: PromptName
+  version: string
+  model: string
+  text: string
+  /** The repository's version, run when no edited version is active. */
+  builtin: string
+  versions: PromptVersion[]
+}
+
 export interface AiPrompts {
-  prompts: { name: 'relevance' | 'extraction'; version: string; model: string; text: string }[]
+  prompts: AiPromptInfo[]
   /** Open articles judged by an older relevance prompt. */
   openWithOlderVerdict: number
   /** When the drafts' list values were last updated by the app; null: the pipeline's snapshot of 21.10.2026. */
@@ -127,4 +150,106 @@ export interface CollectedFeed {
 /** "Şimdi topla": the pipeline reads the feeds now instead of waiting for its two-hourly timer. */
 export function collectFeeds() {
   return api<CollectedFeed[]>('/api/status/collect', { method: 'POST' })
+}
+
+// "AI raporu" (R19d): how often researchers keep the AI's values, and the relevance verdicts against the decisions.
+
+export interface AiReportItem {
+  name: string
+  kept: number
+  removed: number
+  added: number
+}
+
+export interface AiReportField {
+  field: string
+  label: string
+  isList: boolean
+  kept: number
+  changed: number
+  removed: number
+  added: number
+  items: AiReportItem[]
+}
+
+export interface AiReportGroup {
+  origin: string
+  promptVersion: string | null
+  count: number
+}
+
+export interface AiReportVerdict {
+  verdict: 'Relevant' | 'Uncertain' | 'NotRelevant' | 'NotAssessed'
+  linked: number
+  dismissed: Record<string, number>
+}
+
+export interface AiReport {
+  from: string
+  to: string
+  decisions: number
+  applied: number
+  others: number
+  groups: AiReportGroup[]
+  fields: AiReportField[]
+  relevance: { rows: AiReportVerdict[]; versions: string[]; truncated: boolean; error: string | null }
+}
+
+export function getAiReport(filter: { days: number; origin?: string | null; promptVersion?: string | null; relevanceVersion?: string | null }) {
+  const query = new URLSearchParams({ days: String(filter.days) })
+  if (filter.origin) query.set('origin', filter.origin)
+  if (filter.promptVersion) query.set('promptVersion', filter.promptVersion)
+  if (filter.relevanceVersion) query.set('relevanceVersion', filter.relevanceVersion)
+  return api<AiReport>(`/api/status/ai-report?${query}`)
+}
+
+// R28: prompt versions edited in the app (yönetici).
+
+export interface PromptTryRow {
+  articleId: string
+  title: string | null
+  /** "linked", "dismissed", "dismissed:NotLabour" …; for the extraction prompt "newCase" or "addProtest". */
+  decision: string
+  current: string | null
+  tried: string | null
+  triedReason: string | null
+  /** "NoText", "RateLimited", "NotConfigured" or "Unreadable: …". */
+  error: string | null
+  currentAgrees: boolean | null
+  triedAgrees: boolean | null
+  keptCurrent: number | null
+  keptTried: number | null
+}
+
+export interface PromptTryField {
+  field: string
+  label: string
+  keptCurrent: number | null
+  keptTried: number | null
+  givenCurrent: number
+  givenTried: number
+}
+
+export interface PromptTry {
+  name: PromptName
+  version: string
+  model: string | null
+  rows: PromptTryRow[]
+  compared: number
+  currentAgrees: number
+  triedAgrees: number
+  fields: PromptTryField[]
+  message: string | null
+}
+
+export function createPromptVersion(name: PromptName, text: string, note: string) {
+  return api<{ version: PromptVersion }>(`/api/status/prompts/${name}/versions`, { method: 'POST', body: JSON.stringify({ text, note }) })
+}
+
+export function tryPrompt(name: PromptName, version: string) {
+  return api<PromptTry>(`/api/status/prompts/${name}/versions/${encodeURIComponent(version)}/try`, { method: 'POST' })
+}
+
+export function activatePrompt(name: PromptName, version: string) {
+  return api<void>(`/api/status/prompts/${name}/active`, { method: 'POST', body: JSON.stringify({ version }) })
 }

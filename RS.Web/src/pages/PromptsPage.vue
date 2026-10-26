@@ -4,9 +4,10 @@ import { NAlert, NButton, NSpin, useMessage } from 'naive-ui'
 import { errorMessage } from '@/api'
 import { getAiPrompts, queueForAi, sendLists, type AiPrompts } from '@/statusApi'
 import { formatDateTime } from '@/format'
+import PromptVersions from '@/components/PromptVersions.vue'
 
-// "AI istemleri" (R25): what the pipeline's AI stages run now. Read only: a prompt changes through the pipeline
-// repository (docs/extraction/), measured before it is merged.
+// "AI istemleri" (R25): what the pipeline's AI stages run now. Yöneticiler can write a new version, try it on recent
+// decided articles and activate it (R28); the built-in prompts live in the pipeline repository (docs/extraction/).
 const message = useMessage()
 const prompts = ref<AiPrompts | null>(null)
 const loadError = ref('')
@@ -71,8 +72,9 @@ async function reassess() {
   <p class="back"><router-link to="/definitions">← Tanımlar</router-link></p>
   <h1 class="heading">AI istemleri</h1>
   <p class="description">
-    İşleme hattındaki yapay zekânın şu an kullandığı istemler. Bir istem, ölçülüp denendikten sonra işleme hattının
-    deposunda (<code>docs/extraction/</code>) değiştirilir; burada yalnızca görüntülenir.
+    İşleme hattındaki yapay zekânın şu an kullandığı istemler. Yöneticiler yeni bir sürüm yazıp son karar verilen
+    haberlerde deneyebilir ve sonra etkinleştirebilir; yerleşik sürümler işleme hattının deposundadır
+    (<code>docs/extraction/</code>). Değerlerin ne kadarının korunduğu: <router-link to="/status/ai-report">AI raporu</router-link>.
   </p>
 
   <n-alert v-if="loadError" type="error" :show-icon="false">
@@ -104,6 +106,7 @@ async function reassess() {
         <summary>İstemin metni</summary>
         <pre class="prompt">{{ p.text }}</pre>
       </details>
+      <prompt-versions :prompt="p" @changed="load" />
     </section>
   </template>
 </template>

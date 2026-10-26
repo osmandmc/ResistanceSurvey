@@ -189,7 +189,7 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
   </n-alert>
 
   <template v-else-if="status">
-    <p class="period">{{ period }}</p>
+    <p class="period">{{ period }} · <router-link to="/status/ai-report">AI raporu</router-link></p>
 
     <n-alert v-if="!status.ai.enabled" type="warning" :show-icon="false" class="collect-result">
       AI kapalı: işleme hattında anahtar tanımlı değil. Haberler değerlendirilmiyor ve taslak hazırlanmıyor.

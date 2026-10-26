@@ -19,7 +19,7 @@ namespace RS.MVC.Controllers
         public async Task<ActionResult<ActivityPage>> List(string user, string area, int page = 1)
         {
             if (!ListActivityHandler.IsArea(area))
-                return BadRequest(new { error = "'area' is inbox, cases, definitions, users or uploads" });
+                return BadRequest(new { error = "'area' is inbox, cases, definitions, users, uploads or prompts" });
             return await list.Handle(new ListActivityQuery(user, area, page));
         }
 
