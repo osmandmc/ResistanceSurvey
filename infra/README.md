@@ -30,7 +30,7 @@ It creates the resource group, lets this repository's GitHub deploy jobs sign in
 
 ### 2. GitHub settings (Settings → Environments → `test`)
 
-Create an environment named **`test`** and add these as its **environment** variables and secrets. A `test` secret overrides a repository secret of the same name for the test deploy only; `ADMIN_PASSWORD` and `USER_PASSWORD` may be left to the repository secrets to share production's logins:
+Create an environment named **`test`** and add these as its **environment** variables and secrets. A `test` secret overrides a repository secret of the same name for the test deploy only:
 
 | Kind | Name | Value |
 |---|---|---|
@@ -38,7 +38,7 @@ Create an environment named **`test`** and add these as its **environment** vari
 | Variable | `BUDGET_EMAIL` | Where budget alerts go |
 | Variable | `PIPELINE_BASE_URL` | The pipeline's Function App URL, e.g. `https://func-….azurewebsites.net` |
 | Secret | `SQL_ADMIN_PASSWORD` | New strong password, e.g. `openssl rand -base64 24` |
-| Secret | `ADMIN_PASSWORD` `USER_PASSWORD` | Login passwords for `admin` and `user` on the test app |
+| Secret | `ADMIN_PASSWORD` | The very first sign-in as `admin` on the test app, while it has no account yet; a new value, e.g. `openssl rand -base64 24` |
 | Secret | `PIPELINE_FUNCTION_KEY` | Portal → pipeline Function App → App keys → `default` |
 
 ### 3. Deploy the resources

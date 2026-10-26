@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using RS.COMMON.Entities;
@@ -25,7 +25,12 @@ public class CollationTests
             .Select(x => $"{x.Entity}.{x.Property.Name}")
             .ToList();
 
-        // ArticleId is a hex hash, compared exactly.
-        Assert.Equal([$"{nameof(News)}.{nameof(News.ArticleId)}"], latin);
+        // Hashes and the security stamp are compared exactly: the article id, and an account's (F4a).
+        Assert.Equal(
+            [
+                $"{nameof(AppUser)}.{nameof(AppUser.InviteTokenHash)}", $"{nameof(AppUser)}.{nameof(AppUser.PasswordHash)}",
+                $"{nameof(AppUser)}.{nameof(AppUser.SecurityStamp)}", $"{nameof(News)}.{nameof(News.ArticleId)}",
+            ],
+            latin.Order());
     }
 }

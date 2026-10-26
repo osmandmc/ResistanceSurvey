@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
@@ -44,7 +45,7 @@ builder.Services.AddScoped<RS.MVC.Features.Review.AiSuggestionRecorder>();
 // Test environment (Azure) only: bring its copy of the database up to date in the background, after startup.
 if (builder.Environment.IsEnvironment("Test"))
     builder.Services.AddHostedService<TestDatabaseMigrator>();
-builder.Services.AddScoped<IUserApplication, UserApplication>();
+builder.Services.AddSingleton(TimeProvider.System);
 
 // Database Context
 builder.Services.AddDbContext<RSDBContext>(options =>
@@ -72,7 +73,7 @@ builder.Services.AddHttpClient<IPipelineClient, PipelineClient>((sp, http) =>
 });
 
 // Secrets are not in the repository: user-secrets locally, written by the deploy in production. Fail fast if missing.
-var missing = new[] { "ConnectionStrings:RSConnectionString", "AppSettings:AdminPass", "AppSettings:UserPass" }
+var missing = new[] { "ConnectionStrings:RSConnectionString" }
     .Where(k => string.IsNullOrWhiteSpace(configuration[k]))
     .ToList();
 if (missing.Count > 0)
@@ -85,7 +86,8 @@ if (builder.Environment.IsDevelopment() && !configuration.GetValue<bool>("LocalD
     throw new InvalidOperationException(
         "Development uses a database on another machine (possibly production). Make a local copy with tools/copy-test-db.sh; see README, \"Local database\".");
 
-// Sign-in: an HttpOnly cookie set by /api/auth/login (the old pages' bearer token went with them, R12c).
+// Sign-in: an HttpOnly cookie set by /api/auth/login (the old pages' bearer token went with them, R12c), per-person
+// accounts (F4a). AppSettings:AdminPass is only for the very first sign-in, while no account exists (SignInHandler).
 builder.Services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -100,6 +102,22 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         // An API answers 401/403; the front end decides where to go (there is no server-side login page).
         options.Events.OnRedirectToLogin = context => { context.Response.StatusCode = StatusCodes.Status401Unauthorized; return Task.CompletedTask; };
         options.Events.OnRedirectToAccessDenied = context => { context.Response.StatusCode = StatusCodes.Status403Forbidden; return Task.CompletedTask; };
+        // Every request: the account still exists, is enabled and has the same stamp; a changed role applies at once.
+        options.Events.OnValidatePrincipal = async context =>
+        {
+            var validate = context.HttpContext.RequestServices.GetRequiredService<RS.MVC.Features.Accounts.ValidateSessionHandler>();
+            var principal = await validate.Handle(context.Principal);
+            if (principal == null)
+            {
+                context.RejectPrincipal();
+                await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+            else if (principal != context.Principal)
+            {
+                context.ReplacePrincipal(principal);
+                context.ShouldRenew = true;
+            }
+        };
     });
 
 // Errors no controller handled: JSON for /api (ApiExceptionHandler), the error page for the old pages (F6).

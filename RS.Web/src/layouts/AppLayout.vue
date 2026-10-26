@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { NButton } from 'naive-ui'
-import { currentUser, displayName, signOut } from '@/auth'
+import { currentUser, signOut } from '@/auth'
 
 const router = useRouter()
 
@@ -16,7 +16,7 @@ const menu = [
   { path: '/definitions', label: 'Tanımlar' },
 ]
 
-const userName = computed(() => (currentUser.value ? displayName(currentUser.value) : ''))
+const userName = computed(() => currentUser.value?.username ?? '')
 
 async function onSignOut() {
   await signOut()

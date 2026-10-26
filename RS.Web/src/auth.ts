@@ -1,16 +1,19 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { api, ApiError } from './api'
 
 export interface CurrentUser {
+  id: number
   username: string
-  firstName: string | null
-  lastName: string | null
+  /** 'Admin' (yönetici) or 'User' (araştırmacı). */
   role: string
 }
 
 /** The signed-in user, or null. Loaded once on start, then kept in step with sign-in and sign-out. */
 export const currentUser = ref<CurrentUser | null>(null)
 let loaded = false
+
+/** Yöneticiler also manage the accounts (Tanımlar → Kullanıcılar). */
+export const isAdmin = computed(() => currentUser.value?.role === 'Admin')
 
 export async function loadCurrentUser(): Promise<CurrentUser | null> {
   if (!loaded) {
@@ -46,7 +49,8 @@ export function forgetCurrentUser() {
   loaded = true
 }
 
-export function displayName(user: CurrentUser) {
-  const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ')
-  return fullName || user.username
+/** After setting a password through an invitation link, the server has signed the person in. */
+export function setCurrentUser(user: CurrentUser) {
+  currentUser.value = user
+  loaded = true
 }
