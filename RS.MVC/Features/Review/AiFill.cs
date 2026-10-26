@@ -27,7 +27,7 @@ namespace RS.MVC.Features.Review
 
     public class GetAiPromptHandler(IPipelineClient pipeline, RSDBContext db)
     {
-        public const string Version = "v2";
+        public const string Version = "v2.1";
 
         private static readonly Lazy<string> Template = new(() =>
         {
@@ -96,6 +96,10 @@ namespace RS.MVC.Features.Review
     /// <param name="Field">Form field, e.g. "case.reasons" or "protest.locations".</param>
     public record AiField(string Field, string Label, IReadOnlyList<AiItem> Items);
 
+    /// <param name="Field">As in <see cref="AiField"/>: "case.company", "protest.types" …</param>
+    /// <param name="Quote">What the AI copied from the article for this field.</param>
+    public record AiEvidence(string Field, string Label, string Quote);
+
     /// <summary>
     /// Case form values from the answer; a company not registered yet comes as a name only (New…Name). CompanyName and
     /// MainCompanyName are the registered companies' names, so the form can show them (it only knows ids).
@@ -135,13 +139,15 @@ namespace RS.MVC.Features.Review
         int? StrikeHours);
 
     /// <param name="Error">Why the answer could not be read; everything else is empty then.</param>
+    /// <param name="Evidence">Per field, the sentence of the article the AI took the value from (R27).</param>
     public record AiCheckResult(
         string Error,
         bool Relevant,
         string RelevanceReason,
         IReadOnlyList<AiField> Fields,
         AiCaseValues Case,
-        AiProtestValues Protest)
+        AiProtestValues Protest,
+        IReadOnlyList<AiEvidence> Evidence = null)
     {
         public static AiCheckResult Failed(string error) => new(error, false, null, [], null, null);
     }
@@ -264,7 +270,26 @@ namespace RS.MVC.Features.Review
                 InterventionTypeIds: Ids(interventions),
                 CustodyCount: custody,
                 StrikeHours: strikeHours);
-            return new AiCheckResult(null, true, Text(root, "relevance_reason"), fields, caseValues, protestValues);
+            return new AiCheckResult(null, true, Text(root, "relevance_reason"), fields, caseValues, protestValues, Evidence(root, fields));
+        }
+
+        /// <summary>
+        /// The answer's "evidence": field → a sentence copied from the article (R27), for the fields that went into the
+        /// form; labelled as in the check table. The browser highlights each quote in the article.
+        /// </summary>
+        private static List<AiEvidence> Evidence(JsonElement root, List<AiField> fields)
+        {
+            var labels = fields.ToDictionary(f => f.Field, f => f.Label);
+            var result = new List<AiEvidence>();
+            if (Object(root, "evidence") is not { } evidence)
+                return result;
+            foreach (var property in evidence.EnumerateObject())
+            {
+                var quote = property.Value.ValueKind == JsonValueKind.String ? property.Value.GetString()?.Trim() : null;
+                if (!string.IsNullOrEmpty(quote) && labels.TryGetValue(property.Name, out var label))
+                    result.Add(new AiEvidence(property.Name, label, quote));
+            }
+            return result;
         }
 
         // ---- reading the answer ----

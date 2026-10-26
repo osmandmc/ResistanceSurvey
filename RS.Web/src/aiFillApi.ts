@@ -1,4 +1,5 @@
 import { api } from './api'
+import type { AiEvidence } from './evidence'
 import type { CaseFormValue } from './caseForm'
 import { fromDay, noInterventionTypeId, strikeProtestTypeIds, type ProtestFormValue } from './protestForm'
 
@@ -90,6 +91,8 @@ export interface AiCheckResult {
   fields: AiField[]
   case: AiCaseValues | null
   protest: AiProtestValues | null
+  /** Per field, the sentence of the article the AI took the value from (R27). */
+  evidence: AiEvidence[] | null
 }
 
 export function getAiPrompt(articleId: string) {

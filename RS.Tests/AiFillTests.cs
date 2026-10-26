@@ -29,7 +29,8 @@ public class AiFillTests
             "start_date": "2026-10-14", "end_date": "2026-10-14", "types": ["Fiili grev"], "places": ["İşyeri önü"],
             "locations": [{ "city": "Kocaeli", "district": "Gebze", "place": "fabrika önü" }, { "city": "Atlantis", "district": null, "place": null }],
             "participant_count": "200", "custody_count": null, "interventions": [], "strike_hours": 2, "gender": "Erkek Ağırlıklı",
-          }
+          },
+          "evidence": { "protest.types": "bugün iki saat iş bıraktı", "case.company": " Örnek Metal fabrikasında ", "made.up": "x", "protest.places": "" }
         }
         ```
         """;
@@ -84,6 +85,9 @@ public class AiFillTests
         // Fields researchers fill are shown but not taken.
         Assert.Equal(AiItemStatus.Skipped, Status("case.union_authority"));
         Assert.Equal(AiItemStatus.Skipped, Status("protest.gender"));
+        // Quotes for fields that went into the form, labelled as in the check table; unknown fields and empty quotes dropped.
+        Assert.Equal([new AiEvidence("protest.types", "Eylem türleri", "bugün iki saat iş bıraktı"), new AiEvidence("case.company", "Şirket / kurum", "Örnek Metal fabrikasında")],
+            result.Evidence);
         Assert.DoesNotContain(result.Fields, f => f.Field == "case.result" && f.Items.Any(i => i.Value != null));
     }
 
