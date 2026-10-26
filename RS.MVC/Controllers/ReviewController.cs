@@ -24,8 +24,17 @@ namespace RS.MVC.Controllers
         SuggestCasesForArticleHandler suggestCases,
         GetAiPromptHandler getAiPrompt,
         CheckAiAnswerHandler checkAiAnswer,
-        GetAiDraftHandler getAiDraft) : ControllerBase
+        GetAiDraftHandler getAiDraft,
+        MatchCasesFromAiHandler matchCases) : ControllerBase
     {
+        /// <summary>
+        /// POST /api/review/{articleId}/ai-cases — R20: the existing cases this article probably belongs to, from its AI
+        /// answer (a draft or a pasted one), and whether its protest looks already recorded.
+        /// </summary>
+        [HttpPost("{articleId}/ai-cases")]
+        public async Task<AiCaseMatches> AiCases(string articleId, AiCheckRequest request) =>
+            await matchCases.Handle(new MatchCasesFromAiCommand(articleId, request?.Answer));
+
         /// <summary>GET /api/review/{articleId}/ai-draft — the pipeline's AI draft, checked against the lists (404 when none).</summary>
         [HttpGet("{articleId}/ai-draft")]
         public async Task<ActionResult<AiDraft>> AiDraft(string articleId) =>

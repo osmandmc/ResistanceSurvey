@@ -1,5 +1,6 @@
 import { api } from './api'
 import type { AiEvidence } from './evidence'
+import type { CaseOption } from './reviewApi'
 import type { CaseFormValue } from './caseForm'
 import { fromDay, noInterventionTypeId, strikeProtestTypeIds, type ProtestFormValue } from './protestForm'
 
@@ -106,6 +107,26 @@ export async function getAiDraft(articleId: string): Promise<AiDraft | null> {
   } catch {
     return null
   }
+}
+
+/** R20: an existing case the article probably belongs to, with the reasons and a protest that looks the same one. */
+export interface AiCaseMatch {
+  case: CaseOption
+  /** The case's company, so the case search can show its cases. */
+  companyId: number | null
+  points: number
+  reasons: string[]
+  recorded: { protestId: number; startDate: string; cities: string[]; types: string[] } | null
+}
+
+/** likely: recent or ongoing cases (at most three); older: the company's older cases, as context. */
+export interface AiCaseMatches {
+  likely: AiCaseMatch[]
+  older: AiCaseMatch[]
+}
+
+export function matchAiCases(articleId: string, answer: string) {
+  return api<AiCaseMatches>(`/api/review/${encodeURIComponent(articleId)}/ai-cases`, { method: 'POST', body: JSON.stringify({ answer }) })
 }
 
 export function checkAiAnswer(answer: string) {
