@@ -11,7 +11,8 @@ namespace RS.MVC.Controllers
     [ApiController]
     [Route("api/status")]
     [Authorize]
-    public class StatusController(GetStatusHandler getStatus, CollectFeedsHandler collectFeeds, QueueForAiHandler queueForAi, GetAiPromptsHandler getPrompts) : ControllerBase
+    public class StatusController(GetStatusHandler getStatus, CollectFeedsHandler collectFeeds, QueueForAiHandler queueForAi, GetAiPromptsHandler getPrompts,
+        RS.MVC.Features.Review.ListsPublisher lists) : ControllerBase
     {
         /// <summary>GET /api/status?days=14 (1–31).</summary>
         [HttpGet]
@@ -41,5 +42,9 @@ namespace RS.MVC.Controllers
         /// <summary>GET /api/status/prompts — "AI istemleri": the prompts the pipeline's AI stages run now.</summary>
         [HttpGet("prompts")]
         public async Task<AiPrompts> Prompts() => await getPrompts.Handle();
+
+        /// <summary>POST /api/status/lists — "Listeleri şimdi gönder": the app's list values to the pipeline now (R30).</summary>
+        [HttpPost("lists")]
+        public async Task<RS.MVC.Models.PipelineListsResponse> SendLists() => await lists.PublishAsync(force: true);
     }
 }

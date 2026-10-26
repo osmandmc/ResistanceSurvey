@@ -98,7 +98,11 @@ namespace RS.MVC.Models
     public record PipelineVerdictAgreement(string Verdict, int Digested, int Dismissed);
 
     /// <summary>GET /api/prompts (pipeline B13): the prompts the AI stages run, and open articles judged by an older relevance prompt.</summary>
-    public record PipelinePrompts(IReadOnlyList<PipelinePrompt> Prompts, int OpenWithOlderVerdict);
+    /// ListsUpdatedAt: the date of the list values the drafts use (pipeline B16); null: its snapshot of 2026-10-21.
+    public record PipelinePrompts(IReadOnlyList<PipelinePrompt> Prompts, int OpenWithOlderVerdict, DateTimeOffset? ListsUpdatedAt = null);
+
+    /// <summary>PUT /api/lists (pipeline B16): Changed false when the pipeline already had these lists.</summary>
+    public record PipelineListsResponse(DateTimeOffset UpdatedAt, bool Changed, IReadOnlyDictionary<string, int> Counts);
 
     /// <summary>Name: "relevance" or "extraction". Text: the prompt with its placeholders.</summary>
     public record PipelinePrompt(string Name, string Version, string Model, string Text);

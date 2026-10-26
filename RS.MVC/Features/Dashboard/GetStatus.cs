@@ -112,7 +112,8 @@ namespace RS.MVC.Features.Dashboard
 namespace RS.MVC.Features.Dashboard
 {
     /// <summary>"AI istemleri" (R25): the prompts the pipeline's AI stages run now.</summary>
-    public record AiPrompts(IReadOnlyList<AiPromptInfo> Prompts, int OpenWithOlderVerdict);
+    /// <param name="ListsUpdatedAt">The date of the list values the drafts use; null: the pipeline's snapshot of 2026-10-21.</param>
+    public record AiPrompts(IReadOnlyList<AiPromptInfo> Prompts, int OpenWithOlderVerdict, DateTimeOffset? ListsUpdatedAt = null);
 
     /// <param name="Name">"relevance" or "extraction".</param>
     public record AiPromptInfo(string Name, string Version, string Model, string Text);
@@ -122,7 +123,7 @@ namespace RS.MVC.Features.Dashboard
         public async Task<AiPrompts> Handle()
         {
             var prompts = await pipeline.GetPromptsAsync();
-            return new AiPrompts(prompts.Prompts.Select(p => new AiPromptInfo(p.Name, p.Version, p.Model, p.Text)).ToList(), prompts.OpenWithOlderVerdict);
+            return new AiPrompts(prompts.Prompts.Select(p => new AiPromptInfo(p.Name, p.Version, p.Model, p.Text)).ToList(), prompts.OpenWithOlderVerdict, prompts.ListsUpdatedAt);
         }
     }
 }

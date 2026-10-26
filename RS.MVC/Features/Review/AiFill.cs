@@ -44,19 +44,8 @@ namespace RS.MVC.Features.Review
             if (string.IsNullOrWhiteSpace(article.Body))
                 return new AiPromptResult(ReviewStatus.Invalid, Error: "Haberin metni henüz okunmadı; AI ile doldurmak için metin gerekiyor.");
 
-            var lists = new (string Title, List<string> Values)[]
-            {
-                ("Kategoriler", await db.Category.OrderBy(e => e.Name).Select(e => e.Name).ToListAsync()),
-                ("Direniş nedenleri", await db.ResistanceReason.OrderBy(e => e.Name).Select(e => e.Name).ToListAsync()),
-                ("İstihdam biçimleri", await db.EmploymentType.OrderBy(e => e.Name).Select(e => e.Name).ToListAsync()),
-                ("Sendika yetkisi", await db.TradeUnionAuthority.OrderBy(e => e.Name).Select(e => e.Name).ToListAsync()),
-                ("Eylem türleri", await db.ProtestoType.OrderBy(e => e.Name).Select(e => e.Name).ToListAsync()),
-                ("Eylem yerleri", await db.ProtestoPlace.OrderBy(e => e.Name).Select(e => e.Name).ToListAsync()),
-                ("Müdahaleler", await db.InterventionType.OrderBy(e => e.Name).Select(e => e.Name).ToListAsync()),
-                ("İller", await db.City.OrderBy(e => e.Name).Select(e => e.Name).ToListAsync()),
-            };
-            var listText = string.Join("\n\n", lists.Select(l =>
-                $"### {l.Title}\n" + string.Join('\n', l.Values.Where(v => !string.IsNullOrWhiteSpace(v)).Select(v => "- " + v.Trim()))));
+            var lists = await AiLists.LoadAsync(db);
+            var listText = string.Join("\n\n", lists.Select(l => $"### {l.Title}\n" + string.Join('\n', l.Values.Select(v => "- " + v))));
 
             var text = Template.Value
                 .Replace("{{LISTS}}", listText)

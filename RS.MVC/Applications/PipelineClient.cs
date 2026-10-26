@@ -38,6 +38,9 @@ namespace RS.MVC.Applications
         /// <summary>The prompts the AI stages run now (pipeline B13).</summary>
         Task<PipelinePrompts> GetPromptsAsync();
 
+        /// <summary>Sends the list values the drafts offer (pipeline B16): list name → values.</summary>
+        Task<PipelineListsResponse> PutListsAsync(IReadOnlyDictionary<string, IReadOnlyList<string>> lists);
+
         /// <summary>Safe to repeat; the latest decision wins. Throws HttpRequestException when the pipeline cannot be reached.</summary>
         Task RecordOutcomeAsync(string articleId, PipelineOutcomeRequest outcome);
     }
@@ -121,6 +124,13 @@ namespace RS.MVC.Applications
             var response = await _http.PostAsync("api/collect", null);
             await EnsureSuccessAsync(response);
             return await response.Content.ReadFromJsonAsync<PipelineCollectResponse>();
+        }
+
+        public async Task<PipelineListsResponse> PutListsAsync(IReadOnlyDictionary<string, IReadOnlyList<string>> lists)
+        {
+            var response = await _http.PutAsJsonAsync("api/lists", new { lists });
+            await EnsureSuccessAsync(response);
+            return await response.Content.ReadFromJsonAsync<PipelineListsResponse>();
         }
 
         public async Task<PipelinePrompts> GetPromptsAsync()
