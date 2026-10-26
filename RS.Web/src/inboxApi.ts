@@ -13,6 +13,16 @@ export interface InboxItem {
   ai: AiRelevance | null
   /** The AI draft's one-line summary ("company · protest type · city · date"); null without a draft. */
   draft: string | null
+  /** An article of the same days already linked to a case that looks like the same event (R29). */
+  sibling: InboxSibling | null
+}
+
+export interface InboxSibling {
+  caseId: number
+  caseName: string | null
+  title: string | null
+  /** "aynı şirket: X" or "aynı örgüt ve il: X, Y". */
+  reason: string
 }
 
 export interface InboxPage {

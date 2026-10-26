@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using RS.COMMON.Entities;
+using RS.COMMON.Entities.LookupEntity;
 using RS.EF;
 using RS.MVC.Features.Articles;
 using RS.MVC.Features.Inbox;
@@ -26,7 +27,7 @@ public class InboxTests
     {
         var settings = Options.Create(new PipelineSettings { Sources = new() { [1] = "evrensel" } });
         var outcomes = new OutcomeSender(_pipeline, NullLogger<OutcomeSender>.Instance);
-        _getInbox = new GetInboxHandler(_db, _pipeline, outcomes);
+        _getInbox = new GetInboxHandler(_db, _pipeline, outcomes, new SiblingFinder(_db));
         _dismiss = new DismissArticleHandler(_db, _pipeline, new ArticleNewsService(_db, settings), outcomes, new AiSuggestionRecorder(_db, new CheckAiAnswerHandler(_db)));
         _pipeline.Add("a1", "https://evrensel.net/haber/1/x", "Tekstil işçileri iş bıraktı", Nov3);
         _pipeline.Add("a2", "https://evrensel.net/haber/2/y", "Belediye işçileri eylemde", Nov3);
@@ -44,6 +45,51 @@ public class InboxTests
         Assert.Equal(new DateOnly(2026, 11, 30), query.To);
         Assert.Equal("evrensel", query.SourceId);
         Assert.Equal(("parsed", "open"), (query.Status, query.Outcome));
+    }
+
+    private Resistance LinkedCase(string name, DateTime newsDate, Company? company = null, string? organization = null, string? city = null)
+    {
+        var resistance = new Resistance
+        {
+            Name = name,
+            Company = company,
+            ResistanceCorporations = organization == null ? [] : [new ResistanceCorporation { Corporation = new Corporation { Name = organization } }],
+            Protestos = city == null ? [] : [new Protesto { StartDate = newsDate, Locations = [new ProtestoLocation { City = new City { Name = city } }] }],
+            ResistanceNews = [new ResistanceNews { News = new News { Header = "İlk haber", Link = "https://x/1", Date = newsDate, Status = Status.Linked } }],
+        };
+        _db.Resistance.Add(resistance);
+        _db.SaveChanges();
+        return resistance;
+    }
+
+    [Fact]
+    public async Task AnArticleOfTheSameDaysNamingALinkedCasesCompanyGetsAHint()
+    {
+        _pipeline.Add("a3", "https://evrensel.net/haber/3/z", "Örnek Tekstil'de grev sürüyor", Nov3.AddDays(1));
+        _pipeline.Add("a4", "https://evrensel.net/haber/4/w", "Örnek Tekstil işçileri yine eylemde", Nov3.AddDays(5));
+        var tekstil = LinkedCase("Örnek Tekstil grevi", new DateTime(2026, 11, 3, 9, 0, 0), new Company { Name = "Örnek Tekstil San. A.Ş." });
+
+        var items = (await _getInbox.Handle(new GetInboxQuery("2026-11", null, null))).Items.ToDictionary(i => i.ArticleId);
+
+        Assert.Equal(new InboxSibling(tekstil.Id, "Örnek Tekstil grevi", "İlk haber", "aynı şirket: Örnek Tekstil San. A.Ş."), items["a3"].Sibling);
+        Assert.Null(items["a4"].Sibling); // five days later: another event
+        Assert.Null(items["a2"].Sibling);
+    }
+
+    [Fact]
+    public async Task WithoutACompanyTheOrganizationNeedsTheProvinceToo()
+    {
+        _pipeline.Add("a3", "https://evrensel.net/haber/3/z", "Genel-İş Ankara'da belediye önündeydi", Nov3);
+        _pipeline.Add("a4", "https://evrensel.net/haber/4/w", "Genel-İş İzmir'de açıklama yaptı", Nov3);
+        var belediye = LinkedCase("Ankara belediye işçileri", new DateTime(2026, 11, 2, 12, 0, 0), organization: "DİSK Genel-İş", city: "Ankara");
+        _db.Corporation.Single().Name = "Genel-İş";
+        _db.SaveChanges();
+
+        var items = (await _getInbox.Handle(new GetInboxQuery("2026-11", null, null))).Items.ToDictionary(i => i.ArticleId);
+
+        Assert.Equal("aynı örgüt ve il: Genel-İş, Ankara", items["a3"].Sibling?.Reason);
+        Assert.Equal(belediye.Id, items["a3"].Sibling?.CaseId);
+        Assert.Null(items["a4"].Sibling);
     }
 
     [Fact]
