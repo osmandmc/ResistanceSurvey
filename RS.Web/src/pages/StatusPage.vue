@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { NAlert, NButton, NFormItem, NSelect, NSpin } from 'naive-ui'
 import { errorMessage } from '@/api'
 import { formatDate, formatDateTime } from '@/format'
-import { collectFeeds, getStatus, queueForAi, type CollectedFeed, type QueuedForAi, type StatusPage, type StatusSource } from '@/statusApi'
+import { collectFeeds, getStatus, queueForAi, type ArticleStates, type CollectedFeed, type QueuedForAi, type StatusDay, type StatusPage, type StatusSource } from '@/statusApi'
 import { verdictText } from '@/relevance'
 
 const days = ref(14)
@@ -112,6 +112,36 @@ function barWidth(source: StatusSource, received: number) {
   return `${(received / max) * 100}%`
 }
 
+// Where a day's arrivals stand now, in this order along the bar (decided first, then open, then stuck).
+const states: { key: keyof ArticleStates; label: string; color: string }[] = [
+  { key: 'linked', label: 'vakaya bağlandı', color: '#2e7d4f' },
+  { key: 'dismissed', label: 'ilgisiz bulundu', color: '#8f96a0' },
+  { key: 'withDraft', label: 'taslak hazır', color: '#6d4bc4' },
+  { key: 'toReview', label: 'incelenecek', color: '#0b8a8a' },
+  { key: 'notRelevant', label: 'AI: ilgisiz', color: '#d3d6db' },
+  { key: 'failed', label: 'hata', color: '#b42318' },
+  { key: 'processing', label: 'işleniyor', color: '#e0b84c' },
+]
+
+function segments(day: StatusDay) {
+  const now = day.now
+  if (!now || day.received === 0) return []
+  return states.filter((s) => now[s.key] > 0).map((s) => ({ ...s, count: now[s.key], width: `${(now[s.key] / day.received) * 100}%` }))
+}
+
+function segmentsTitle(day: StatusDay) {
+  return segments(day).map((s) => `${s.count} ${s.label}`).join('\n')
+}
+
+/** The AI's verdicts that day, as labelled counts; zeros left out. */
+function verdictCounts(day: StatusDay) {
+  return [
+    { count: day.assessedRelevant, label: 'ilgili', cls: 'relevant' },
+    { count: day.assessedUncertain, label: 'belirsiz', cls: 'uncertain' },
+    { count: day.assessedNotRelevant, label: 'ilgisiz', cls: 'notRelevant' },
+  ].filter((v) => v.count > 0)
+}
+
 const period = computed(() => (status.value ? `${formatDate(status.value.from)} – ${formatDate(status.value.to)}` : ''))
 </script>
 
@@ -213,26 +243,32 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
 
     <section v-for="source in status.sources.filter((s) => s.received > 0 || s.days.some((d) => d.parsed || d.failed || d.digested || d.dismissed))" :key="source.sourceId" class="panel">
       <h2 class="panel-title">{{ source.sourceName }} · gün gün</h2>
+      <div class="legend">
+        <span class="legend-note">Çubuk: o gün gelen haberlerin <strong>bugünkü</strong> durumu.</span>
+        <span v-for="s in states" :key="s.key" class="legend-item"><span class="dot" :style="{ background: s.color }" />{{ s.label }}</span>
+      </div>
       <div class="table-wrap">
         <table class="days-table">
           <thead>
             <tr>
               <th>Gün</th>
-              <th class="received-col">Alınan</th>
-              <th class="num">Okunan</th>
-              <th class="num">Hata</th>
-              <th class="num">Vakaya bağlanan</th>
-              <th class="num">İlgisiz</th>
-              <th title="AI'ın o gün verdiği kararlar: ilgili · belirsiz · ilgisiz">AI kararı</th>
-              <th class="num">Taslak</th>
+              <th class="received-col">Gelen ve bugünkü durumu</th>
+              <th class="num" title="O gün metni okunan haberler">Okunan</th>
+              <th class="num" title="O gün indirme ya da okuma hatası alan haberler">Hata</th>
+              <th class="num" title="O gün araştırmacıların vakaya bağladığı haberler">Bağlanan</th>
+              <th class="num" title="O gün araştırmacıların ilgisiz bulduğu haberler">Kapatılan</th>
+              <th title="AI'ın o gün verdiği kararlar">AI kararı</th>
+              <th class="num" title="AI'ın o gün hazırladığı taslaklar">Taslak</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="day in source.days" :key="day.day" :class="{ empty: day.received === 0 }">
               <td class="nowrap">{{ formatDate(day.day) }}</td>
               <td class="received-col">
-                <div class="bar-cell">
-                  <span class="bar" :style="{ width: barWidth(source, day.received) }" aria-hidden="true" />
+                <div class="bar-cell" :title="segmentsTitle(day) || undefined">
+                  <span class="bar" :class="{ stacked: segments(day).length }" :style="{ width: barWidth(source, day.received) }" aria-hidden="true">
+                    <span v-for="s in segments(day)" :key="s.key" class="segment" :style="{ width: s.width, background: s.color }" />
+                  </span>
                   <span class="bar-value">{{ day.received }}</span>
                 </div>
               </td>
@@ -240,8 +276,9 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
               <td class="num" :class="{ bad: day.failed > 0 }">{{ day.failed }}</td>
               <td class="num">{{ day.digested }}</td>
               <td class="num">{{ day.dismissed }}</td>
-              <td class="nowrap" :class="{ muted: day.assessedRelevant + day.assessedUncertain + day.assessedNotRelevant === 0 }">
-                {{ day.assessedRelevant }} · {{ day.assessedUncertain }} · {{ day.assessedNotRelevant }}
+              <td class="nowrap">
+                <span v-for="v in verdictCounts(day)" :key="v.cls" class="verdict" :class="v.cls">{{ v.count }} {{ v.label }}</span>
+                <span v-if="verdictCounts(day).length === 0" class="muted">—</span>
               </td>
               <td class="num">{{ day.drafted }}</td>
             </tr>
@@ -506,8 +543,58 @@ const period = computed(() => (status.value ? `${formatDate(status.value.from)} 
   border-radius: 3px;
   background: var(--rs-accent);
 }
+.bar.stacked {
+  display: inline-flex;
+  overflow: hidden;
+  background: transparent;
+}
+.segment {
+  display: block;
+  height: 100%;
+}
 .bar-value {
   min-width: 28px;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  padding: 0 16px 10px;
+  font-size: 13px;
+  color: var(--rs-muted);
+}
+.legend-note {
+  width: 100%;
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.verdict {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+.verdict.relevant {
+  background: #e8f4ec;
+  color: #1f5b33;
+}
+.verdict.uncertain {
+  background: #fdf3e1;
+  color: #7a4a00;
+}
+.verdict.notRelevant {
+  background: #eef0f2;
+  color: #4b5563;
 }
 .nowrap {
   white-space: nowrap;
