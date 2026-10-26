@@ -13,6 +13,7 @@ import { emptyProtest, toProtestInput, type ProtestFormValue } from '@/protestFo
 import DismissDialog from '@/components/DismissDialog.vue'
 import { formatDate } from '@/format'
 import { verdictText } from '@/relevance'
+import { evidenceFormField, findQuote, highlight, type AiEvidence } from '@/evidence'
 import { getInbox } from '@/inboxApi'
 import {
   getFormOptions,
@@ -141,7 +142,33 @@ const aiUse = ref<AiUse | null>(null)
 const aiCaseFields = computed(() => unchangedFields(caseValue.value, aiApplied.value?.case ?? null))
 const aiProtestFields = computed(() => unchangedFields(protestValue.value, aiApplied.value?.protest ?? null))
 
+// Evidence (R27): the AI's quotes for the fields it filled, highlighted in the article while those fields still hold
+// its values; the "Kanıtlar" row jumps to each one.
+const aiEvidence = ref<AiEvidence[]>([])
+const activeEvidence = ref<string | null>(null)
+const evidenceShown = computed(() =>
+  aiEvidence.value.filter((e) => {
+    const f = evidenceFormField[e.field]
+    return f && (f.part === 'case' ? aiCaseFields.value : aiProtestFields.value).includes(f.key)
+  }),
+)
+const titleSegments = computed(() => highlight(article.value?.title ?? '', evidenceShown.value))
+const bodySegments = computed(() => highlight(article.value?.body ?? '', evidenceShown.value))
+const evidenceList = computed(() =>
+  evidenceShown.value.map((e) => ({
+    ...e,
+    found: !!findQuote(article.value?.title ?? '', e.quote) || !!findQuote(article.value?.body ?? '', e.quote),
+  })),
+)
+
+function showEvidence(field: string) {
+  activeEvidence.value = field
+  document.querySelector(`[data-evidence~="${field}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
+
 function onAiApply(result: AiCheckResult) {
+  aiEvidence.value = result.evidence ?? []
+  activeEvidence.value = null
   const caseValues = result.case ? aiCaseValues(result.case) : {}
   const protestValues = result.protest ? aiProtestValues(result.protest) : {}
   caseValue.value = { ...caseValue.value, ...structuredClone(caseValues) }
@@ -183,6 +210,8 @@ async function loadDraft() {
 }
 
 function clearAi() {
+  aiEvidence.value = []
+  activeEvidence.value = null
   aiDraft.value = null
   aiUse.value = null
   aiApplied.value = null
@@ -324,13 +353,40 @@ async function onDismissed() {
         <span>{{ formatDate(article.publishedAt) }}</span>
         <a :href="article.url" target="_blank" rel="noopener">Kaynağa git ↗</a>
       </div>
-      <h1 class="article-title">{{ article.title || article.url }}</h1>
+      <h1 class="article-title">
+        <template v-if="article.title">
+          <template v-for="(s, i) in titleSegments" :key="i">
+            <mark v-if="s.fields.length" class="evidence" :class="{ active: s.fields.includes(activeEvidence ?? '') }" :data-evidence="s.fields.join(' ')" :title="s.labels.join(', ')">{{ s.text }}</mark>
+            <template v-else>{{ s.text }}</template>
+          </template>
+        </template>
+        <template v-else>{{ article.url }}</template>
+      </h1>
       <p v-if="article.ai" class="ai-verdict" :class="article.ai.verdict">
         <strong>AI: {{ verdictText[article.ai.verdict] }}.</strong>
         <span v-if="article.ai.reason"> {{ article.ai.reason }}</span>
         <span v-if="article.ai.version" class="ai-origin">{{ article.ai.version }}</span>
       </p>
-      <p v-if="article.body" class="body">{{ article.body }}</p>
+      <div v-if="evidenceList.length" class="evidence-list" aria-label="AI kanıtları">
+        <span class="evidence-head">AI kanıtları:</span>
+        <button
+          v-for="e in evidenceList"
+          :key="e.field"
+          type="button"
+          class="evidence-chip"
+          :class="{ missing: !e.found, active: activeEvidence === e.field }"
+          :title="e.found ? e.quote : `Metinde bulunamadı: “${e.quote}”`"
+          @click="e.found && showEvidence(e.field)"
+        >
+          {{ e.label }}<span v-if="!e.found"> · bulunamadı</span>
+        </button>
+      </div>
+      <p v-if="article.body" class="body">
+        <template v-for="(s, i) in bodySegments" :key="i">
+          <mark v-if="s.fields.length" class="evidence" :class="{ active: s.fields.includes(activeEvidence ?? '') }" :data-evidence="s.fields.join(' ')" :title="s.labels.join(', ')">{{ s.text }}</mark>
+          <template v-else>{{ s.text }}</template>
+        </template>
+      </p>
       <p v-else class="no-body">Haberin metni henüz okunmadı; kaynağa giderek okuyabilirsiniz.</p>
     </article>
 
@@ -607,6 +663,49 @@ async function onDismissed() {
 .suggestion-actions {
   display: flex;
   gap: 6px;
+}
+.evidence {
+  background: #efeafb;
+  color: inherit;
+  border-bottom: 2px solid #b8a6ec;
+  border-radius: 2px;
+  padding: 0 1px;
+  transition: background 0.3s;
+}
+.evidence.active {
+  background: #d9cdf7;
+  border-bottom-color: #6d4bc4;
+}
+.evidence-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 14px;
+  font-size: 13px;
+}
+.evidence-head {
+  color: var(--rs-muted);
+}
+.evidence-chip {
+  border: 1px solid #b8a6ec;
+  background: #f5f2fc;
+  color: #5c3db0;
+  border-radius: 999px;
+  padding: 1px 10px;
+  font: inherit;
+  cursor: pointer;
+}
+.evidence-chip.active {
+  background: #6d4bc4;
+  color: #fff;
+}
+.evidence-chip.missing {
+  border-style: dashed;
+  border-color: #c9ccd1;
+  background: transparent;
+  color: var(--rs-muted);
+  cursor: help;
 }
 .ai-verdict {
   margin: 0 0 16px;
