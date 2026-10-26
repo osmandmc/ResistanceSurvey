@@ -12,7 +12,7 @@ namespace RS.MVC.Controllers
     [Route("api/status")]
     [Authorize]
     public class StatusController(GetStatusHandler getStatus, CollectFeedsHandler collectFeeds, QueueForAiHandler queueForAi, GetAiPromptsHandler getPrompts,
-        RS.MVC.Features.Review.ListsPublisher lists) : ControllerBase
+        RS.MVC.Features.Review.ListsPublisher lists, AiReportHandler aiReport) : ControllerBase
     {
         /// <summary>GET /api/status?days=14 (1–31).</summary>
         [HttpGet]
@@ -46,5 +46,17 @@ namespace RS.MVC.Controllers
         /// <summary>POST /api/status/lists — "Listeleri şimdi gönder": the app's list values to the pipeline now (R30).</summary>
         [HttpPost("lists")]
         public async Task<RS.MVC.Models.PipelineListsResponse> SendLists() => await lists.PublishAsync(force: true);
+
+        /// <summary>
+        /// GET /api/status/ai-report?days=90&amp;origin=…&amp;promptVersion=…&amp;relevanceVersion=… — "AI raporu" (R19d): how often
+        /// researchers keep the AI's values, per field; the relevance verdicts against the decisions.
+        /// </summary>
+        [HttpGet("ai-report")]
+        public async Task<ActionResult<AiReport>> AiReport(int? days, string origin, string promptVersion, string relevanceVersion)
+        {
+            if (days is < 1 or > AiReportHandler.MaxDays)
+                return BadRequest(new { error = $"'days' is a number from 1 to {AiReportHandler.MaxDays}" });
+            return await aiReport.Handle(new AiReportQuery(days ?? AiReportHandler.DefaultDays, origin, promptVersion, relevanceVersion));
+        }
     }
 }

@@ -128,3 +128,54 @@ export interface CollectedFeed {
 export function collectFeeds() {
   return api<CollectedFeed[]>('/api/status/collect', { method: 'POST' })
 }
+
+// "AI raporu" (R19d): how often researchers keep the AI's values, and the relevance verdicts against the decisions.
+
+export interface AiReportItem {
+  name: string
+  kept: number
+  removed: number
+  added: number
+}
+
+export interface AiReportField {
+  field: string
+  label: string
+  isList: boolean
+  kept: number
+  changed: number
+  removed: number
+  added: number
+  items: AiReportItem[]
+}
+
+export interface AiReportGroup {
+  origin: string
+  promptVersion: string | null
+  count: number
+}
+
+export interface AiReportVerdict {
+  verdict: 'Relevant' | 'Uncertain' | 'NotRelevant' | 'NotAssessed'
+  linked: number
+  dismissed: Record<string, number>
+}
+
+export interface AiReport {
+  from: string
+  to: string
+  decisions: number
+  applied: number
+  others: number
+  groups: AiReportGroup[]
+  fields: AiReportField[]
+  relevance: { rows: AiReportVerdict[]; versions: string[]; truncated: boolean; error: string | null }
+}
+
+export function getAiReport(filter: { days: number; origin?: string | null; promptVersion?: string | null; relevanceVersion?: string | null }) {
+  const query = new URLSearchParams({ days: String(filter.days) })
+  if (filter.origin) query.set('origin', filter.origin)
+  if (filter.promptVersion) query.set('promptVersion', filter.promptVersion)
+  if (filter.relevanceVersion) query.set('relevanceVersion', filter.relevanceVersion)
+  return api<AiReport>(`/api/status/ai-report?${query}`)
+}
