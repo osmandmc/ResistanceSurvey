@@ -85,7 +85,11 @@ namespace RS.MVC.Models
     /// <summary>Assessed…: the AI's verdicts given that day; Drafted: AI drafts made that day (pipeline B11).</summary>
     public record PipelineDailyMetrics(
         DateOnly Day, string SourceId, int Received, int Parsed, int Failed, int Digested, int Dismissed,
-        int AssessedRelevant = 0, int AssessedUncertain = 0, int AssessedNotRelevant = 0, int Drafted = 0);
+        int AssessedRelevant = 0, int AssessedUncertain = 0, int AssessedNotRelevant = 0, int Drafted = 0,
+        PipelineArticleStates Now = null);
+
+    /// <summary>Where a day's arrivals stand now (pipeline B14); the counts add up to the day's Received.</summary>
+    public record PipelineArticleStates(int Linked, int Dismissed, int WithDraft, int ToReview, int NotRelevant, int Failed, int Processing);
 
     /// <summary>Enabled: a model key is configured. Agreement: per verdict, how many decided articles were linked or dismissed.</summary>
     public record PipelineAiMetrics(bool Enabled, IReadOnlyList<PipelineVerdictAgreement> Agreement);

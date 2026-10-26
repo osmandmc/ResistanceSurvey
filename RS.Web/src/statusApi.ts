@@ -13,6 +13,19 @@ export interface StatusDay {
   assessedUncertain: number
   assessedNotRelevant: number
   drafted: number
+  /** Where the articles received that day stand now; null from an older pipeline. */
+  now: ArticleStates | null
+}
+
+/** Articles by where they stand now; the counts add up to the day's received articles. */
+export interface ArticleStates {
+  linked: number
+  dismissed: number
+  withDraft: number
+  toReview: number
+  notRelevant: number
+  failed: number
+  processing: number
 }
 
 export interface StatusSource {

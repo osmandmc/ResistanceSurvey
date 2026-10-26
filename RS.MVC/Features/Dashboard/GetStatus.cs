@@ -4,12 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using RS.MVC.Applications;
 using RS.MVC.Features.Articles;
+using RS.MVC.Models;
 
 namespace RS.MVC.Features.Dashboard
 {
-    /// <summary>Assessed…: the AI's verdicts given that day; Drafted: AI drafts made that day.</summary>
+    /// <summary>
+    /// Assessed…: the AI's verdicts given that day; Drafted: AI drafts made that day; Now: where that day's arrivals
+    /// stand now (null from a pipeline without B14).
+    /// </summary>
     public record StatusDay(DateOnly Day, int Received, int Parsed, int Failed, int Digested, int Dismissed,
-        int AssessedRelevant, int AssessedUncertain, int AssessedNotRelevant, int Drafted);
+        int AssessedRelevant, int AssessedUncertain, int AssessedNotRelevant, int Drafted, PipelineArticleStates Now = null);
 
     /// <summary>One source over the period. LastReceivedAt is null when nothing arrived (a silent source). Open: in the inbox now.</summary>
     public record StatusSource(
@@ -52,7 +56,7 @@ namespace RS.MVC.Features.Dashboard
                         .Where(d => d.SourceId == s.SourceId)
                         .OrderByDescending(d => d.Day)
                         .Select(d => new StatusDay(d.Day, d.Received, d.Parsed, d.Failed, d.Digested, d.Dismissed,
-                            d.AssessedRelevant, d.AssessedUncertain, d.AssessedNotRelevant, d.Drafted))
+                            d.AssessedRelevant, d.AssessedUncertain, d.AssessedNotRelevant, d.Drafted, d.Now))
                         .ToList()))
                 .OrderBy(s => s.SourceName, StringComparer.Create(new System.Globalization.CultureInfo("tr-TR"), ignoreCase: true))
                 .ToList();
