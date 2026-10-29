@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { NAlert, NButton, NFormItem, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect } from 'naive-ui'
+import { NAlert, NButton, NFormItem, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect, type SelectOption } from 'naive-ui'
 import type { CaseFormValue } from '@/caseForm'
 import { formatDate } from '@/format'
-import { TargetType, resultOptions, searchCases, type CaseFormOptions, type CaseOption, type Option } from '@/reviewApi'
+import { CaseCategory, resultOptions, searchCases, type CaseFormOptions, type CaseOption, type Option } from '@/reviewApi'
 import CompanyPicker from './CompanyPicker.vue'
 
-/** The "Vaka (Direniş)" part of the case form: every field of the old form, in the same order. */
+/**
+ * The "Vaka (Direniş)" part of the case form. The category comes first and decides the fields (R31): İşletme/Kurum,
+ * a workplace's struggle (workplace, main company, organizations, union, counts, result); Genel, an action
+ * organizations called without a workplace (organizers; the issue is the case reason); Dayanışma, an action supporting
+ * another struggle (organizers, optionally the workplace whose workers acted, and the supported case).
+ */
 const props = defineProps<{
   options: CaseFormOptions
   /** Field path ("case.categoryId") → message, from the server. */
@@ -21,6 +26,8 @@ const props = defineProps<{
   /** Companies the AI named that are not registered: offered as "add" under the pickers. */
   suggestedCompanyName?: string | null
   suggestedMainCompanyName?: string | null
+  /** Name of the supported case (editing a Dayanışma case). */
+  supportedCaseName?: string | null
 }>()
 
 const value = defineModel<CaseFormValue>({ required: true })
@@ -32,10 +39,18 @@ const emit = defineEmits<{
 
 const toOptions = (list: Option[]) => list.map((o) => ({ label: o.name, value: o.id }))
 
-const targetOptions = [
-  { label: 'Şirket', value: TargetType.Company },
-  { label: 'Kurum', value: TargetType.Corporation },
-]
+// The three categories in a fixed order, named as the list names them.
+const categoryOptions = computed(() =>
+  [CaseCategory.Workplace, CaseCategory.General, CaseCategory.Solidarity].map((id) => ({
+    value: id,
+    label: props.options.categories.find((c) => c.id === id)?.name ?? String(id),
+  })),
+)
+const categoryHelp: Record<number, string> = {
+  [CaseCategory.Workplace]: 'Bir işyerindeki mücadele: işyeri, ana şirket, kurumsallık, istihdam türü, sonuç.',
+  [CaseCategory.General]: 'İşyeri olmadan kurumların örgütlediği eylem: 1 Mayıs, asgari ücret, vergi … Gündem vaka nedeninde.',
+  [CaseCategory.Solidarity]: 'Başka bir mücadeleye destek eylemi: örgütleyen kurumlar ve (varsa) desteklenen vaka.',
+}
 const yesNo = [
   { label: 'Hayır', value: false },
   { label: 'Evet', value: true },
@@ -45,19 +60,28 @@ const rightOptions = [
   { label: 'Hak Savunma', value: false },
 ]
 
-const againstCompany = computed(() => value.value.targetType === TargetType.Company)
-const againstCorporation = computed(() => value.value.targetType === TargetType.Corporation)
+const workplace = computed(() => value.value.categoryId === CaseCategory.Workplace)
+const solidarity = computed(() => value.value.categoryId === CaseCategory.Solidarity)
+const general = computed(() => value.value.categoryId === CaseCategory.General)
 
 // The union-authority field appears once a union is among the chosen corporations.
 const tradeUnionIds = computed(() => new Set(props.options.corporations.filter((c) => c.isTradeUnion).map((c) => c.id)))
 const hasTradeUnion = computed(() => value.value.corporations.some((c) => typeof c === 'number' && tradeUnionIds.value.has(c)))
 
-// Clear fields that no longer apply, so they are not saved by accident.
-watch(againstCompany, (yes) => {
-  if (!yes) Object.assign(value.value, { companyId: null, isOutsource: false, mainCompanyId: null })
+// Clear fields that no longer apply, so they are not saved by accident. A Dayanışma case keeps a workplace (its workers
+// acted); a Genel case has none.
+watch(workplace, (yes) => {
+  if (!yes)
+    Object.assign(value.value, {
+      isOutsource: false, mainCompanyId: null, employmentTypeIds: [], employeeCount: null, employeeCountRangeId: null,
+      firedEmployeeCount: null, tradeUnionId: null, tradeUnionAuthorityId: null, result: 0,
+    })
 })
-watch(againstCorporation, (yes) => {
-  if (!yes) value.value.targetCorporationId = null
+watch(general, (yes) => {
+  if (yes) value.value.companyId = null
+})
+watch(solidarity, (yes) => {
+  if (!yes) value.value.supportedCaseId = null
 })
 watch(
   () => value.value.isOutsource,
@@ -72,7 +96,7 @@ watch(hasTradeUnion, (yes) => {
 // Duplicate guard: once a company is chosen, show its existing cases (ongoing first).
 const existingCases = ref<CaseOption[]>([])
 watch(
-  () => (againstCompany.value ? value.value.companyId : null),
+  () => (workplace.value ? value.value.companyId : null),
   async (companyId) => {
     existingCases.value = []
     if (companyId === null || props.warnAboutExistingCases === false) return
@@ -83,6 +107,45 @@ watch(
     }
   },
 )
+
+// Desteklenen vaka: searched by name, description or company.
+const supportedOptions = ref<SelectOption[]>([])
+const searchingSupported = ref(false)
+watch(
+  () => props.supportedCaseName,
+  (name) => {
+    const id = value.value.supportedCaseId
+    if (id !== null && !supportedOptions.value.some((o) => o.value === id))
+      supportedOptions.value = [{ label: name || `Vaka #${id}`, value: id }]
+  },
+  { immediate: true },
+)
+let supportedSearch = 0
+async function searchSupported(query: string) {
+  if (query.trim().length < 2) return
+  const mine = ++supportedSearch
+  searchingSupported.value = true
+  try {
+    const found = await searchCases({ query: query.trim() })
+    if (mine !== supportedSearch) return
+    const chosen = supportedOptions.value.filter((o) => o.value === value.value.supportedCaseId)
+    supportedOptions.value = [
+      ...chosen,
+      ...found
+        .filter((c) => c.id !== value.value.supportedCaseId)
+        .map((c) => ({
+          label: [c.name || c.companyName || `Vaka #${c.id}`, c.ongoing ? 'devam ediyor' : c.lastProtestDate ? `son eylem ${formatDate(c.lastProtestDate)}` : null]
+            .filter(Boolean)
+            .join(' · '),
+          value: c.id,
+        })),
+    ]
+  } catch {
+    // the field keeps its options
+  } finally {
+    if (mine === supportedSearch) searchingSupported.value = false
+  }
+}
 
 const ai = (field: string) => (props.aiFields?.includes(field) ? 'ai' : undefined)
 
@@ -98,6 +161,12 @@ function status(field: string) {
   <fieldset class="section">
     <legend class="section-title">Vaka (Direniş)</legend>
     <div class="grid">
+      <n-form-item :class="ai('categoryId')" label="Vaka Niteliği" label-placement="top" class="wide" required :validation-status="status('categoryId')" :feedback="error('categoryId') || (value.categoryId ? categoryHelp[value.categoryId] : 'Önce niteliği seçin: form ona göre alanları gösterir.')">
+        <n-radio-group v-model:value="value.categoryId" name="category">
+          <n-radio-button v-for="o in categoryOptions" :key="o.value" :value="o.value" :label="o.label" />
+        </n-radio-group>
+      </n-form-item>
+
       <n-form-item label="Vaka İsmi" label-placement="top" class="wide" :show-feedback="false">
         <n-input v-model:value="value.name" placeholder="Örn. Örnek Tekstil işçilerinin ücret direnişi" />
       </n-form-item>
@@ -106,27 +175,19 @@ function status(field: string) {
         <n-input v-model:value="value.description" type="textarea" :autosize="{ minRows: 3, maxRows: 8 }" />
       </n-form-item>
 
-      <n-form-item :class="ai('categoryId')" label="Vaka Niteliği" label-placement="top" required :validation-status="status('categoryId')" :feedback="error('categoryId')">
-        <n-select v-model:value="value.categoryId" :options="toOptions(options.categories)" filterable placeholder="Seçiniz" />
-      </n-form-item>
-
-      <n-form-item :class="ai('targetType')" label="Kime Karşı" label-placement="top" required :validation-status="status('targetType')" :feedback="error('targetType')">
-        <n-select v-model:value="value.targetType" :options="targetOptions" placeholder="Seçiniz" />
-      </n-form-item>
-
-      <template v-if="againstCompany">
-        <n-form-item :class="ai('isOutsource')" label="Şirket Taşeron mu?" label-placement="top" :show-feedback="false">
+      <template v-if="workplace">
+        <n-form-item :class="ai('isOutsource')" label="İşyeri Taşeron mu?" label-placement="top" :show-feedback="false">
           <n-radio-group v-model:value="value.isOutsource" name="is-outsource">
             <n-radio-button v-for="o in yesNo" :key="o.label" :value="o.value" :label="o.label" />
           </n-radio-group>
         </n-form-item>
-        <n-form-item :class="ai('companyId')" label="Şirket" label-placement="top" class="wide" :validation-status="status('companyId')" :feedback="error('companyId')">
+        <n-form-item :class="ai('companyId')" label="İşyeri" label-placement="top" class="wide" required :validation-status="status('companyId')" :feedback="error('companyId')">
           <company-picker
             v-model="value.companyId"
             input-id="company"
             :selected-name="props.companyName"
             :suggested-name="props.suggestedCompanyName"
-            add-label="Şirket Ekle"
+            add-label="İşyeri Ekle"
             :company-types="options.companyTypes"
             :company-scales="options.companyScales"
             :company-worklines="options.companyWorklines"
@@ -135,7 +196,7 @@ function status(field: string) {
         </n-form-item>
         <n-alert v-if="existingCases.length" type="warning" :show-icon="false" class="wide existing">
           <p class="existing-text">
-            Bu şirket için {{ existingCases.length }} vaka var. Aynı mücadeleyse yeni vaka yerine mevcut vakaya eylem ekleyin:
+            Bu işyeri için {{ existingCases.length }} vaka var. Aynı mücadeleyse yeni vaka yerine mevcut vakaya eylem ekleyin:
           </p>
           <ul class="existing-list">
             <li v-for="c in existingCases.slice(0, 3)" :key="c.id">
@@ -162,51 +223,78 @@ function status(field: string) {
         </n-form-item>
       </template>
 
-      <n-form-item v-if="againstCorporation" :class="ai('targetCorporationId')" label="Hedef Kurum" label-placement="top" class="wide" :show-feedback="false">
-        <n-select v-model:value="value.targetCorporationId" :options="toOptions(options.corporations)" filterable clearable placeholder="Seçiniz" />
-      </n-form-item>
-
-      <n-form-item :class="ai('reasons')" label="Vaka Nedeni" label-placement="top" class="wide" required :validation-status="status('reasonIds')" :feedback="error('reasonIds') || 'Listede yoksa yazıp Enter’a basarak ekleyebilirsiniz.'">
+      <n-form-item :class="ai('reasons')" label="Vaka Nedeni" label-placement="top" class="wide" required :validation-status="status('reasonIds')" :feedback="error('reasonIds') || (general ? 'Gündemi taşır: 1 Mayıs, vergi, asgari ücret … Listede yoksa yazıp Enter’a basın.' : 'Listede yoksa yazıp Enter’a basarak ekleyebilirsiniz.')">
         <n-select v-model:value="value.reasons" :options="toOptions(options.reasons)" multiple filterable tag placeholder="Seçiniz veya yazın" />
       </n-form-item>
 
-      <n-form-item label="Hak Geliştirme/Hak Savunma Özelliği" label-placement="top" required :validation-status="status('developRight')" :feedback="error('developRight')">
+      <n-form-item v-if="workplace" :class="ai('corporations')" label="Kurumsallık" label-placement="top" class="wide" required :validation-status="status('corporationIds')" :feedback="error('corporationIds') || 'Listede yoksa yazıp Enter’a basarak ekleyebilirsiniz.'">
+        <n-select v-model:value="value.corporations" :options="toOptions(options.corporations)" multiple filterable tag placeholder="Seçiniz veya yazın" />
+      </n-form-item>
+      <n-form-item v-else-if="general || solidarity" :class="ai('corporations')" label="Örgütleyen Kurumlar" label-placement="top" class="wide" :feedback="'Ortak eylemlerde birden fazla. Boş bırakılırsa kurumsuz. Listede yoksa yazıp Enter’a basın.'">
+        <n-select v-model:value="value.corporations" :options="toOptions(options.corporations)" multiple filterable tag clearable placeholder="Seçiniz veya yeni kurum yazın" />
+      </n-form-item>
+
+      <template v-if="solidarity">
+        <n-form-item label="Desteklenen Vaka" label-placement="top" class="wide" :validation-status="status('supportedCaseId')" :feedback="error('supportedCaseId') || 'Vaka henüz kayıtlı değilse boş bırakın; sonra vaka sayfasından bağlanabilir.'">
+          <n-select
+            v-model:value="value.supportedCaseId"
+            :options="supportedOptions"
+            :loading="searchingSupported"
+            filterable
+            remote
+            clearable
+            placeholder="Vaka ara: ad, işyeri, açıklama"
+            @search="searchSupported"
+          />
+        </n-form-item>
+        <n-form-item label="Eylemi Yapan İşyeri" label-placement="top" class="wide" :feedback="'Yalnızca bir işyerinin işçileri eylem yaptıysa (örn. dayanışma grevi).'">
+          <company-picker
+            v-model="value.companyId"
+            input-id="acting-company"
+            :selected-name="props.companyName"
+            add-label="İşyeri Ekle"
+            :company-types="options.companyTypes"
+            :company-scales="options.companyScales"
+            :company-worklines="options.companyWorklines"
+          />
+        </n-form-item>
+      </template>
+
+      <n-form-item v-if="value.categoryId" label="Hak Geliştirme/Hak Savunma Özelliği" label-placement="top" required :validation-status="status('developRight')" :feedback="error('developRight')">
         <n-radio-group v-model:value="value.developRight" name="develop-right">
           <n-radio-button v-for="o in rightOptions" :key="o.label" :value="o.value" :label="o.label" />
         </n-radio-group>
       </n-form-item>
 
-      <n-form-item label="Sonuç" label-placement="top" required :validation-status="status('result')" :feedback="error('result')">
-        <n-select v-model:value="value.result" :options="resultOptions" />
-      </n-form-item>
+      <template v-if="workplace">
+        <n-form-item label="Sonuç" label-placement="top" required :validation-status="status('result')" :feedback="error('result')">
+          <n-select v-model:value="value.result" :options="resultOptions" />
+        </n-form-item>
 
-      <n-form-item :class="ai('employeeCount')" label="İş Yerindeki İşçi Sayısı (Tam)" label-placement="top" :show-feedback="false">
-        <n-input-number v-model:value="value.employeeCount" :min="0" clearable class="full" />
-      </n-form-item>
+        <n-form-item :class="ai('employeeCount')" label="İş Yerindeki İşçi Sayısı (Tam)" label-placement="top" :show-feedback="false">
+          <n-input-number v-model:value="value.employeeCount" :min="0" clearable class="full" />
+        </n-form-item>
 
-      <n-form-item label="İş Yerindeki İşçi Sayısı" label-placement="top" :show-feedback="false">
-        <n-select v-model:value="value.employeeCountRangeId" :options="toOptions(options.employeeCountRanges)" clearable placeholder="Seçiniz" />
-      </n-form-item>
+        <n-form-item label="İş Yerindeki İşçi Sayısı" label-placement="top" :show-feedback="false">
+          <n-select v-model:value="value.employeeCountRangeId" :options="toOptions(options.employeeCountRanges)" clearable placeholder="Seçiniz" />
+        </n-form-item>
 
-      <n-form-item :class="ai('corporations')" label="Kurumsallık" label-placement="top" class="wide" required :validation-status="status('corporationIds')" :feedback="error('corporationIds') || 'Listede yoksa yazıp Enter’a basarak ekleyebilirsiniz.'">
-        <n-select v-model:value="value.corporations" :options="toOptions(options.corporations)" multiple filterable tag placeholder="Seçiniz veya yazın" />
-      </n-form-item>
+        <n-form-item v-if="hasTradeUnion" label="Sendikanın Yetki Durumu" label-placement="top" :show-feedback="false">
+          <n-select v-model:value="value.tradeUnionAuthorityId" :options="toOptions(options.tradeUnionAuthorities)" clearable placeholder="Seçiniz" />
+        </n-form-item>
 
-      <n-form-item v-if="hasTradeUnion" label="Sendikanın Yetki Durumu" label-placement="top" :show-feedback="false">
-        <n-select v-model:value="value.tradeUnionAuthorityId" :options="toOptions(options.tradeUnionAuthorities)" clearable placeholder="Seçiniz" />
-      </n-form-item>
+        <n-form-item label="Tepki Gösterilen Sendika" label-placement="top" :show-feedback="false">
+          <n-select v-model:value="value.tradeUnionId" :options="toOptions(options.tradeUnions)" filterable clearable placeholder="Seçiniz" />
+        </n-form-item>
 
-      <n-form-item label="Tepki Gösterilen Sendika" label-placement="top" :show-feedback="false">
-        <n-select v-model:value="value.tradeUnionId" :options="toOptions(options.tradeUnions)" filterable clearable placeholder="Seçiniz" />
-      </n-form-item>
+        <n-form-item :class="ai('employmentTypeIds')" label="İstihdam Türü" label-placement="top" class="wide" required :validation-status="status('employmentTypeIds')" :feedback="error('employmentTypeIds')">
+          <n-select v-model:value="value.employmentTypeIds" :options="toOptions(options.employmentTypes)" multiple filterable placeholder="Seçiniz" />
+        </n-form-item>
 
-      <n-form-item :class="ai('employmentTypeIds')" label="İstihdam Türü" label-placement="top" class="wide" required :validation-status="status('employmentTypeIds')" :feedback="error('employmentTypeIds')">
-        <n-select v-model:value="value.employmentTypeIds" :options="toOptions(options.employmentTypes)" multiple filterable placeholder="Seçiniz" />
-      </n-form-item>
-
-      <n-form-item :class="ai('firedEmployeeCount')" label="Mücadele Ettiği için İşten Atılan İşçi Sayısı" label-placement="top" :show-feedback="false">
-        <n-input-number v-model:value="value.firedEmployeeCount" :min="0" clearable class="full" />
-      </n-form-item>
+        <n-form-item :class="ai('firedEmployeeCount')" label="Mücadele Ettiği için İşten Atılan İşçi Sayısı" label-placement="top" :show-feedback="false">
+          <n-input-number v-model:value="value.firedEmployeeCount" :min="0" clearable class="full" />
+        </n-form-item>
+      </template>
     </div>
   </fieldset>
 </template>

@@ -16,6 +16,8 @@ namespace RS.MVC.Features.Cases
         public async Task<CaseCommandResult> Handle(CreateCaseCommand command)
         {
             var errors = ReviewValidation.ForNewCase(command.Case, command.Protest);
+            if (await writer.SupportedCaseProblemAsync(command.Case) is { } supported)
+                errors["case.supportedCaseId"] = supported;
             if (errors.Count > 0)
                 return CaseCommandResult.Invalid(errors);
 

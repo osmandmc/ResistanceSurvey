@@ -107,8 +107,8 @@ export interface CaseFormOptions {
   interventionTypes: Option[]
 }
 
-/** Matches the server's ResistanceTargetType. */
-export const TargetType = { Company: 1, Corporation: 2 } as const
+/** The three case categories (R31, the server's KnownListIds): each shows its own fields. */
+export const CaseCategory = { Workplace: 1, Solidarity: 2, General: 3 } as const
 
 /** Matches the server's ResistanceResult; labels are shown to users. */
 export const resultOptions = [
@@ -123,11 +123,12 @@ export interface CaseInput {
   name: string | null
   description: string | null
   categoryId: number | null
-  targetType: number | null
+  /** The workplace of those who acted: İşletme required, Dayanışma optional, Genel none. */
   companyId: number | null
   isOutsource: boolean
   mainCompanyId: number | null
-  targetCorporationId: number | null
+  /** Dayanışma: the case whose struggle the action supported; may stay empty. */
+  supportedCaseId: number | null
   reasonIds: number[]
   newReasonNames: string[]
   developRight: boolean | null

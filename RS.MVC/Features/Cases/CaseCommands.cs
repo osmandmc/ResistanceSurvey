@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RS.COMMON.Constants;
 using RS.COMMON.Entities;
 using RS.EF;
 using RS.MVC.Features.Activity;
 using RS.MVC.Features.Review;
 using RS.MVC.Models;
+using static RS.COMMON.Constants.Enums;
 
 namespace RS.MVC.Features.Cases
 {
@@ -64,24 +66,33 @@ namespace RS.MVC.Features.Cases
             return protest.Id;
         }
 
-        /// <summary>Copies the form's case part onto the entity and replaces its reasons, corporations and employment types.</summary>
+        /// <summary>
+        /// Copies the form's case part onto the entity and replaces its reasons, organizations and employment types (R31:
+        /// by category). İşletme: the workplace, its main company, union and counts, the result; organizations support.
+        /// Genel and Dayanışma: organizations organize; Dayanışma may name the workplace whose workers acted and the
+        /// supported case. "Kime karşı" and the target institution are no longer set.
+        /// </summary>
         public async Task ApplyCaseAsync(Resistance r, CaseInput c, IReadOnlyList<int> reasonIds, IReadOnlyList<int> corporationIds)
         {
-            var againstCompany = c.TargetType == ResistanceTargetType.Company;
+            var workplace = c.CategoryId == KnownListIds.WorkplaceCategory;
+            var solidarity = c.CategoryId == KnownListIds.SolidarityCategory;
             r.Name = c.Name;
             r.Description = c.Description;
             r.CategoryId = c.CategoryId!.Value;
-            r.ResistanceTargetType = c.TargetType!.Value;
-            r.CompanyId = againstCompany ? c.CompanyId : null;
-            r.MainCompanyId = againstCompany && c.IsOutsource ? c.MainCompanyId : null;
-            r.CorporationId = againstCompany ? null : c.TargetCorporationId;
+            r.ResistanceTargetType = ResistanceTargetType.Company; // retired with R31; the column goes in R31d
+            r.CompanyId = workplace || solidarity ? c.CompanyId : null;
+            r.MainCompanyId = workplace && c.IsOutsource ? c.MainCompanyId : null;
+            r.CorporationId = null;
+            r.SupportedResistanceId = solidarity ? c.SupportedCaseId : null;
             r.DevelopRight = c.DevelopRight!.Value;
-            r.EmployeeCountNumber = c.EmployeeCount;
-            r.EmployeeCountId = c.EmployeeCountRangeId;
-            r.TradeUnionAuthorityId = c.TradeUnionAuthorityId;
-            r.TradeUnionId = c.TradeUnionId;
-            r.FiredEmployeeCountByProtesto = c.FiredEmployeeCount ?? 0;
-            r.ResistanceResult = c.Result!.Value;
+            r.EmployeeCountNumber = workplace ? c.EmployeeCount : null;
+            r.EmployeeCountId = workplace ? c.EmployeeCountRangeId : null;
+            r.TradeUnionAuthorityId = workplace ? c.TradeUnionAuthorityId : null;
+            r.TradeUnionId = workplace ? c.TradeUnionId : null;
+            r.FiredEmployeeCountByProtesto = workplace ? c.FiredEmployeeCount ?? 0 : 0;
+            r.ResistanceResult = workplace ? c.Result!.Value : ResistanceResult.Unknown;
+            var role = workplace ? OrganizationRole.Supporting : OrganizationRole.Organizing;
+            var employmentTypeIds = workplace ? c.EmploymentTypeIds : [];
 
             if (r.Id != 0)
             {
@@ -90,9 +101,19 @@ namespace RS.MVC.Features.Cases
                 db.ResistanceEmploymentType.RemoveRange(await db.ResistanceEmploymentType.Where(x => x.ResistanceId == r.Id).ToListAsync());
             }
             r.ResistanceResistanceReasons = reasonIds.Distinct().Select(id => new ResistanceResistanceReason { ResistanceReasonId = id }).ToList();
-            r.ResistanceCorporations = corporationIds.Distinct().Select(id => new ResistanceCorporation { CorporationId = id }).ToList();
-            r.ResistanceEmploymentTypes = c.EmploymentTypeIds.Distinct().Select(id => new ResistanceEmploymentType { EmploymentTypeId = id }).ToList();
+            r.ResistanceCorporations = corporationIds.Distinct().Select(id => new ResistanceCorporation { CorporationId = id, Role = role }).ToList();
+            r.ResistanceEmploymentTypes = employmentTypeIds.Distinct().Select(id => new ResistanceEmploymentType { EmploymentTypeId = id }).ToList();
             await EnsureOutsourceRelationAsync(r.CompanyId, r.MainCompanyId);
+        }
+
+        /// <summary>Why the supported case cannot be used (R31), or null: it must exist, be live and be another case.</summary>
+        public async Task<string> SupportedCaseProblemAsync(CaseInput c, int? selfId = null)
+        {
+            if (c?.CategoryId != KnownListIds.SolidarityCategory || c.SupportedCaseId is not { } supported)
+                return null;
+            if (supported == selfId)
+                return "Bir vaka kendisini destekleyemez.";
+            return await db.Resistance.AnyAsync(x => x.Id == supported && !x.Deleted) ? null : "Desteklenen vaka bulunamadı.";
         }
 
         /// <summary>The case's start date follows its earliest protest (as in the old code).</summary>
@@ -151,6 +172,8 @@ namespace RS.MVC.Features.Cases
         public async Task<CaseCommandResult> Handle(UpdateCaseCommand command)
         {
             var errors = ReviewValidation.ForCase(command.Case);
+            if (await writer.SupportedCaseProblemAsync(command.Case, command.Id) is { } supported)
+                errors["case.supportedCaseId"] = supported;
             if (errors.Count > 0)
                 return CaseCommandResult.Invalid(errors);
 

@@ -23,7 +23,11 @@ namespace RS.MVC.Features.Cases
         string Creator,
         DateTime? CreateDate,
         string Updater,
-        DateTime? UpdateDate);
+        DateTime? UpdateDate,
+        CaseLink SupportedCase = null);
+
+    /// <summary>Another case, by id and the name shown for it (its name, else its company).</summary>
+    public record CaseLink(int Id, string Name);
 
     /// <summary>One protest in the form's shape, plus a short summary for the list.</summary>
     public record ProtestDetail(int Id, ProtestInput Protest, IReadOnlyList<string> TypeNames, IReadOnlyList<string> CityNames);
@@ -43,7 +47,10 @@ namespace RS.MVC.Features.Cases
                     x.Id, x.Name, x.Description, x.CategoryId, x.ResistanceTargetType, x.CompanyId, x.MainCompanyId,
                     x.CorporationId, x.DevelopRight, x.EmployeeCountNumber, x.EmployeeCountId, x.TradeUnionAuthorityId,
                     x.TradeUnionId, x.FiredEmployeeCountByProtesto, x.ResistanceResult, x.Note,
-                    x.Creator, x.CreateDate, x.Updater, x.UpdateDate,
+                    x.Creator, x.CreateDate, x.Updater, x.UpdateDate, x.SupportedResistanceId,
+                    SupportedName = x.SupportedResistance != null
+                        ? x.SupportedResistance.Name ?? (x.SupportedResistance.Company != null ? x.SupportedResistance.Company.Name : null)
+                        : null,
                     CompanyName = x.Company != null ? x.Company.Name : null,
                     MainCompanyName = x.MainCompany != null ? x.MainCompany.Name : null,
                     ReasonIds = x.ResistanceResistanceReasons.Select(y => y.ResistanceReasonId).ToList(),
@@ -82,11 +89,10 @@ namespace RS.MVC.Features.Cases
                 Name = r.Name,
                 Description = r.Description,
                 CategoryId = r.CategoryId,
-                TargetType = r.ResistanceTargetType,
                 CompanyId = r.CompanyId,
                 IsOutsource = r.MainCompanyId != null,
                 MainCompanyId = r.MainCompanyId,
-                TargetCorporationId = r.CorporationId,
+                SupportedCaseId = r.SupportedResistanceId,
                 ReasonIds = r.ReasonIds,
                 DevelopRight = r.DevelopRight,
                 EmployeeCount = r.EmployeeCountNumber,
@@ -122,7 +128,8 @@ namespace RS.MVC.Features.Cases
 
             return new CaseDetail(
                 r.Id, caseInput, r.CompanyName, r.MainCompanyName, r.Note, protestDetails, articles,
-                r.Creator, r.CreateDate, r.Updater, r.UpdateDate);
+                r.Creator, r.CreateDate, r.Updater, r.UpdateDate,
+                r.SupportedResistanceId is { } supported ? new CaseLink(supported, r.SupportedName) : null);
         }
     }
 }

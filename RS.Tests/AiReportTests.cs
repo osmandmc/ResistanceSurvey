@@ -57,7 +57,7 @@ public class AiReportTests
             new { Case = Case(newCompany: "Yemek Sepeti", employees: 40), Protest = Protest([1, 2], "2026-10-20", 34) },
             new
             {
-                Case = new CaseInput { CategoryId = 1, TargetType = ResistanceTargetType.Company, CompanyId = 10 },
+                Case = new CaseInput { CategoryId = 1, CompanyId = 10 },
                 Protest = new ProtestInput { ProtestTypeIds = [1, 3], StartDate = new DateTime(2026, 10, 21), Locations = [new LocationInput { CityId = 34 }] },
             });
         // Adding a protest: only the protest is compared.

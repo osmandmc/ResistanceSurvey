@@ -217,11 +217,9 @@ namespace RS.MVC.Features.Dashboard
             private readonly List<(string Field, string Label, bool IsList)> _order =
             [
                 ("case.category", "Kategori", false),
-                ("case.targetType", "Hedef türü", false),
                 ("case.company", "Şirket", false),
                 ("case.isOutsource", "Taşeron", false),
                 ("case.mainCompany", "Ana şirket", false),
-                ("case.targetCorporation", "Hedef kurum", false),
                 ("case.reasons", "Vaka nedenleri", true),
                 ("case.corporations", "Destekleyen kurumlar", true),
                 ("case.employmentTypes", "İstihdam biçimleri", true),
@@ -292,11 +290,9 @@ namespace RS.MVC.Features.Dashboard
             public void AddCase(AiCaseValues s, CaseInput v)
             {
                 Scalar("case.category", s.CategoryId, v.CategoryId);
-                Scalar("case.targetType", s.TargetType, (int?)v.TargetType);
                 Scalar("case.company", CompanyName(s.CompanyId, s.NewCompanyName), CompanyName(v.CompanyId, null));
                 Scalar("case.isOutsource", s.IsOutsource ? "evet" : null, v.IsOutsource ? "evet" : null);
                 Scalar("case.mainCompany", CompanyName(s.MainCompanyId, s.NewMainCompanyName), CompanyName(v.MainCompanyId, null));
-                Scalar("case.targetCorporation", s.TargetCorporationId, v.TargetCorporationId);
                 List("case.reasons", Ids("reasons", s.ReasonIds), Ids("reasons", v.ReasonIds).Concat(v.NewReasonNames ?? []));
                 List("case.corporations", Ids("corporations", s.CorporationIds).Concat(s.NewCorporationNames ?? []),
                     Ids("corporations", v.CorporationIds).Concat(v.NewCorporationNames ?? []));

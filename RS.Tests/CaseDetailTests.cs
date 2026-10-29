@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using RS.COMMON.Constants;
 using RS.COMMON.Entities;
 using RS.COMMON.Entities.LookupEntity;
 using RS.EF;
@@ -97,6 +98,69 @@ public class CaseDetailTests
         Assert.Equal([9], _db.ResistanceEmploymentType.Where(x => x.ResistanceId == r.Id).Select(x => x.EmploymentTypeId));
         Assert.Single(_db.CompanyOutsourceCompany, c => c.CompanyId == 11 && c.OutsourceCompanyId == 10);
         Assert.Single(_db.ResistanceNews, rn => rn.ResistanceId == r.Id); // articles are not touched by editing
+    }
+
+    private Task<CaseCommandResult> Update(CaseInput input) =>
+        new UpdateCaseHandler(_db, new CaseWriter(_db), new ListValueResolver(_db)).Handle(new UpdateCaseCommand(_case.Id, input, "ayse"));
+
+    [Fact]
+    public async Task AGenelCaseKeepsOnlyItsOrganizersAndReasons()
+    {
+        var input = ValidCase(c =>
+        {
+            c.CategoryId = KnownListIds.GeneralCategory;
+            c.CorporationIds = [4, 7];
+            c.Result = ResistanceResult.FullGain;
+            c.TradeUnionId = 4;
+        });
+
+        Assert.Equal(CaseCommandStatus.Ok, (await Update(input)).Status);
+
+        var r = _db.Resistance.Single(x => x.Id == _case.Id);
+        Assert.Equal(((int?)null, (int?)null, (int?)null, ResistanceResult.Unknown, (int?)null), (r.CompanyId, r.MainCompanyId, r.EmployeeCountNumber, r.ResistanceResult, r.TradeUnionId));
+        Assert.Equal([(4, OrganizationRole.Organizing), (7, OrganizationRole.Organizing)],
+            _db.ResistanceCorporation.Where(x => x.ResistanceId == r.Id).OrderBy(x => x.CorporationId).Select(x => ValueTuple.Create(x.CorporationId, x.Role)));
+        Assert.Empty(_db.ResistanceEmploymentType.Where(x => x.ResistanceId == r.Id));
+    }
+
+    [Fact]
+    public async Task AnIsletmeCaseKeepsItsOrganizationsAsSupporting()
+    {
+        Assert.Equal(CaseCommandStatus.Ok, (await Update(ValidCase())).Status);
+
+        Assert.All(_db.ResistanceCorporation.Where(x => x.ResistanceId == _case.Id), x => Assert.Equal(OrganizationRole.Supporting, x.Role));
+        Assert.Equal(10, _db.Resistance.Single(x => x.Id == _case.Id).CompanyId);
+    }
+
+    [Fact]
+    public async Task ADayanismaCaseLinksTheSupportedCaseAndShowsIt()
+    {
+        var supported = new Resistance { Name = "Migros depo işçileri", CategoryId = KnownListIds.WorkplaceCategory };
+        _db.Resistance.Add(supported);
+        await _db.SaveChangesAsync();
+        var input = ValidCase(c =>
+        {
+            c.CategoryId = KnownListIds.SolidarityCategory;
+            c.CompanyId = null;
+            c.CorporationIds = [];
+            c.SupportedCaseId = supported.Id;
+        });
+
+        Assert.Equal(CaseCommandStatus.Ok, (await Update(input)).Status);
+
+        var detail = await new GetCaseHandler(_db).Handle(new GetCaseQuery(_case.Id));
+        Assert.Equal(new CaseLink(supported.Id, "Migros depo işçileri"), detail!.SupportedCase);
+        Assert.Equal(supported.Id, detail.Case.SupportedCaseId);
+    }
+
+    [Fact]
+    public async Task ACaseCannotSupportItselfNorAMissingCase()
+    {
+        var self = await Update(ValidCase(c => { c.CategoryId = KnownListIds.SolidarityCategory; c.SupportedCaseId = _case.Id; }));
+        var missing = await Update(ValidCase(c => { c.CategoryId = KnownListIds.SolidarityCategory; c.SupportedCaseId = 9999; }));
+
+        Assert.Equal("Bir vaka kendisini destekleyemez.", self.Errors!["case.supportedCaseId"]);
+        Assert.Equal("Desteklenen vaka bulunamadı.", missing.Errors!["case.supportedCaseId"]);
     }
 
     [Fact]

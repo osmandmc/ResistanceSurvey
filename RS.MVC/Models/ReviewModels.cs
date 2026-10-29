@@ -57,12 +57,16 @@ namespace RS.MVC.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        /// <summary>İşletme/Kurum, Dayanışma or Genel (KnownListIds): decides which fields apply (R31).</summary>
         public int? CategoryId { get; set; }
-        public ResistanceTargetType? TargetType { get; set; }
+
+        /// <summary>The workplace of the people who acted: İşletme, required; Dayanışma, optional; Genel, none.</summary>
         public int? CompanyId { get; set; }
         public bool IsOutsource { get; set; }
         public int? MainCompanyId { get; set; }
-        public int? TargetCorporationId { get; set; }
+
+        /// <summary>Dayanışma: the case whose struggle the action supported; may be left empty and linked later.</summary>
+        public int? SupportedCaseId { get; set; }
         public List<int> ReasonIds { get; set; } = [];
 
         /// <summary>Reasons typed by the researcher; matched to existing ones by name, otherwise created.</summary>
@@ -71,6 +75,7 @@ namespace RS.MVC.Models
         public bool? DevelopRight { get; set; }
         public int? EmployeeCount { get; set; }
         public int? EmployeeCountRangeId { get; set; }
+        /// <summary>İşletme: “Kurumsallık” (supporting organizations, required). Genel, Dayanışma: “Örgütleyen kurumlar” (optional; empty = kurumsuz).</summary>
         public List<int> CorporationIds { get; set; } = [];
 
         /// <summary>Corporations typed by the researcher; matched to existing ones by name, otherwise created.</summary>

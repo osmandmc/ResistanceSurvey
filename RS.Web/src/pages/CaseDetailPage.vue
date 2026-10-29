@@ -269,6 +269,7 @@ function confirmDetach(newsId: number, title: string | null) {
         :errors="caseErrors"
         :company-name="detail.companyName"
         :main-company-name="detail.mainCompanyName"
+        :supported-case-name="detail.supportedCase?.name"
         :warn-about-existing-cases="false"
       />
       <div class="actions">

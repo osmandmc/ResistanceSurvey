@@ -137,12 +137,10 @@ export function checkAiAnswer(answer: string) {
 export function aiCaseValues(v: AiCaseValues): Partial<CaseFormValue> {
   const out: Partial<CaseFormValue> = {}
   if (v.categoryId !== null) out.categoryId = v.categoryId
-  if (v.targetType !== null) out.targetType = v.targetType
   if (v.companyId !== null) out.companyId = v.companyId
   // A named main company opens the main company field, also when it still has to be added.
   if (v.isOutsource) out.isOutsource = true
   if (v.mainCompanyId !== null) out.mainCompanyId = v.mainCompanyId
-  if (v.targetCorporationId !== null) out.targetCorporationId = v.targetCorporationId
   if (v.reasonIds.length) out.reasons = [...v.reasonIds]
   if (v.corporationIds.length || v.newCorporationNames.length) out.corporations = [...v.corporationIds, ...v.newCorporationNames]
   if (v.employmentTypeIds.length) out.employmentTypeIds = [...v.employmentTypeIds]
