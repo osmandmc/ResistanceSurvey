@@ -44,8 +44,8 @@ namespace RS.MVC.Features.Cases
                 .Where(x => x.Id == query.Id && !x.Deleted)
                 .Select(x => new
                 {
-                    x.Id, x.Name, x.Description, x.CategoryId, x.ResistanceTargetType, x.CompanyId, x.MainCompanyId,
-                    x.CorporationId, x.DevelopRight, x.EmployeeCountNumber, x.EmployeeCountId, x.TradeUnionAuthorityId,
+                    x.Id, x.Name, x.Description, x.CategoryId, x.CompanyId, x.MainCompanyId,
+                    x.DevelopRight, x.EmployeeCountNumber, x.EmployeeCountId, x.TradeUnionAuthorityId,
                     x.TradeUnionId, x.FiredEmployeeCountByProtesto, x.ResistanceResult, x.Note,
                     x.Creator, x.CreateDate, x.Updater, x.UpdateDate, x.SupportedResistanceId,
                     SupportedName = x.SupportedResistance != null

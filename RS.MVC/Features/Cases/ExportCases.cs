@@ -65,6 +65,11 @@ namespace RS.MVC.Features.Cases
             ("Direniş Sonucu", p => p.Resistance.ResistanceResult.ToString()),
             ("Direniş Haberleri", p => string.Join("; ", p.Resistance.ResistanceNews?.Select(x => x.News?.Header ?? "") ?? NoNames)),
             ("Direniş Haberleri Linki", p => string.Join("; ", p.Resistance.ResistanceNews?.Select(x => x.News?.Link ?? "") ?? NoNames)),
+            // R31, added at the end so the old columns keep their places: who organized a Genel or Dayanışma case, and the
+            // case a Dayanışma case supported.
+            ("Örgütleyen Kurumlar", p => string.Join("; ", p.Resistance.ResistanceCorporations?.Where(x => x.Role == OrganizationRole.Organizing).Select(x => x.Corporation.Name) ?? NoNames)),
+            ("Desteklenen Vaka", p => p.Resistance.SupportedResistance is { } s ? $"{s.Id}: {s.Name ?? s.Company?.Name}" : ""),
+
         ];
 
         public async Task<byte[]> Handle(ExportCasesQuery query)
@@ -95,6 +100,7 @@ namespace RS.MVC.Features.Cases
                 .Include(p => p.Resistance).ThenInclude(r => r.ResistanceResistanceReasons).ThenInclude(x => x.ResistanceReason)
                 .Include(p => p.Resistance).ThenInclude(r => r.ResistanceCorporations).ThenInclude(x => x.Corporation)
                 .Include(p => p.Resistance).ThenInclude(r => r.ResistanceNews).ThenInclude(x => x.News)
+                .Include(p => p.Resistance).ThenInclude(r => r.SupportedResistance).ThenInclude(s => s.Company)
                 .Include(p => p.Gender)
                 .Include(p => p.ProtestoEmployeeCount)
                 .Include(p => p.ProtestoProtestoTypes).ThenInclude(x => x.ProtestoType)

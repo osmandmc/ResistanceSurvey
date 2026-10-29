@@ -79,10 +79,8 @@ namespace RS.MVC.Features.Cases
             r.Name = c.Name;
             r.Description = c.Description;
             r.CategoryId = c.CategoryId!.Value;
-            r.ResistanceTargetType = ResistanceTargetType.Company; // retired with R31; the column goes in R31d
             r.CompanyId = workplace || solidarity ? c.CompanyId : null;
             r.MainCompanyId = workplace && c.IsOutsource ? c.MainCompanyId : null;
-            r.CorporationId = null;
             r.SupportedResistanceId = solidarity ? c.SupportedCaseId : null;
             r.DevelopRight = c.DevelopRight!.Value;
             r.EmployeeCountNumber = workplace ? c.EmployeeCount : null;

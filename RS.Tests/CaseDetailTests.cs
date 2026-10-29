@@ -33,7 +33,6 @@ public class CaseDetailTests
             Name = "Tekstil direnişi",
             Description = "Ücretler ödenmedi",
             CategoryId = 1,
-            ResistanceTargetType = ResistanceTargetType.Company,
             CompanyId = 10,
             ResistanceResult = ResistanceResult.Unknown,
             Note = "eski not",

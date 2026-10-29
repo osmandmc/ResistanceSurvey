@@ -42,7 +42,7 @@ namespace RS.MVC.Features.Cases
             var total = await cases.CountAsync();
             var rows = await Build(cases).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             var items = rows.Select(r => new CaseListItem(
-                r.Id, r.Name, r.Target, r.MainCompanyName, r.CategoryName, r.ProtestCount, r.LastProtestDate, r.Ongoing, r.Cities, r.ArticleCount)).ToList();
+                r.Id, r.Name, r.Target ?? (r.Organizers is { Count: > 0 } o ? string.Join(", ", o.Take(3)) + (o.Count > 3 ? " …" : "") : null), r.MainCompanyName, r.CategoryName, r.ProtestCount, r.LastProtestDate, r.Ongoing, r.Cities, r.ArticleCount)).ToList();
             return new CaseListPage(items, total, page, pageSize);
         }
 
@@ -53,7 +53,8 @@ namespace RS.MVC.Features.Cases
                 {
                     Id = r.Id,
                     Name = r.Name,
-                    Target = r.Company != null ? r.Company.Name : r.Corporation != null ? r.Corporation.Name : null,
+                    Target = r.Company != null ? r.Company.Name : null,
+                    Organizers = r.ResistanceCorporations.Where(x => x.Role == COMMON.Entities.OrganizationRole.Organizing).Select(x => x.Corporation.Name).ToList(),
                     MainCompanyName = r.MainCompany != null ? r.MainCompany.Name : null,
                     CategoryName = r.Category != null ? r.Category.Name : null,
                     ProtestCount = r.Protestos.Count(p => !p.Deleted),
@@ -69,7 +70,9 @@ namespace RS.MVC.Features.Cases
         {
             public int Id { get; set; }
             public string Name { get; set; }
+            /// <summary>The workplace; Genel and Dayanışma cases without one show their organizers instead (R31).</summary>
             public string Target { get; set; }
+            public List<string> Organizers { get; set; }
             public string MainCompanyName { get; set; }
             public string CategoryName { get; set; }
             public int ProtestCount { get; set; }

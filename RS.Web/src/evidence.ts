@@ -4,7 +4,7 @@
 export interface AiEvidence {
   /** "case.company", "protest.types" … */
   field: string
-  /** As in the check table: "Şirket / kurum", "Eylem türleri" … */
+  /** As in the check table: "İşyeri", "Eylem türleri" … */
   label: string
   quote: string
 }

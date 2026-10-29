@@ -97,11 +97,9 @@ namespace RS.MVC.Features.Definitions
                 case DefinitionKind.Corporations:
                     var supporting = await db.ResistanceCorporation.Where(x => list.Contains(x.CorporationId) && !x.Resistance.Deleted)
                         .Select(x => new { Id = x.CorporationId, CaseId = x.ResistanceId }).ToListAsync();
-                    var target = await db.Resistance.Where(r => !r.Deleted && r.CorporationId != null && list.Contains(r.CorporationId.Value))
-                        .Select(r => new { Id = r.CorporationId.Value, CaseId = r.Id }).ToListAsync();
                     var union = await db.Resistance.Where(r => !r.Deleted && r.TradeUnionId != null && list.Contains(r.TradeUnionId.Value))
                         .Select(r => new { Id = r.TradeUnionId.Value, CaseId = r.Id }).ToListAsync();
-                    return supporting.Concat(target).Concat(union).Select(x => (x.Id, x.CaseId)).ToList();
+                    return supporting.Concat(union).Select(x => (x.Id, x.CaseId)).ToList();
                 case DefinitionKind.Reasons:
                     return (await db.ResistanceResistanceReason.Where(x => list.Contains(x.ResistanceReasonId) && !x.Resistance.Deleted)
                         .Select(x => new { Id = x.ResistanceReasonId, x.ResistanceId }).ToListAsync()).Select(x => (x.Id, x.ResistanceId)).ToList();

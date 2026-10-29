@@ -27,7 +27,8 @@ namespace RS.MVC.Features.Cases
             if (text != "")
                 cases = cases.Where(r => r.Name.Contains(text) || r.Description.Contains(text)
                     || (r.Company != null && r.Company.Name.Contains(text))
-                    || (r.Corporation != null && r.Corporation.Name.Contains(text)));
+                    || (r.MainCompany != null && r.MainCompany.Name.Contains(text))
+                    || r.ResistanceCorporations.Any(x => x.Corporation.Name.Contains(text)));
             if (CompanyId is { } companyId)
                 cases = cases.Where(r => r.CompanyId == companyId);
             if (MainCompanyId is { } mainId)
