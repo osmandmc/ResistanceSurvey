@@ -46,6 +46,10 @@ namespace RS.COMMON.Entities
         public List<ResistanceResistanceReason> ResistanceResistanceReasons { get; set; }
         public List<ResistanceNews> ResistanceNews { get; set; }
 
+        /// <summary>Dayanışma (R31): the case whose struggle this action supported; may be linked later.</summary>
+        public int? SupportedResistanceId { get; set; }
+        public Resistance SupportedResistance { get; set; }
+
         public Resistance(){}
 
         

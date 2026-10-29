@@ -12,5 +12,14 @@ namespace RS.COMMON.Constants
 
         /// <summary>InterventionType for "no intervention": choosing it means no custody count is needed.</summary>
         public const int NoInterventionType = 7;
+
+        /// <summary>
+        /// The three case categories (R31): fixed, each with its own fields. İşletme/Kurum: a workplace's struggle (employer,
+        /// main company, union, counts, result). Dayanışma: an action supporting another struggle (organizers, the supported
+        /// case). Genel: an action organizations called without a workplace (organizers; the issue is the case reason).
+        /// </summary>
+        public const int WorkplaceCategory = 1;
+        public const int SolidarityCategory = 2;
+        public const int GeneralCategory = 3;
     }
 }

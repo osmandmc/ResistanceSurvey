@@ -50,6 +50,7 @@ namespace RS.EF
         public DbSet<AiSuggestion> AiSuggestion { get; set; }
         public DbSet<AppUser> AppUser { get; set; }
         public DbSet<ActivityEntry> ActivityEntry { get; set; }
+        public DbSet<CaseMigrationRecord> CaseMigrationRecord { get; set; }
 
        
         public const string TurkishCollation = "Turkish_CI_AS";
@@ -119,6 +120,19 @@ namespace RS.EF
                      e.HasIndex(x => new { x.Username, x.At });
                  });
 
+                 // R31: the record of what the case-category migration changed; one or more rows per case.
+                 modelBuilder.Entity<CaseMigrationRecord>(e =>
+                 {
+                     e.Property(x => x.Step).HasMaxLength(30).IsUnicode(false).UseCollation(null).IsRequired();
+                     e.Property(x => x.RemovedCorporationIds).HasMaxLength(200).IsUnicode(false).UseCollation(null);
+                     e.HasIndex(x => x.ResistanceId);
+                 });
+
+                 // R31: a solidarity case points at the case it supported; deleting either never touches the other.
+                 modelBuilder.Entity<Resistance>()
+                    .HasOne(r => r.SupportedResistance).WithMany()
+                    .HasForeignKey(r => r.SupportedResistanceId);
+
                  // A hash in hex: compared exactly, kept in the database default collation (see ConfigureConventions).
                  modelBuilder.Entity<News>().Property(n => n.ArticleId).UseCollation(null);
 
@@ -139,7 +153,7 @@ namespace RS.EF
                      var owner = foreignKey.PrincipalEntityType.ClrType;
                      var part = foreignKey.DeclaringEntityType.ClrType;
                      // An AI suggestion belongs to its article, not to the case it went to (cases are only marked deleted).
-                     var ownsIt = (owner == typeof(Resistance) && part != typeof(AiSuggestion)) || owner == typeof(Protesto)
+                     var ownsIt = (owner == typeof(Resistance) && part != typeof(AiSuggestion) && part != typeof(Resistance)) || owner == typeof(Protesto)
                          || (owner == typeof(News) && (part == typeof(ResistanceNews) || part == typeof(AiSuggestion)));
                      foreignKey.DeleteBehavior = ownsIt ? DeleteBehavior.Cascade : DeleteBehavior.Restrict;
                  }
