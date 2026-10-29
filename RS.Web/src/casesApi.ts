@@ -100,6 +100,8 @@ export interface CaseDetail {
   createDate: string | null
   updater: string | null
   updateDate: string | null
+  /** Dayanışma (R31): the supported case, for the form's picker. */
+  supportedCase: { id: number; name: string | null } | null
 }
 
 export interface NewsOption {

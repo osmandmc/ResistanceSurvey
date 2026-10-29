@@ -214,6 +214,67 @@ namespace RS.EF.Data.Migrations
                     b.ToTable("AppUser");
                 });
 
+            modelBuilder.Entity("RS.COMMON.Entities.CaseMigrationRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AddedOrganizingLink")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("CompanyMarkedDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("OldCompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OldCompanyName")
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<int?>("OldCorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OldMainCompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OldName")
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<int>("OldTargetType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RemovedCorporationIds")
+                        .HasMaxLength(200)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<int>("ResistanceId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Step")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResistanceId");
+
+                    b.ToTable("CaseMigrationRecord");
+                });
+
             modelBuilder.Entity("RS.COMMON.Entities.Company", b =>
                 {
                     b.Property<int>("Id")
@@ -968,6 +1029,9 @@ namespace RS.EF.Data.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("SupportedResistanceId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("TradeUnionAuthorityId")
                         .HasColumnType("int");
 
@@ -994,6 +1058,8 @@ namespace RS.EF.Data.Migrations
 
                     b.HasIndex("MainCompanyId");
 
+                    b.HasIndex("SupportedResistanceId");
+
                     b.HasIndex("TradeUnionAuthorityId");
 
                     b.HasIndex("TradeUnionId");
@@ -1013,6 +1079,9 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("ResistanceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Role")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1349,6 +1418,11 @@ namespace RS.EF.Data.Migrations
                         .HasForeignKey("MainCompanyId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("RS.COMMON.Entities.Resistance", "SupportedResistance")
+                        .WithMany()
+                        .HasForeignKey("SupportedResistanceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("RS.COMMON.Entities.LookupEntity.TradeUnionAuthority", "TradeUnionAuthority")
                         .WithMany()
                         .HasForeignKey("TradeUnionAuthorityId")
@@ -1368,6 +1442,8 @@ namespace RS.EF.Data.Migrations
                     b.Navigation("EmployeeCount");
 
                     b.Navigation("MainCompany");
+
+                    b.Navigation("SupportedResistance");
 
                     b.Navigation("TradeUnion");
 

@@ -1,3 +1,4 @@
+using RS.COMMON.Constants;
 using RS.COMMON.Entities;
 using RS.MVC.Features.Review;
 using RS.MVC.Models;
@@ -15,8 +16,7 @@ public class ReviewValidationTests
         {
             Name = "Örnek Tekstil ücret direnişi",
             Description = "120 işçi ödenmeyen ücretler için iş bıraktı.",
-            CategoryId = 1,
-            TargetType = ResistanceTargetType.Company,
+            CategoryId = KnownListIds.WorkplaceCategory,
             CompanyId = 10,
             ReasonIds = [3],
             DevelopRight = false,
@@ -52,12 +52,34 @@ public class ReviewValidationTests
 
         Assert.Equal(
             [
-                "case.categoryId", "case.corporationIds", "case.description", "case.developRight", "case.employmentTypeIds",
-                "case.reasonIds", "case.result", "case.targetType",
+                "case.categoryId", "case.description", "case.developRight", "case.reasonIds",
                 "protest.genderId", "protest.interventionTypeIds", "protest.placeIds", "protest.protestTypeIds", "protest.startDate",
             ],
             errors.Keys.Order());
     }
+
+    [Fact]
+    public void AnIsletmeCaseNeedsItsWorkplaceFields()
+    {
+        var errors = ReviewValidation.ForCase(new CaseInput { CategoryId = KnownListIds.WorkplaceCategory, Description = "x", ReasonIds = [3], DevelopRight = true });
+
+        Assert.Equal(["case.companyId", "case.corporationIds", "case.employmentTypeIds", "case.result"], errors.Keys.Order());
+    }
+
+    [Theory]
+    [InlineData(KnownListIds.GeneralCategory)]
+    [InlineData(KnownListIds.SolidarityCategory)]
+    public void GenelAndDayanismaNeedNoWorkplaceNorOrganizer(int category)
+    {
+        // R31: no company, no organizations (kurumsuz), no employment types, no result.
+        var errors = ReviewValidation.ForCase(new CaseInput { CategoryId = category, Description = "1 Mayıs çağrısı", ReasonIds = [3], DevelopRight = true });
+
+        Assert.Empty(errors);
+    }
+
+    [Fact]
+    public void AnUnknownCategoryIsRefused() =>
+        Assert.Contains("case.categoryId", ReviewValidation.ForCase(new CaseInput { CategoryId = 9, Description = "x", ReasonIds = [3], DevelopRight = true }).Keys);
 
     [Fact]
     public void TypedValuesCountAsChosen()

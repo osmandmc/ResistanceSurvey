@@ -69,11 +69,16 @@ namespace RS.MVC.Features.Review
                 return;
             }
             if (string.IsNullOrWhiteSpace(c.Description)) errors["case.description"] = "Lütfen kısa açıklama giriniz.";
-            if (c.CategoryId is not > 0) errors["case.categoryId"] = "Lütfen vaka niteliğini seçiniz.";
-            if (c.TargetType == null) errors["case.targetType"] = "Lütfen kime karşı olduğunu seçiniz.";
-            if (c.IsOutsource && c.MainCompanyId is not > 0) errors["case.mainCompanyId"] = "Lütfen ana şirketi seçiniz.";
+            if (c.CategoryId is not (KnownListIds.WorkplaceCategory or KnownListIds.SolidarityCategory or KnownListIds.GeneralCategory))
+                errors["case.categoryId"] = "Lütfen vaka niteliğini seçiniz.";
             if (!HasAny(c.ReasonIds, c.NewReasonNames)) errors["case.reasonIds"] = "Lütfen en az bir vaka nedeni seçiniz.";
             if (c.DevelopRight == null) errors["case.developRight"] = "Lütfen hak geliştirme / hak savunma seçiniz.";
+
+            // R31: the workplace's fields only for İşletme; Genel and Dayanışma name their organizers (optional: kurumsuz).
+            if (c.CategoryId != KnownListIds.WorkplaceCategory)
+                return;
+            if (c.CompanyId is not > 0) errors["case.companyId"] = "Lütfen işyerini seçiniz.";
+            if (c.IsOutsource && c.MainCompanyId is not > 0) errors["case.mainCompanyId"] = "Lütfen ana şirketi seçiniz.";
             if (!HasAny(c.CorporationIds, c.NewCorporationNames)) errors["case.corporationIds"] = "Lütfen en az bir kurumsallık seçiniz.";
             if (c.EmploymentTypeIds is not { Count: > 0 }) errors["case.employmentTypeIds"] = "Lütfen en az bir istihdam türü seçiniz.";
             if (c.Result == null) errors["case.result"] = "Lütfen sonucu seçiniz.";
