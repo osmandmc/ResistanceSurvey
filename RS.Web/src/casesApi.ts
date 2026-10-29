@@ -155,3 +155,62 @@ export function detachArticle(caseId: number, newsId: number) {
 export function createCase(input: { case: CaseInput; protest: unknown }) {
   return api<{ id: number }>('/api/cases', { method: 'POST', body: JSON.stringify(input) })
 }
+
+// R31c: Dayanışma cases and the struggles they supported.
+
+export interface SupportedSuggestion {
+  caseId: number
+  name: string | null
+  companyName: string | null
+  lastProtestDate: string | null
+  ongoing: boolean
+  /** "aynı işyeri" or "adında işyeri geçiyor". */
+  reason: string
+}
+
+export interface SolidarityGroup {
+  name: string
+  oldCompanyId: number | null
+  caseIds: number[]
+  cities: string[]
+  firstDate: string | null
+  lastDate: string | null
+  /** The name is a real workplace with İşletme cases. */
+  oldCompanyUsedByIsletme: boolean
+  /** An organization of that name exists. */
+  looksLikeOrganization: boolean
+  suggestion: SupportedSuggestion | null
+}
+
+export interface TargetCheck {
+  caseId: number
+  name: string | null
+  companyName: string | null
+  oldTargetName: string | null
+}
+
+export interface SolidarityLinksPage {
+  groups: SolidarityGroup[]
+  targetChecks: TargetCheck[]
+  /** Dayanışma cases entered after the migration and not linked yet. */
+  unlinkedNewCases: number
+}
+
+export type SolidarityAction = 'Link' | 'Organizer' | 'Workplace' | 'None'
+
+export const getSolidarityLinks = () => api<SolidarityLinksPage>('/api/cases/solidarity-links')
+
+export const resolveSolidarity = (caseIds: number[], action: SolidarityAction, supportedCaseId: number | null = null) =>
+  api<void>('/api/cases/solidarity-links/resolve', { method: 'POST', body: JSON.stringify({ caseIds, action, supportedCaseId }) })
+
+export const markTargetChecked = (caseId: number) => api<void>(`/api/cases/${caseId}/target-checked`, { method: 'POST' })
+
+export interface CaseSolidarity {
+  linked: { id: number; name: string | null }[]
+  suggested: { id: number; name: string | null }[]
+}
+
+export const getCaseSolidarity = (caseId: number) => api<CaseSolidarity>(`/api/cases/${caseId}/solidarity`)
+
+export const linkSupportedCase = (solidarityCaseId: number, supportedCaseId: number) =>
+  api<void>(`/api/cases/${solidarityCaseId}/supported-case`, { method: 'POST', body: JSON.stringify({ supportedCaseId }) })

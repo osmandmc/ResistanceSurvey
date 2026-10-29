@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { NAlert, NButton, NFormItem, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect, type SelectOption } from 'naive-ui'
+import { NAlert, NButton, NFormItem, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect } from 'naive-ui'
 import type { CaseFormValue } from '@/caseForm'
 import { formatDate } from '@/format'
 import { CaseCategory, resultOptions, searchCases, type CaseFormOptions, type CaseOption, type Option } from '@/reviewApi'
+import CaseSearchSelect from './CaseSearchSelect.vue'
 import CompanyPicker from './CompanyPicker.vue'
 
 /**
@@ -108,45 +109,6 @@ watch(
   },
 )
 
-// Desteklenen vaka: searched by name, description or company.
-const supportedOptions = ref<SelectOption[]>([])
-const searchingSupported = ref(false)
-watch(
-  () => props.supportedCaseName,
-  (name) => {
-    const id = value.value.supportedCaseId
-    if (id !== null && !supportedOptions.value.some((o) => o.value === id))
-      supportedOptions.value = [{ label: name || `Vaka #${id}`, value: id }]
-  },
-  { immediate: true },
-)
-let supportedSearch = 0
-async function searchSupported(query: string) {
-  if (query.trim().length < 2) return
-  const mine = ++supportedSearch
-  searchingSupported.value = true
-  try {
-    const found = await searchCases({ query: query.trim() })
-    if (mine !== supportedSearch) return
-    const chosen = supportedOptions.value.filter((o) => o.value === value.value.supportedCaseId)
-    supportedOptions.value = [
-      ...chosen,
-      ...found
-        .filter((c) => c.id !== value.value.supportedCaseId)
-        .map((c) => ({
-          label: [c.name || c.companyName || `Vaka #${c.id}`, c.ongoing ? 'devam ediyor' : c.lastProtestDate ? `son eylem ${formatDate(c.lastProtestDate)}` : null]
-            .filter(Boolean)
-            .join(' · '),
-          value: c.id,
-        })),
-    ]
-  } catch {
-    // the field keeps its options
-  } finally {
-    if (mine === supportedSearch) searchingSupported.value = false
-  }
-}
-
 const ai = (field: string) => (props.aiFields?.includes(field) ? 'ai' : undefined)
 
 function error(field: string) {
@@ -236,16 +198,7 @@ function status(field: string) {
 
       <template v-if="solidarity">
         <n-form-item label="Desteklenen Vaka" label-placement="top" class="wide" :validation-status="status('supportedCaseId')" :feedback="error('supportedCaseId') || 'Vaka henüz kayıtlı değilse boş bırakın; sonra vaka sayfasından bağlanabilir.'">
-          <n-select
-            v-model:value="value.supportedCaseId"
-            :options="supportedOptions"
-            :loading="searchingSupported"
-            filterable
-            remote
-            clearable
-            placeholder="Vaka ara: ad, işyeri, açıklama"
-            @search="searchSupported"
-          />
+          <case-search-select v-model="value.supportedCaseId" :selected-name="props.supportedCaseName" />
         </n-form-item>
         <n-form-item label="Eylemi Yapan İşyeri" label-placement="top" class="wide" :feedback="'Yalnızca bir işyerinin işçileri eylem yaptıysa (örn. dayanışma grevi).'">
           <company-picker

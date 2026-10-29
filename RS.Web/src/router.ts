@@ -4,6 +4,7 @@ import { forgetCurrentUser, loadCurrentUser } from './auth'
 import AppLayout from './layouts/AppLayout.vue'
 import ActivityPage from './pages/ActivityPage.vue'
 import AiReportPage from './pages/AiReportPage.vue'
+import SolidarityLinksPage from './pages/SolidarityLinksPage.vue'
 import ArchivePage from './pages/ArchivePage.vue'
 import CaseDetailPage from './pages/CaseDetailPage.vue'
 import CasesPage from './pages/CasesPage.vue'
@@ -46,6 +47,7 @@ export const router = createRouter({
         { path: 'archive', component: ArchivePage, meta: { title: 'Haber Arşivi' } },
         { path: 'cases', component: CasesPage, meta: { title: 'Vakalar' } },
         { path: 'cases/new', component: NewCasePage, meta: { title: 'Yeni vaka' } },
+        { path: 'cases/solidarity', component: SolidarityLinksPage, meta: { title: 'Dayanışma bağlantıları' } },
         { path: 'cases/:id(\\d+)', component: CaseDetailPage, meta: { title: 'Vaka' } },
         { path: 'status', component: StatusPage, meta: { title: 'Durum Paneli' } },
         { path: 'status/ai-report', component: AiReportPage, meta: { title: 'AI raporu' } },
