@@ -24,7 +24,7 @@ public class AiReportTests
     }
 
     private static AiCaseValues Case(int? companyId = null, string newCompany = null!, int? employees = null) =>
-        new(1, 1, companyId, newCompany, false, null, null, null, [], [], [], [], employees, null, "Açıklama");
+        new(1, companyId, newCompany, false, null, null, [], [], [], [], employees, null, "Açıklama");
 
     private static AiProtestValues Protest(int[] types, string start, params int[] cities) =>
         new(types, start, null, [], cities.Select(c => new AiLocation(c, null, null)).ToList(), null, null, [], null, null);

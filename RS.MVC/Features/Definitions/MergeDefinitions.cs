@@ -58,11 +58,8 @@ namespace RS.MVC.Features.Definitions
                 case DefinitionKind.Corporations:
                     await MoveLinksAsync(db.ResistanceCorporation, x => x.CorporationId, x => x.ResistanceId,
                         command.FromId, command.IntoId, (x, id) => x.CorporationId = id);
-                    foreach (var r in await db.Resistance.Where(r => r.CorporationId == command.FromId || r.TradeUnionId == command.FromId).ToListAsync())
-                    {
-                        if (r.CorporationId == command.FromId) r.CorporationId = command.IntoId;
-                        if (r.TradeUnionId == command.FromId) r.TradeUnionId = command.IntoId;
-                    }
+                    foreach (var r in await db.Resistance.Where(r => r.TradeUnionId == command.FromId).ToListAsync())
+                        r.TradeUnionId = command.IntoId;
                     db.Remove(await db.Corporation.FindAsync(command.FromId));
                     break;
                 case DefinitionKind.Reasons:

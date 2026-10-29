@@ -61,7 +61,7 @@ public class AiFillTests
         Assert.Null(result.Error);
         Assert.True(result.Relevant);
         var c = result.Case;
-        Assert.Equal((1, 1, 10, (string?)null, false), (c.CategoryId, c.TargetType, c.CompanyId, c.NewCompanyName, c.IsOutsource));
+        Assert.Equal((1, 10, (string?)null, false), (c.CategoryId, c.CompanyId, c.NewCompanyName, c.IsOutsource));
         Assert.Equal("Örnek Metal Sanayi ve Ticaret A.Ş.", c.CompanyName); // the registered name, for the form to show
         Assert.Equal([20], c.CorporationIds);
         Assert.Equal(["Gebze Dayanışma Platformu"], c.NewCorporationNames);
@@ -86,7 +86,7 @@ public class AiFillTests
         Assert.Equal(AiItemStatus.Skipped, Status("case.union_authority"));
         Assert.Equal(AiItemStatus.Skipped, Status("protest.gender"));
         // Quotes for fields that went into the form, labelled as in the check table; unknown fields and empty quotes dropped.
-        Assert.Equal([new AiEvidence("protest.types", "Eylem türleri", "bugün iki saat iş bıraktı"), new AiEvidence("case.company", "Şirket / kurum", "Örnek Metal fabrikasında")],
+        Assert.Equal([new AiEvidence("protest.types", "Eylem türleri", "bugün iki saat iş bıraktı"), new AiEvidence("case.company", "İşyeri", "Örnek Metal fabrikasında")],
             result.Evidence);
         Assert.DoesNotContain(result.Fields, f => f.Field == "case.result" && f.Items.Any(i => i.Value != null));
     }

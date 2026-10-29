@@ -99,7 +99,6 @@ public class DefinitionsTests
         _db.AddRange(typo, kept);
         var resistance = Case();
         resistance.ResistanceCorporations = [new ResistanceCorporation { Corporation = typo }];
-        resistance.Corporation = typo;
         resistance.TradeUnion = typo;
         await _db.SaveChangesAsync();
 
@@ -108,7 +107,7 @@ public class DefinitionsTests
         Assert.Equal((MergeStatus.Ok, 1), (result.Status, result.Affected));
         var link = Assert.Single(_db.ResistanceCorporation);
         Assert.Equal(kept.Id, link.CorporationId);
-        Assert.Equal((kept.Id, kept.Id), (resistance.CorporationId!.Value, resistance.TradeUnionId!.Value));
+        Assert.Equal(kept.Id, resistance.TradeUnionId!.Value);
         Assert.Equal(["Kurumsuz"], _db.Corporation.Select(c => c.Name));
     }
 

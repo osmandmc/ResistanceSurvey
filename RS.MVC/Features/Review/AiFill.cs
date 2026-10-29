@@ -27,7 +27,7 @@ namespace RS.MVC.Features.Review
 
     public class GetAiPromptHandler(IPipelineClient pipeline, RSDBContext db)
     {
-        public const string Version = "v2.1";
+        public const string Version = "v2.2";
 
         private static readonly Lazy<string> Template = new(() =>
         {
@@ -115,13 +115,11 @@ namespace RS.MVC.Features.Review
     /// </summary>
     public record AiCaseValues(
         int? CategoryId,
-        int? TargetType,
         int? CompanyId,
         string NewCompanyName,
         bool IsOutsource,
         int? MainCompanyId,
         string NewMainCompanyName,
-        int? TargetCorporationId,
         IReadOnlyList<int> ReasonIds,
         IReadOnlyList<int> CorporationIds,
         IReadOnlyList<string> NewCorporationNames,
@@ -194,19 +192,16 @@ namespace RS.MVC.Features.Review
             var category = One(categories, Text(c, "category"));
             Add("case.category", "Kategori", Items(category));
 
-            int? targetType = Text(c, "target_type") switch { "company" => 1, "corporation" => 2, _ => null };
-
+            // "target_type" and "target_corporation" (prompts before R31) are ignored: the category decides the fields.
             var companies = await ListAsync(db.Company.Where(e => !e.Deleted).Select(e => new { e.Id, e.Name }).ToListAsync(), e => e.Id, e => e.Name, DefinitionKind.Companies);
             var company = Record(companies, Text(c, "company"), "şirket");
-            Add("case.company", "Şirket / kurum", Items(company));
+            Add("case.company", "İşyeri", Items(company));
             var mainCompany = Record(companies, Text(c, "main_company"), "şirket");
             Add("case.main_company", "Asıl işveren", Items(mainCompany));
 
             var corporations = await ListAsync(db.Corporation.Select(e => new { e.Id, e.Name }).ToListAsync(), e => e.Id, e => e.Name, DefinitionKind.Corporations);
-            var targetCorporation = Text(c, "target_corporation") is { } targetName ? One(corporations, targetName, "kayıtlı değil, kurum seçin") : null;
-            Add("case.target_corporation", "Hedef kurum", Items(targetCorporation));
             var organizations = Texts(c, "organizations").Select(o => Record(corporations, o, "örgüt")).ToList();
-            Add("case.organizations", "Örgütler", Items(organizations));
+            Add("case.organizations", "Kurumsallık / örgütleyen kurumlar", Items(organizations));
 
             var reasons = await Many(db.ResistanceReason.Select(e => new { e.Id, e.Name }).ToListAsync(), e => e.Id, e => e.Name, Texts(c, "reasons"));
             Add("case.reasons", "Direniş nedenleri", Items(reasons));
@@ -252,13 +247,11 @@ namespace RS.MVC.Features.Review
 
             var caseValues = new AiCaseValues(
                 CategoryId: category?.Id,
-                TargetType: targetType,
                 CompanyId: company?.Id,
                 NewCompanyName: company is { Id: null } ? company.Item.Value : null,
                 IsOutsource: mainCompany != null,
                 MainCompanyId: mainCompany?.Id,
                 NewMainCompanyName: mainCompany is { Id: null } ? mainCompany.Item.Value : null,
-                TargetCorporationId: targetCorporation?.Id,
                 ReasonIds: Ids(reasons),
                 CorporationIds: Ids(organizations),
                 NewCorporationNames: organizations.Where(o => o.Id == null && o.Item.Status == AiItemStatus.New).Select(o => o.Item.Value).ToList(),

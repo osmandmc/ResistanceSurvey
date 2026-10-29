@@ -22,7 +22,7 @@ public class CaseListTests
     }
 
     private Resistance Add(string name, DateTime lastProtest, DateTime? end = null, Company? company = null, Company? main = null,
-        int categoryId = 1, string? note = null, string? description = null, City? city = null, int articles = 0, Corporation? target = null)
+        int categoryId = 1, string? note = null, string? description = null, City? city = null, int articles = 0, Corporation? organizer = null)
     {
         var r = new Resistance
         {
@@ -30,7 +30,7 @@ public class CaseListTests
             Description = description,
             Company = company,
             MainCompany = main,
-            Corporation = target,
+            ResistanceCorporations = organizer == null ? [] : [new ResistanceCorporation { Corporation = organizer, Role = OrganizationRole.Organizing }],
             CategoryId = categoryId,
             Note = note,
             Protestos = [new Protesto { StartDate = lastProtest, EndDate = end, Locations = city == null ? [] : [new ProtestoLocation { City = city, CityId = city.Id }] }],
@@ -59,11 +59,13 @@ public class CaseListTests
     }
 
     [Fact]
-    public async Task TheTargetIsTheInstitutionForCasesAgainstOne()
+    public async Task ACaseWithoutAWorkplaceShowsItsOrganizers()
     {
-        Add("Kurum direnişi", new DateTime(2026, 9, 1), target: new Corporation { Name = "Örnek Belediyesi" });
+        // R31: Genel and Dayanışma cases have no workplace; the list shows who organized them, and the search finds them.
+        Add("1 Mayıs çağrısı", new DateTime(2026, 4, 28), organizer: new Corporation { Name = "DİSK Genel-İş" });
 
-        Assert.Equal("Örnek Belediyesi", (await List(new CaseFilter())).Items.Single().Target);
+        Assert.Equal("DİSK Genel-İş", (await List(new CaseFilter())).Items.Single().Target);
+        Assert.Single((await List(new CaseFilter(Text: "Genel-İş"))).Items);
     }
 
     [Fact]
@@ -128,6 +130,7 @@ public class CaseListTests
             "Hukuki Müdahale", "Hukuki Müdahale Açıklaması", "Protesto ID", "Protesto Sayısı", "Protesto Türleri", "Protesto Yerleri",
             "Başlangıç Tarihi", "Bitiş Tarihi", "Grev Süresi", "Konumlar", "Protestoda Çalışan Sayısı", "Protestoda Çalışan Sayısı (Sayısal)",
             "Müdahale Türleri", "Gözaltı Sayısı", "Not", "Protesto Notu", "Direniş Sonucu", "Direniş Haberleri", "Direniş Haberleri Linki",
+            "Örgütleyen Kurumlar", "Desteklenen Vaka", // R31, at the end
         ];
 
         Assert.Equal(expected, ExportCasesHandler.Columns.Select(c => c.Header));

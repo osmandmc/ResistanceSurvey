@@ -178,7 +178,7 @@ namespace RS.MVC.Features.Definitions
         public static async Task<bool> AnyReferenceAsync(RSDBContext db, DefinitionKind kind, int id) => kind switch
         {
             DefinitionKind.Corporations => await db.ResistanceCorporation.AnyAsync(x => x.CorporationId == id)
-                || await db.Resistance.AnyAsync(r => r.CorporationId == id || r.TradeUnionId == id),
+                || await db.Resistance.AnyAsync(r => r.TradeUnionId == id),
             DefinitionKind.Reasons => await db.ResistanceResistanceReason.AnyAsync(x => x.ResistanceReasonId == id),
             DefinitionKind.ProtestTypes => await db.ProtestoProtestoType.AnyAsync(x => x.ProtestoTypeId == id),
             DefinitionKind.ProtestPlaces => await db.ProtestoProtestoPlace.AnyAsync(x => x.ProtestoPlaceId == id),

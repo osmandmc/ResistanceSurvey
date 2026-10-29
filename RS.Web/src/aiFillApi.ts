@@ -51,14 +51,12 @@ export interface AiField {
 
 export interface AiCaseValues {
   categoryId: number | null
-  targetType: number | null
   companyId: number | null
   /** The AI named a company that is not registered: offered to the researcher, never created on its own. */
   newCompanyName: string | null
   isOutsource: boolean
   mainCompanyId: number | null
   newMainCompanyName: string | null
-  targetCorporationId: number | null
   reasonIds: number[]
   corporationIds: number[]
   newCorporationNames: string[]

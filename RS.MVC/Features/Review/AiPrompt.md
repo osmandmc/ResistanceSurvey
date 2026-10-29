@@ -27,26 +27,32 @@ yalnızca aşağıdaki JSON biçiminde yanıt ver; JSON dışında hiçbir şey 
 
 ## Alanlar
 
-- `case.category`: "İşletme/Kurum": eylem belirli bir işyerinde ya da kurumda (fabrika, belediye, hastane, il müdürlüğü)
-  çalışanların eylemi ise, eylemi bir sendika şubesi yapsa bile. "Genel": birçok işyerini kapsayan, ülke ya da kent
-  genelinde bir eylem (miting, ülke çapında iş bırakma, anma). "Dayanışma": başka işçilerle dayanışma eylemi.
-- `case.target_type`: "company" (eylem bir işverene ya da kuruma karşı) ya da "corporation" (eylem bir sendikaya, partiye,
-  meslek odasına karşı).
-- `case.company`: işyerinin ya da kurumun haberde geçen kısa adı ("Kristal Yağ", "Seyhan Belediyesi", "Yedikule Göğüs
-  Hastalıkları Hastanesi"); "fabrikası", "A.Ş." gibi ekleri yazma. İşçiler bir taşeronda çalışıyorsa taşeronun adı.
-  Yalnızca `Genel` vakalarda eylemi adlandır: "Örgüt (yer): Konu", örneğin "DİSK: 15-16 Haziran eylemleri".
-- `case.main_company`: işçiler bir taşeronda çalışıyorsa asıl işveren; değilse `null`.
-- `case.target_corporation`: `target_type` "corporation" ise o örgütün adı; değilse `null`.
-- `case.organizations`: eylemi yapan sendikalar ve örgütler, konfederasyonuyla: "DİSK Genel-İş", "TÜRK-İŞ Petrol-İş",
-  "KESK Eğitim-Sen". Sendikası yazılmışsa konfederasyonu ayrıca ekleme. Yalnızca destek veren örgütleri yazma;
-  eylemi örgütsüz işçiler yapıyorsa ["Kurumsuz"].
-- `case.union_authority`: listeden; haberde açıkça geçmiyorsa `null`.
-- `case.reasons`: listeden direnişin **en belirleyici bir ya da iki** nedeni. Toplu sözleşme ya da grev için yalnızca
-  "TİS" yeter ("Düşük ücret" ekleme). Sürgün ve zorunlu yer değiştirme: "KHK ile isten atma, açığa alma, sürgün".
-- `case.employment_types`: listeden; işçilerin istihdam biçimi.
-- `case.employee_count`: işyerinde çalışan toplam kişi sayısı haberde geçiyorsa.
-- `case.fired_count`: işten atılan işçi sayısı haberde geçiyorsa.
-- `case.description`: "GG.AA.YY: " ile başlayan, direnişi bir iki cümleyle özetleyen açıklama.
+- `case.category`: vakanın niteliği; diğer alanlar ona göre doldurulur.
+  - "İşletme/Kurum": belirli bir işyerinde ya da kurumda (fabrika, belediye, hastane, il müdürlüğü) çalışanların
+    mücadelesi, eylemi bir sendika şubesi yapsa bile.
+  - "Genel": bir işyeri olmadan kurumların çağırdığı ya da örgütlediği eylem: 1 Mayıs, asgari ücret, vergi, emeklilik,
+    anma, ülke çapında iş bırakma.
+  - "Dayanışma": başka bir işyerindeki ya da başka bir mücadeledeki işçilerle dayanışma eylemi.
+- `case.company`: "İşletme/Kurum" için işyerinin ya da kurumun haberde geçen kısa adı ("Kristal Yağ", "Seyhan
+  Belediyesi", "Yedikule Göğüs Hastalıkları Hastanesi"); "fabrikası", "A.Ş." gibi ekleri yazma. İşçiler bir taşeronda
+  çalışıyorsa taşeronun adı. "Dayanışma" için yalnızca eylemi bir işyerinin işçileri yaptıysa onların işyeri (desteklenen
+  işyeri değil); değilse `null`. "Genel" için `null`. Bu alana eylemin ya da kampanyanın adını yazma.
+- `case.main_company`: yalnızca "İşletme/Kurum"da, işçiler bir taşeronda çalışıyorsa asıl işveren; değilse `null`.
+- `case.organizations`: "İşletme/Kurum" için eylemi yapan ya da işçilerin örgütlü olduğu sendikalar ve örgütler,
+  konfederasyonuyla: "DİSK Genel-İş", "TÜRK-İŞ Petrol-İş", "KESK Eğitim-Sen"; eylemi örgütsüz işçiler yapıyorsa
+  ["Kurumsuz"]. "Genel" ve "Dayanışma" için eylemi **örgütleyen** kurumlar (sendika, konfederasyon, platform, meslek
+  odası); ortak eylemde hepsi; örgütleyen yoksa []. Her durumda: sendikası yazılmışsa konfederasyonu ayrıca ekleme,
+  yalnızca destek veren örgütleri yazma.
+- `case.union_authority`: yalnızca "İşletme/Kurum"da, listeden; haberde açıkça geçmiyorsa `null`.
+- `case.reasons`: listeden direnişin **en belirleyici bir ya da iki** nedeni; "Genel" vakalarda eylemin gündemi
+  (örneğin "1 Mayıs eylemi (çağrı eylemi dahil)", "Vergi", "Asgari ücret şu kadar olsun"). Toplu sözleşme ya da grev
+  için yalnızca "TİS" yeter ("Düşük ücret" ekleme). Sürgün ve zorunlu yer değiştirme: "KHK ile isten atma, açığa alma,
+  sürgün".
+- `case.employment_types`: yalnızca "İşletme/Kurum"da, listeden; işçilerin istihdam biçimi.
+- `case.employee_count`: yalnızca "İşletme/Kurum"da, işyerinde çalışan toplam kişi sayısı haberde geçiyorsa.
+- `case.fired_count`: yalnızca "İşletme/Kurum"da, işten atılan işçi sayısı haberde geçiyorsa.
+- `case.description`: "GG.AA.YY: " ile başlayan, direnişi bir iki cümleyle özetleyen açıklama. "Dayanışma"
+  vakalarında desteklenen mücadeleyi (işyeri, işçiler) mutlaka an.
 - `protest.start_date`, `protest.end_date`: haberde anlatılan eylemin günü (tek günlükse ikisi aynı). Haber "bugün",
   "dün" diyorsa haberin tarihine göre hesapla. Süren bir direniş ("37. gününde") için o günkü eylemi yaz.
 - `protest.types`, `protest.places`, `protest.interventions`: listelerden. Eylem, eylemcilerin kendi çalıştığı kurumun
@@ -66,7 +72,7 @@ sayı aralığı, hak geliştirme.
   "relevant": true,
   "relevance_reason": "kısa gerekçe",
   "case": {
-    "category": "", "target_type": "company", "company": null, "main_company": null, "target_corporation": null,
+    "category": "", "company": null, "main_company": null,
     "organizations": [], "union_authority": null, "reasons": [], "employment_types": [],
     "employee_count": null, "fired_count": null, "description": ""
   },
