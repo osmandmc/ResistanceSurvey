@@ -19,6 +19,7 @@ import {
 } from '@/casesApi'
 import CaseForm from '@/components/CaseForm.vue'
 import CaseHistory from '@/components/CaseHistory.vue'
+import CaseSolidarityPanel from '@/components/CaseSolidarityPanel.vue'
 import ProtestForm from '@/components/ProtestForm.vue'
 import { formatDate } from '@/format'
 import { emptyProtest, fromProtestInput, toProtestInput, type ProtestFormValue } from '@/protestForm'
@@ -332,6 +333,14 @@ function confirmDetach(newsId: number, title: string | null) {
         </li>
       </ul>
     </section>
+
+    <case-solidarity-panel
+      :case-id="caseId"
+      :category-id="detail.case.categoryId"
+      :supported-case="detail.supportedCase"
+      :version="detail"
+      @changed="reload"
+    />
 
     <case-history :case-id="caseId" :version="detail" />
 

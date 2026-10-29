@@ -140,6 +140,7 @@ function open(item: CaseListItem) {
       <p class="description">Direnişler ve eylemleri. Bir vakayı açmak için satıra tıklayın.</p>
     </div>
     <div class="head-actions">
+      <n-button @click="router.push('/cases/solidarity')">Dayanışma bağlantıları</n-button>
       <n-button tag="a" :href="download">Dışa Aktar</n-button>
       <n-button type="primary" @click="router.push('/cases/new')">Yeni vaka</n-button>
     </div>

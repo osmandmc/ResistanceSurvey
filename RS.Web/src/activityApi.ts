@@ -47,6 +47,8 @@ const actionLabels: Record<string, string> = {
   'protest.add': 'Eylem ekledi',
   'protest.update': 'Eylemi düzenledi',
   'protest.delete': 'Eylemi sildi',
+  'case.solidarity-resolve': 'Dayanışma grubunu bağladı',
+  'case.target-check': 'Eski hedef kurumu kontrol etti',
   'definition.update': 'Tanımı düzenledi',
   'definition.approve': 'Tanımı onayladı',
   'definition.unapprove': 'Onayı kaldırdı',

@@ -21,6 +21,8 @@ namespace RS.MVC.Features.Activity
         public const string ProtestAdd = "protest.add";
         public const string ProtestUpdate = "protest.update";
         public const string ProtestDelete = "protest.delete";
+        public const string SolidarityResolve = "case.solidarity-resolve";
+        public const string TargetCheck = "case.target-check";
 
         public const string DefinitionUpdate = "definition.update";
         public const string DefinitionApprove = "definition.approve";
