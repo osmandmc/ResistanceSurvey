@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { turkishFilter } from '@/search'
 import { computed, ref, watch } from 'vue'
 import { NEmpty, NFormItem, NInput, NSelect, NSpin, NTag } from 'naive-ui'
 import { formatDate } from '@/format'
@@ -80,7 +81,7 @@ function describe(c: CaseOption) {
         <n-input v-model:value="text" clearable placeholder="Ara" :input-props="{ id: 'case-text' }" />
       </n-form-item>
       <n-form-item label="İl" label-placement="top" :show-feedback="false">
-        <n-select v-model:value="cityId" :options="cityOptions" filterable clearable placeholder="Tümü" />
+        <n-select v-model:value="cityId" :options="cityOptions" filterable :filter="turkishFilter" clearable placeholder="Tümü" />
       </n-form-item>
       <n-form-item label="Son eylem" label-placement="top" :show-feedback="false">
         <n-select v-model:value="period" :options="periodOptions" />

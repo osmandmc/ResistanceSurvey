@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { turkishFilter } from '@/search'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NCheckbox, NEmpty, NFormItem, NInput, NPagination, NSelect, NSpin, NTag } from 'naive-ui'
@@ -157,7 +158,7 @@ function open(item: CaseListItem) {
       <company-picker v-model="mainCompanyId" input-id="filter-main-company" placeholder="Tümü" />
     </n-form-item>
     <n-form-item label="Vaka Niteliği" label-placement="top" :show-feedback="false">
-      <n-select v-model:value="categoryId" :options="toOptions(categories)" filterable clearable placeholder="Tümü" />
+      <n-select v-model:value="categoryId" :options="toOptions(categories)" filterable :filter="turkishFilter" clearable placeholder="Tümü" />
     </n-form-item>
     <n-form-item label="Eylem Yılı" label-placement="top" :show-feedback="false">
       <n-select v-model:value="year" :options="yearOptions" clearable placeholder="Tümü" />
@@ -166,7 +167,7 @@ function open(item: CaseListItem) {
       <n-select v-model:value="month" :options="monthOptions" clearable placeholder="Tümü" />
     </n-form-item>
     <n-form-item label="İl" label-placement="top" :show-feedback="false">
-      <n-select v-model:value="cityId" :options="toOptions(cities)" filterable clearable placeholder="Tümü" />
+      <n-select v-model:value="cityId" :options="toOptions(cities)" filterable :filter="turkishFilter" clearable placeholder="Tümü" />
     </n-form-item>
     <n-form-item label="Kişisel Notlar" label-placement="top" :show-feedback="false">
       <n-select v-model:value="hasNote" :options="noteOptions" />

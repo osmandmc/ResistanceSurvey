@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { turkishFilter } from '@/search'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NFormItem, NInput, NPopconfirm, NSelect, NSpin, useMessage } from 'naive-ui'
@@ -162,7 +163,7 @@ function onMerged(affected: number, intoId: number) {
           <n-select v-model:value="form.scaleId" :options="toSelect(options.companyScales)" clearable />
         </n-form-item>
         <n-form-item label="İş kolu" label-placement="top" :show-feedback="false">
-          <n-select v-model:value="form.worklineId" :options="toSelect(options.companyWorklines)" clearable filterable />
+          <n-select v-model:value="form.worklineId" :options="toSelect(options.companyWorklines)" clearable filterable :filter="turkishFilter" />
         </n-form-item>
       </div>
       <div class="save">

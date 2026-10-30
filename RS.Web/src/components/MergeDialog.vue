@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { turkishFilter } from '@/search'
 import { computed, ref, watch } from 'vue'
 import { NAlert, NButton, NFormItem, NModal, NSelect } from 'naive-ui'
 import { errorMessage } from '@/api'
@@ -71,7 +72,7 @@ async function merge() {
         <n-select
           v-model:value="intoId"
           :options="options"
-          filterable
+          filterable :filter="turkishFilter"
           remote
           :loading="searching"
           placeholder="En az 2 harf yazın"

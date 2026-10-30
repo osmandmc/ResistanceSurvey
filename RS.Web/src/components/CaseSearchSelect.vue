@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { turkishFilter } from '@/search'
 import { ref, watch } from 'vue'
 import { NSelect, type SelectOption } from 'naive-ui'
 import { formatDate } from '@/format'
@@ -62,7 +63,7 @@ async function search(query: string) {
     v-model:value="caseId"
     :options="options"
     :loading="searching"
-    filterable
+    filterable :filter="turkishFilter"
     remote
     clearable
     :placeholder="placeholder ?? 'Vaka ara: ad, işyeri, açıklama'"

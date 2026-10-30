@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { turkishFilter } from '@/search'
 import { computed, watch } from 'vue'
 import { NButton, NDatePicker, NFormItem, NInput, NInputNumber, NSelect } from 'naive-ui'
 import {
@@ -75,7 +76,7 @@ function status(field: string) {
     <legend class="section-title">Eylem</legend>
     <div class="grid">
       <n-form-item :class="ai('protestTypeIds')" label="Eylem Türleri" label-placement="top" class="wide" required :validation-status="status('protestTypeIds')" :feedback="error('protestTypeIds')">
-        <n-select v-model:value="value.protestTypeIds" :options="toOptions(options.protestTypes)" multiple filterable placeholder="Seçiniz" />
+        <n-select v-model:value="value.protestTypeIds" :options="toOptions(options.protestTypes)" multiple filterable :filter="turkishFilter" placeholder="Seçiniz" />
       </n-form-item>
 
       <n-form-item v-if="showDuration" :class="ai('duration')" label="Eylemin Süresi" label-placement="top" class="wide" :show-feedback="false">
@@ -99,7 +100,7 @@ function status(field: string) {
       </n-form-item>
 
       <n-form-item :class="ai('placeIds')" label="Eylem Yerleri" label-placement="top" class="wide" required :validation-status="status('placeIds')" :feedback="error('placeIds')">
-        <n-select v-model:value="value.placeIds" :options="toOptions(options.protestPlaces)" multiple filterable placeholder="Seçiniz" />
+        <n-select v-model:value="value.placeIds" :options="toOptions(options.protestPlaces)" multiple filterable :filter="turkishFilter" placeholder="Seçiniz" />
       </n-form-item>
 
       <n-form-item label="Cinsiyet" label-placement="top" required :validation-status="status('genderId')" :feedback="error('genderId')">
@@ -112,7 +113,7 @@ function status(field: string) {
             <n-select
               :value="location.cityId"
               :options="cityOptions"
-              filterable
+              filterable :filter="turkishFilter"
               placeholder="İl"
               aria-label="İl"
               @update:value="(cityId: number | null) => onCityChange(index, cityId)"
@@ -121,7 +122,7 @@ function status(field: string) {
               v-model:value="location.districtId"
               :options="districtOptions(location.cityId)"
               :disabled="location.cityId === null"
-              filterable
+              filterable :filter="turkishFilter"
               placeholder="İlçe"
               aria-label="İlçe"
             />
@@ -141,7 +142,7 @@ function status(field: string) {
       </n-form-item>
 
       <n-form-item :class="ai('interventionTypeIds')" label="Müdahale Tipi" label-placement="top" class="wide" required :validation-status="status('interventionTypeIds')" :feedback="error('interventionTypeIds')">
-        <n-select v-model:value="value.interventionTypeIds" :options="toOptions(options.interventionTypes)" multiple filterable placeholder="Seçiniz" />
+        <n-select v-model:value="value.interventionTypeIds" :options="toOptions(options.interventionTypes)" multiple filterable :filter="turkishFilter" placeholder="Seçiniz" />
       </n-form-item>
 
       <n-form-item v-if="showCustody" :class="ai('custodyCount')" label="Gözaltı Sayısı" label-placement="top" required :validation-status="status('custodyCount')" :feedback="error('custodyCount') || 'Gözaltı yoksa 0 yazın.'">
