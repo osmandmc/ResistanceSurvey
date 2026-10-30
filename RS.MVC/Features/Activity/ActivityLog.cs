@@ -31,6 +31,7 @@ namespace RS.MVC.Features.Activity
         public const string DefinitionMerge = "definition.merge";
         public const string DefinitionNotDuplicate = "definition.not-duplicate";
         public const string CompanyCreate = "definition.company-create";
+        public const string CorporationCreate = "definition.corporation-create";
         public const string CompanyLinkAdd = "definition.company-link-add";
         public const string CompanyLinkRemove = "definition.company-link-remove";
 

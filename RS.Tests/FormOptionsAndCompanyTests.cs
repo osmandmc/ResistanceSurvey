@@ -14,7 +14,7 @@ public class FormOptionsAndCompanyTests
     [Fact]
     public async Task FormOptionsMarkUnionsAndKeepDistrictsWithTheirCity()
     {
-        _db.Corporation.AddRange(new Corporation { Name = "Birleşik Metal-İş", CorporationTypeId = GetCaseFormOptionsHandler.TradeUnionCorporationTypeId },
+        _db.Corporation.AddRange(new TradeUnion { Name = "Birleşik Metal-İş", CorporationTypeId = GetCaseFormOptionsHandler.TradeUnionCorporationTypeId },
             new Corporation { Name = "Bir Dernek", CorporationTypeId = 2 });
         _db.City.Add(new City { Id = 16, Name = "Bursa" });
         _db.District.Add(new District { Id = 160, Name = "Nilüfer", CityId = 16 });
@@ -32,8 +32,8 @@ public class FormOptionsAndCompanyTests
         // The case's union points to a corporation (the old TradeUnion table, whose ids meant other corporations, is gone).
         _db.Corporation.AddRange(
             new Corporation { Id = 30, Name = "TTB", CorporationTypeId = 3 },
-            new Corporation { Id = 14, Name = "DİSK Genel-İş", CorporationTypeId = GetCaseFormOptionsHandler.TradeUnionCorporationTypeId },
-            new Corporation { Id = 58, Name = "Bilinmiyor", CorporationTypeId = GetCaseFormOptionsHandler.TradeUnionCorporationTypeId });
+            new TradeUnion { Id = 14, Name = "DİSK Genel-İş", CorporationTypeId = GetCaseFormOptionsHandler.TradeUnionCorporationTypeId },
+            new TradeUnion { Id = 58, Name = "Bilinmiyor", CorporationTypeId = GetCaseFormOptionsHandler.TradeUnionCorporationTypeId });
         await _db.SaveChangesAsync();
 
         var options = await new GetCaseFormOptionsHandler(_db).Handle(new GetCaseFormOptionsQuery());

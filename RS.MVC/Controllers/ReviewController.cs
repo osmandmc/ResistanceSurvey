@@ -21,6 +21,7 @@ namespace RS.MVC.Controllers
         GetCaseFormOptionsHandler getFormOptions,
         SearchCompaniesHandler searchCompanies,
         CreateCompanyHandler createCompany,
+        RS.MVC.Features.Definitions.CreateCorporationHandler createCorporation,
         SuggestCasesForArticleHandler suggestCases,
         GetAiPromptHandler getAiPrompt,
         CheckAiAnswerHandler checkAiAnswer,
@@ -86,6 +87,21 @@ namespace RS.MVC.Controllers
         public async Task<ActionResult<CreateCompanyResult>> CreateCompany(CreateCompanyRequest request)
         {
             var result = await createCompany.Handle(new CreateCompanyCommand(request.Name, request.TypeId, request.ScaleId, request.WorklineId));
+            return result.Error == null
+                ? result
+                : BadRequest(new { error = result.Error, fields = new Dictionary<string, string> { ["name"] = result.Error } });
+        }
+
+        public record CreateCorporationRequest(string Name, int? TypeId, int? ConfederationId);
+
+        /// <summary>
+        /// POST /api/review/corporations — "Kurum Ekle" in the case form (R34): waits for approval in Tanımlar; an existing
+        /// organization of the same name is returned instead.
+        /// </summary>
+        [HttpPost("corporations")]
+        public async Task<ActionResult<RS.MVC.Features.Definitions.CreateCorporationResult>> CreateCorporation(CreateCorporationRequest request)
+        {
+            var result = await createCorporation.Handle(new RS.MVC.Features.Definitions.CreateCorporationCommand(request?.Name, request?.TypeId, request?.ConfederationId, Approved: false));
             return result.Error == null
                 ? result
                 : BadRequest(new { error = result.Error, fields = new Dictionary<string, string> { ["name"] = result.Error } });

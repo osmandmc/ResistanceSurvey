@@ -1,3 +1,4 @@
+using RS.COMMON.Entities.LookupEntity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,6 +61,10 @@ namespace RS.MVC.Features.Definitions
                         command.FromId, command.IntoId, (x, id) => x.CorporationId = id);
                     foreach (var r in await db.Resistance.Where(r => r.TradeUnionId == command.FromId).ToListAsync())
                         r.TradeUnionId = command.IntoId;
+                    // Unions of a confederation merged away follow it, when the kept value is a confederation too (R34).
+                    var intoIsConfederation = await db.Set<Confederation>().AnyAsync(c => c.Id == command.IntoId);
+                    foreach (var u in await db.Set<TradeUnion>().Where(u => u.ConfederationId == command.FromId).ToListAsync())
+                        u.ConfederationId = intoIsConfederation && u.Id != command.IntoId ? command.IntoId : null;
                     db.Remove(await db.Corporation.FindAsync(command.FromId));
                     break;
                 case DefinitionKind.Reasons:

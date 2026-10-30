@@ -24,6 +24,8 @@ export interface DefinitionItem {
   simple: boolean | null
   scaleId: number | null
   worklineId: number | null
+  /** A union's confederation (R34). */
+  confederationId: number | null
 }
 
 export interface DefinitionPage {
@@ -45,6 +47,7 @@ export interface DefinitionOptions {
   companyTypes: Option[]
   companyScales: Option[]
   companyWorklines: Option[]
+  confederations: Option[]
 }
 
 export function getDefinitionOptions() {
@@ -70,6 +73,7 @@ export function updateDefinition(kind: DefinitionKind, item: DefinitionItem) {
       simple: item.simple ?? false,
       scaleId: item.scaleId,
       worklineId: item.worklineId,
+      confederationId: item.confederationId,
     }),
   })
 }

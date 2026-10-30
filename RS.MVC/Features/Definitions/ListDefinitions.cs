@@ -26,13 +26,14 @@ namespace RS.MVC.Features.Definitions
                 DefinitionKind.Companies => await CompaniesAsync(text, page),
                 DefinitionKind.Corporations => await ApprovableAsync(
                     db.Corporation.Where(c => query.TypeId == null || c.CorporationTypeId == query.TypeId), text, query.PendingOnly, page,
-                    c => new DefinitionItem(c.Id, c.Name, c.Approved, 0, c.CorporationTypeId, null, null, null, null)),
+                    c => new DefinitionItem(c.Id, c.Name, c.Approved, 0, c.CorporationTypeId, null, null, null, null,
+                        c is TradeUnion ? ((TradeUnion)c).ConfederationId : null)),
                 DefinitionKind.Reasons => await ApprovableAsync(db.ResistanceReason, text, query.PendingOnly, page,
-                    r => new DefinitionItem(r.Id, r.Name, r.Approved, 0, null, null, null, null, null)),
+                    r => new DefinitionItem(r.Id, r.Name, r.Approved, 0, null, null, null, null, null, null)),
                 DefinitionKind.ProtestTypes => await ApprovableAsync(db.ProtestoType, text, query.PendingOnly, page,
-                    t => new DefinitionItem(t.Id, t.Name, t.Approved, 0, null, t.AgainstProduction, t.Simple, null, null)),
+                    t => new DefinitionItem(t.Id, t.Name, t.Approved, 0, null, t.AgainstProduction, t.Simple, null, null, null)),
                 _ => await ApprovableAsync(db.ProtestoPlace, text, query.PendingOnly, page,
-                    p => new DefinitionItem(p.Id, p.Name, p.Approved, 0, null, null, null, null, null)),
+                    p => new DefinitionItem(p.Id, p.Name, p.Approved, 0, null, null, null, null, null, null)),
             };
 
             var usage = await DefinitionUsage.CountAsync(db, query.Kind, items.Select(i => i.Id).ToList());
@@ -69,7 +70,7 @@ namespace RS.MVC.Features.Definitions
             var total = await companies.CountAsync();
             var items = await companies.OrderBy(c => c.Name).ThenBy(c => c.Id)
                 .Skip((page - 1) * PageSize).Take(PageSize)
-                .Select(c => new DefinitionItem(c.Id, c.Name, null, 0, c.CompanyTypeId, null, null, c.CompanyScaleId, c.CompanyWorkLineId))
+                .Select(c => new DefinitionItem(c.Id, c.Name, null, 0, c.CompanyTypeId, null, null, c.CompanyScaleId, c.CompanyWorkLineId, null))
                 .ToListAsync();
             return (items, total, 0);
         }

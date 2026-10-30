@@ -27,7 +27,7 @@ const id = computed(() => Number(route.params.id))
 
 const company = ref<CompanyDetail | null>(null)
 const loadError = ref('')
-const options = ref<DefinitionOptions>({ corporationTypes: [], companyTypes: [], companyScales: [], companyWorklines: [] })
+const options = ref<DefinitionOptions>({ corporationTypes: [], companyTypes: [], companyScales: [], companyWorklines: [], confederations: [] })
 void getDefinitionOptions().then((o) => (options.value = o))
 const toSelect = (list: Option[]) => list.map((o) => ({ label: o.name, value: o.id }))
 
@@ -48,7 +48,7 @@ watch(id, load, { immediate: true })
 
 const asItem = computed<DefinitionItem | null>(() =>
   company.value
-    ? { id: company.value.id, name: company.value.name, approved: null, usage: company.value.cases.length, typeId: form.value.typeId, againstProduction: null, simple: null, scaleId: form.value.scaleId, worklineId: form.value.worklineId }
+    ? { id: company.value.id, name: company.value.name, approved: null, usage: company.value.cases.length, typeId: form.value.typeId, againstProduction: null, simple: null, scaleId: form.value.scaleId, worklineId: form.value.worklineId, confederationId: null }
     : null,
 )
 const changed = computed(

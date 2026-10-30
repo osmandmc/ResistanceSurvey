@@ -105,6 +105,26 @@ export interface CaseFormOptions {
   cities: Option[]
   districts: DistrictOption[]
   interventionTypes: Option[]
+  /** Organization types, for "Kurum Ekle" (R34). */
+  corporationTypes: Option[]
+  confederations: Option[]
+}
+
+/** Matches the server's KnownListIds: the types whose organizations are unions or confederations (R34). */
+export const UnionTypes = { TradeUnion: 1, Confederation: 6 } as const
+
+export interface CreateCorporationResult {
+  corporation: CorporationOption
+  /** An organization with that name already existed and is returned instead of a duplicate. */
+  existed: boolean
+}
+
+/** "Kurum Ekle": from a case (waits for approval) or from Tanımlar (approved). */
+export function createCorporation(corporation: { name: string; typeId: number | null; confederationId: number | null }, fromDefinitions = false) {
+  return api<CreateCorporationResult>(fromDefinitions ? '/api/definitions/corporations' : '/api/review/corporations', {
+    method: 'POST',
+    body: JSON.stringify(corporation),
+  })
 }
 
 /** The three case categories (R31, the server's KnownListIds): each shows its own fields. */
