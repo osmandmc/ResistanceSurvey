@@ -54,6 +54,11 @@ async function load() {
   } finally {
     loading.value = false
   }
+  // From the case list's protest line (#protest-12): show that protest.
+  if (route.hash) {
+    await nextTick()
+    document.getElementById(route.hash.slice(1))?.scrollIntoView({ block: 'center' })
+  }
 }
 
 /** Refresh the case after a change, keeping the case form's unsaved edits. */
@@ -295,7 +300,7 @@ function confirmDetach(newsId: number, title: string | null) {
       <n-empty v-if="detail.protests.length === 0 && editingProtest !== 'new'" description="Bu vakanın eylemi yok." class="state" />
 
       <ul class="protests">
-        <li v-for="p in detail.protests" :key="p.id" class="protest">
+        <li v-for="p in detail.protests" :id="`protest-${p.id}`" :key="p.id" class="protest">
           <template v-if="editingProtest === p.id">
             <protest-form v-model="protestValue" :options="options" :errors="protestErrors" />
             <div class="actions">

@@ -227,6 +227,29 @@ public class CaseDetailTests
     }
 
     [Fact]
+    public async Task TheCaseListShowsTheProtestsAsLinesNewestFirst()
+    {
+        var lines = await new CaseProtestLinesHandler(_db).Handle(_case.Id);
+
+        // The deleted protest of 2026-07-01 is left out.
+        Assert.Equal([new DateTime(2026, 9, 10), new DateTime(2026, 8, 1)], lines.Select(l => l.StartDate));
+        Assert.Equal(["Bursa · fabrika önü"], lines[0].Places);
+        Assert.Empty(lines[1].Places);
+    }
+
+    [Fact]
+    public void TheProtestLinesTranslateToSqlServer()
+    {
+        using var sqlServer = new RSDBContext(new DbContextOptionsBuilder<RSDBContext>().UseSqlServer("Server=none;Database=none").Options);
+
+        var sql = sqlServer.Protesto.Where(p => p.ResistanceId == 1 && !p.Deleted)
+            .Select(p => new { Types = p.ProtestoProtestoTypes.Select(t => t.ProtestoType.Name).ToList(), Districts = p.Locations.Select(l => l.District != null ? l.District.Name : null).ToList() })
+            .ToQueryString();
+
+        Assert.Contains("ProtestoType", sql);
+    }
+
+    [Fact]
     public async Task ADeletedCaseIsGoneFromTheDetail()
     {
         await new DeleteCaseHandler(_db).Handle(new DeleteCaseCommand(_case.Id, "ayse"));

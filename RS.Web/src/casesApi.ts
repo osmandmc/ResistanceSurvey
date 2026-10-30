@@ -214,3 +214,16 @@ export const getCaseSolidarity = (caseId: number) => api<CaseSolidarity>(`/api/c
 
 export const linkSupportedCase = (solidarityCaseId: number, supportedCaseId: number) =>
   api<void>(`/api/cases/${solidarityCaseId}/supported-case`, { method: 'POST', body: JSON.stringify({ supportedCaseId }) })
+
+/** A protest as a line in the case list's opened row. */
+export interface ProtestLine {
+  id: number
+  startDate: string
+  endDate: string | null
+  types: string[]
+  /** "City / district · place". */
+  places: string[]
+  description: string | null
+}
+
+export const getProtestLines = (caseId: number) => api<ProtestLine[]>(`/api/cases/${caseId}/protest-lines`)
