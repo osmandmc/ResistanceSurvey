@@ -3,9 +3,10 @@ import { computed, ref, watch } from 'vue'
 import { NAlert, NButton, NFormItem, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect } from 'naive-ui'
 import type { CaseFormValue } from '@/caseForm'
 import { formatDate } from '@/format'
-import { CaseCategory, resultOptions, searchCases, type CaseFormOptions, type CaseOption, type Option } from '@/reviewApi'
+import { CaseCategory, resultOptions, searchCases, type CaseFormOptions, type CaseOption, type CorporationOption, type Option } from '@/reviewApi'
 import CaseSearchSelect from './CaseSearchSelect.vue'
 import CompanyPicker from './CompanyPicker.vue'
+import CorporationAddDialog from './CorporationAddDialog.vue'
 
 /**
  * The "Vaka (Direniş)" part of the case form. The category comes first and decides the fields (R31): İşletme/Kurum,
@@ -109,6 +110,13 @@ watch(
   },
 )
 
+// "Kurum Ekle" (R34): the new (or existing) organization joins the list and the field.
+const addingCorporation = ref(false)
+function onCorporationCreated(corporation: CorporationOption) {
+  if (!props.options.corporations.some((c) => c.id === corporation.id)) props.options.corporations.push(corporation)
+  if (!value.value.corporations.includes(corporation.id)) value.value.corporations = [...value.value.corporations, corporation.id]
+}
+
 const ai = (field: string) => (props.aiFields?.includes(field) ? 'ai' : undefined)
 
 function error(field: string) {
@@ -190,10 +198,16 @@ function status(field: string) {
       </n-form-item>
 
       <n-form-item v-if="workplace" :class="ai('corporations')" label="Kurumsallık" label-placement="top" class="wide" required :validation-status="status('corporationIds')" :feedback="error('corporationIds') || 'Listede yoksa yazıp Enter’a basarak ekleyebilirsiniz.'">
-        <n-select v-model:value="value.corporations" :options="toOptions(options.corporations)" multiple filterable tag placeholder="Seçiniz veya yazın" />
+        <div class="with-add">
+          <n-select v-model:value="value.corporations" :options="toOptions(options.corporations)" multiple filterable tag placeholder="Seçiniz veya yazın" />
+          <n-button @click="addingCorporation = true">Kurum Ekle</n-button>
+        </div>
       </n-form-item>
       <n-form-item v-else-if="general || solidarity" :class="ai('corporations')" label="Örgütleyen Kurumlar" label-placement="top" class="wide" :feedback="'Ortak eylemlerde birden fazla. Boş bırakılırsa kurumsuz. Listede yoksa yazıp Enter’a basın.'">
-        <n-select v-model:value="value.corporations" :options="toOptions(options.corporations)" multiple filterable tag clearable placeholder="Seçiniz veya yeni kurum yazın" />
+        <div class="with-add">
+          <n-select v-model:value="value.corporations" :options="toOptions(options.corporations)" multiple filterable tag clearable placeholder="Seçiniz veya yeni kurum yazın" />
+          <n-button @click="addingCorporation = true">Kurum Ekle</n-button>
+        </div>
       </n-form-item>
 
       <template v-if="solidarity">
@@ -249,6 +263,12 @@ function status(field: string) {
         </n-form-item>
       </template>
     </div>
+    <corporation-add-dialog
+      v-model:show="addingCorporation"
+      :corporation-types="options.corporationTypes ?? []"
+      :confederations="options.confederations ?? []"
+      @created="onCorporationCreated"
+    />
   </fieldset>
 </template>
 
@@ -286,6 +306,15 @@ function status(field: string) {
 }
 .full {
   width: 100%;
+}
+.with-add {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+.with-add > :first-child {
+  flex: 1;
+  min-width: 0;
 }
 .existing {
   margin-bottom: 16px;

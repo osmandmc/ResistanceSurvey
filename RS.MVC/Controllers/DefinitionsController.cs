@@ -29,11 +29,15 @@ namespace RS.MVC.Controllers
         DismissDuplicatesHandler dismissDuplicates,
         GetCompanyHandler getCompany,
         AddCompanyLinkHandler addLink,
-        RemoveCompanyLinkHandler removeLink) : ControllerBase
+        RemoveCompanyLinkHandler removeLink,
+        CreateCorporationHandler createCorporation) : ControllerBase
     {
-        public record DefinitionOptions(IReadOnlyList<Option> CorporationTypes, IReadOnlyList<Option> CompanyTypes, IReadOnlyList<Option> CompanyScales, IReadOnlyList<Option> CompanyWorklines);
+        public record DefinitionOptions(IReadOnlyList<Option> CorporationTypes, IReadOnlyList<Option> CompanyTypes, IReadOnlyList<Option> CompanyScales,
+            IReadOnlyList<Option> CompanyWorklines, IReadOnlyList<Option> Confederations);
 
-        public record UpdateRequest(string Name, int? TypeId, bool AgainstProduction, bool Simple, int? ScaleId, int? WorklineId);
+        public record CreateCorporationRequest(string Name, int? TypeId, int? ConfederationId);
+
+        public record UpdateRequest(string Name, int? TypeId, bool AgainstProduction, bool Simple, int? ScaleId, int? WorklineId, int? ConfederationId = null);
 
         public record MergeRequest(int IntoId);
 
@@ -49,7 +53,16 @@ namespace RS.MVC.Controllers
             await db.CorporationType.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             await db.CompanyType.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             await db.CompanyScale.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
-            await db.CompanyWorkLine.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync());
+            await db.CompanyWorkLine.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
+            await db.Set<COMMON.Entities.LookupEntity.Confederation>().OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync());
+
+        /// <summary>POST /api/definitions/corporations — a new organization added in Tanımlar (approved); an existing one of the same name is returned instead.</summary>
+        [HttpPost("corporations")]
+        public async Task<ActionResult<CreateCorporationResult>> CreateCorporation(CreateCorporationRequest request)
+        {
+            var result = await createCorporation.Handle(new CreateCorporationCommand(request?.Name, request?.TypeId, request?.ConfederationId, Approved: true));
+            return result.Error == null ? result : BadRequest(new { error = result.Error });
+        }
 
         /// <summary>GET /api/definitions/{kind}?q=…&amp;pending=true&amp;typeId=1&amp;page=1</summary>
         [HttpGet("{kind}")]
@@ -67,7 +80,7 @@ namespace RS.MVC.Controllers
             if (!DefinitionKinds.TryParse(kind, out var parsed))
                 return UnknownKind();
             var result = await update.Handle(new UpdateDefinitionCommand(
-                parsed, id, request?.Name, request?.TypeId, request?.AgainstProduction ?? false, request?.Simple ?? false, request?.ScaleId, request?.WorklineId));
+                parsed, id, request?.Name, request?.TypeId, request?.AgainstProduction ?? false, request?.Simple ?? false, request?.ScaleId, request?.WorklineId, request?.ConfederationId));
             return Answer(result);
         }
 

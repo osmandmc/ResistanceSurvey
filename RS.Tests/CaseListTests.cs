@@ -144,7 +144,7 @@ public class CaseListTests
             Id = 412,
             Name = "Tekstil",
             Company = new Company { Name = "Örnek Tekstil" },
-            ResistanceCorporations = [new ResistanceCorporation { Corporation = new Corporation { Name = "Birleşik Metal-İş", CorporationTypeId = 1 } }],
+            ResistanceCorporations = [new ResistanceCorporation { Corporation = new TradeUnion { Name = "Birleşik Metal-İş", CorporationTypeId = 1 } }],
             ResistanceResistanceReasons = [new ResistanceResistanceReason { ResistanceReason = new ResistanceReason { Name = "Ücret alacağı" } }],
             ResistanceEmploymentTypes = [],
             ResistanceNews = [],

@@ -133,6 +133,16 @@ namespace RS.EF
                     .HasOne(r => r.SupportedResistance).WithMany()
                     .HasForeignKey(r => r.SupportedResistanceId);
 
+                 // R34: unions and confederations share the organization table; Kind says which, and follows the type.
+                 modelBuilder.Entity<Corporation>()
+                    .HasDiscriminator<OrganizationKind>("Kind")
+                    .HasValue<Corporation>(OrganizationKind.Organization)
+                    .HasValue<TradeUnion>(OrganizationKind.TradeUnion)
+                    .HasValue<Confederation>(OrganizationKind.Confederation);
+                 modelBuilder.Entity<TradeUnion>()
+                    .HasOne(u => u.Confederation).WithMany(c => c.Unions)
+                    .HasForeignKey(u => u.ConfederationId);
+
                  // A hash in hex: compared exactly, kept in the database default collation (see ConfigureConventions).
                  modelBuilder.Entity<News>().Property(n => n.ArticleId).UseCollation(null);
 

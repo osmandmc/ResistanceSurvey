@@ -464,6 +464,9 @@ namespace RS.EF.Data.Migrations
                     b.Property<int?>("CorporationTypeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)")
                         .UseCollation("Turkish_CI_AS");
@@ -473,6 +476,10 @@ namespace RS.EF.Data.Migrations
                     b.HasIndex("CorporationTypeId");
 
                     b.ToTable("Corporation");
+
+                    b.HasDiscriminator<int>("Kind").HasValue(0);
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.CorporationType", b =>
@@ -1154,6 +1161,25 @@ namespace RS.EF.Data.Migrations
                     b.ToTable("ResistanceResistanceReason");
                 });
 
+            modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.Confederation", b =>
+                {
+                    b.HasBaseType("RS.COMMON.Entities.LookupEntity.Corporation");
+
+                    b.HasDiscriminator().HasValue(2);
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.TradeUnion", b =>
+                {
+                    b.HasBaseType("RS.COMMON.Entities.LookupEntity.Corporation");
+
+                    b.Property<int?>("ConfederationId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("ConfederationId");
+
+                    b.HasDiscriminator().HasValue(1);
+                });
+
             modelBuilder.Entity("RS.COMMON.Entities.AiSuggestion", b =>
                 {
                     b.HasOne("RS.COMMON.Entities.News", "News")
@@ -1511,6 +1537,16 @@ namespace RS.EF.Data.Migrations
                     b.Navigation("ResistanceReason");
                 });
 
+            modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.TradeUnion", b =>
+                {
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.Confederation", "Confederation")
+                        .WithMany("Unions")
+                        .HasForeignKey("ConfederationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Confederation");
+                });
+
             modelBuilder.Entity("RS.COMMON.Entities.Company", b =>
                 {
                     b.Navigation("OutsourceCompanies");
@@ -1542,6 +1578,11 @@ namespace RS.EF.Data.Migrations
                     b.Navigation("ResistanceNews");
 
                     b.Navigation("ResistanceResistanceReasons");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.Confederation", b =>
+                {
+                    b.Navigation("Unions");
                 });
 #pragma warning restore 612, 618
         }

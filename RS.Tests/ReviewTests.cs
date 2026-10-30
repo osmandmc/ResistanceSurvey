@@ -122,7 +122,7 @@ public class ReviewTests
     public async Task TypedValuesUseExistingEntriesOrBecomeNewOnes()
     {
         _db.ResistanceReason.Add(new ResistanceReason { Name = "İşten Çıkarma" });
-        _db.Corporation.Add(new Corporation { Name = "Birleşik Metal-İş", CorporationTypeId = 1 });
+        _db.Corporation.Add(new TradeUnion { Name = "Birleşik Metal-İş", CorporationTypeId = 1 });
         await _db.SaveChangesAsync();
         var request = ReviewValidationTests.CompleteNewCase();
         request.Case!.ReasonIds = [];
@@ -234,6 +234,7 @@ public class ReviewTests
         var controller = new ReviewController(
             _getArticle, _searchCases, _createCase, _addProtest, _linkToCase,
             new GetCaseFormOptionsHandler(_db), new SearchCompaniesHandler(_db), new CreateCompanyHandler(_db),
+            new RS.MVC.Features.Definitions.CreateCorporationHandler(_db),
             new SuggestCasesForArticleHandler(_db, _pipeline, _searchCases),
             new GetAiPromptHandler(_pipeline, _db), new CheckAiAnswerHandler(_db), new GetAiDraftHandler(_pipeline, new CheckAiAnswerHandler(_db)),
             new MatchCasesFromAiHandler(_db, new CheckAiAnswerHandler(_db), _pipeline, _searchCases))

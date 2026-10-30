@@ -41,7 +41,7 @@ public class DefinitionsTests
     [Fact]
     public async Task CorporationsCountLiveCasesInEveryRole()
     {
-        var union = new Corporation { Name = "DİSK Genel-İş", CorporationTypeId = 1, Approved = true };
+        var union = new TradeUnion { Name = "DİSK Genel-İş", CorporationTypeId = 1, Approved = true };
         var typed = new Corporation { Name = "Yeni Platform", Approved = false };
         _db.AddRange(union, typed);
         var supporting = Case();

@@ -4,6 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NCheckbox, NEmpty, NInput, NPopconfirm, NSelect, NSpin, NSwitch, NTag, useMessage } from 'naive-ui'
 import { ApiError, errorMessage } from '@/api'
 import { isAdmin } from '@/auth'
+import CorporationAddDialog from '@/components/CorporationAddDialog.vue'
+import { UnionTypes } from '@/reviewApi'
 import DuplicateGroups from '@/components/DuplicateGroups.vue'
 import MergeDialog from '@/components/MergeDialog.vue'
 import {
@@ -37,8 +39,13 @@ const pendingOnly = ref(false)
 const typeId = ref<number | null>(null)
 const page = ref(1)
 
-const options = ref<DefinitionOptions>({ corporationTypes: [], companyTypes: [], companyScales: [], companyWorklines: [] })
-void getDefinitionOptions().then((o) => (options.value = o))
+const options = ref<DefinitionOptions>({ corporationTypes: [], companyTypes: [], companyScales: [], companyWorklines: [], confederations: [] })
+// "Yeni kurum" (R34): added approved.
+const addingCorporation = ref(false)
+function reloadOptions() {
+  void getDefinitionOptions().then((o) => (options.value = o))
+}
+reloadOptions()
 const toSelect = (list: Option[]) => list.map((o) => ({ label: o.name, value: o.id }))
 const nameOf = (list: Option[], id: number | null) => (id === null ? '—' : (list.find((o) => o.id === id)?.name ?? '—'))
 
@@ -106,6 +113,7 @@ async function save() {
   saving.value = true
   try {
     await updateDefinition(kind.value, editing.value)
+    if (kind.value === 'corporations') reloadOptions()
     const index = items.value.findIndex((i) => i.id === editing.value!.id)
     if (index >= 0) items.value[index] = { ...editing.value, name: editing.value.name.trim() }
     editing.value = null
@@ -199,7 +207,16 @@ function onMerged(affected: number) {
         class="type-filter"
       />
       <n-checkbox v-if="meta.hasApproval" v-model:checked="pendingOnly">Yalnız onay bekleyenler ({{ pendingCount }})</n-checkbox>
+      <n-button v-if="kind === 'corporations'" @click="addingCorporation = true">Yeni kurum</n-button>
     </div>
+    <corporation-add-dialog
+      v-if="kind === 'corporations'"
+      v-model:show="addingCorporation"
+      :corporation-types="options.corporationTypes"
+      :confederations="options.confederations"
+      from-definitions
+      @created="() => { load(); reloadOptions() }"
+    />
 
     <div v-if="loading && items.length === 0" class="state"><n-spin /></div>
     <n-alert v-else-if="loadError" type="error" :show-icon="false" class="state-alert">
@@ -212,7 +229,10 @@ function onMerged(affected: number) {
         <thead>
           <tr>
             <th>Ad</th>
-            <th v-if="kind === 'corporations'">Tür</th>
+            <template v-if="kind === 'corporations'">
+              <th>Tür</th>
+              <th>Konfederasyon</th>
+            </template>
             <template v-if="kind === 'companies'">
               <th>Tür</th>
               <th>Ölçek</th>
@@ -232,6 +252,16 @@ function onMerged(affected: number) {
               <td><n-input v-model:value="editing.name" size="small" :input-props="{ 'aria-label': 'Ad' }" @keyup.enter="save" /></td>
               <td v-if="kind === 'corporations'">
                 <n-select v-model:value="editing.typeId" :options="toSelect(options.corporationTypes)" clearable size="small" placeholder="Türsüz" />
+              </td>
+              <td v-if="kind === 'corporations'">
+                <n-select
+                  v-if="editing.typeId === UnionTypes.TradeUnion"
+                  v-model:value="editing.confederationId"
+                  :options="toSelect(options.confederations.filter((c) => c.id !== editing!.id))"
+                  clearable
+                  size="small"
+                  placeholder="Bağımsız"
+                />
               </td>
               <template v-if="kind === 'companies'">
                 <td><n-select v-model:value="editing.typeId" :options="toSelect(options.companyTypes)" clearable size="small" /></td>
@@ -255,7 +285,10 @@ function onMerged(affected: number) {
                 <template v-else>{{ item.name }}</template>
                 <n-tag v-if="item.approved === false" size="small" type="warning" :bordered="false" class="tag">onay bekliyor</n-tag>
               </td>
-              <td v-if="kind === 'corporations'">{{ nameOf(options.corporationTypes, item.typeId) }}</td>
+              <template v-if="kind === 'corporations'">
+                <td>{{ nameOf(options.corporationTypes, item.typeId) }}</td>
+                <td>{{ item.typeId === UnionTypes.TradeUnion ? nameOf(options.confederations, item.confederationId) : '' }}</td>
+              </template>
               <template v-if="kind === 'companies'">
                 <td>{{ nameOf(options.companyTypes, item.typeId) }}</td>
                 <td>{{ nameOf(options.companyScales, item.scaleId) }}</td>

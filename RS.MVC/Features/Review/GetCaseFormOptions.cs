@@ -1,3 +1,4 @@
+using RS.COMMON.Entities.LookupEntity;
 using RS.COMMON.Constants;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,9 @@ namespace RS.MVC.Features.Review
         IReadOnlyList<Option> ProtestEmployeeCountRanges,
         IReadOnlyList<Option> Cities,
         IReadOnlyList<DistrictOption> Districts,
-        IReadOnlyList<Option> InterventionTypes);
+        IReadOnlyList<Option> InterventionTypes,
+        IReadOnlyList<Option> CorporationTypes = null,
+        IReadOnlyList<Option> Confederations = null);
 
     public record GetCaseFormOptionsQuery;
 
@@ -44,13 +47,14 @@ namespace RS.MVC.Features.Review
             Categories: await db.Category.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             Reasons: await db.ResistanceReason.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             EmployeeCountRanges: await db.EmployeeCount.Select(e => new Option(e.Id, e.Name)).ToListAsync(),
+            // Unions and confederations (R34) show the union fields.
             Corporations: await db.Corporation.OrderBy(e => e.Name)
-                .Select(e => new CorporationOption(e.Id, e.Name, e.CorporationTypeId == TradeUnionCorporationTypeId)).ToListAsync(),
+                .Select(e => new CorporationOption(e.Id, e.Name, e is TradeUnion || e is Confederation)).ToListAsync(),
             // The case's union (Resistance.TradeUnionId) is a corporation, not a row of the separate TradeUnion table, whose
             // ids mean other corporations from 21 upwards. Unions first; the rest stay selectable as in the old form
             // (researchers used values like "Bilinmiyor").
             TradeUnions: await db.Corporation
-                .OrderBy(e => e.CorporationTypeId == TradeUnionCorporationTypeId ? 0 : 1).ThenBy(e => e.Name)
+                .OrderBy(e => e is TradeUnion || e is Confederation ? 0 : 1).ThenBy(e => e.Name)
                 .Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             TradeUnionAuthorities: await db.TradeUnionAuthority.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             EmploymentTypes: await db.EmploymentType.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
@@ -63,6 +67,8 @@ namespace RS.MVC.Features.Review
             ProtestEmployeeCountRanges: await db.ProtestoEmployeeCount.Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             Cities: await db.City.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             Districts: await db.District.OrderBy(e => e.Name).Select(e => new DistrictOption(e.Id, e.Name, e.CityId)).ToListAsync(),
-            InterventionTypes: await db.InterventionType.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync());
+            InterventionTypes: await db.InterventionType.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
+            CorporationTypes: await db.CorporationType.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
+            Confederations: await db.Set<Confederation>().OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync());
     }
 }

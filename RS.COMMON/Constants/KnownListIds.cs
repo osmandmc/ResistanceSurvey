@@ -7,8 +7,11 @@ namespace RS.COMMON.Constants
     /// </summary>
     public static class KnownListIds
     {
-        /// <summary>CorporationType "Sendika": corporations of this type are unions (the union field, "Sendika Var mı").</summary>
+        /// <summary>CorporationType "Sendika": organizations of this type are unions (TradeUnion, R34).</summary>
         public const int TradeUnionCorporationType = 1;
+
+        /// <summary>CorporationType "Konfederasyon" (added by migration Unions, R34): organizations of this type are confederations.</summary>
+        public const int ConfederationCorporationType = 6;
 
         /// <summary>InterventionType for "no intervention": choosing it means no custody count is needed.</summary>
         public const int NoInterventionType = 7;

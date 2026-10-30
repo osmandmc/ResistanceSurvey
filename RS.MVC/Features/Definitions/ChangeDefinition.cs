@@ -17,7 +17,8 @@ namespace RS.MVC.Features.Definitions
         bool AgainstProduction = false,
         bool Simple = false,
         int? ScaleId = null,
-        int? WorklineId = null);
+        int? WorklineId = null,
+        int? ConfederationId = null);
 
     public enum ChangeStatus
     {
@@ -48,6 +49,7 @@ namespace RS.MVC.Features.Definitions
             if (string.IsNullOrEmpty(name))
                 return new ChangeResult(ChangeStatus.Invalid);
             var oldName = await DefinitionKinds.NameAsync(db, command.Kind, command.Id);
+            (int Id, COMMON.Entities.LookupEntity.OrganizationKind Kind, int? Confederation)? changedKind = null;
 
             if (command.Kind == DefinitionKind.Companies)
             {
@@ -75,6 +77,14 @@ namespace RS.MVC.Features.Definitions
                 {
                     case Corporation corporation:
                         corporation.CorporationTypeId = command.TypeId;
+                        var confederation = await Organizations.ConfederationAsync(db, command.ConfederationId);
+                        if (confederation == corporation.Id)
+                            confederation = null;
+                        var kind = Organizations.KindOf(command.TypeId);
+                        if (kind != Organizations.KindOf(corporation))
+                            changedKind = (corporation.Id, kind, confederation); // after the save (R34)
+                        else if (corporation is TradeUnion union)
+                            union.ConfederationId = confederation;
                         break;
                     case ProtestoType protestType:
                         protestType.AgainstProduction = command.AgainstProduction;
@@ -86,6 +96,8 @@ namespace RS.MVC.Features.Definitions
                 : $"{DefinitionKinds.Label(command.Kind)} {ActivityLog.Quoted(name)}";
             db.LogActivity(Actions.DefinitionUpdate, summary, subject: DefinitionKinds.Slug(command.Kind), subjectId: command.Id);
             await db.SaveChangesAsync();
+            if (changedKind is { } k)
+                await Organizations.SetKindAsync(db, k.Id, k.Kind, k.Confederation);
             return ChangeResult.Ok;
         }
     }
@@ -178,7 +190,8 @@ namespace RS.MVC.Features.Definitions
         public static async Task<bool> AnyReferenceAsync(RSDBContext db, DefinitionKind kind, int id) => kind switch
         {
             DefinitionKind.Corporations => await db.ResistanceCorporation.AnyAsync(x => x.CorporationId == id)
-                || await db.Resistance.AnyAsync(r => r.TradeUnionId == id),
+                || await db.Resistance.AnyAsync(r => r.TradeUnionId == id)
+                || await db.Set<TradeUnion>().AnyAsync(u => u.ConfederationId == id), // a confederation with unions
             DefinitionKind.Reasons => await db.ResistanceResistanceReason.AnyAsync(x => x.ResistanceReasonId == id),
             DefinitionKind.ProtestTypes => await db.ProtestoProtestoType.AnyAsync(x => x.ProtestoTypeId == id),
             DefinitionKind.ProtestPlaces => await db.ProtestoProtestoPlace.AnyAsync(x => x.ProtestoPlaceId == id),
