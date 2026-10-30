@@ -4,7 +4,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NCheckbox, NEmpty, NFormItem, NInput, NPagination, NSelect, NSpin, NTag } from 'naive-ui'
 import { errorMessage } from '@/api'
-import { exportUrl, listCases, type CaseFilter, type CaseListItem } from '@/casesApi'
+import { exportUrl, getProtestLines, listCases, type CaseFilter, type CaseListItem, type ProtestLine } from '@/casesApi'
 import CompanyPicker from '@/components/CompanyPicker.vue'
 import { formatDate } from '@/format'
 import { getFormOptions, type Option } from '@/reviewApi'
@@ -52,6 +52,36 @@ getFormOptions()
     // the other filters still work
   })
 const toOptions = (list: Option[]) => list.map((o) => ({ label: o.name, value: o.id }))
+
+// A row opens to show the case's protests, loaded the first time it is opened.
+const expanded = ref(new Set<number>())
+const protestLines = ref(new Map<number, ProtestLine[] | 'loading' | 'failed'>())
+
+async function toggle(item: CaseListItem) {
+  const open = new Set(expanded.value)
+  if (open.has(item.id)) open.delete(item.id)
+  else open.add(item.id)
+  expanded.value = open
+  const known = protestLines.value.get(item.id)
+  if (!open.has(item.id) || (known && known !== 'failed')) return
+  protestLines.value = new Map(protestLines.value).set(item.id, 'loading')
+  try {
+    protestLines.value = new Map(protestLines.value).set(item.id, await getProtestLines(item.id))
+  } catch {
+    protestLines.value = new Map(protestLines.value).set(item.id, 'failed')
+  }
+}
+
+function linesOf(id: number) {
+  const lines = protestLines.value.get(id)
+  return Array.isArray(lines) ? lines : []
+}
+
+function period(line: ProtestLine) {
+  return line.endDate && line.endDate.slice(0, 10) !== line.startDate.slice(0, 10)
+    ? `${formatDate(line.startDate)} – ${formatDate(line.endDate)}`
+    : formatDate(line.startDate)
+}
 const yearOptions = Array.from({ length: new Date().getFullYear() - 2018 }, (_, i) => {
   const y = new Date().getFullYear() - i
   return { label: String(y), value: y }
@@ -195,6 +225,7 @@ function open(item: CaseListItem) {
         <table class="cases">
           <thead>
             <tr>
+              <th class="toggle-col"><span class="visually-hidden">Eylemleri göster</span></th>
               <th>Vaka</th>
               <th>Şirket / Kurum</th>
               <th>Nitelik</th>
@@ -205,7 +236,20 @@ function open(item: CaseListItem) {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in items" :key="item.id" tabindex="0" @click="open(item)" @keydown.enter="open(item)">
+            <template v-for="item in items" :key="item.id">
+            <tr tabindex="0" @click="open(item)" @keydown.enter="open(item)">
+              <td class="toggle-col">
+                <button
+                  type="button"
+                  class="toggle"
+                  :aria-expanded="expanded.has(item.id)"
+                  :aria-label="`${item.name || 'Vaka'}: eylemleri ${expanded.has(item.id) ? 'gizle' : 'göster'}`"
+                  @click.stop="toggle(item)"
+                  @keydown.enter.stop
+                >
+                  {{ expanded.has(item.id) ? '▾' : '▸' }}
+                </button>
+              </td>
               <td class="name">
                 <router-link :to="`/cases/${item.id}`" @click.stop>{{ item.name || `Vaka #${item.id}` }}</router-link>
                 <n-tag v-if="item.ongoing" size="small" type="success" :bordered="false">devam ediyor</n-tag>
@@ -220,6 +264,25 @@ function open(item: CaseListItem) {
               <td class="nowrap">{{ formatDate(item.lastProtestDate) }}</td>
               <td class="num">{{ item.articleCount }}</td>
             </tr>
+            <tr v-if="expanded.has(item.id)" class="lines-row">
+              <td></td>
+              <td colspan="7">
+                <span v-if="protestLines.get(item.id) === 'loading'" class="sub"><n-spin size="small" /></span>
+                <span v-else-if="protestLines.get(item.id) === 'failed'" class="sub">Eylemler yüklenemedi.</span>
+                <span v-else-if="linesOf(item.id).length === 0" class="sub">Bu vakanın eylemi yok.</span>
+                <ul v-else class="lines">
+                  <li v-for="line in linesOf(item.id)" :key="line.id">
+                    <router-link :to="`/cases/${item.id}#protest-${line.id}`" class="line">
+                      <span class="when">{{ period(line) }}</span>
+                      <span class="types">{{ line.types.join(', ') || 'Eylem türü yok' }}</span>
+                      <span v-if="line.places.length" class="sub inline">{{ line.places.join('; ') }}</span>
+                      <span v-if="line.description" class="sub inline">— {{ line.description }}</span>
+                    </router-link>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            </template>
           </tbody>
         </table>
       </div>
@@ -342,5 +405,56 @@ function open(item: CaseListItem) {
   display: flex;
   justify-content: center;
   padding: 16px;
+}
+.toggle-col {
+  width: 28px;
+  padding-right: 0 !important;
+}
+.toggle {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--rs-accent);
+  font-size: 14px;
+  width: 28px;
+  height: 28px;
+}
+.lines-row td {
+  background: var(--rs-ground);
+}
+.lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  color: var(--rs-ink);
+  text-decoration: none;
+  font-size: 14px;
+  padding: 2px 0;
+}
+.line:hover .types {
+  text-decoration: underline;
+}
+.when {
+  min-width: 110px;
+  font-variant-numeric: tabular-nums;
+  color: var(--rs-muted);
+}
+.inline {
+  display: inline;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
 }
 </style>

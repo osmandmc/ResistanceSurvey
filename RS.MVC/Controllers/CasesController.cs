@@ -23,7 +23,8 @@ namespace RS.MVC.Controllers
         SearchNewsHandler searchNews,
         AttachArticleHandler attachArticle,
         DetachArticleHandler detachArticle,
-        CreateCaseHandler createCase) : ControllerBase
+        CreateCaseHandler createCase,
+        CaseProtestLinesHandler protestLines) : ControllerBase
     {
         public record AttachArticleRequest(int NewsId);
 
@@ -40,6 +41,10 @@ namespace RS.MVC.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<CaseDetail>> Get(int id) =>
             await getCase.Handle(new GetCaseQuery(id)) is { } detail ? detail : NotFound(new { error = "Vaka bulunamadı." });
+
+        /// <summary>GET /api/cases/{id}/protest-lines — the case's protests as lines, newest first (the case list's opened row).</summary>
+        [HttpGet("{id:int}/protest-lines")]
+        public async Task<IReadOnlyList<ProtestLine>> ProtestLines(int id) => await protestLines.Handle(id);
 
         /// <summary>PUT /api/cases/{id} — the case part; 400 lists missing fields.</summary>
         [HttpPut("{id:int}")]
