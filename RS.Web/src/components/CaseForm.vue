@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { turkishFilter } from '@/search'
 import { computed, ref, watch } from 'vue'
 import { NAlert, NButton, NFormItem, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect } from 'naive-ui'
 import type { CaseFormValue } from '@/caseForm'
@@ -194,18 +195,18 @@ function status(field: string) {
       </template>
 
       <n-form-item :class="ai('reasons')" label="Vaka Nedeni" label-placement="top" class="wide" required :validation-status="status('reasonIds')" :feedback="error('reasonIds') || (general ? 'Gündemi taşır: 1 Mayıs, vergi, asgari ücret … Listede yoksa yazıp Enter’a basın.' : 'Listede yoksa yazıp Enter’a basarak ekleyebilirsiniz.')">
-        <n-select v-model:value="value.reasons" :options="toOptions(options.reasons)" multiple filterable tag placeholder="Seçiniz veya yazın" />
+        <n-select v-model:value="value.reasons" :options="toOptions(options.reasons)" multiple filterable :filter="turkishFilter" tag placeholder="Seçiniz veya yazın" />
       </n-form-item>
 
       <n-form-item v-if="workplace" :class="ai('corporations')" label="Kurumsallık" label-placement="top" class="wide" required :validation-status="status('corporationIds')" :feedback="error('corporationIds') || 'Listede yoksa yazıp Enter’a basarak ekleyebilirsiniz.'">
         <div class="with-add">
-          <n-select v-model:value="value.corporations" :options="toOptions(options.corporations)" multiple filterable tag placeholder="Seçiniz veya yazın" />
+          <n-select v-model:value="value.corporations" :options="toOptions(options.corporations)" multiple filterable :filter="turkishFilter" tag placeholder="Seçiniz veya yazın" />
           <n-button @click="addingCorporation = true">Kurum Ekle</n-button>
         </div>
       </n-form-item>
       <n-form-item v-else-if="general || solidarity" :class="ai('corporations')" label="Örgütleyen Kurumlar" label-placement="top" class="wide" :feedback="'Ortak eylemlerde birden fazla. Boş bırakılırsa kurumsuz. Listede yoksa yazıp Enter’a basın.'">
         <div class="with-add">
-          <n-select v-model:value="value.corporations" :options="toOptions(options.corporations)" multiple filterable tag clearable placeholder="Seçiniz veya yeni kurum yazın" />
+          <n-select v-model:value="value.corporations" :options="toOptions(options.corporations)" multiple filterable :filter="turkishFilter" tag clearable placeholder="Seçiniz veya yeni kurum yazın" />
           <n-button @click="addingCorporation = true">Kurum Ekle</n-button>
         </div>
       </n-form-item>
@@ -251,11 +252,11 @@ function status(field: string) {
         </n-form-item>
 
         <n-form-item label="Tepki Gösterilen Sendika" label-placement="top" :show-feedback="false">
-          <n-select v-model:value="value.tradeUnionId" :options="toOptions(options.tradeUnions)" filterable clearable placeholder="Seçiniz" />
+          <n-select v-model:value="value.tradeUnionId" :options="toOptions(options.tradeUnions)" filterable :filter="turkishFilter" clearable placeholder="Seçiniz" />
         </n-form-item>
 
         <n-form-item :class="ai('employmentTypeIds')" label="İstihdam Türü" label-placement="top" class="wide" required :validation-status="status('employmentTypeIds')" :feedback="error('employmentTypeIds')">
-          <n-select v-model:value="value.employmentTypeIds" :options="toOptions(options.employmentTypes)" multiple filterable placeholder="Seçiniz" />
+          <n-select v-model:value="value.employmentTypeIds" :options="toOptions(options.employmentTypes)" multiple filterable :filter="turkishFilter" placeholder="Seçiniz" />
         </n-form-item>
 
         <n-form-item :class="ai('firedEmployeeCount')" label="Mücadele Ettiği için İşten Atılan İşçi Sayısı" label-placement="top" :show-feedback="false">

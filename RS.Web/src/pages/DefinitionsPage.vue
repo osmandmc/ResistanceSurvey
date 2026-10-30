@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { turkishFilter } from '@/search'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NCheckbox, NEmpty, NInput, NPopconfirm, NSelect, NSpin, NSwitch, NTag, useMessage } from 'naive-ui'
@@ -266,7 +267,7 @@ function onMerged(affected: number) {
               <template v-if="kind === 'companies'">
                 <td><n-select v-model:value="editing.typeId" :options="toSelect(options.companyTypes)" clearable size="small" /></td>
                 <td><n-select v-model:value="editing.scaleId" :options="toSelect(options.companyScales)" clearable size="small" /></td>
-                <td><n-select v-model:value="editing.worklineId" :options="toSelect(options.companyWorklines)" clearable filterable size="small" /></td>
+                <td><n-select v-model:value="editing.worklineId" :options="toSelect(options.companyWorklines)" clearable filterable :filter="turkishFilter" size="small" /></td>
               </template>
               <template v-if="kind === 'protest-types'">
                 <td><n-switch :value="editing.againstProduction ?? false" size="small" @update:value="(v: boolean) => (editing!.againstProduction = v)" /></td>

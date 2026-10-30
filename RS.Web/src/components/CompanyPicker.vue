@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { turkishFilter } from '@/search'
 import { ref, watch } from 'vue'
 import { NButton, NFormItem, NInput, NModal, NSelect, useMessage } from 'naive-ui'
 import { ApiError } from '@/api'
@@ -95,7 +96,7 @@ const toOptions = (list: Option[] | undefined) => (list ?? []).map((o) => ({ lab
         :options="options"
         :loading="searching"
         :status="props.status"
-        filterable
+        filterable :filter="turkishFilter"
         remote
         clearable
         :placeholder="props.placeholder ?? 'Şirket adıyla arayın'"
@@ -128,7 +129,7 @@ const toOptions = (list: Option[] | undefined) => (list ?? []).map((o) => ({ lab
       <n-select v-model:value="newCompany.scaleId" :options="toOptions(props.companyScales)" clearable />
     </n-form-item>
     <n-form-item label="İş kolu" label-placement="top">
-      <n-select v-model:value="newCompany.worklineId" :options="toOptions(props.companyWorklines)" filterable clearable />
+      <n-select v-model:value="newCompany.worklineId" :options="toOptions(props.companyWorklines)" filterable :filter="turkishFilter" clearable />
     </n-form-item>
     <template #footer>
       <div class="actions">
