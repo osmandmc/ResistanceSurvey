@@ -11,6 +11,7 @@ const menu = [
   { path: '/inbox', label: 'Gelen Kutusu' },
   { path: '/archive', label: 'Haber Arşivi' },
   { path: '/cases', label: 'Vakalar' },
+  { path: '/analysis', label: 'Analiz' },
   { path: '/status', label: 'Durum Paneli' },
   { path: '/upload', label: 'Yükleme' },
   { path: '/definitions', label: 'Tanımlar' },

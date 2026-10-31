@@ -172,6 +172,8 @@ function open(item: CaseListItem) {
     </div>
     <div class="head-actions">
       <n-button @click="router.push('/cases/solidarity')">Dayanışma bağlantıları</n-button>
+      <!-- The same filters (Analiz reads text, category, year, month and province). -->
+      <n-button @click="router.push({ path: '/analysis', query: route.query })">Grafikler</n-button>
       <n-button tag="a" :href="download">Dışa Aktar</n-button>
       <n-button type="primary" @click="router.push('/cases/new')">Yeni vaka</n-button>
     </div>

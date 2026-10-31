@@ -49,6 +49,8 @@ export const router = createRouter({
         { path: 'cases/new', component: NewCasePage, meta: { title: 'Yeni vaka' } },
         { path: 'cases/solidarity', component: SolidarityLinksPage, meta: { title: 'Dayanışma bağlantıları' } },
         { path: 'cases/:id(\\d+)', component: CaseDetailPage, meta: { title: 'Vaka' } },
+        // Loaded when opened: the charts library (ECharts) stays out of the other pages.
+        { path: 'analysis', component: () => import('@/pages/AnalysisPage.vue'), meta: { title: 'Analiz' } },
         { path: 'status', component: StatusPage, meta: { title: 'Durum Paneli' } },
         { path: 'status/ai-report', component: AiReportPage, meta: { title: 'AI raporu' } },
         { path: 'upload', component: UploadPage, meta: { title: 'Yükleme' } },
