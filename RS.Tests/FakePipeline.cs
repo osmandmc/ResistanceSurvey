@@ -12,8 +12,8 @@ internal sealed class FakePipeline : IPipelineClient
     public List<(string ArticleId, PipelineOutcomeRequest Outcome)> Outcomes { get; } = [];
     public bool FailOutcomes { get; set; }
 
-    public void Add(string id, string url, string title, DateTimeOffset publishedAt, string body = "Metin") =>
-        _articles.Add(new PipelineArticleDetail(id, "evrensel", url, title, publishedAt, body));
+    public void Add(string id, string url, string title, DateTimeOffset publishedAt, string body = "Metin", string imageUrl = null) =>
+        _articles.Add(new PipelineArticleDetail(id, "evrensel", url, title, publishedAt, body, ImageUrl: imageUrl));
 
     public List<PipelineArticle> Submitted { get; } = [];
 

@@ -35,7 +35,7 @@ async function load() {
 void load()
 
 // The pipeline's sources with an inbox (as the inbox's source filter).
-const sources = ['evrensel', 'kizilbayrak']
+const sources = ['evrensel', 'kizilbayrak', 'sendika']
 
 // The drafts offer the app's lists; the app sends them when they change (every 15 minutes at most) or here at once.
 const sendingLists = ref(false)

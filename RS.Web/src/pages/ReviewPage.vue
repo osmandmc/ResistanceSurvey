@@ -35,6 +35,7 @@ const articleId = computed(() => String(route.params.articleId))
 
 // The article shown on the left.
 const article = ref<ReviewArticle | null>(null)
+const imageFailed = ref(false)
 const loading = ref(false)
 const loadError = ref<'handled' | 'notFound' | 'unavailable' | ''>('')
 const loadErrorText = ref('')
@@ -43,6 +44,7 @@ async function loadArticle() {
   loading.value = true
   loadError.value = ''
   article.value = null
+  imageFailed.value = false
   try {
     article.value = await getReviewArticle(articleId.value)
   } catch (error) {
@@ -406,6 +408,16 @@ async function onDismissed() {
           {{ e.label }}<span v-if="!e.found"> · bulunamadı</span>
         </button>
       </div>
+      <!-- From the news site itself (not copied); hidden if the site no longer serves it. -->
+      <img
+        v-if="article.imageUrl && !imageFailed"
+        :src="article.imageUrl"
+        alt=""
+        class="article-image"
+        loading="lazy"
+        referrerpolicy="no-referrer"
+        @error="imageFailed = true"
+      />
       <p v-if="article.body" class="body">
         <template v-for="(s, i) in bodySegments" :key="i">
           <mark v-if="s.fields.length" class="evidence" :class="{ active: s.fields.includes(activeEvidence ?? '') }" :data-evidence="s.fields.join(' ')" :title="s.labels.join(', ')">{{ s.text }}</mark>
@@ -620,6 +632,14 @@ async function onDismissed() {
   margin: 12px 0 16px;
   font-size: 24px;
   line-height: 1.3;
+}
+.article-image {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0 0 16px;
 }
 .body {
   margin: 0;
