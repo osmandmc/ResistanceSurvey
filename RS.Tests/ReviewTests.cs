@@ -84,6 +84,15 @@ public class ReviewTests
         Assert.Equal("Evrensel", result.Article!.SourceName);
         Assert.Equal("Hekimler ve sağlık çalışanları 6 aydır maaşlarını alamıyor.", result.Article.Body);
         Assert.Equal(ReviewStatus.NotFound, (await GetArticle("nope")).Status);
+        Assert.Null(result.Article.ImageUrl); // the page named no picture
+    }
+
+    [Fact]
+    public async Task TheArticleComesWithItsPictureOnTheNewsSite()
+    {
+        _pipeline.Add("a2", "https://sendika.org/2026/10/x-754962", "Madenciler yürüyor", Oct19, imageUrl: "https://sendikaorg.example/maden.png");
+
+        Assert.Equal("https://sendikaorg.example/maden.png", (await GetArticle("a2")).Article!.ImageUrl);
     }
 
     [Fact]

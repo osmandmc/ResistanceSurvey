@@ -56,10 +56,13 @@ namespace RS.MVC.Models
     /// <summary>The researchers' decision as the pipeline last heard it. Kind: "Digested" or "Dismissed".</summary>
     public record PipelineOutcome(string Kind, DateTimeOffset At, int? ResistanceId = null, string Reason = null);
 
-    /// <summary>GET /api/articles/{id}: one article with its latest text (Body is null until parsed).</summary>
+    /// <summary>
+    /// GET /api/articles/{id}: one article with its latest text (Body is null until parsed). ImageUrl: its picture on the
+    /// news site (og:image, not copied); null when the page names none or was read before the parsers took it.
+    /// </summary>
     public record PipelineArticleDetail(
         string ArticleId, string SourceId, string Url, string Title, DateTimeOffset? PublishedAt, string Body,
-        IReadOnlyDictionary<string, PipelineStageResult> Stages = null);
+        IReadOnlyDictionary<string, PipelineStageResult> Stages = null, string ImageUrl = null);
 
     /// <summary>
     /// GET /api/articles/{id}/draft (pipeline B12): the model's JSON in the shape of the extraction prompt, checked by the

@@ -12,6 +12,8 @@ export interface ReviewArticle {
   body: string | null
   /** The AI's verdict (pipeline Relevance stage); null when not assessed. */
   ai: AiRelevance | null
+  /** The article's picture on the news site (loaded from there); null when there is none. */
+  imageUrl: string | null
 }
 
 export interface CaseOption {

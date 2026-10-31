@@ -25,6 +25,7 @@ const sourceOptions = [
   { label: 'Tümü', value: '' },
   { label: 'Evrensel', value: 'evrensel' },
   { label: 'Kızılbayrak', value: 'kizilbayrak' },
+  { label: 'Sendika.org', value: 'sendika' },
 ]
 const monthParam = computed(() => {
   const date = new Date(month.value)

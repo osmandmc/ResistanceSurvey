@@ -22,7 +22,7 @@ namespace RS.MVC.Features.Review
                 ? new ReviewArticleResult(ReviewStatus.NotFound)
                 : new ReviewArticleResult(ReviewStatus.Ok, new ReviewArticle(
                     article.ArticleId, article.Title, article.Url, SourceCatalog.Name(article.SourceId), article.PublishedAt, article.Body,
-                    AiRelevance.From(article.Stages)));
+                    AiRelevance.From(article.Stages), article.ImageUrl));
         }
     }
 }
