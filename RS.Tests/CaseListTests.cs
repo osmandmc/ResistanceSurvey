@@ -59,6 +59,20 @@ public class CaseListTests
     }
 
     [Fact]
+    public async Task TheCasesPlaceShowsUnderTheEmployer()
+    {
+        var r = Add("Metro", new DateTime(2026, 10, 1), company: new Company { Name = "Örnek Taşeron" });
+        r.Workplace = new Workplace { Name = "Halkalı metro şantiyesi" };
+        Add("Doğrudan", new DateTime(2026, 9, 1), company: new Company { Name = "Örnek Fabrika" });
+        _db.SaveChanges();
+
+        var items = (await List(new CaseFilter())).Items;
+
+        Assert.Equal(("Örnek Taşeron", "Halkalı metro şantiyesi"), (items[0].Target, items[0].WorkplaceName));
+        Assert.Null(items[1].WorkplaceName);
+    }
+
+    [Fact]
     public async Task ACaseWithoutAWorkplaceShowsItsOrganizers()
     {
         // R31: Genel and Dayanışma cases have no workplace; the list shows who organized them, and the search finds them.

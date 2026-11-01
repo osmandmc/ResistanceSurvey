@@ -19,6 +19,8 @@ export interface CaseListItem {
   name: string | null
   /** The company, or the institution for cases against one. */
   target: string | null
+  /** The case's place (R37), when it names one. */
+  workplaceName: string | null
   mainCompanyName: string | null
   categoryName: string | null
   protestCount: number
