@@ -9,7 +9,7 @@ import CorporationAddDialog from '@/components/CorporationAddDialog.vue'
 import { UnionTypes } from '@/reviewApi'
 import DuplicateGroups from '@/components/DuplicateGroups.vue'
 import MergeDialog from '@/components/MergeDialog.vue'
-import {
+import { institutionKindOptions,
   approveDefinition,
   definitionKinds,
   deleteDefinition,
@@ -42,7 +42,7 @@ const unusedOnly = ref(false)
 const typeId = ref<number | null>(null)
 const page = ref(1)
 
-const options = ref<DefinitionOptions>({ corporationTypes: [], companyTypes: [], companyScales: [], companyWorklines: [], confederations: [] })
+const options = ref<DefinitionOptions>({ corporationTypes: [], companyTypes: [], companyScales: [], companyWorklines: [], confederations: [], serviceBranches: [] })
 // "Yeni kurum" (R34): added approved.
 const addingCorporation = ref(false)
 function reloadOptions() {
@@ -239,9 +239,10 @@ function onMerged(affected: number) {
               <th>Konfederasyon</th>
             </template>
             <template v-if="kind === 'companies'">
-              <th>Tür</th>
-              <th>Ölçek</th>
-              <th>İş kolu</th>
+              <th>Kurum türü</th>
+              <th>Sahiplik</th>
+              <th>Büyüklük</th>
+              <th>İşkolu / hizmet kolu</th>
             </template>
             <template v-if="kind === 'protest-types'">
               <th>Üretime karşı</th>
@@ -269,6 +270,7 @@ function onMerged(affected: number) {
                 />
               </td>
               <template v-if="kind === 'companies'">
+                <td><n-select v-model:value="editing.institutionKind" :options="institutionKindOptions" clearable size="small" /></td>
                 <td><n-select v-model:value="editing.typeId" :options="toSelect(options.companyTypes)" clearable size="small" /></td>
                 <td><n-select v-model:value="editing.scaleId" :options="toSelect(options.companyScales)" clearable size="small" /></td>
                 <td><n-select v-model:value="editing.worklineId" :options="toSelect(options.companyWorklines)" clearable filterable :filter="turkishFilter" size="small" /></td>
@@ -295,9 +297,10 @@ function onMerged(affected: number) {
                 <td>{{ item.typeId === UnionTypes.TradeUnion ? nameOf(options.confederations, item.confederationId) : '' }}</td>
               </template>
               <template v-if="kind === 'companies'">
+                <td>{{ institutionKindOptions.find((o) => o.value === item.institutionKind)?.label ?? '' }}</td>
                 <td>{{ nameOf(options.companyTypes, item.typeId) }}</td>
                 <td>{{ nameOf(options.companyScales, item.scaleId) }}</td>
-                <td>{{ nameOf(options.companyWorklines, item.worklineId) }}</td>
+                <td>{{ nameOf(options.companyWorklines, item.worklineId) || nameOf(options.serviceBranches ?? [], item.serviceBranchId ?? null) }}</td>
               </template>
               <template v-if="kind === 'protest-types'">
                 <td>{{ item.againstProduction ? 'Evet' : 'Hayır' }}</td>

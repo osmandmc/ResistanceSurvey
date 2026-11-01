@@ -100,6 +100,8 @@ export interface CaseFormOptions {
   companyTypes: Option[]
   companyScales: Option[]
   companyWorklines: Option[]
+  /** The civil servants' hizmet kolları (R37). */
+  serviceBranches?: Option[] | null
   protestTypes: Option[]
   protestPlaces: Option[]
   genders: Option[]
@@ -144,6 +146,23 @@ export const employerRoleOptions: { value: EmployerRole; label: string; help: st
 ]
 export const hasAbove = (role: EmployerRole | null) =>
   role === EmployerRole.Subcontractor || role === EmployerRole.Contractor || role === EmployerRole.Operator
+
+/** R37: a company's fact with another one (its group, the public body it belongs to, a name change), seen from it. */
+export interface CompanyFact {
+  id: number
+  /** 1 group, 2 public body, 3 renamed. */
+  kind: number
+  outgoing: boolean
+  otherId: number
+  otherName: string
+  sharePercent: number | null
+  startDate: string | null
+  endDate: string | null
+}
+
+export function getCompanyFacts(companyId: number) {
+  return api<CompanyFact[]>(`/api/review/companies/${companyId}/facts`)
+}
 
 /** R37: a workplace (a place) as the form offers it, with whom it belongs to. */
 export interface WorkplaceOption {
@@ -232,7 +251,15 @@ export function searchCompanies(query: string) {
   return api<Option[]>(`/api/review/companies?${new URLSearchParams({ query })}`)
 }
 
-export function createCompany(company: { name: string; typeId: number | null; scaleId: number | null; worklineId: number | null }) {
+/** typeId: Sahiplik; institutionKind: Kurum türü; serviceBranchId: the civil servants' hizmet kolu (R37). */
+export function createCompany(company: {
+  name: string
+  typeId: number | null
+  scaleId: number | null
+  worklineId: number | null
+  institutionKind?: number | null
+  serviceBranchId?: number | null
+}) {
   return api<CreateCompanyResult>('/api/review/companies', { method: 'POST', body: JSON.stringify(company) })
 }
 

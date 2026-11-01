@@ -27,7 +27,26 @@ export interface DefinitionItem {
   worklineId: number | null
   /** A union's confederation (R34). */
   confederationId: number | null
+  /** Companies (R37): “Kurum türü” and the civil servants' hizmet kolu. */
+  institutionKind?: InstitutionKind | null
+  serviceBranchId?: number | null
 }
+
+/** “Kurum türü” (R37), matching the server's InstitutionKind. */
+export const InstitutionKind = {
+  Company: 1, Holding: 2, PublicBody: 3, StateEnterprise: 4, Municipality: 5, MunicipalCompany: 6, Cooperative: 7, Other: 8,
+} as const
+export type InstitutionKind = (typeof InstitutionKind)[keyof typeof InstitutionKind]
+export const institutionKindOptions: { value: InstitutionKind; label: string }[] = [
+  { value: 1, label: 'Şirket' },
+  { value: 2, label: 'Holding / şirketler grubu' },
+  { value: 3, label: 'Kamu kurumu' },
+  { value: 4, label: 'Kamu şirketi (KİT)' },
+  { value: 5, label: 'Belediye' },
+  { value: 6, label: 'Belediye şirketi' },
+  { value: 7, label: 'Kooperatif / vakıf / dernek' },
+  { value: 8, label: 'Diğer' },
+]
 
 export interface DefinitionPage {
   items: DefinitionItem[]
@@ -47,8 +66,11 @@ export interface DefinitionOptions {
   corporationTypes: Option[]
   companyTypes: Option[]
   companyScales: Option[]
+  /** The workers' işkolları. */
   companyWorklines: Option[]
   confederations: Option[]
+  /** The civil servants' hizmet kolları (R37). */
+  serviceBranches: Option[] | null
 }
 
 export function getDefinitionOptions() {
@@ -80,6 +102,8 @@ export function updateDefinition(kind: DefinitionKind, item: DefinitionItem) {
       scaleId: item.scaleId,
       worklineId: item.worklineId,
       confederationId: item.confederationId,
+      institutionKind: item.institutionKind ?? null,
+      serviceBranchId: item.serviceBranchId ?? null,
     }),
   })
 }
@@ -124,32 +148,87 @@ export interface CompanyCase {
   id: number
   name: string
   startDate: string
-  /** The company is the case's main company (the case is against its subcontractor). */
+  /** The company is the organization above the case's employer. */
   asMainCompany: boolean
+}
+
+/** A fact between companies (R37, part B), matching the server's CompanyRelationKind. */
+export const CompanyRelationKind = { Group: 1, PublicBody: 2, Renamed: 3 } as const
+export type CompanyRelationKind = (typeof CompanyRelationKind)[keyof typeof CompanyRelationKind]
+
+/** Seen from the page's company. Outgoing: “this → other”. */
+export interface CompanyRelationItem {
+  id: number
+  kind: CompanyRelationKind
+  outgoing: boolean
+  otherId: number
+  otherName: string
+  sharePercent: number | null
+  startDate: string | null
+  endDate: string | null
+  sourceUrl: string | null
+  note: string | null
+}
+
+/** How a relation reads from the page's company, by kind and direction (shown to users). */
+export const relationChoices: { kind: CompanyRelationKind; outgoing: boolean; label: string; listTitle: string }[] = [
+  { kind: 1, outgoing: true, label: 'Bu şirketin grubu (holding)', listTitle: 'Grubu' },
+  { kind: 1, outgoing: false, label: 'Bu grubun bir şirketi', listTitle: 'Grup şirketleri' },
+  { kind: 2, outgoing: true, label: 'Bu şirketin bağlı olduğu kamu kurumu', listTitle: 'Bağlı olduğu kamu kurumu' },
+  { kind: 2, outgoing: false, label: 'Bu kuruma bağlı bir kuruluş', listTitle: 'Bağlı kuruluşları' },
+  { kind: 3, outgoing: true, label: 'Bu şirketin yeni adı', listTitle: 'Yeni adı' },
+  { kind: 3, outgoing: false, label: 'Bu şirketin eski adı', listTitle: 'Eski adı' },
+]
+
+/** A link read from the cases (R37, decision b). AsEmployer: this company is the employer, the other is above it. */
+export interface CompanyJobLink {
+  role: number
+  asEmployer: boolean
+  otherId: number
+  otherName: string
+  cases: number
+  first: string | null
+  last: string | null
 }
 
 export interface CompanyDetail {
   id: number
   name: string
+  /** Sahiplik. */
   typeId: number | null
   scaleId: number | null
   worklineId: number | null
+  institutionKind: InstitutionKind | null
+  serviceBranchId: number | null
   cases: CompanyCase[]
-  /** It works for these as a subcontractor. */
-  mainCompanies: Option[]
-  /** These work for it. */
-  subcontractors: Option[]
+  relations: CompanyRelationItem[]
+  jobLinks: CompanyJobLink[]
 }
 
 export function getCompany(id: number) {
   return api<CompanyDetail>(`/api/definitions/companies/${id}`)
 }
 
-/** relation: "subcontractors" (the other works for this one) or "main-companies" (this one works for the other). */
-export function addCompanyLink(id: number, relation: 'subcontractors' | 'main-companies', companyId: number) {
-  return api<void>(`/api/definitions/companies/${id}/${relation}`, { method: 'POST', body: JSON.stringify({ companyId }) })
+export interface CompanyRelationInput {
+  kind: CompanyRelationKind
+  otherCompanyId: number
+  /** “This company → the other”. */
+  thisIsFirst: boolean
+  sharePercent: number | null
+  startDate: string | null
+  endDate: string | null
+  sourceUrl: string | null
+  note: string | null
 }
 
-export function removeCompanyLink(id: number, relation: 'subcontractors' | 'main-companies', companyId: number) {
-  return api<void>(`/api/definitions/companies/${id}/${relation}/${companyId}`, { method: 'DELETE' })
+export function addCompanyRelation(companyId: number, relation: CompanyRelationInput) {
+  return api<{ id: number }>(`/api/definitions/companies/${companyId}/relations`, { method: 'POST', body: JSON.stringify(relation) })
+}
+
+export function changeCompanyRelation(companyId: number, relationId: number, relation: CompanyRelationInput) {
+  return api<void>(`/api/definitions/companies/${companyId}/relations/${relationId}`, { method: 'PUT', body: JSON.stringify(relation) })
+}
+
+export function removeCompanyRelation(companyId: number, relationId: number) {
+  return api<void>(`/api/definitions/companies/${companyId}/relations/${relationId}`, { method: 'DELETE' })
 }

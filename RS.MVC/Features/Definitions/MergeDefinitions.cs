@@ -157,6 +157,23 @@ namespace RS.MVC.Features.Definitions
                     db.CompanyOutsourceCompany.Remove(link);
             }
 
+            // Facts with other companies (R37) follow too; one that now links the company to itself goes, as does a copy.
+            var relations = await db.CompanyRelation
+                .Where(r => r.CompanyId == fromId || r.RelatedCompanyId == fromId || r.CompanyId == intoId || r.RelatedCompanyId == intoId)
+                .ToListAsync();
+            foreach (var relation in relations)
+            {
+                if (relation.CompanyId == fromId) relation.CompanyId = intoId;
+                if (relation.RelatedCompanyId == fromId) relation.RelatedCompanyId = intoId;
+            }
+            var keptFacts = new HashSet<(int, int, COMMON.Entities.CompanyRelationKind, System.DateTime?)>();
+            foreach (var relation in relations.OrderBy(r => r.Id))
+            {
+                if (relation.CompanyId == relation.RelatedCompanyId
+                    || !keptFacts.Add((relation.CompanyId, relation.RelatedCompanyId, relation.Kind, relation.StartDate)))
+                    db.CompanyRelation.Remove(relation);
+            }
+
             (await db.Company.FindAsync(fromId))!.Deleted = true;
         }
     }

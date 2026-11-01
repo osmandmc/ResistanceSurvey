@@ -295,9 +295,15 @@ namespace RS.EF.Data.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("InstitutionKind")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)")
                         .UseCollation("Turkish_CI_AS");
+
+                    b.Property<int?>("ServiceBranchId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -306,6 +312,8 @@ namespace RS.EF.Data.Migrations
                     b.HasIndex("CompanyTypeId");
 
                     b.HasIndex("CompanyWorkLineId");
+
+                    b.HasIndex("ServiceBranchId");
 
                     b.ToTable("Company");
                 });
@@ -331,6 +339,60 @@ namespace RS.EF.Data.Migrations
                     b.HasIndex("OutsourceCompanyId");
 
                     b.ToTable("CompanyOutsourceCompany");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.CompanyRelation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<int>("RelatedCompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("SharePercent")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("SourceUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("RelatedCompanyId");
+
+                    b.ToTable("CompanyRelation");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.DefinitionNotDuplicate", b =>
@@ -440,6 +502,9 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsCivilService")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)")
@@ -1268,11 +1333,18 @@ namespace RS.EF.Data.Migrations
                         .HasForeignKey("CompanyWorkLineId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.CompanyWorkLine", "ServiceBranch")
+                        .WithMany()
+                        .HasForeignKey("ServiceBranchId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("CompanyScale");
 
                     b.Navigation("CompanyType");
 
                     b.Navigation("CompanyWorkLine");
+
+                    b.Navigation("ServiceBranch");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.CompanyOutsourceCompany", b =>
@@ -1292,6 +1364,25 @@ namespace RS.EF.Data.Migrations
                     b.Navigation("Company");
 
                     b.Navigation("OutsourceCompany");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.CompanyRelation", b =>
+                {
+                    b.HasOne("RS.COMMON.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RS.COMMON.Entities.Company", "RelatedCompany")
+                        .WithMany()
+                        .HasForeignKey("RelatedCompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("RelatedCompany");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.Corporation", b =>

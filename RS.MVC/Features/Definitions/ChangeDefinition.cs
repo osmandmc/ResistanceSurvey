@@ -18,7 +18,9 @@ namespace RS.MVC.Features.Definitions
         bool Simple = false,
         int? ScaleId = null,
         int? WorklineId = null,
-        int? ConfederationId = null);
+        int? ConfederationId = null,
+        RS.COMMON.Entities.InstitutionKind? InstitutionKind = null,
+        int? ServiceBranchId = null);
 
     public enum ChangeStatus
     {
@@ -63,6 +65,8 @@ namespace RS.MVC.Features.Definitions
                 company.CompanyTypeId = command.TypeId;
                 company.CompanyScaleId = command.ScaleId;
                 company.CompanyWorkLineId = command.WorklineId;
+                company.InstitutionKind = command.InstitutionKind;
+                company.ServiceBranchId = command.ServiceBranchId;
             }
             else
             {

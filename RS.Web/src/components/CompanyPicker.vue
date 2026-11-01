@@ -4,6 +4,7 @@ import { ref, watch } from 'vue'
 import { NButton, NFormItem, NInput, NModal, NSelect, useMessage } from 'naive-ui'
 import { ApiError } from '@/api'
 import { createCompany, searchCompanies, type Option } from '@/reviewApi'
+import { institutionKindOptions } from '@/definitionsApi'
 
 /** Picks a company by searching its name, or adds a new one ("Şirket Ekle"). */
 const props = defineProps<{
@@ -13,6 +14,8 @@ const props = defineProps<{
   companyTypes?: Option[]
   companyScales?: Option[]
   companyWorklines?: Option[]
+  /** The civil servants' hizmet kolları (R37). */
+  serviceBranches?: Option[] | null
   status?: 'error'
   placeholder?: string
   /** Name of a company chosen elsewhere, so it can be shown before any search found it. */
@@ -65,11 +68,18 @@ watch(
 // "Şirket Ekle"
 const adding = ref(false)
 const saving = ref(false)
-const newCompany = ref({ name: '', typeId: null as number | null, scaleId: null as number | null, worklineId: null as number | null })
+const newCompany = ref({
+  name: '',
+  typeId: null as number | null,
+  institutionKind: null as number | null,
+  scaleId: null as number | null,
+  worklineId: null as number | null,
+  serviceBranchId: null as number | null,
+})
 const nameError = ref('')
 
 function openAdd(name = '') {
-  newCompany.value = { name, typeId: null, scaleId: null, worklineId: null }
+  newCompany.value = { name, typeId: null, institutionKind: null, scaleId: null, worklineId: null, serviceBranchId: null }
   nameError.value = ''
   adding.value = true
 }
@@ -93,7 +103,7 @@ async function saveCompany() {
   }
 }
 
-const toOptions = (list: Option[] | undefined) => (list ?? []).map((o) => ({ label: o.name, value: o.id }))
+const toOptions = (list: Option[] | null | undefined) => (list ?? []).map((o) => ({ label: o.name, value: o.id }))
 </script>
 
 <template>
@@ -130,14 +140,20 @@ const toOptions = (list: Option[] | undefined) => (list ?? []).map((o) => ({ lab
     <n-form-item label="Şirket adı" label-placement="top" :validation-status="nameError ? 'error' : undefined" :feedback="nameError">
       <n-input v-model:value="newCompany.name" placeholder="Örn. Örnek Tekstil A.Ş." />
     </n-form-item>
-    <n-form-item label="Şirket türü" label-placement="top">
+    <n-form-item label="Kurum türü" label-placement="top">
+      <n-select v-model:value="newCompany.institutionKind" :options="institutionKindOptions" clearable />
+    </n-form-item>
+    <n-form-item label="Sahiplik" label-placement="top">
       <n-select v-model:value="newCompany.typeId" :options="toOptions(props.companyTypes)" clearable />
     </n-form-item>
-    <n-form-item label="Ölçek" label-placement="top">
+    <n-form-item label="Büyüklük" label-placement="top">
       <n-select v-model:value="newCompany.scaleId" :options="toOptions(props.companyScales)" clearable />
     </n-form-item>
-    <n-form-item label="İş kolu" label-placement="top">
+    <n-form-item label="İşkolu (işçi)" label-placement="top">
       <n-select v-model:value="newCompany.worklineId" :options="toOptions(props.companyWorklines)" filterable :filter="turkishFilter" clearable />
+    </n-form-item>
+    <n-form-item v-if="props.serviceBranches?.length" label="Hizmet kolu (memur)" label-placement="top">
+      <n-select v-model:value="newCompany.serviceBranchId" :options="toOptions(props.serviceBranches)" filterable :filter="turkishFilter" clearable placeholder="Kamu kurumları için" />
     </n-form-item>
     <template #footer>
       <div class="actions">

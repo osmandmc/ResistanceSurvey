@@ -12,7 +12,9 @@ import {
   resultOptions,
   searchCases,
   type CaseFormOptions,
+  getCompanyFacts,
   type CaseOption,
+  type CompanyFact,
   type CorporationOption,
   type Option,
   type WorkplaceOption,
@@ -115,6 +117,35 @@ watch(
   (unknown) => {
     if (unknown) value.value.companyId = null
   },
+)
+
+// R37: what is known about the employer in every case (its group, the public body it belongs to, a name change),
+// shown under İşveren; it is corrected on the company's page.
+const employerFacts = ref<CompanyFact[]>([])
+watch(
+  () => (workplace.value ? value.value.companyId : null),
+  async (companyId) => {
+    employerFacts.value = []
+    if (companyId === null) return
+    try {
+      const facts = await getCompanyFacts(companyId)
+      if (companyId === value.value.companyId) employerFacts.value = facts
+    } catch {
+      // only a hint
+    }
+  },
+  { immediate: true },
+)
+const factLines = computed(() =>
+  employerFacts.value
+    .filter((f) => f.outgoing || f.kind === 3)
+    .map((f) => {
+      const share = f.sharePercent !== null ? ` (%${f.sharePercent})` : ''
+      const ended = f.endDate ? ` (${f.endDate.slice(0, 4)}'e kadar)` : ''
+      if (f.kind === 1) return `${f.otherName} grubu${share}${ended}`
+      if (f.kind === 2) return `bağlı olduğu kurum: ${f.otherName}${ended}`
+      return f.outgoing ? `yeni adı: ${f.otherName}` : `eski adı: ${f.otherName}`
+    }),
 )
 
 // Names of the chosen employer and organization above: the new-workplace dialog says whom a new place belongs to.
@@ -233,9 +264,15 @@ function status(field: string) {
               :company-types="options.companyTypes"
               :company-scales="options.companyScales"
               :company-worklines="options.companyWorklines"
+            :service-branches="options.serviceBranches"
               :status="status('companyId')"
               @named="employerName = $event"
             />
+            <p v-if="!value.employerUnknown && value.companyId !== null" class="facts">
+              <template v-if="factLines.length">{{ factLines.join(' · ') }} · </template>
+              <template v-else>Şirkete dair bilgi (grubu, bağlı olduğu kurum) yok · </template>
+              <a :href="`/app/definitions/companies/${value.companyId}`" target="_blank" rel="noopener">{{ factLines.length ? 'düzelt' : 'ekle' }} ↗</a>
+            </p>
             <n-checkbox v-model:checked="value.employerUnknown">İşveren bilinmiyor (haber işverenin adını vermiyor)</n-checkbox>
           </div>
         </n-form-item>
@@ -280,6 +317,7 @@ function status(field: string) {
             :company-types="options.companyTypes"
             :company-scales="options.companyScales"
             :company-worklines="options.companyWorklines"
+            :service-branches="options.serviceBranches"
             :status="status('mainCompanyId')"
             @named="aboveName = $event"
           />
@@ -316,6 +354,7 @@ function status(field: string) {
             :company-types="options.companyTypes"
             :company-scales="options.companyScales"
             :company-worklines="options.companyWorklines"
+            :service-branches="options.serviceBranches"
           />
         </n-form-item>
       </template>
@@ -408,6 +447,17 @@ function status(field: string) {
 .with-add > :first-child {
   flex: 1;
   min-width: 0;
+}
+.facts {
+  margin: 0;
+  font-size: 13px;
+  color: var(--rs-muted);
+  background: var(--rs-ground);
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+.facts a {
+  color: var(--rs-accent);
 }
 .employer {
   display: flex;
