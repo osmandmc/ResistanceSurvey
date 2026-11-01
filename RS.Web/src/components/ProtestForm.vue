@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { turkishFilter } from '@/search'
 import { computed, watch } from 'vue'
-import { NButton, NDatePicker, NFormItem, NInput, NInputNumber, NSelect } from 'naive-ui'
+import { NButton, NCheckbox, NDatePicker, NFormItem, NInput, NInputNumber, NSelect } from 'naive-ui'
 import {
   noInterventionTypeId,
   simpleActionProtestTypeId,
@@ -59,6 +59,21 @@ function onCityChange(index: number, cityId: number | null) {
 // The end date may not lie before the start date.
 const isBeforeStart = (timestamp: number) => value.value.startDate !== null && timestamp < value.value.startDate
 
+// Most protests last a day: a picked start date fills an empty end date (not when "Eylem sürüyor" is ticked).
+watch(
+  () => value.value.startDate,
+  (start) => {
+    if (start !== null && value.value.endDate === null && !value.value.ongoing) value.value.endDate = start
+  },
+)
+// "Eylem sürüyor" clears the end date; unticking it starts again from the start day.
+watch(
+  () => value.value.ongoing,
+  (ongoing) => {
+    value.value.endDate = ongoing ? null : value.value.endDate ?? value.value.startDate
+  },
+)
+
 // The duration is three inputs; it is marked while any of them still holds the AI's value.
 const ai = (field: string) =>
   (field === 'duration' ? ['durationDays', 'durationHours'] : [field]).some((f) => props.aiFields?.includes(f)) ? 'ai' : undefined
@@ -91,12 +106,24 @@ function status(field: string) {
         <n-input v-model:value="value.simpleDescription" />
       </n-form-item>
 
-      <n-form-item :class="ai('startDate')" label="Başlangıç Tarihi" label-placement="top" required :validation-status="status('startDate')" :feedback="error('startDate')">
+      <n-form-item :class="[ai('startDate'), 'top']" label="Başlangıç Tarihi" label-placement="top" required :validation-status="status('startDate')" :feedback="error('startDate')">
         <n-date-picker v-model:value="value.startDate" type="date" format="dd.MM.yyyy" clearable class="full" />
       </n-form-item>
 
-      <n-form-item :class="ai('endDate')" label="Bitiş Tarihi" label-placement="top" :show-feedback="false">
-        <n-date-picker v-model:value="value.endDate" type="date" format="dd.MM.yyyy" clearable :is-date-disabled="isBeforeStart" class="full" />
+      <n-form-item :class="[ai('endDate'), 'top']" label="Bitiş Tarihi" label-placement="top" :required="!value.ongoing" :validation-status="status('endDate')" :feedback="error('endDate')">
+        <div class="end-date">
+          <n-date-picker
+            v-model:value="value.endDate"
+            type="date"
+            format="dd.MM.yyyy"
+            clearable
+            :disabled="value.ongoing"
+            :placeholder="value.ongoing ? 'Sürüyor' : 'Tarih seçin'"
+            :is-date-disabled="isBeforeStart"
+            class="full"
+          />
+          <n-checkbox v-model:checked="value.ongoing">Eylem sürüyor</n-checkbox>
+        </div>
       </n-form-item>
 
       <n-form-item :class="ai('placeIds')" label="Eylem Yerleri" label-placement="top" class="wide" required :validation-status="status('placeIds')" :feedback="error('placeIds')">
@@ -188,7 +215,17 @@ function status(field: string) {
 .wide {
   grid-column: 1 / -1;
 }
+/* The end date has "Eylem sürüyor" under it: both dates keep to the top of their row. */
+.top {
+  align-self: start;
+}
 .full {
+  width: 100%;
+}
+.end-date {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   width: 100%;
 }
 .duration {

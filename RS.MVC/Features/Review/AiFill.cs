@@ -234,7 +234,12 @@ namespace RS.MVC.Features.Review
             var startDate = Date(p, "start_date");
             Add("protest.start_date", "Başlangıç", Plain(startDate));
             var endDate = Date(p, "end_date");
-            Add("protest.end_date", "Bitiş", Plain(endDate));
+            // No end date in the article: most protests last a day, so the start day is taken (flagged below); the
+            // researcher ticks "Eylem sürüyor" when the article says it goes on.
+            var endAssumed = endDate == null && startDate != null;
+            if (endAssumed)
+                endDate = startDate;
+            Add("protest.end_date", "Bitiş", endAssumed ? [new AiItem("", endDate, AiItemStatus.Matched, "haberde yok, başlangıç günü alındı")] : Plain(endDate));
             var types = await Many(db.ProtestoType.Select(e => new { e.Id, e.Name }).ToListAsync(), e => e.Id, e => e.Name, Texts(p, "types"));
             Add("protest.types", "Eylem türleri", Items(types));
             var places = await Many(db.ProtestoPlace.Select(e => new { e.Id, e.Name }).ToListAsync(), e => e.Id, e => e.Name, Texts(p, "places"));
@@ -283,7 +288,7 @@ namespace RS.MVC.Features.Review
                 CustodyCount: custody,
                 StrikeHours: strikeHours);
             return new AiCheckResult(null, true, Text(root, "relevance_reason"), fields, caseValues, protestValues, Evidence(root, fields),
-                Flags(fields, category?.Id, caseValues, protestValues, command.PublishedAt));
+                Flags(fields, category?.Id, caseValues, protestValues, command.PublishedAt, endAssumed));
         }
 
         /// <summary>A protest dated this long before its article is probably a misread date (or an old story retold).</summary>
@@ -293,7 +298,8 @@ namespace RS.MVC.Features.Review
         /// The rules (R11, D-008): dates against the article's date and each other, numbers against each other, and the
         /// names the lists do not have (left out) or that would become new records. Each flag says why.
         /// </summary>
-        public static List<AiFlag> Flags(IReadOnlyList<AiField> fields, int? categoryId, AiCaseValues c, AiProtestValues p, DateTimeOffset? publishedAt)
+        public static List<AiFlag> Flags(IReadOnlyList<AiField> fields, int? categoryId, AiCaseValues c, AiProtestValues p, DateTimeOffset? publishedAt,
+            bool endAssumed = false)
         {
             var flags = new List<AiFlag>();
             var labels = fields.ToDictionary(f => f.Field, f => f.Label);
@@ -314,6 +320,8 @@ namespace RS.MVC.Features.Review
                 else if (s < articleDay.AddDays(-MaxDaysBeforeArticle))
                     Flag("protest.start_date", $"Eylem tarihi ({Day(s)}) haberden bir yıldan daha eski ({Day(articleDay)}).");
             }
+            if (endAssumed)
+                Flag("protest.end_date", "Haberde bitiş tarihi yok; başlangıç günü alındı. Eylem sürüyorsa “Eylem sürüyor”u işaretleyin.");
             if (start is { } from && end is { } to && to < from)
                 Flag("protest.end_date", $"Bitiş ({Day(to)}) başlangıçtan ({Day(from)}) önce.");
 

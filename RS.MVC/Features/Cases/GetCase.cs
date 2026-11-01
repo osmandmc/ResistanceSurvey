@@ -115,6 +115,7 @@ namespace RS.MVC.Features.Cases
                     SimpleDescription = p.SimpleProtestoDescription,
                     StartDate = p.StartDate,
                     EndDate = p.EndDate,
+                    Ongoing = p.EndDate == null,
                     PlaceIds = p.PlaceIds,
                     GenderId = p.GenderId,
                     Locations = p.Locations.Select(l => new LocationInput { CityId = l.CityId, DistrictId = l.DistrictId, Place = l.Place }).ToList(),

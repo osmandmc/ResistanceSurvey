@@ -103,6 +103,17 @@ public class AiFillTests
     }
 
     [Fact]
+    public async Task WithoutAnEndDateTheStartDayIsTakenAndFlagged()
+    {
+        await SeedAsync();
+
+        var result = await Check(Answer.Replace("\"end_date\": \"2026-10-14\"", "\"end_date\": null"), Published(2026, 10, 14));
+
+        Assert.Equal("2026-10-14", result.Protest!.EndDate);
+        Assert.Contains(result.Flags!, f => f.Field == "protest.end_date" && f.Message.Contains("Eylem sürüyor"));
+    }
+
+    [Fact]
     public async Task WithoutTheArticlesDateOnlyTheDateItselfIsChecked()
     {
         await SeedAsync();
