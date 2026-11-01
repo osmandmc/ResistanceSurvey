@@ -3,6 +3,7 @@ using RS.COMMON.Entities;
 using RS.COMMON.Entities.LookupEntity;
 using RS.EF;
 using RS.MVC.Features.Review;
+using RS.COMMON.Constants;
 
 namespace RS.Tests;
 
@@ -121,6 +122,48 @@ public class AiFillTests
         var flags = (await Check(Answer.Replace("\"start_date\": \"2026-10-14\"", "\"start_date\": null"), null)).Flags!;
 
         Assert.Contains(flags, f => f.Field == "protest.start_date" && f.Message.Contains("bulunamadı"));
+    }
+
+    [Fact]
+    public async Task PromptV23SaysHowTheEmployerWorksAndWhere()
+    {
+        await SeedAsync();
+        _db.Company.Add(new Company { Id = 12, Name = "İstanbul Üniversitesi" });
+        _db.Workplace.Add(new Workplace { Id = 1, Name = "Çapa Tıp Fakültesi Hastanesi", CityId = 34, Approved = true });
+        await _db.SaveChangesAsync();
+        var answer = Answer
+            .Replace("\"main_company\": null", "\"employer_role\": \"TAŞERON\", \"main_company\": \"İstanbul Üniversitesi\", \"workplace\": \"çapa tıp fakültesi hastanesi\"");
+
+        var c = (await Check(answer, null)).Case!;
+
+        Assert.Equal((RS.COMMON.Entities.EmployerRole.Subcontractor, true, 12, 1, "Çapa Tıp Fakültesi Hastanesi"),
+            (c.EmployerRole!.Value, c.IsOutsource, c.MainCompanyId!.Value, c.WorkplaceId!.Value, c.WorkplaceName));
+    }
+
+    [Fact]
+    public async Task ANewWorkplaceIsOfferedAndADirectEmployerHasNothingAbove()
+    {
+        await SeedAsync();
+        var answer = Answer.Replace("\"main_company\": null",
+            "\"employer_role\": \"Doğrudan\", \"main_company\": \"Bir Holding\", \"workplace\": \"Gölcük fabrikası\"");
+
+        var result = await Check(answer, null);
+
+        Assert.Equal((RS.COMMON.Entities.EmployerRole.Direct, false, (int?)null, (string?)null, "Gölcük fabrikası"),
+            (result.Case!.EmployerRole!.Value, result.Case.IsOutsource, result.Case.MainCompanyId, result.Case.NewMainCompanyName, result.Case.NewWorkplaceName));
+        Assert.Contains(result.Flags!, f => f.Field == "case.workplace" && f.Message.Contains("formdaki düğmeyle"));
+    }
+
+    [Fact]
+    public async Task AnOlderAnswerWithoutARoleIsReadAsBefore()
+    {
+        await SeedAsync();
+
+        var withAbove = (await Check(Answer.Replace("\"main_company\": null", "\"main_company\": \"Örnek Holding\""), null)).Case!;
+        var direct = (await Check(Answer, null)).Case!;
+
+        Assert.Equal((RS.COMMON.Entities.EmployerRole.Subcontractor, true), (withAbove.EmployerRole!.Value, withAbove.IsOutsource));
+        Assert.Equal((RS.COMMON.Entities.EmployerRole.Direct, false), (direct.EmployerRole!.Value, direct.IsOutsource));
     }
 
     [Fact]

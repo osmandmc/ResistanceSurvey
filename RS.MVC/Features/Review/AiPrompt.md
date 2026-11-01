@@ -18,7 +18,7 @@ yalnızca aşağıdaki JSON biçiminde yanıt ver; JSON dışında hiçbir şey 
 - Doldurduğun **her** alan için `evidence` içine, o bilginin geçtiği yeri haberden **harfi harfine kopyalanmış** kısa bir
   cümle parçasıyla yaz (alan adı → alıntı; en fazla 20 kelime). Araştırmacılar alıntıyı haberde işaretli görür, bu yüzden
   alıntıyı değiştirme, kısaltma ya da özetleme. Şu alanlar doluysa alıntıları mutlaka olsun: `case.company`,
-  `case.main_company`, `case.organizations`, `case.reasons`, `case.employment_types`, `case.employee_count`,
+  `case.employer_role`, `case.main_company`, `case.workplace`, `case.organizations`, `case.reasons`, `case.employment_types`, `case.employee_count`,
   `case.fired_count`, `protest.start_date`, `protest.types`, `protest.places`, `protest.locations`,
   `protest.participant_count`, `protest.custody_count`, `protest.interventions`. Tarih için tarihin kendisini değil,
   haberde geçtiği ifadeyi alıntıla ("bugün", "19 Haziran'da"); liste alanları için listedeki değeri değil, haberdeki
@@ -33,11 +33,22 @@ yalnızca aşağıdaki JSON biçiminde yanıt ver; JSON dışında hiçbir şey 
   - "Genel": bir işyeri olmadan kurumların çağırdığı ya da örgütlediği eylem: 1 Mayıs, asgari ücret, vergi, emeklilik,
     anma, ülke çapında iş bırakma.
   - "Dayanışma": başka bir işyerindeki ya da başka bir mücadeledeki işçilerle dayanışma eylemi.
-- `case.company`: "İşletme/Kurum" için işyerinin ya da kurumun haberde geçen kısa adı ("Kristal Yağ", "Seyhan
-  Belediyesi", "Yedikule Göğüs Hastalıkları Hastanesi"); "fabrikası", "A.Ş." gibi ekleri yazma. İşçiler bir taşeronda
-  çalışıyorsa taşeronun adı. "Dayanışma" için yalnızca eylemi bir işyerinin işçileri yaptıysa onların işyeri (desteklenen
+- `case.company`: "İşletme/Kurum" için **işveren**: işçileri çalıştıran şirketin ya da kurumun haberde geçen kısa adı
+  ("Kristal Yağ", "Seyhan Belediyesi", "Yedikule Göğüs Hastalıkları Hastanesi"); "fabrikası", "A.Ş." gibi ekleri yazma.
+  İşçiler bir taşeronda çalışıyorsa taşeronun adı. İşveren haberde geçmiyorsa `null`. "Dayanışma" için yalnızca eylemi bir işyerinin işçileri yaptıysa onların işyeri (desteklenen
   işyeri değil); değilse `null`. "Genel" için `null`. Bu alana eylemin ya da kampanyanın adını yazma.
-- `case.main_company`: yalnızca "İşletme/Kurum"da, işçiler bir taşeronda çalışıyorsa asıl işveren; değilse `null`.
+- `case.employer_role`: yalnızca "İşletme/Kurum"da, işverenin bu işteki durumu:
+  - "Doğrudan": işçiler doğrudan bu işverende çalışıyor (bir belediyenin memurları, bir fabrikanın işçileri).
+  - "Taşeron": işveren bu işi başka bir kurum için taşeron (alt işveren) olarak yapıyor (hastanede temizlik firması).
+  - "Yüklenici": bütün bir iş (bir inşaat, bir ihale) işverene verilmiş (TOKİ konutlarını yapan inşaat firması).
+  - "İşletmeci": işveren başkasına ait bir yeri işletiyor (rödovansla işletilen maden, işletme hakkı devredilmiş liman).
+  Haberden anlaşılmıyorsa `null`.
+- `case.main_company`: yalnızca `employer_role` "Taşeron", "Yüklenici" ya da "İşletmeci" ise işverenin üstündeki kurum:
+  taşeronun asıl işvereni, işi veren kurum (iş sahibi) ya da işletilen yerin sahibi; değilse `null`. İşverenin bağlı
+  olduğu holdingi ya da şirketler grubunu buraya yazma.
+- `case.workplace`: yalnızca "İşletme/Kurum"da, işin yapıldığı **yer** haberde anılıyorsa ve işverenin kendisi değilse
+  onun adı: "Gölcük fabrikası", "Çapa Tıp Fakültesi Hastanesi", "Alpagut linyit ocağı", "Adıyaman toplu konut
+  şantiyesi". Yer işverenin kendisiyse ("Seyhan Belediyesi") ya da haberde yoksa `null`. Bir şirketin adını yazma.
 - `case.organizations`: "İşletme/Kurum" için eylemi yapan ya da işçilerin örgütlü olduğu sendikalar ve örgütler,
   konfederasyonuyla: "DİSK Genel-İş", "TÜRK-İŞ Petrol-İş", "KESK Eğitim-Sen"; eylemi örgütsüz işçiler yapıyorsa
   ["Kurumsuz"]. "Genel" ve "Dayanışma" için eylemi **örgütleyen** kurumlar (sendika, konfederasyon, platform, meslek
@@ -72,7 +83,7 @@ sayı aralığı, hak geliştirme.
   "relevant": true,
   "relevance_reason": "kısa gerekçe",
   "case": {
-    "category": "", "company": null, "main_company": null,
+    "category": "", "company": null, "employer_role": null, "main_company": null, "workplace": null,
     "organizations": [], "union_authority": null, "reasons": [], "employment_types": [],
     "employee_count": null, "fired_count": null, "description": ""
   },

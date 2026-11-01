@@ -13,6 +13,8 @@ const props = defineProps<{
   inputId: string
   /** Name of the chosen place, so it shows before any search found it (editing a case). */
   selectedName?: string | null
+  /** A name suggested elsewhere (the AI answer) that is not registered: offered as "add", never added on its own. */
+  suggestedName?: string | null
   /** Whose places to suggest before anything is typed: the organization above the employer, else the employer. */
   suggestFor?: number | null
   /** Shown while empty, e.g. “İşverenle aynı” for a direct employer. */
@@ -88,8 +90,8 @@ const nameError = ref('')
 const cityDistricts = computed(() => props.districts.filter((d) => d.cityId === draft.value.cityId))
 watch(() => draft.value.cityId, () => (draft.value.districtId = null))
 
-function openAdd() {
-  draft.value = { name: lastText, cityId: null, districtId: null }
+function openAdd(name = lastText) {
+  draft.value = { name, cityId: null, districtId: null }
   nameError.value = ''
   adding.value = true
 }
@@ -115,24 +117,30 @@ const toOptions = (list: Option[]) => list.map((o) => ({ label: o.name, value: o
 </script>
 
 <template>
-  <div class="picker">
-    <n-select
-      :value="workplaceId"
-      :options="options"
-      :loading="searching"
-      :status="props.status"
-      filterable
-      :filter="turkishFilter"
-      remote
-      clearable
-      :placeholder="props.placeholder ?? 'Fabrika, hastane, şantiye, maden …'"
-      :input-props="{ id: props.inputId }"
-      class="select"
-      @search="load"
-      @update:value="onPick"
-      @focus="onFocus"
-    />
-    <n-button @click="openAdd">Yeni İşyeri</n-button>
+  <div class="column">
+    <div class="picker">
+      <n-select
+        :value="workplaceId"
+        :options="options"
+        :loading="searching"
+        :status="props.status"
+        filterable
+        :filter="turkishFilter"
+        remote
+        clearable
+        :placeholder="props.placeholder ?? 'Fabrika, hastane, şantiye, maden …'"
+        :input-props="{ id: props.inputId }"
+        class="select"
+        @search="load"
+        @update:value="onPick"
+        @focus="onFocus"
+      />
+      <n-button @click="openAdd()">Yeni İşyeri</n-button>
+    </div>
+    <div v-if="props.suggestedName && workplaceId === null" class="suggested">
+      <span>AI önerisi kayıtlı değil:</span>
+      <n-button size="small" secondary type="primary" @click="openAdd(props.suggestedName)">“{{ props.suggestedName }}” işyerini ekle</n-button>
+    </div>
   </div>
 
   <n-modal
@@ -162,6 +170,9 @@ const toOptions = (list: Option[]) => list.map((o) => ({ label: o.name, value: o
 </template>
 
 <style scoped>
+.column {
+  width: 100%;
+}
 .picker {
   display: flex;
   gap: 8px;
@@ -170,6 +181,15 @@ const toOptions = (list: Option[]) => list.map((o) => ({ label: o.name, value: o
 .select {
   flex: 1 1 auto;
   min-width: 0;
+}
+.suggested {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--rs-muted);
 }
 .owner {
   margin: 0;
