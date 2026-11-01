@@ -17,7 +17,11 @@ export function emptyCase(): CaseFormValue {
     categoryId: null,
     companyId: null,
     isOutsource: false,
+    // R37: a new İşletme case starts as a direct employer.
+    employerRole: 1,
+    employerUnknown: false,
     mainCompanyId: null,
+    workplaceId: null,
     supportedCaseId: null,
     reasons: [],
     developRight: null,

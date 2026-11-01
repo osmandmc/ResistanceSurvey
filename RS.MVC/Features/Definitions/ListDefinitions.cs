@@ -36,6 +36,8 @@ namespace RS.MVC.Features.Definitions
                     r => new DefinitionItem(r.Id, r.Name, r.Approved, 0, null, null, null, null, null, null)),
                 DefinitionKind.ProtestTypes => await ApprovableAsync(db.ProtestoType, text, query.PendingOnly, page,
                     t => new DefinitionItem(t.Id, t.Name, t.Approved, 0, null, t.AgainstProduction, t.Simple, null, null, null)),
+                DefinitionKind.Workplaces => await ApprovableAsync(db.Workplace.Where(w => !w.Deleted), text, query.PendingOnly, page,
+                    w => new DefinitionItem(w.Id, w.Name, w.Approved, 0, null, null, null, null, null, null)),
                 _ => await ApprovableAsync(db.ProtestoPlace, text, query.PendingOnly, page,
                     p => new DefinitionItem(p.Id, p.Name, p.Approved, 0, null, null, null, null, null, null)),
             };

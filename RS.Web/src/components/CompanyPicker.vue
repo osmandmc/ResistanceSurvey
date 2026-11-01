@@ -22,6 +22,8 @@ const props = defineProps<{
 }>()
 
 const companyId = defineModel<number | null>({ required: true })
+/** The chosen company's name (null when cleared or not yet known), for forms that show it elsewhere. */
+const emit = defineEmits<{ named: [name: string | null] }>()
 
 const message = useMessage()
 const options = ref<{ label: string; value: number }[]>([])
@@ -51,6 +53,12 @@ watch(
       options.value = [{ label: name, value: id }, ...options.value]
     }
   },
+  { immediate: true },
+)
+
+watch(
+  () => [companyId.value, options.value] as const,
+  ([id]) => emit('named', id === null ? null : options.value.find((o) => o.value === id)?.label ?? props.selectedName ?? null),
   { immediate: true },
 )
 

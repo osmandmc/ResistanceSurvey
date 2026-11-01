@@ -83,6 +83,8 @@ namespace RS.MVC.Features.Definitions
                 .Select(c => (c.Id, c.Name, (bool?)c.Approved)).ToList(),
             DefinitionKind.ProtestTypes => (await db.ProtestoType.Select(c => new { c.Id, c.Name, c.Approved }).ToListAsync())
                 .Select(c => (c.Id, c.Name, (bool?)c.Approved)).ToList(),
+            DefinitionKind.Workplaces => (await db.Workplace.Where(w => !w.Deleted).Select(c => new { c.Id, c.Name, c.Approved }).ToListAsync())
+                .Select(c => (c.Id, c.Name, (bool?)c.Approved)).ToList(),
             _ => (await db.ProtestoPlace.Select(c => new { c.Id, c.Name, c.Approved }).ToListAsync())
                 .Select(c => (c.Id, c.Name, (bool?)c.Approved)).ToList(),
         };
@@ -96,14 +98,7 @@ namespace RS.MVC.Features.Definitions
                     yield return (list[i], list[j]);
         }
 
-        public static string Slug(DefinitionKind kind) => kind switch
-        {
-            DefinitionKind.Companies => "companies",
-            DefinitionKind.Corporations => "corporations",
-            DefinitionKind.Reasons => "reasons",
-            DefinitionKind.ProtestTypes => "protest-types",
-            _ => "protest-places",
-        };
+        public static string Slug(DefinitionKind kind) => DefinitionKinds.Slug(kind);
     }
 
     /// <summary>"Aynı değil": these values look alike but differ; they are not suggested together again.</summary>

@@ -130,6 +130,49 @@ export function createCorporation(corporation: { name: string; typeId: number | 
 }
 
 /** The three case categories (R31, the server's KnownListIds): each shows its own fields. */
+/** R37: how the employer works in an İşletme case (matches the server's EmployerRole). */
+export const EmployerRole = { Unknown: 0, Direct: 1, Subcontractor: 2, Contractor: 3, Operator: 4 } as const
+export type EmployerRole = (typeof EmployerRole)[keyof typeof EmployerRole]
+
+/** The buttons, in order, and the name of the organization above for the roles that have one. */
+export const employerRoleOptions: { value: EmployerRole; label: string; help: string; above: string | null }[] = [
+  { value: EmployerRole.Direct, label: 'Doğrudan', help: 'İşçiler doğrudan bu işverende çalışıyor.', above: null },
+  { value: EmployerRole.Subcontractor, label: 'Taşeron', help: 'İşveren bu işi başka bir kurum için taşeron olarak yapıyor (alt işveren).', above: 'Asıl İşveren' },
+  { value: EmployerRole.Contractor, label: 'Yüklenici', help: 'Bütün iş (ör. bir inşaat) işverene verildi; işi veren iş sahibidir.', above: 'İş Sahibi' },
+  { value: EmployerRole.Operator, label: 'İşletmeci', help: 'İşveren başkasına ait bir yeri işletiyor (rödovans, işletme hakkı).', above: 'Varlığın Sahibi' },
+  { value: EmployerRole.Unknown, label: 'Bilinmiyor', help: 'Haber söylemiyor.', above: null },
+]
+export const hasAbove = (role: EmployerRole | null) =>
+  role === EmployerRole.Subcontractor || role === EmployerRole.Contractor || role === EmployerRole.Operator
+
+/** R37: a workplace (a place) as the form offers it, with whom it belongs to. */
+export interface WorkplaceOption {
+  id: number
+  name: string
+  cityName: string | null
+  districtName: string | null
+  ownerCompanyId: number | null
+  ownerName: string | null
+  approved: boolean
+}
+
+/** By name, or without a query the places known for that company (its cases, or belonging to it). */
+export function searchWorkplaces(query: string, companyId: number | null = null) {
+  const params = new URLSearchParams()
+  if (query) params.set('query', query)
+  if (companyId) params.set('companyId', String(companyId))
+  return api<WorkplaceOption[]>(`/api/review/workplaces?${params}`)
+}
+
+export interface CreateWorkplaceResult {
+  workplace: WorkplaceOption
+  existed: boolean
+}
+
+export function createWorkplace(workplace: { name: string; cityId: number | null; districtId: number | null; ownerCompanyId: number | null }) {
+  return api<CreateWorkplaceResult>('/api/review/workplaces', { method: 'POST', body: JSON.stringify(workplace) })
+}
+
 export const CaseCategory = { Workplace: 1, Solidarity: 2, General: 3 } as const
 
 /** Matches the server's ResistanceResult; labels are shown to users. */
@@ -147,10 +190,18 @@ export interface CaseInput {
   /** “Kişisel Notlar”: the case's own note; each protest has its own note too. */
   note: string | null
   categoryId: number | null
-  /** The workplace of those who acted: İşletme required, Dayanışma optional, Genel none. */
+  /** İşletme: the employer (“İşveren”), required unless employerUnknown. Dayanışma: the workplace whose workers acted. */
   companyId: number | null
+  /** The old “Taşeron mu?”; kept equal to “the role has an organization above” (R37). */
   isOutsource: boolean
+  /** İşletme (R37): how the employer works in this case (EmployerRole). */
+  employerRole: EmployerRole | null
+  /** “İşveren bilinmiyor”. */
+  employerUnknown: boolean
+  /** The organization above the employer: Asıl işveren, İş sahibi or Varlığın sahibi, by role. */
   mainCompanyId: number | null
+  /** İşletme (R37): the place, when it is not the employer itself. */
+  workplaceId: number | null
   /** Dayanışma: the case whose struggle the action supported; may stay empty. */
   supportedCaseId: number | null
   reasonIds: number[]

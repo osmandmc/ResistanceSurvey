@@ -1,13 +1,26 @@
 <script setup lang="ts">
 import { turkishFilter } from '@/search'
 import { computed, ref, watch } from 'vue'
-import { NAlert, NButton, NFormItem, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect } from 'naive-ui'
+import { NAlert, NButton, NCheckbox, NFormItem, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect } from 'naive-ui'
 import type { CaseFormValue } from '@/caseForm'
 import { formatDate } from '@/format'
-import { CaseCategory, resultOptions, searchCases, type CaseFormOptions, type CaseOption, type CorporationOption, type Option } from '@/reviewApi'
+import {
+  CaseCategory,
+  EmployerRole,
+  employerRoleOptions,
+  hasAbove,
+  resultOptions,
+  searchCases,
+  type CaseFormOptions,
+  type CaseOption,
+  type CorporationOption,
+  type Option,
+  type WorkplaceOption,
+} from '@/reviewApi'
 import CaseSearchSelect from './CaseSearchSelect.vue'
 import CompanyPicker from './CompanyPicker.vue'
 import CorporationAddDialog from './CorporationAddDialog.vue'
+import WorkplacePicker from './WorkplacePicker.vue'
 
 /**
  * The "Vaka (Direniş)" part of the case form. The category comes first and decides the fields (R31): İşletme/Kurum,
@@ -31,6 +44,8 @@ const props = defineProps<{
   suggestedMainCompanyName?: string | null
   /** Name of the supported case (editing a Dayanışma case). */
   supportedCaseName?: string | null
+  /** Name of the case's workplace (editing, R37). */
+  workplaceName?: string | null
 }>()
 
 const value = defineModel<CaseFormValue>({ required: true })
@@ -50,14 +65,10 @@ const categoryOptions = computed(() =>
   })),
 )
 const categoryHelp: Record<number, string> = {
-  [CaseCategory.Workplace]: 'Bir işyerindeki mücadele: işyeri, ana şirket, kurumsallık, istihdam türü, sonuç.',
+  [CaseCategory.Workplace]: 'Bir işverenin işçilerinin mücadelesi: işveren, işyeri, çalışma biçimi, kurumsallık, istihdam türü, sonuç.',
   [CaseCategory.General]: 'İşyeri olmadan kurumların örgütlediği eylem: 1 Mayıs, asgari ücret, vergi … Gündem vaka nedeninde.',
   [CaseCategory.Solidarity]: 'Başka bir mücadeleye destek eylemi: örgütleyen kurumlar ve (varsa) desteklenen vaka.',
 }
-const yesNo = [
-  { label: 'Hayır', value: false },
-  { label: 'Evet', value: true },
-]
 const rightOptions = [
   { label: 'Hak Geliştirme', value: true },
   { label: 'Hak Savunma', value: false },
@@ -78,6 +89,7 @@ watch(workplace, (yes) => {
     Object.assign(value.value, {
       isOutsource: false, mainCompanyId: null, employmentTypeIds: [], employeeCount: null, employeeCountRangeId: null,
       firedEmployeeCount: null, tradeUnionId: null, tradeUnionAuthorityId: null, result: 0,
+      employerRole: EmployerRole.Direct, employerUnknown: false, workplaceId: null,
     })
 })
 watch(general, (yes) => {
@@ -86,12 +98,64 @@ watch(general, (yes) => {
 watch(solidarity, (yes) => {
   if (!yes) value.value.supportedCaseId = null
 })
+// R37: how the employer works decides whether an organization is above it; the old “Taşeron mu?” follows.
+const role = computed(() => employerRoleOptions.find((o) => o.value === value.value.employerRole) ?? employerRoleOptions[4])
+const above = computed(() => hasAbove(value.value.employerRole))
 watch(
-  () => value.value.isOutsource,
-  (yes) => {
-    if (!yes) value.value.mainCompanyId = null
+  () => value.value.employerRole,
+  (r) => {
+    value.value.isOutsource = hasAbove(r)
+    if (!hasAbove(r)) value.value.mainCompanyId = null
   },
 )
+watch(
+  () => value.value.employerUnknown,
+  (unknown) => {
+    if (unknown) value.value.companyId = null
+  },
+)
+
+// Names of the chosen employer and organization above: the new-workplace dialog says whom a new place belongs to.
+const employerName = ref<string | null>(null)
+const aboveName = ref<string | null>(null)
+const workplaceOwner = computed(() =>
+  above.value ? { id: value.value.mainCompanyId, name: aboveName.value } : { id: value.value.companyId, name: employerName.value },
+)
+// The places to suggest: those of the organization above, else of the employer.
+const suggestPlacesFor = computed(() => (above.value ? value.value.mainCompanyId ?? value.value.companyId : value.value.companyId))
+const workplacePlaceholder = computed(() =>
+  value.value.employerRole === EmployerRole.Direct && value.value.companyId !== null
+    ? 'İşverenle aynı (isteğe bağlı: daha belirli bir yer seçin)'
+    : 'Fabrika, hastane, şantiye, maden …',
+)
+
+// A place that belongs to someone suggests the organization above the employer, when that is still empty.
+const aboveSuggested = ref(false)
+function onWorkplacePicked(place: WorkplaceOption | null) {
+  if (place?.ownerCompanyId && above.value && value.value.mainCompanyId === null && place.ownerCompanyId !== value.value.companyId) {
+    value.value.mainCompanyId = place.ownerCompanyId
+    aboveName.value = place.ownerName
+    aboveSuggested.value = true
+  }
+}
+watch(
+  () => value.value.mainCompanyId,
+  () => (aboveSuggested.value = false),
+)
+
+// “Taşeron” and the employment type should agree (Özel or Kamu taşeronu).
+const subcontractTypeIds = computed(
+  () => new Set(props.options.employmentTypes.filter((t) => t.name.toLocaleLowerCase('tr-TR').includes('taşeron')).map((t) => t.id)),
+)
+const employmentWarning = computed(() => {
+  if (!workplace.value || value.value.employmentTypeIds.length === 0) return null
+  const saysSubcontract = value.value.employmentTypeIds.some((id) => subcontractTypeIds.value.has(id))
+  if (value.value.employerRole === EmployerRole.Subcontractor && !saysSubcontract)
+    return 'İşveren taşeron: istihdam türünde “Özel taşeronu” ya da “Kamu taşeronu” beklenir.'
+  if (saysSubcontract && value.value.employerRole !== EmployerRole.Subcontractor && value.value.employerRole !== EmployerRole.Unknown)
+    return 'İstihdam türü taşeron diyor; işverenin çalışma biçimi de “Taşeron” olmalı mı?'
+  return null
+})
 watch(hasTradeUnion, (yes) => {
   if (!yes) value.value.tradeUnionAuthorityId = null
 })
@@ -150,27 +214,27 @@ function status(field: string) {
       </n-form-item>
 
       <template v-if="workplace">
-        <n-form-item :class="ai('isOutsource')" label="İşyeri Taşeron mu?" label-placement="top" :show-feedback="false">
-          <n-radio-group v-model:value="value.isOutsource" name="is-outsource">
-            <n-radio-button v-for="o in yesNo" :key="o.label" :value="o.value" :label="o.label" />
-          </n-radio-group>
-        </n-form-item>
-        <n-form-item :class="ai('companyId')" label="İşyeri" label-placement="top" class="wide" required :validation-status="status('companyId')" :feedback="error('companyId')">
-          <company-picker
-            v-model="value.companyId"
-            input-id="company"
-            :selected-name="props.companyName"
-            :suggested-name="props.suggestedCompanyName"
-            add-label="İşyeri Ekle"
-            :company-types="options.companyTypes"
-            :company-scales="options.companyScales"
-            :company-worklines="options.companyWorklines"
-            :status="status('companyId')"
-          />
+        <n-form-item :class="ai('companyId')" label="İşveren" label-placement="top" class="wide" :required="!value.employerUnknown" :validation-status="status('companyId')" :feedback="error('companyId') || 'İşçileri çalıştıran şirket ya da kurum.'">
+          <div class="employer">
+            <company-picker
+              v-if="!value.employerUnknown"
+              v-model="value.companyId"
+              input-id="company"
+              :selected-name="props.companyName"
+              :suggested-name="props.suggestedCompanyName"
+              add-label="İşveren Ekle"
+              :company-types="options.companyTypes"
+              :company-scales="options.companyScales"
+              :company-worklines="options.companyWorklines"
+              :status="status('companyId')"
+              @named="employerName = $event"
+            />
+            <n-checkbox v-model:checked="value.employerUnknown">İşveren bilinmiyor (haber işverenin adını vermiyor)</n-checkbox>
+          </div>
         </n-form-item>
         <n-alert v-if="existingCases.length" type="warning" :show-icon="false" class="wide existing">
           <p class="existing-text">
-            Bu işyeri için {{ existingCases.length }} vaka var. Aynı mücadeleyse yeni vaka yerine mevcut vakaya eylem ekleyin:
+            Bu işveren için {{ existingCases.length }} vaka var. Aynı mücadeleyse yeni vaka yerine mevcut vakaya eylem ekleyin:
           </p>
           <ul class="existing-list">
             <li v-for="c in existingCases.slice(0, 3)" :key="c.id">
@@ -182,17 +246,39 @@ function status(field: string) {
             </li>
           </ul>
         </n-alert>
-        <n-form-item v-if="value.isOutsource" :class="ai('mainCompanyId')" label="Ana Şirket" label-placement="top" class="wide" required :validation-status="status('mainCompanyId')" :feedback="error('mainCompanyId')">
+
+        <n-form-item label="İşyeri" label-placement="top" class="wide" :validation-status="status('workplaceId')" :feedback="error('workplaceId') || 'İşin yapıldığı yer (isteğe bağlı). Doğrudan işverende boş bırakılırsa işverenin kendisidir.'">
+          <workplace-picker
+            v-model="value.workplaceId"
+            input-id="workplace"
+            :selected-name="props.workplaceName"
+            :suggest-for="suggestPlacesFor"
+            :placeholder="workplacePlaceholder"
+            :cities="options.cities"
+            :districts="options.districts"
+            :owner-company-id="workplaceOwner.id"
+            :owner-name="workplaceOwner.name"
+            @picked="onWorkplacePicked"
+          />
+        </n-form-item>
+
+        <n-form-item :class="ai('employerRole')" label="İşveren bu işte nasıl çalışıyor?" label-placement="top" class="wide" :feedback="role.help">
+          <n-radio-group v-model:value="value.employerRole" name="employer-role">
+            <n-radio-button v-for="o in employerRoleOptions" :key="o.value" :value="o.value" :label="o.label" />
+          </n-radio-group>
+        </n-form-item>
+        <n-form-item v-if="above" :class="ai('mainCompanyId')" :label="role.above ?? ''" label-placement="top" class="wide" required :validation-status="status('mainCompanyId')" :feedback="error('mainCompanyId') || (aboveSuggested ? 'Önerildi: seçilen işyerinin sahibi.' : '')">
           <company-picker
             v-model="value.mainCompanyId"
             input-id="main-company"
-            :selected-name="props.mainCompanyName"
+            :selected-name="aboveName ?? props.mainCompanyName"
             :suggested-name="props.suggestedMainCompanyName"
-            add-label="Ana Şirket Ekle"
+            :add-label="`${role.above} Ekle`"
             :company-types="options.companyTypes"
             :company-scales="options.companyScales"
             :company-worklines="options.companyWorklines"
             :status="status('mainCompanyId')"
+            @named="aboveName = $event"
           />
         </n-form-item>
       </template>
@@ -258,7 +344,7 @@ function status(field: string) {
           <n-select v-model:value="value.tradeUnionId" :options="toOptions(options.tradeUnions)" filterable :filter="turkishFilter" clearable placeholder="Seçiniz" />
         </n-form-item>
 
-        <n-form-item :class="ai('employmentTypeIds')" label="İstihdam Türü" label-placement="top" class="wide" required :validation-status="status('employmentTypeIds')" :feedback="error('employmentTypeIds')">
+        <n-form-item :class="ai('employmentTypeIds')" label="İstihdam Türü" label-placement="top" class="wide" required :validation-status="status('employmentTypeIds') ?? (employmentWarning ? 'warning' : undefined)" :feedback="error('employmentTypeIds') || employmentWarning || undefined">
           <n-select v-model:value="value.employmentTypeIds" :options="toOptions(options.employmentTypes)" multiple filterable :filter="turkishFilter" placeholder="Seçiniz" />
         </n-form-item>
 
@@ -319,6 +405,12 @@ function status(field: string) {
 .with-add > :first-child {
   flex: 1;
   min-width: 0;
+}
+.employer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
 }
 .existing {
   margin-bottom: 16px;
