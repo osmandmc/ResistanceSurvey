@@ -20,7 +20,10 @@ namespace RS.MVC.Features.Definitions
         int? WorklineId = null,
         int? ConfederationId = null,
         RS.COMMON.Entities.InstitutionKind? InstitutionKind = null,
-        int? ServiceBranchId = null);
+        int? ServiceBranchId = null,
+        int? CityId = null,
+        int? DistrictId = null,
+        int? OwnerCompanyId = null);
 
     public enum ChangeStatus
     {
@@ -67,6 +70,24 @@ namespace RS.MVC.Features.Definitions
                 company.CompanyWorkLineId = command.WorklineId;
                 company.InstitutionKind = command.InstitutionKind;
                 company.ServiceBranchId = command.ServiceBranchId;
+            }
+            else if (command.Kind == DefinitionKind.Workplaces)
+            {
+                // R37: a place's name, province, district and whom it belongs to. The same name in another province is
+                // another place; a district must lie in the province; the owner must be a company that is not deleted.
+                var workplace = await db.Workplace.FirstOrDefaultAsync(w => w.Id == command.Id && !w.Deleted);
+                if (workplace == null)
+                    return ChangeResult.NotFound;
+                var same = await db.Workplace.Where(w => w.Id != command.Id && !w.Deleted && w.Name == name && w.CityId == command.CityId)
+                    .Select(w => new { w.Id, w.Name }).FirstOrDefaultAsync();
+                if (same != null)
+                    return new ChangeResult(ChangeStatus.Duplicate, same.Id, same.Name);
+                workplace.Name = name;
+                workplace.CityId = command.CityId is { } cityId && await db.City.AnyAsync(c => c.Id == cityId) ? cityId : null;
+                workplace.DistrictId = command.DistrictId is { } districtId && await db.District.AnyAsync(d => d.Id == districtId && d.CityId == workplace.CityId)
+                    ? districtId : null;
+                workplace.OwnerCompanyId = command.OwnerCompanyId is { } ownerId && await db.Company.AnyAsync(c => c.Id == ownerId && !c.Deleted)
+                    ? ownerId : null;
             }
             else
             {

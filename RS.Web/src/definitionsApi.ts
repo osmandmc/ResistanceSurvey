@@ -5,11 +5,12 @@ export type DefinitionKind = 'companies' | 'corporations' | 'reasons' | 'protest
 
 export const definitionKinds: { kind: DefinitionKind; label: string; usageUnit: 'vaka' | 'eylem'; hasApproval: boolean }[] = [
   { kind: 'companies', label: 'Şirketler', usageUnit: 'vaka', hasApproval: false },
+  // R37: places, right under the companies they belong to.
+  { kind: 'workplaces', label: 'İşyerleri', usageUnit: 'vaka', hasApproval: true },
   { kind: 'corporations', label: 'Kurumlar', usageUnit: 'vaka', hasApproval: true },
   { kind: 'reasons', label: 'Vaka nedenleri', usageUnit: 'vaka', hasApproval: true },
   { kind: 'protest-types', label: 'Eylem türleri', usageUnit: 'eylem', hasApproval: true },
   { kind: 'protest-places', label: 'Eylem mekanları', usageUnit: 'eylem', hasApproval: true },
-  { kind: 'workplaces', label: 'İşyerleri', usageUnit: 'vaka', hasApproval: true },
 ]
 
 export interface DefinitionItem {
@@ -30,6 +31,12 @@ export interface DefinitionItem {
   /** Companies (R37): “Kurum türü” and the civil servants' hizmet kolu. */
   institutionKind?: InstitutionKind | null
   serviceBranchId?: number | null
+  /** Workplaces (R37): province, district, whom it belongs to, and the province and district in words. */
+  cityId?: number | null
+  districtId?: number | null
+  ownerCompanyId?: number | null
+  ownerName?: string | null
+  placeName?: string | null
 }
 
 /** “Kurum türü” (R37), matching the server's InstitutionKind. */
@@ -104,6 +111,9 @@ export function updateDefinition(kind: DefinitionKind, item: DefinitionItem) {
       confederationId: item.confederationId,
       institutionKind: item.institutionKind ?? null,
       serviceBranchId: item.serviceBranchId ?? null,
+      cityId: item.cityId ?? null,
+      districtId: item.districtId ?? null,
+      ownerCompanyId: item.ownerCompanyId ?? null,
     }),
   })
 }
@@ -203,6 +213,26 @@ export interface CompanyDetail {
   cases: CompanyCase[]
   relations: CompanyRelationItem[]
   jobLinks: CompanyJobLink[]
+  workplaces: CompanyWorkplace[]
+}
+
+/** A place on the company page (R37). source: "own" (belongs to it), "group" (to one of its group companies), "cases" (its cases name it). */
+export interface CompanyWorkplace {
+  id: number
+  name: string
+  cityId: number | null
+  districtId: number | null
+  placeName: string | null
+  ownerCompanyId: number | null
+  ownerName: string | null
+  approved: boolean
+  cases: number
+  source: 'own' | 'group' | 'cases'
+}
+
+/** A place added in Tanımlar (approved); the same name in the same province is returned instead. */
+export function addWorkplace(workplace: { name: string; cityId: number | null; districtId: number | null; ownerCompanyId: number | null }) {
+  return api<{ workplace: { id: number; name: string }; existed: boolean }>('/api/definitions/workplaces', { method: 'POST', body: JSON.stringify(workplace) })
 }
 
 export function getCompany(id: number) {

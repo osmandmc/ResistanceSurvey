@@ -8,6 +8,7 @@ import CompanyPicker from '@/components/CompanyPicker.vue'
 import MergeDialog from '@/components/MergeDialog.vue'
 import {
   addCompanyRelation,
+  addWorkplace,
   changeCompanyRelation,
   deleteDefinition,
   getCompany,
@@ -19,12 +20,13 @@ import {
   updateDefinition,
   type CompanyDetail,
   type CompanyRelationItem,
+  type CompanyWorkplace,
   type DefinitionItem,
   type DefinitionOptions,
   type Option,
 } from '@/definitionsApi'
 import { formatDate } from '@/format'
-import { EmployerRole } from '@/reviewApi'
+import { EmployerRole, getFormOptions, type DistrictOption } from '@/reviewApi'
 
 // One company (R12a-3, R37): its fields, its facts with other companies, its links from cases, and its cases.
 const route = useRoute()
@@ -200,6 +202,73 @@ async function removeRelation(r: CompanyRelationItem) {
   }
 }
 
+// ---- Workplaces (R37): its own, its group companies' (a holding), and those its cases name ----
+const cities = ref<Option[]>([])
+const districts = ref<DistrictOption[]>([])
+void getFormOptions().then((o) => {
+  cities.value = o.cities
+  districts.value = o.districts
+})
+const workplaceGroups = computed(() =>
+  (
+    [
+      ['own', 'Bu şirkete ait'],
+      ['group', 'Grup şirketlerine ait'],
+      ['cases', 'Vakalarında geçen (başkasına ait ya da sahibi girilmemiş)'],
+    ] as const
+  )
+    .map(([source, title]) => ({ title, items: (company.value?.workplaces ?? []).filter((w) => w.source === source) }))
+    .filter((g) => g.items.length > 0),
+)
+
+const placeEditing = ref(false)
+const placeId = ref<number | null>(null)
+const placeDraft = ref({ name: '', cityId: null as number | null, districtId: null as number | null, ownerId: null as number | null, ownerName: null as string | null })
+const placeError = ref('')
+const savingPlace = ref(false)
+const placeDistricts = computed(() => districts.value.filter((d) => d.cityId === placeDraft.value.cityId))
+
+function openPlace(w: CompanyWorkplace | null) {
+  placeId.value = w?.id ?? null
+  placeDraft.value = w
+    ? { name: w.name, cityId: w.cityId, districtId: w.districtId, ownerId: w.ownerCompanyId, ownerName: w.ownerName }
+    : { name: '', cityId: null, districtId: null, ownerId: company.value?.id ?? null, ownerName: company.value?.name ?? null }
+  placeError.value = ''
+  placeEditing.value = true
+}
+function onPlaceCity(cityId: number | null) {
+  placeDraft.value.cityId = cityId
+  if (!placeDistricts.value.some((d) => d.id === placeDraft.value.districtId)) placeDraft.value.districtId = null
+}
+
+async function savePlace() {
+  const d = placeDraft.value
+  if (!d.name.trim()) {
+    placeError.value = 'İşyerinin adını girin.'
+    return
+  }
+  savingPlace.value = true
+  placeError.value = ''
+  try {
+    if (placeId.value === null) {
+      const result = await addWorkplace({ name: d.name, cityId: d.cityId, districtId: d.districtId, ownerCompanyId: d.ownerId })
+      if (result.existed) message.info(`“${result.workplace.name}” zaten kayıtlıydı.`)
+    } else {
+      await updateDefinition('workplaces', {
+        id: placeId.value, name: d.name, approved: null, usage: 0, typeId: null, againstProduction: null, simple: null, scaleId: null,
+        worklineId: null, confederationId: null, cityId: d.cityId, districtId: d.districtId, ownerCompanyId: d.ownerId,
+      })
+    }
+    placeEditing.value = false
+    message.success('İşyeri kaydedildi.')
+    await load()
+  } catch (error) {
+    placeError.value = errorMessage(error, 'İşyeri kaydedilemedi.')
+  } finally {
+    savingPlace.value = false
+  }
+}
+
 // ---- Links read from the cases (R37, decision b) ----
 const roleTitles: Record<number, [string, string]> = {
   [EmployerRole.Subcontractor]: ['Taşeron olarak çalıştığı', 'Taşeronları'],
@@ -317,6 +386,35 @@ function onMerged(affected: number, intoId: number) {
     </section>
 
     <section class="panel">
+      <div class="panel-head">
+        <h2 class="panel-title">İşyerleri</h2>
+        <n-button size="small" @click="openPlace(null)">İşyeri ekle</n-button>
+      </div>
+      <p class="hint">Yerler: fabrika, hastane, şantiye, maden … Bir işyerinin kime ait olduğunu buradan değiştirebilirsiniz.</p>
+      <p v-if="workplaceGroups.length === 0" class="empty">Yok.</p>
+      <div v-for="g in workplaceGroups" :key="g.title" class="group">
+        <h3 class="group-title">{{ g.title }}</h3>
+        <ul class="links">
+          <li v-for="w in g.items" :key="w.id">
+            <div class="link-text">
+              <span>{{ w.name }}</span>
+              <span v-if="w.placeName" class="meta">{{ w.placeName }}</span>
+              <span v-if="w.source !== 'own'" class="meta">
+                <template v-if="w.ownerCompanyId">kime ait: <router-link :to="`/definitions/companies/${w.ownerCompanyId}`">{{ w.ownerName }}</router-link></template>
+                <template v-else>kime ait: girilmemiş</template>
+              </span>
+              <span class="meta">{{ w.cases }} vaka</span>
+              <span v-if="!w.approved" class="meta pending">onay bekliyor</span>
+            </div>
+            <div class="link-actions">
+              <n-button size="tiny" quaternary @click="openPlace(w)">Düzenle</n-button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="panel">
       <h2 class="panel-title">Vakalardan</h2>
       <p class="hint">Vakaların “İşveren Durumu”ndan (taşeron, yüklenici, işletmeci); burada girilmez. Düzeltmek için vakayı açın.</p>
       <p v-if="jobGroups.length === 0" class="empty">Yok.</p>
@@ -325,7 +423,8 @@ function onMerged(affected: number, intoId: number) {
         <ul class="links">
           <li v-for="l in g.links" :key="`${l.role}-${l.otherId}`">
             <div class="link-text">
-              <router-link :to="`/definitions/companies/${l.otherId}`">{{ l.otherName }}</router-link>
+              <router-link v-if="l.otherId" :to="`/definitions/companies/${l.otherId}`">{{ l.otherName }}</router-link>
+              <span v-else>{{ l.otherName }}</span>
               <span class="meta">{{ l.cases }} vaka</span>
               <span v-if="period(l.first, l.last)" class="meta">{{ period(l.first, l.last) }}</span>
             </div>
@@ -391,6 +490,35 @@ function onMerged(affected: number, intoId: number) {
       <div class="actions">
         <n-button :disabled="savingRelation" @click="editing = false">Vazgeç</n-button>
         <n-button type="primary" :loading="savingRelation" @click="saveRelation">Kaydet</n-button>
+      </div>
+    </template>
+  </n-modal>
+
+  <n-modal
+    v-model:show="placeEditing"
+    preset="card"
+    :title="placeId === null ? 'İşyeri ekle' : 'İşyerini düzenle'"
+    :style="{ width: 'min(520px, calc(100vw - 32px))' }"
+    :mask-closable="!savingPlace"
+  >
+    <n-form-item label="İşyerinin adı" label-placement="top" :show-feedback="false">
+      <n-input v-model:value="placeDraft.name" placeholder="Örn. Gölcük fabrikası" />
+    </n-form-item>
+    <div class="dates">
+      <n-form-item label="İl" label-placement="top" :show-feedback="false">
+        <n-select :value="placeDraft.cityId" :options="toSelect(cities)" filterable :filter="turkishFilter" clearable @update:value="onPlaceCity" />
+      </n-form-item>
+      <n-form-item label="İlçe" label-placement="top" :show-feedback="false">
+        <n-select v-model:value="placeDraft.districtId" :options="toSelect(placeDistricts)" :disabled="!placeDraft.cityId" filterable :filter="turkishFilter" clearable />
+      </n-form-item>
+    </div>
+    <n-form-item label="Kime ait" label-placement="top" :validation-status="placeError ? 'error' : undefined" :feedback="placeError || 'İşyerinin sahibi olan şirket ya da kurum (ör. hastane için üniversite ya da bakanlık).'">
+      <company-picker v-model="placeDraft.ownerId" input-id="workplace-owner" :selected-name="placeDraft.ownerName" placeholder="Adıyla arayın" />
+    </n-form-item>
+    <template #footer>
+      <div class="actions">
+        <n-button :disabled="savingPlace" @click="placeEditing = false">Vazgeç</n-button>
+        <n-button type="primary" :loading="savingPlace" @click="savePlace">Kaydet</n-button>
       </div>
     </template>
   </n-modal>
@@ -512,6 +640,9 @@ a.meta {
 }
 .note {
   font-style: italic;
+}
+.pending {
+  color: #92400e;
 }
 .cases li {
   display: flex;
