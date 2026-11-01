@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CompanyPicker from '@/components/CompanyPicker.vue'
 import { turkishFilter } from '@/search'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -244,6 +245,10 @@ function onMerged(affected: number) {
               <th>Büyüklük</th>
               <th>İşkolu / hizmet kolu</th>
             </template>
+            <template v-if="kind === 'workplaces'">
+              <th>İl / ilçe</th>
+              <th>Kime ait</th>
+            </template>
             <template v-if="kind === 'protest-types'">
               <th>Üretime karşı</th>
               <th>Basit</th>
@@ -275,6 +280,18 @@ function onMerged(affected: number) {
                 <td><n-select v-model:value="editing.scaleId" :options="toSelect(options.companyScales)" clearable size="small" /></td>
                 <td><n-select v-model:value="editing.worklineId" :options="toSelect(options.companyWorklines)" clearable filterable :filter="turkishFilter" size="small" /></td>
               </template>
+              <template v-if="kind === 'workplaces'">
+                <td>{{ item.placeName ?? '' }}</td>
+                <td class="owner-cell">
+                  <company-picker
+                    :model-value="editing.ownerCompanyId ?? null"
+                    input-id="workplace-owner"
+                    :selected-name="item.ownerName"
+                    placeholder="Kime ait"
+                    @update:model-value="(v: number | null) => (editing!.ownerCompanyId = v)"
+                  />
+                </td>
+              </template>
               <template v-if="kind === 'protest-types'">
                 <td><n-switch :value="editing.againstProduction ?? false" size="small" @update:value="(v: boolean) => (editing!.againstProduction = v)" /></td>
                 <td><n-switch :value="editing.simple ?? false" size="small" @update:value="(v: boolean) => (editing!.simple = v)" /></td>
@@ -301,6 +318,12 @@ function onMerged(affected: number) {
                 <td>{{ nameOf(options.companyTypes, item.typeId) }}</td>
                 <td>{{ nameOf(options.companyScales, item.scaleId) }}</td>
                 <td>{{ nameOf(options.companyWorklines, item.worklineId) || nameOf(options.serviceBranches ?? [], item.serviceBranchId ?? null) }}</td>
+              </template>
+              <template v-if="kind === 'workplaces'">
+                <td>{{ item.placeName ?? '' }}</td>
+                <td>
+                  <router-link v-if="item.ownerCompanyId" :to="`/definitions/companies/${item.ownerCompanyId}`" class="name-link">{{ item.ownerName }}</router-link>
+                </td>
               </template>
               <template v-if="kind === 'protest-types'">
                 <td>{{ item.againstProduction ? 'Evet' : 'Hayır' }}</td>
@@ -340,6 +363,9 @@ function onMerged(affected: number) {
 </template>
 
 <style scoped>
+.owner-cell {
+  min-width: 240px;
+}
 .heading {
   margin: 0;
   font-size: 30px;

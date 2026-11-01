@@ -130,6 +130,61 @@ public class CompanyRelationTests
     }
 
     [Fact]
+    public async Task AHoldingSeesItsOwnItsGroupsAndItsCasesWorkplaces()
+    {
+        _db.City.AddRange(new City { Id = 34, Name = "İstanbul" }, new City { Id = 44, Name = "Malatya" });
+        _db.District.Add(new District { Id = 341, Name = "Küçükçekmece", CityId = 34 });
+        var cengizInsaat = new Company { Name = "Cengiz İnşaat" };
+        _db.Company.Add(cengizInsaat);
+        await _db.SaveChangesAsync();
+        await Save(cengizInsaat.Id, CompanyRelationKind.Group, _cengiz.Id); // Cengiz İnşaat is part of Cengiz Holding
+        _db.Workplace.AddRange(
+            new Workplace { Id = 1, Name = "Cengiz Holding genel müdürlüğü", CityId = 34, OwnerCompanyId = _cengiz.Id, Approved = true },
+            new Workplace { Id = 2, Name = "Eti Bakır Malatya işletmesi", CityId = 44, OwnerCompanyId = _eti.Id },
+            new Workplace { Id = 3, Name = "Halkalı–İstanbul Havalimanı metro şantiyesi", CityId = 34, DistrictId = 341 },
+            new Workplace { Id = 4, Name = "Başka bir şantiye", CityId = 34, OwnerCompanyId = cengizInsaat.Id });
+        await Save(_eti.Id, CompanyRelationKind.Group, _cengiz.Id);
+        // Case 3547's place: subcontracted work for Cengiz İnşaat, which names Cengiz Holding as before.
+        _db.Resistance.Add(new Resistance { Name = "Metro", CategoryId = KnownListIds.WorkplaceCategory, MainCompanyId = _cengiz.Id, EmployerUnknown = true,
+            EmployerRole = EmployerRole.Subcontractor, WorkplaceId = 3, Protestos = [] });
+        await _db.SaveChangesAsync();
+
+        var detail = (await new GetCompanyHandler(_db).Handle(_cengiz.Id))!;
+        var places = detail.Workplaces!;
+        // The subcontractor the news did not name still shows among the links from cases.
+        Assert.Equal((EmployerRole.Subcontractor, false, 0, "İşveren bilinmiyor"),
+            (detail.JobLinks[0].Role, detail.JobLinks[0].AsEmployer, detail.JobLinks[0].OtherId, detail.JobLinks[0].OtherName));
+
+        Assert.Equal(
+            [("Cengiz Holding genel müdürlüğü", "own"), ("Başka bir şantiye", "group"), ("Eti Bakır Malatya işletmesi", "group"), ("Halkalı–İstanbul Havalimanı metro şantiyesi", "cases")],
+            places.Select(w => (w.Name, w.Source)));
+        Assert.Equal(("İstanbul / Küçükçekmece", 1), (places[3].PlaceName, places[3].Cases));
+    }
+
+    [Fact]
+    public async Task AWorkplacesProvinceDistrictAndOwnerAreEditedInTanimlar()
+    {
+        _db.City.AddRange(new City { Id = 34, Name = "İstanbul" }, new City { Id = 44, Name = "Malatya" });
+        _db.District.Add(new District { Id = 341, Name = "Küçükçekmece", CityId = 34 });
+        _db.Workplace.AddRange(new Workplace { Id = 3, Name = "Metro şantiyesi", CityId = 34 }, new Workplace { Id = 5, Name = "Metro şantiyesi", CityId = 44 });
+        await _db.SaveChangesAsync();
+        var update = new UpdateDefinitionHandler(_db);
+
+        var saved = await update.Handle(new UpdateDefinitionCommand(DefinitionKind.Workplaces, 3, "Metro şantiyesi", CityId: 34, DistrictId: 341, OwnerCompanyId: _cengiz.Id));
+        var badDistrict = await update.Handle(new UpdateDefinitionCommand(DefinitionKind.Workplaces, 5, "Metro şantiyesi", CityId: 44, DistrictId: 341, OwnerCompanyId: 99));
+
+        Assert.Equal(ChangeStatus.Ok, saved.Status);
+        Assert.Equal((341, _cengiz.Id), (_db.Workplace.Single(w => w.Id == 3).DistrictId!.Value, _db.Workplace.Single(w => w.Id == 3).OwnerCompanyId!.Value));
+        // The same name in another province is another place; a district of another province and a deleted owner are dropped.
+        Assert.Equal(ChangeStatus.Ok, badDistrict.Status);
+        Assert.Equal(((int?)null, (int?)null), (_db.Workplace.Single(w => w.Id == 5).DistrictId, _db.Workplace.Single(w => w.Id == 5).OwnerCompanyId));
+        Assert.Equal(ChangeStatus.Duplicate, (await update.Handle(new UpdateDefinitionCommand(DefinitionKind.Workplaces, 5, "Metro şantiyesi", CityId: 34))).Status);
+
+        var row = (await new ListDefinitionsHandler(_db).Handle(new ListDefinitionsQuery(DefinitionKind.Workplaces))).Items.Single(i => i.Id == 3);
+        Assert.Equal(("İstanbul / Küçükçekmece", "Cengiz Holding"), (row.PlaceName, row.OwnerName));
+    }
+
+    [Fact]
     public void TheFactsAndLinksTranslateToSqlServer()
     {
         using var sqlServer = new RSDBContext(new DbContextOptionsBuilder<RSDBContext>().UseSqlServer("Server=none;Database=none").Options);

@@ -32,7 +32,8 @@ namespace RS.MVC.Controllers
         GetCompanyHandler getCompany,
         SaveCompanyRelationHandler saveRelation,
         RemoveCompanyRelationHandler removeRelation,
-        CreateCorporationHandler createCorporation) : ControllerBase
+        CreateCorporationHandler createCorporation,
+        CreateWorkplaceHandler createWorkplace) : ControllerBase
     {
         /// <summary>CompanyWorklines: the workers' işkolları; ServiceBranches: the civil servants' hizmet kolları (R37).</summary>
         public record DefinitionOptions(IReadOnlyList<Option> CorporationTypes, IReadOnlyList<Option> CompanyTypes, IReadOnlyList<Option> CompanyScales,
@@ -41,7 +42,9 @@ namespace RS.MVC.Controllers
         public record CreateCorporationRequest(string Name, int? TypeId, int? ConfederationId);
 
         public record UpdateRequest(string Name, int? TypeId, bool AgainstProduction, bool Simple, int? ScaleId, int? WorklineId, int? ConfederationId = null,
-            InstitutionKind? InstitutionKind = null, int? ServiceBranchId = null);
+            InstitutionKind? InstitutionKind = null, int? ServiceBranchId = null, int? CityId = null, int? DistrictId = null, int? OwnerCompanyId = null);
+
+        public record CreateWorkplaceRequest(string Name, int? CityId, int? DistrictId, int? OwnerCompanyId);
 
         public record MergeRequest(int IntoId);
 
@@ -62,6 +65,14 @@ namespace RS.MVC.Controllers
             await db.CompanyWorkLine.Where(e => !e.IsCivilService).OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             await db.Set<COMMON.Entities.LookupEntity.Confederation>().OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             await db.CompanyWorkLine.Where(e => e.IsCivilService).OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync());
+
+        /// <summary>POST /api/definitions/workplaces — a place added in Tanımlar (approved; R37); the same name in the same province is returned instead.</summary>
+        [HttpPost("workplaces")]
+        public async Task<ActionResult<CreateWorkplaceResult>> CreateWorkplace(CreateWorkplaceRequest request)
+        {
+            var result = await createWorkplace.Handle(new CreateWorkplaceCommand(request?.Name, request?.CityId, request?.DistrictId, request?.OwnerCompanyId, Approved: true));
+            return result.Error == null ? result : BadRequest(new { error = result.Error });
+        }
 
         /// <summary>POST /api/definitions/corporations — a new organization added in Tanımlar (approved); an existing one of the same name is returned instead.</summary>
         [HttpPost("corporations")]
@@ -88,7 +99,7 @@ namespace RS.MVC.Controllers
                 return UnknownKind();
             var result = await update.Handle(new UpdateDefinitionCommand(
                 parsed, id, request?.Name, request?.TypeId, request?.AgainstProduction ?? false, request?.Simple ?? false, request?.ScaleId, request?.WorklineId, request?.ConfederationId,
-                request?.InstitutionKind, request?.ServiceBranchId));
+                request?.InstitutionKind, request?.ServiceBranchId, request?.CityId, request?.DistrictId, request?.OwnerCompanyId));
             return Answer(result);
         }
 

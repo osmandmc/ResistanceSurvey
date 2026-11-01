@@ -30,6 +30,14 @@ namespace RS.MVC.Features.Definitions
     /// </summary>
     public record CompanyJobLink(EmployerRole Role, bool AsEmployer, int OtherId, string OtherName, int Cases, DateTime? First, DateTime? Last);
 
+    /// <summary>
+    /// A workplace on the company page (R37). Source: “own” (it belongs to this company), “group” (it belongs to one of
+    /// this group's companies), “cases” (a case of this company names it, as employer or organization above, but it
+    /// belongs to someone else or to nobody yet). Cases: live cases at the place, whoever the employer.
+    /// </summary>
+    public record CompanyWorkplace(int Id, string Name, int? CityId, int? DistrictId, string PlaceName, int? OwnerCompanyId, string OwnerName,
+        bool Approved, int Cases, string Source);
+
     /// <summary>One company in Tanımlar: its fields, its live cases, its facts with other companies and its links from cases.</summary>
     public record CompanyDetail(
         int Id,
@@ -41,7 +49,8 @@ namespace RS.MVC.Features.Definitions
         int? ServiceBranchId,
         IReadOnlyList<CompanyCase> Cases,
         IReadOnlyList<CompanyRelationItem> Relations,
-        IReadOnlyList<CompanyJobLink> JobLinks);
+        IReadOnlyList<CompanyJobLink> JobLinks,
+        IReadOnlyList<CompanyWorkplace> Workplaces = null);
 
     public class GetCompanyHandler(RSDBContext db)
     {
@@ -61,21 +70,49 @@ namespace RS.MVC.Features.Definitions
                 .ToListAsync();
 
             return new CompanyDetail(company.Id, company.Name, company.CompanyTypeId, company.CompanyScaleId, company.CompanyWorkLineId,
-                company.InstitutionKind, company.ServiceBranchId, cases, await CompanyFacts.OfAsync(db, id), await JobLinksAsync(id));
+                company.InstitutionKind, company.ServiceBranchId, cases, await CompanyFacts.OfAsync(db, id), await JobLinksAsync(id),
+                await WorkplacesAsync(id));
+        }
+
+        /// <summary>The company's places, its group companies' places (a holding), and the places its cases name.</summary>
+        public async Task<List<CompanyWorkplace>> WorkplacesAsync(int id)
+        {
+            var members = await db.CompanyRelation
+                .Where(r => r.Kind == CompanyRelationKind.Group && r.RelatedCompanyId == id && !r.Company.Deleted)
+                .Select(r => r.CompanyId).Distinct().ToListAsync();
+            var rows = await db.Workplace
+                .Where(w => !w.Deleted && (w.OwnerCompanyId == id
+                    || (w.OwnerCompanyId != null && members.Contains(w.OwnerCompanyId.Value))
+                    || db.Resistance.Any(r => !r.Deleted && r.WorkplaceId == w.Id && (r.CompanyId == id || r.MainCompanyId == id))))
+                .Select(w => new
+                {
+                    w.Id, w.Name, w.CityId, w.DistrictId, w.OwnerCompanyId, w.Approved,
+                    PlaceName = w.City != null ? (w.District != null ? w.City.Name + " / " + w.District.Name : w.City.Name) : null,
+                    OwnerName = w.OwnerCompany != null ? w.OwnerCompany.Name : null,
+                    Cases = db.Resistance.Count(r => !r.Deleted && r.WorkplaceId == w.Id),
+                })
+                .ToListAsync();
+            static int Order(string source) => source == "own" ? 0 : source == "group" ? 1 : 2;
+            return rows
+                .Select(w => new CompanyWorkplace(w.Id, w.Name, w.CityId, w.DistrictId, w.PlaceName, w.OwnerCompanyId, w.OwnerName, w.Approved, w.Cases,
+                    w.OwnerCompanyId == id ? "own" : w.OwnerCompanyId is { } owner && members.Contains(owner) ? "group" : "cases"))
+                .OrderBy(w => Order(w.Source)).ThenBy(w => w.OwnerName).ThenBy(w => w.Name)
+                .ToList();
         }
 
         private async Task<List<CompanyJobLink>> JobLinksAsync(int id)
         {
             var rows = await db.Resistance
-                .Where(r => !r.Deleted && r.CategoryId == KnownListIds.WorkplaceCategory && r.MainCompanyId != null && r.CompanyId != null
+                .Where(r => !r.Deleted && r.CategoryId == KnownListIds.WorkplaceCategory && r.MainCompanyId != null
                     && (r.CompanyId == id || r.MainCompanyId == id)
                     && (r.EmployerRole == EmployerRole.Subcontractor || r.EmployerRole == EmployerRole.Contractor || r.EmployerRole == EmployerRole.Operator))
                 .Select(r => new
                 {
                     r.EmployerRole,
                     AsEmployer = r.CompanyId == id,
-                    OtherId = r.CompanyId == id ? r.MainCompanyId.Value : r.CompanyId.Value,
-                    OtherName = r.CompanyId == id ? r.MainCompany.Name : r.Company.Name,
+                    // An employer the news did not name (“İşveren bilinmiyor”) is one group, without a company (0).
+                    OtherId = r.CompanyId == id ? r.MainCompanyId.Value : r.CompanyId ?? 0,
+                    OtherName = r.CompanyId == id ? r.MainCompany.Name : r.Company != null ? r.Company.Name : "İşveren bilinmiyor",
                     First = r.Protestos.Where(p => !p.Deleted).Min(p => (DateTime?)p.StartDate),
                     Last = r.Protestos.Where(p => !p.Deleted).Max(p => (DateTime?)p.StartDate),
                 })
