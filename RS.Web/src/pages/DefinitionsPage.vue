@@ -37,6 +37,8 @@ const meta = computed(() => definitionKinds.find((k) => k.kind === kind.value)!)
 const view = ref<'list' | 'duplicates'>('list')
 const text = ref('')
 const pendingOnly = ref(false)
+/** Şirketler: only companies no live case uses (as workplace or main company). */
+const unusedOnly = ref(false)
 const typeId = ref<number | null>(null)
 const page = ref(1)
 
@@ -61,7 +63,7 @@ async function load() {
   loading.value = true
   loadError.value = ''
   try {
-    const result = await listDefinitions(kind.value, { text: text.value.trim(), pending: pendingOnly.value, typeId: typeId.value, page: page.value })
+    const result = await listDefinitions(kind.value, { text: text.value.trim(), pending: pendingOnly.value, typeId: typeId.value, unused: unusedOnly.value, page: page.value })
     items.value = result.items
     total.value = result.total
     pageSize.value = result.pageSize
@@ -77,6 +79,7 @@ watch(kind, () => {
   view.value = 'list'
   text.value = ''
   pendingOnly.value = false
+  unusedOnly.value = false
   typeId.value = null
   page.value = 1
   editing.value = null
@@ -92,7 +95,7 @@ watch(text, () => {
     void load()
   }, 300)
 })
-watch([pendingOnly, typeId], () => {
+watch([pendingOnly, typeId, unusedOnly], () => {
   page.value = 1
   void load()
 })
@@ -208,6 +211,7 @@ function onMerged(affected: number) {
         class="type-filter"
       />
       <n-checkbox v-if="meta.hasApproval" v-model:checked="pendingOnly">Yalnız onay bekleyenler ({{ pendingCount }})</n-checkbox>
+      <n-checkbox v-if="kind === 'companies'" v-model:checked="unusedOnly">Yalnız vakası olmayanlar</n-checkbox>
       <n-button v-if="kind === 'corporations'" @click="addingCorporation = true">Yeni kurum</n-button>
     </div>
     <corporation-add-dialog
@@ -223,7 +227,7 @@ function onMerged(affected: number) {
     <n-alert v-else-if="loadError" type="error" :show-icon="false" class="state-alert">
       {{ loadError }} <n-button size="small" @click="load()">Tekrar dene</n-button>
     </n-alert>
-    <div v-else-if="items.length === 0" class="state"><n-empty :description="pendingOnly ? 'Onay bekleyen değer yok.' : 'Değer bulunamadı.'" /></div>
+    <div v-else-if="items.length === 0" class="state"><n-empty :description="pendingOnly ? 'Onay bekleyen değer yok.' : unusedOnly ? 'Vakası olmayan şirket yok.' : 'Değer bulunamadı.'" /></div>
 
     <div v-else class="table-wrap">
       <table class="definitions-table">
