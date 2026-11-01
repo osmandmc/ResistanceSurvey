@@ -22,6 +22,8 @@ export interface CaseListItem {
   /** The case's place (R37), when it names one. */
   workplaceName: string | null
   mainCompanyName: string | null
+  /** Asıl işveren, İş sahibi or Varlığın sahibi by the employer's role (R37); “Ana şirket” when the role is not set. */
+  mainCompanyLabel: string | null
   categoryName: string | null
   protestCount: number
   lastProtestDate: string | null
