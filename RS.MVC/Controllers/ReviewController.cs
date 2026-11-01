@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RS.MVC.Applications;
 using RS.MVC.Features.Review;
 using RS.MVC.Models;
 
@@ -26,7 +27,8 @@ namespace RS.MVC.Controllers
         GetAiPromptHandler getAiPrompt,
         CheckAiAnswerHandler checkAiAnswer,
         GetAiDraftHandler getAiDraft,
-        MatchCasesFromAiHandler matchCases) : ControllerBase
+        MatchCasesFromAiHandler matchCases,
+        IPipelineClient pipeline) : ControllerBase
     {
         /// <summary>
         /// POST /api/review/{articleId}/ai-cases — R20: the existing cases this article probably belongs to, from its AI
@@ -54,13 +56,15 @@ namespace RS.MVC.Controllers
             };
         }
 
-        public record AiCheckRequest(string Answer);
+        /// <param name="ArticleId">The article the answer is for: its date lets the dates be checked (R11 flags).</param>
+        public record AiCheckRequest(string Answer, string ArticleId = null);
 
         /// <summary>POST /api/review/ai-check — the pasted AI answer checked against the lists, as form values.</summary>
         [HttpPost("ai-check")]
         public async Task<ActionResult<AiCheckResult>> AiCheck(AiCheckRequest request)
         {
-            var result = await checkAiAnswer.Handle(new CheckAiAnswerCommand(request?.Answer));
+            var publishedAt = string.IsNullOrEmpty(request?.ArticleId) ? null : (await pipeline.GetArticleAsync(request.ArticleId))?.PublishedAt;
+            var result = await checkAiAnswer.Handle(new CheckAiAnswerCommand(request?.Answer, publishedAt));
             return result.Error == null ? result : BadRequest(new { error = result.Error });
         }
 

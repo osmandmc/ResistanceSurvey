@@ -51,6 +51,67 @@ public class AiFillTests
         await _db.SaveChangesAsync();
     }
 
+    private static DateTimeOffset Published(int year, int month, int day) => new(year, month, day, 10, 0, 0, TimeSpan.FromHours(3));
+
+    private Task<AiCheckResult> Check(string answer, DateTimeOffset? published) =>
+        new CheckAiAnswerHandler(_db).Handle(new CheckAiAnswerCommand(answer, published));
+
+    [Fact]
+    public async Task FlagsNameTheValuesToCheckWithAReason()
+    {
+        await SeedAsync();
+
+        var flags = (await Check(Answer, Published(2026, 10, 14))).Flags!;
+
+        // Names the lists do not have, and a new organization; the dates and numbers are plausible.
+        Assert.Contains(flags, f => f.Field == "protest.locations" && f.Message.Contains("Atlantis") && f.Message.Contains("listede yok"));
+        Assert.Contains(flags, f => f.Field == "case.reasons" && f.Message.Contains("Ücret artışı"));
+        Assert.Contains(flags, f => f.Field == "case.organizations" && f.Message.Contains("Gebze Dayanışma Platformu") && f.Message.Contains("yeni kayıt"));
+        Assert.DoesNotContain(flags, f => f.Field.StartsWith("protest.start_date") || f.Field == "protest.custody_count");
+        Assert.All(flags, f => Assert.False(string.IsNullOrEmpty(f.Label)));
+    }
+
+    [Theory]
+    [InlineData(2026, 10, 10, "haberin tarihinden (10.10.2026) sonra")]
+    [InlineData(2027, 12, 1, "bir yıldan daha eski")]
+    public async Task ADateAfterOrLongBeforeTheArticleIsFlagged(int year, int month, int day, string message)
+    {
+        await SeedAsync();
+
+        var flags = (await Check(Answer, Published(year, month, day))).Flags!;
+
+        Assert.Contains(flags, f => f.Field == "protest.start_date" && f.Message.Contains(message));
+    }
+
+    [Fact]
+    public async Task ImpossibleNumbersAndAnEndBeforeTheStartAreFlagged()
+    {
+        await SeedAsync();
+        var answer = Answer
+            .Replace("\"end_date\": \"2026-10-14\"", "\"end_date\": \"2026-10-12\"")
+            .Replace("\"custody_count\": null", "\"custody_count\": 300")
+            .Replace("\"fired_count\": null", "\"fired_count\": 500")
+            .Replace("\"participant_count\": \"200\"", "\"participant_count\": \"250\"")
+            .Replace("\"employee_count\": 450", "\"employee_count\": 120");
+
+        var flags = (await Check(answer, Published(2026, 10, 14))).Flags!.Select(f => f.Field).ToList();
+
+        Assert.Contains("protest.end_date", flags);
+        Assert.Contains("protest.custody_count", flags);
+        Assert.Contains("case.fired_count", flags);
+        Assert.Contains("protest.participant_count", flags); // İşletme: more acting than the workplace employs
+    }
+
+    [Fact]
+    public async Task WithoutTheArticlesDateOnlyTheDateItselfIsChecked()
+    {
+        await SeedAsync();
+
+        var flags = (await Check(Answer.Replace("\"start_date\": \"2026-10-14\"", "\"start_date\": null"), null)).Flags!;
+
+        Assert.Contains(flags, f => f.Field == "protest.start_date" && f.Message.Contains("bulunamadı"));
+    }
+
     [Fact]
     public async Task AnAnswerBecomesFormValuesWithAStatusPerValue()
     {

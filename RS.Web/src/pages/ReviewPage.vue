@@ -3,7 +3,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NAlert, NButton, NRadio, NRadioGroup, NResult, NSpin, NTag, useMessage } from 'naive-ui'
 import { ApiError, errorMessage } from '@/api'
-import { aiCaseValues, aiProtestValues, getAiDraft, matchAiCases, unchangedFields, type AiCaseMatch, type AiCaseMatches, type AiCheckResult, type AiDraft, type AiUse } from '@/aiFillApi'
+import { aiCaseValues, aiProtestValues, getAiDraft, matchAiCases, unchangedFields, type AiCaseMatch, type AiCaseMatches, type AiCheckResult, type AiDraft, type AiFlag, type AiUse } from '@/aiFillApi'
 import { emptyCase, toCaseInput, type CaseFormValue } from '@/caseForm'
 import AiFillDialog from '@/components/AiFillDialog.vue'
 import CaseFinder from '@/components/CaseFinder.vue'
@@ -127,10 +127,10 @@ function useSuggestion(suggestion: CaseSuggestion, next: 'addProtest' | 'linkOnl
 
 // "AI ile doldur" (R19): what the answer put into the form, so those fields stay marked until changed.
 const aiDialogFor = ref<string | null>(null)
-/** The pipeline's draft for this article (R11); null when it has none. */
+/** The pipeline's draft for this article (R11); null when it has none. Applied to the form as soon as it loads. */
 const aiDraft = ref<AiDraft | null>(null)
-/** The dialog shows the draft (true) or the copy-paste steps (false). */
-const aiDialogShowsDraft = ref(false)
+/** The applied answer's flags (R11, D-008): values to check, each with its reason. */
+const aiFlags = ref<AiFlag[]>([])
 const aiApplied = ref<{ case: Partial<CaseFormValue>; protest: Partial<ProtestFormValue> } | null>(null)
 const aiCompanyName = ref<string | null>(null)
 /** Names of the registered companies the answer chose: the company pickers show them instead of a bare id. */
@@ -193,8 +193,10 @@ function showEvidence(field: string) {
   document.querySelector(`[data-evidence~="${field}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
 }
 
-function onAiApply(result: AiCheckResult) {
+/** auto: the pipeline's draft, applied when the article opens (no message). */
+function onAiApply(result: AiCheckResult, auto = false) {
   aiEvidence.value = result.evidence ?? []
+  aiFlags.value = result.flags ?? []
   activeEvidence.value = null
   const caseValues = result.case ? aiCaseValues(result.case) : {}
   const protestValues = result.protest ? aiProtestValues(result.protest) : {}
@@ -209,7 +211,7 @@ function onAiApply(result: AiCheckResult) {
   aiNotRelevant.value = null
   aiDialogFor.value = null
   if (action.value === 'linkOnly') action.value = 'newCase'
-  message.success('Form dolduruldu. “AI” işaretli alanları kontrol edin; kaydetmeden önce her şeyi değiştirebilirsiniz.')
+  if (!auto) message.success('Form dolduruldu. “AI” işaretli alanları kontrol edin; kaydetmeden önce her şeyi değiştirebilirsiniz.')
 }
 
 function onAiNotRelevant(reason: string | null) {
@@ -217,15 +219,27 @@ function onAiNotRelevant(reason: string | null) {
   aiNotRelevant.value = reason ?? 'Gerekçe yazılmadı.'
 }
 
-function openAiDialog(showDraft: boolean) {
-  aiDialogShowsDraft.value = showDraft
+function openAiDialog() {
   aiDialogFor.value = articleId.value
 }
 
-/** "Forma uygula" on the pipeline's draft, without opening the check table. */
-function applyDraft() {
-  if (aiDraft.value) onAiApply(aiDraft.value.check)
-}
+/**
+ * What to check before saving (R11): the flags of the applied answer for fields that still hold its value, and the
+ * quotes not found in the article. The check table's other values (matched, corrected) need no attention.
+ */
+const toCheck = computed(() => {
+  const formField = (field: string) => evidenceFormField[field]
+  const stillAi = (field: string) => {
+    const f = formField(field)
+    return !f || (f.part === 'case' ? aiCaseFields.value : aiProtestFields.value).includes(f.key)
+  }
+  return [
+    ...aiFlags.value.filter((f) => stillAi(f.field)).map((f) => ({ key: `${f.field}:${f.message}`, label: f.label, text: f.message })),
+    ...evidenceList.value
+      .filter((e) => !e.found)
+      .map((e) => ({ key: `quote:${e.field}`, label: e.label, text: 'AI’ın gösterdiği cümle haberde bulunamadı.' })),
+  ]
+})
 
 // The pipeline's draft is kept with the decision even when not applied (R19c): that it was ignored says something too.
 async function loadDraft() {
@@ -233,11 +247,15 @@ async function loadDraft() {
   const draft = await getAiDraft(id)
   if (id !== articleId.value) return
   aiDraft.value = draft
-  if (draft) aiUse.value = { answer: draft.answer, promptVersion: 'v2', applied: false, origin: draft.origin }
+  if (!draft) return
+  aiUse.value = { answer: draft.answer, promptVersion: 'v2', applied: false, origin: draft.origin }
+  // A relevant draft fills the form at once (R11): the researcher reviews the marked fields and the evidence.
+  if (draft.check.relevant && needsProtest.value) onAiApply(draft.check, true)
 }
 
 function clearAi() {
   aiEvidence.value = []
+  aiFlags.value = []
   activeEvidence.value = null
   aiDraft.value = null
   aiUse.value = null
@@ -505,18 +523,20 @@ async function onDismissed() {
       </n-alert>
       <div v-else-if="aiDraft?.check.relevant && needsProtest" class="ai-bar">
         <p class="ai-text">
-          <strong>AI taslağı hazır.</strong>
+          <strong>Form AI taslağıyla dolduruldu.</strong> “AI” işaretli alanları ve haberdeki kanıtları kontrol edin.
           <span class="ai-origin">{{ aiDraft.origin }}</span>
         </p>
-        <div class="ai-actions">
-          <n-button size="small" @click="openAiDialog(true)">Kontrolü göster</n-button>
-          <n-button size="small" class="ai-button" @click="applyDraft">Forma uygula</n-button>
-          <n-button size="small" quaternary @click="openAiDialog(false)">Kendi AI sohbetimle doldur</n-button>
-        </div>
+        <n-button size="small" quaternary @click="openAiDialog()">Kendi AI sohbetimle doldur</n-button>
       </div>
       <div v-else-if="article.body && needsProtest" class="ai-bar">
         <p class="ai-text">Formu bir AI sohbetinin yanıtıyla önceden doldurun.</p>
-        <n-button size="small" class="ai-button" @click="openAiDialog(false)">AI ile doldur</n-button>
+        <n-button size="small" class="ai-button" @click="openAiDialog()">AI ile doldur</n-button>
+      </div>
+      <div v-if="toCheck.length && needsProtest" class="to-check" role="note" aria-labelledby="to-check-heading">
+        <p id="to-check-heading" class="to-check-head">{{ toCheck.length }} değer kontrol edilmeli</p>
+        <ul>
+          <li v-for="c in toCheck" :key="c.key"><strong>{{ c.label }}:</strong> {{ c.text }}</li>
+        </ul>
       </div>
 
       <h2 id="decision-heading" class="decision-heading">Önerilen işlem</h2>
@@ -578,7 +598,7 @@ async function onDismissed() {
   </div>
 
   <dismiss-dialog :article="dismissTarget" :suggested-reason="aiNotRelevant" :ai="aiUse" @handled="onDismissed" @close="dismissTarget = null" />
-  <ai-fill-dialog :article-id="aiDialogFor" :draft="aiDialogShowsDraft ? aiDraft?.check : null" @checked="aiUse = $event" @apply="onAiApply" @not-relevant="onAiNotRelevant" @close="aiDialogFor = null" />
+  <ai-fill-dialog :article-id="aiDialogFor" @checked="aiUse = $event" @apply="onAiApply" @not-relevant="onAiNotRelevant" @close="aiDialogFor = null" />
 </template>
 
 <style scoped>
@@ -838,6 +858,25 @@ async function onDismissed() {
   padding: 10px 14px;
   border-radius: 8px;
   background: #f5f2fc;
+}
+.to-check {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-left: 3px solid #d4a72c;
+  background: #fff8e5;
+  border-radius: 0 8px 8px 0;
+  font-size: 14px;
+}
+.to-check-head {
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+.to-check ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 .ai-origin {
   margin-left: 6px;

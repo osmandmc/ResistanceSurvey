@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RS.COMMON.Constants;
 using RS.EF;
 using RS.MVC.Applications;
 using RS.MVC.Features.Articles;
@@ -77,7 +78,14 @@ namespace RS.MVC.Features.Review
         }
     }
 
-    public record CheckAiAnswerCommand(string Answer);
+    /// <param name="PublishedAt">The article's date, for the date checks (R11 flags); null leaves those checks out.</param>
+    public record CheckAiAnswerCommand(string Answer, DateTimeOffset? PublishedAt = null);
+
+    /// <summary>
+    /// A value to check before saving (R11, D-008): found by a rule, with the reason in words, never a confidence number.
+    /// Field: the check table's field ("protest.start_date"); quotes not found in the article are added by the browser.
+    /// </summary>
+    public record AiFlag(string Field, string Label, string Message);
 
     [JsonConverter(typeof(JsonStringEnumConverter<AiItemStatus>))]
     public enum AiItemStatus
@@ -147,6 +155,7 @@ namespace RS.MVC.Features.Review
 
     /// <param name="Error">Why the answer could not be read; everything else is empty then.</param>
     /// <param name="Evidence">Per field, the sentence of the article the AI took the value from (R27).</param>
+    /// <param name="Flags">Values to check (R11): implausible dates and numbers, names not in the lists, new records.</param>
     public record AiCheckResult(
         string Error,
         bool Relevant,
@@ -154,7 +163,8 @@ namespace RS.MVC.Features.Review
         IReadOnlyList<AiField> Fields,
         AiCaseValues Case,
         AiProtestValues Protest,
-        IReadOnlyList<AiEvidence> Evidence = null)
+        IReadOnlyList<AiEvidence> Evidence = null,
+        IReadOnlyList<AiFlag> Flags = null)
     {
         public static AiCheckResult Failed(string error) => new(error, false, null, [], null, null);
     }
@@ -272,7 +282,58 @@ namespace RS.MVC.Features.Review
                 InterventionTypeIds: Ids(interventions),
                 CustodyCount: custody,
                 StrikeHours: strikeHours);
-            return new AiCheckResult(null, true, Text(root, "relevance_reason"), fields, caseValues, protestValues, Evidence(root, fields));
+            return new AiCheckResult(null, true, Text(root, "relevance_reason"), fields, caseValues, protestValues, Evidence(root, fields),
+                Flags(fields, category?.Id, caseValues, protestValues, command.PublishedAt));
+        }
+
+        /// <summary>A protest dated this long before its article is probably a misread date (or an old story retold).</summary>
+        public const int MaxDaysBeforeArticle = 365;
+
+        /// <summary>
+        /// The rules (R11, D-008): dates against the article's date and each other, numbers against each other, and the
+        /// names the lists do not have (left out) or that would become new records. Each flag says why.
+        /// </summary>
+        public static List<AiFlag> Flags(IReadOnlyList<AiField> fields, int? categoryId, AiCaseValues c, AiProtestValues p, DateTimeOffset? publishedAt)
+        {
+            var flags = new List<AiFlag>();
+            var labels = fields.ToDictionary(f => f.Field, f => f.Label);
+            void Flag(string field, string message) => flags.Add(new AiFlag(field, labels.GetValueOrDefault(field, field), message));
+            static string Day(DateOnly d) => d.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
+
+            DateOnly? Parse(string text) =>
+                DateOnly.TryParseExact(text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d) ? d : null;
+            var start = Parse(p.StartDate);
+            var end = Parse(p.EndDate);
+            if (start == null)
+                Flag("protest.start_date", "Eylemin tarihi bulunamadı; haberden girin.");
+            if (start is { } s && publishedAt is { } published)
+            {
+                var articleDay = DateOnly.FromDateTime(published.ToOffset(TimeSpan.FromHours(3)).DateTime);
+                if (s > articleDay.AddDays(1))
+                    Flag("protest.start_date", $"Eylem tarihi ({Day(s)}) haberin tarihinden ({Day(articleDay)}) sonra.");
+                else if (s < articleDay.AddDays(-MaxDaysBeforeArticle))
+                    Flag("protest.start_date", $"Eylem tarihi ({Day(s)}) haberden bir yıldan daha eski ({Day(articleDay)}).");
+            }
+            if (start is { } from && end is { } to && to < from)
+                Flag("protest.end_date", $"Bitiş ({Day(to)}) başlangıçtan ({Day(from)}) önce.");
+
+            if (p.CustodyCount is { } custody && p.EmployeeCount is { } participants && custody > participants)
+                Flag("protest.custody_count", $"Gözaltı ({custody}) katılımcı sayısından ({participants}) fazla.");
+            if (c.FiredEmployeeCount is { } fired && c.EmployeeCount is { } employees && fired > employees)
+                Flag("case.fired_count", $"Atılan işçi ({fired}) çalışan sayısından ({employees}) fazla.");
+            // At a workplace the people acting are its workers; at a Genel or Dayanışma action anyone may join.
+            if (categoryId == KnownListIds.WorkplaceCategory && p.EmployeeCount is { } acting && c.EmployeeCount is { } staff && acting > staff)
+                Flag("protest.participant_count", $"Katılımcı ({acting}) işyerinin çalışan sayısından ({staff}) fazla.");
+
+            foreach (var field in fields)
+                foreach (var item in field.Items)
+                {
+                    if (item.Status == AiItemStatus.NotInList)
+                        Flag(field.Field, $"“{item.Answer}” listede yok, forma alınmadı.");
+                    else if (item.Status == AiItemStatus.New)
+                        Flag(field.Field, $"“{item.Value}” kayıtlı değil; kaydederken yeni kayıt olarak eklenir.");
+                }
+            return flags;
         }
 
         /// <summary>
@@ -473,7 +534,8 @@ namespace RS.MVC.Features.Review
             var draft = await pipeline.GetDraftAsync(query.ArticleId);
             if (draft == null || string.IsNullOrWhiteSpace(draft.Answer))
                 return null;
-            var result = await check.Handle(new CheckAiAnswerCommand(draft.Answer));
+            var article = await pipeline.GetArticleAsync(query.ArticleId);
+            var result = await check.Handle(new CheckAiAnswerCommand(draft.Answer, article?.PublishedAt));
             return result.Error != null ? null : new AiDraft(draft.Answer, "pipeline · " + draft.Version, draft.CreatedAt, result);
         }
     }
