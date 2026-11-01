@@ -246,7 +246,7 @@ public class ReviewTests
             new RS.MVC.Features.Definitions.CreateCorporationHandler(_db),
             new SuggestCasesForArticleHandler(_db, _pipeline, _searchCases),
             new GetAiPromptHandler(_pipeline, _db), new CheckAiAnswerHandler(_db), new GetAiDraftHandler(_pipeline, new CheckAiAnswerHandler(_db)),
-            new MatchCasesFromAiHandler(_db, new CheckAiAnswerHandler(_db), _pipeline, _searchCases))
+            new MatchCasesFromAiHandler(_db, new CheckAiAnswerHandler(_db), _pipeline, _searchCases), _pipeline)
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
         };
@@ -315,6 +315,11 @@ public class ReviewTests
 
         Assert.Null(none);
         Assert.Equal(("pipeline · prompt-v2 · gemini-3.5-flash-lite", true, "2026-10-19"), (draft!.Origin, draft.Check.Relevant, draft.Check.Protest.StartDate));
+        // Checked against the article's own date (19 October): a protest that day is plausible.
+        Assert.DoesNotContain(draft.Check.Flags!, f => f.Field == "protest.start_date");
+        _pipeline.Drafts["a1"] = _pipeline.Drafts["a1"] with { Answer = AiAnswer.Replace("2026-10-19", "2026-11-25") };
+        Assert.Contains((await handler.Handle(new GetAiDraftQuery("a1")))!.Check.Flags!, f => f.Field == "protest.start_date");
+        _pipeline.Drafts["a1"] = _pipeline.Drafts["a1"] with { Answer = AiAnswer };
 
         var request = ReviewValidationTests.CompleteNewCase();
         request.Ai = new AiUse { Answer = draft.Answer, PromptVersion = "v2", Applied = true, Origin = draft.Origin };

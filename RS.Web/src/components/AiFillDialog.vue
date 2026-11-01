@@ -11,8 +11,6 @@ import { checkAiAnswer, getAiPrompt, type AiCheckResult, type AiItemStatus, type
 const props = defineProps<{
   /** The article to fill the form for; null closes the dialog. */
   articleId: string | null
-  /** The pipeline's draft, already checked (R11): the dialog opens on the check table, nothing to copy or paste. */
-  draft?: AiCheckResult | null
 }>()
 
 const emit = defineEmits<{
@@ -52,11 +50,6 @@ watch(
   () => props.articleId,
   (articleId, previous) => {
     if (!articleId) return
-    if (props.draft) {
-      result.value = props.draft
-      step.value = 3
-      return
-    }
     if (articleId !== previous || !prompt.value) {
       prompt.value = null
       answer.value = ''
@@ -89,7 +82,7 @@ async function check() {
   checking.value = true
   checkError.value = ''
   try {
-    const checked = await checkAiAnswer(answer.value)
+    const checked = await checkAiAnswer(answer.value, props.articleId)
     emit('checked', { answer: answer.value, promptVersion: prompt.value?.version ?? null, applied: false })
     if (!checked.relevant) {
       emit('notRelevant', checked.relevanceReason)
@@ -139,8 +132,7 @@ const summary = computed(() => {
     :mask-closable="!checking"
     @update:show="(show: boolean) => !show && emit('close')"
   >
-    <p v-if="props.draft" class="lead">İşleme hattındaki yapay zekânın bu haberden hazırladığı taslak, listelerle karşılaştırıldı.</p>
-    <n-steps v-else :current="step" size="small" class="steps">
+    <n-steps :current="step" size="small" class="steps">
       <n-step title="Komutu kopyala" />
       <n-step title="Yanıtı yapıştır" />
       <n-step title="Kontrol et" />
@@ -212,8 +204,7 @@ const summary = computed(() => {
         Sonuç, işyeri büyüklüğü, cinsiyet, hak geliştirme ve sendika yetkisini siz seçersiniz.
       </p>
       <div class="row">
-        <n-button v-if="!props.draft" quaternary @click="step = 2">Geri</n-button>
-        <span v-else />
+        <n-button quaternary @click="step = 2">Geri</n-button>
         <n-button type="primary" @click="apply">Forma uygula</n-button>
       </div>
     </div>

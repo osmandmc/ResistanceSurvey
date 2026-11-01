@@ -92,6 +92,15 @@ export interface AiCheckResult {
   protest: AiProtestValues | null
   /** Per field, the sentence of the article the AI took the value from (R27). */
   evidence: AiEvidence[] | null
+  /** Values to check (R11): implausible dates and numbers, names not in the lists, new records; each with its reason. */
+  flags: AiFlag[] | null
+}
+
+export interface AiFlag {
+  /** The check table's field, e.g. "protest.start_date". */
+  field: string
+  label: string
+  message: string
 }
 
 export function getAiPrompt(articleId: string) {
@@ -127,8 +136,9 @@ export function matchAiCases(articleId: string, answer: string) {
   return api<AiCaseMatches>(`/api/review/${encodeURIComponent(articleId)}/ai-cases`, { method: 'POST', body: JSON.stringify({ answer }) })
 }
 
-export function checkAiAnswer(answer: string) {
-  return api<AiCheckResult>('/api/review/ai-check', { method: 'POST', body: JSON.stringify({ answer }) })
+/** articleId: the article the answer is for, so its dates are checked against the article's date. */
+export function checkAiAnswer(answer: string, articleId: string | null = null) {
+  return api<AiCheckResult>('/api/review/ai-check', { method: 'POST', body: JSON.stringify({ answer, articleId }) })
 }
 
 /** The case fields the answer fills; fields it leaves empty are not touched. */
