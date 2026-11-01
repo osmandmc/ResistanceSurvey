@@ -35,6 +35,9 @@ namespace RS.MVC.Features.Activity
         public const string WorkplaceCreate = "definition.workplace-create";
         public const string CompanyLinkAdd = "definition.company-link-add";
         public const string CompanyLinkRemove = "definition.company-link-remove";
+        public const string CompanyRelationAdd = "definition.company-relation-add";
+        public const string CompanyRelationChange = "definition.company-relation-change";
+        public const string CompanyRelationRemove = "definition.company-relation-remove";
 
         public const string UserCreate = "user.create";
         public const string UserLink = "user.link";

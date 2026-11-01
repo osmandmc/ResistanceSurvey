@@ -247,7 +247,7 @@ public class ReviewTests
             new SuggestCasesForArticleHandler(_db, _pipeline, _searchCases),
             new GetAiPromptHandler(_pipeline, _db), new CheckAiAnswerHandler(_db), new GetAiDraftHandler(_pipeline, new CheckAiAnswerHandler(_db)),
             new MatchCasesFromAiHandler(_db, new CheckAiAnswerHandler(_db), _pipeline, _searchCases),
-            new SearchWorkplacesHandler(_db), new CreateWorkplaceHandler(_db), _pipeline)
+            new SearchWorkplacesHandler(_db), new CreateWorkplaceHandler(_db), new RS.MVC.Features.Definitions.GetCompanyFactsHandler(_db), _pipeline)
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
         };

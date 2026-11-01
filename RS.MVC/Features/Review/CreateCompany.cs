@@ -8,7 +8,9 @@ using RS.MVC.Features.Activity;
 namespace RS.MVC.Features.Review
 {
     /// <summary>"Şirket Ekle" in the case form.</summary>
-    public record CreateCompanyCommand(string Name, int? TypeId, int? ScaleId, int? WorklineId);
+    /// <param name="TypeId">Sahiplik (CompanyType).</param>
+    public record CreateCompanyCommand(string Name, int? TypeId, int? ScaleId, int? WorklineId,
+        RS.COMMON.Entities.InstitutionKind? InstitutionKind = null, int? ServiceBranchId = null);
 
     /// <summary>Existed: a company with that name was already there and is returned instead of a duplicate.</summary>
     public record CreateCompanyResult(Option Company, bool Existed, string Error = null);
@@ -33,6 +35,8 @@ namespace RS.MVC.Features.Review
                 CompanyTypeId = command.TypeId,
                 CompanyScaleId = command.ScaleId,
                 CompanyWorkLineId = command.WorklineId,
+                InstitutionKind = command.InstitutionKind,
+                ServiceBranchId = command.ServiceBranchId,
             };
             db.Company.Add(company);
             await db.SaveChangesAsync();

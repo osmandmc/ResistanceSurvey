@@ -73,7 +73,9 @@ namespace RS.MVC.Features.Definitions
         bool? Simple = null,
         int? ScaleId = null,
         int? WorklineId = null,
-        int? ConfederationId = null);
+        int? ConfederationId = null,
+        RS.COMMON.Entities.InstitutionKind? InstitutionKind = null,
+        int? ServiceBranchId = null);
 
     public record DefinitionPage(IReadOnlyList<DefinitionItem> Items, int Total, int Page, int PageSize, int PendingCount);
 

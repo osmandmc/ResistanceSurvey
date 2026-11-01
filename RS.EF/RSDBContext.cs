@@ -39,6 +39,7 @@ namespace RS.EF
 
         public DbSet<ProtestoLocation> ProtestoLocation { get; set; }
         public DbSet<Workplace> Workplace { get; set; }
+        public DbSet<CompanyRelation> CompanyRelation { get; set; }
         public DbSet<ProtestoEmployeeCount> ProtestoEmployeeCount { get; set; }
         public DbSet<ProtestoProtestoPlace> ProtestoProtestoPlace { get; set; }
         public DbSet<ResistanceResistanceReason> ResistanceResistanceReason  { get; set; }
@@ -149,6 +150,22 @@ namespace RS.EF
                  {
                      e.Property(x => x.Name).HasMaxLength(200).IsRequired();
                      e.HasIndex(x => x.Name);
+                 });
+
+                 // R37, part C: a company's two branches come from the same list (işkolu, or hizmet kolu for civil servants).
+                 modelBuilder.Entity<Company>()
+                    .HasOne(c => c.ServiceBranch).WithMany()
+                    .HasForeignKey(c => c.ServiceBranchId);
+
+                 // R37, part B: facts between two companies (group, public body, new name).
+                 modelBuilder.Entity<CompanyRelation>(e =>
+                 {
+                     e.HasOne(x => x.Company).WithMany().HasForeignKey(x => x.CompanyId);
+                     e.HasOne(x => x.RelatedCompany).WithMany().HasForeignKey(x => x.RelatedCompanyId);
+                     e.Property(x => x.SharePercent).HasPrecision(5, 2);
+                     e.Property(x => x.SourceUrl).HasMaxLength(500);
+                     e.Property(x => x.Note).HasMaxLength(500);
+                     e.Property(x => x.CreatedBy).HasMaxLength(50);
                  });
 
                  // A hash in hex: compared exactly, kept in the database default collation (see ConfigureConventions).

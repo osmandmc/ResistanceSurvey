@@ -30,6 +30,7 @@ namespace RS.MVC.Controllers
         MatchCasesFromAiHandler matchCases,
         SearchWorkplacesHandler searchWorkplaces,
         CreateWorkplaceHandler createWorkplace,
+        RS.MVC.Features.Definitions.GetCompanyFactsHandler companyFacts,
         IPipelineClient pipeline) : ControllerBase
     {
         /// <summary>
@@ -77,7 +78,8 @@ namespace RS.MVC.Controllers
             return Ok(await suggestCases.Handle(new SuggestCasesForArticleQuery(articleId)));
         }
 
-        public record CreateCompanyRequest(string Name, int? TypeId, int? ScaleId, int? WorklineId);
+        public record CreateCompanyRequest(string Name, int? TypeId, int? ScaleId, int? WorklineId,
+            RS.COMMON.Entities.InstitutionKind? InstitutionKind = null, int? ServiceBranchId = null);
 
         /// <summary>GET /api/review/form-options — every list the case form needs.</summary>
         [HttpGet("form-options")]
@@ -101,6 +103,11 @@ namespace RS.MVC.Controllers
             return result.Error == null ? result : BadRequest(new { error = result.Error });
         }
 
+        /// <summary>GET /api/review/companies/{id}/facts (R37) — the company's group, public body and names, for the line under İşveren.</summary>
+        [HttpGet("companies/{id:int}/facts")]
+        public async Task<IReadOnlyList<RS.MVC.Features.Definitions.CompanyRelationItem>> CompanyFacts(int id) =>
+            await companyFacts.Handle(id);
+
         /// <summary>GET /api/review/companies?query=… — companies by name (at most 20).</summary>
         [HttpGet("companies")]
         public async Task<IReadOnlyList<Option>> SearchCompanies(string query) =>
@@ -110,7 +117,7 @@ namespace RS.MVC.Controllers
         [HttpPost("companies")]
         public async Task<ActionResult<CreateCompanyResult>> CreateCompany(CreateCompanyRequest request)
         {
-            var result = await createCompany.Handle(new CreateCompanyCommand(request.Name, request.TypeId, request.ScaleId, request.WorklineId));
+            var result = await createCompany.Handle(new CreateCompanyCommand(request.Name, request.TypeId, request.ScaleId, request.WorklineId, request.InstitutionKind, request.ServiceBranchId));
             return result.Error == null
                 ? result
                 : BadRequest(new { error = result.Error, fields = new Dictionary<string, string> { ["name"] = result.Error } });

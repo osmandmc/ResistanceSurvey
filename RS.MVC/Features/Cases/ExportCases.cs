@@ -32,9 +32,10 @@ namespace RS.MVC.Features.Cases
             ("Açıklama", p => p.Resistance.Description ?? ""),
             ("Kategori Adı", p => p.Resistance.Category?.Name ?? ""),
             ("Şirket Adı", p => p.Resistance.Company?.Name ?? ""),
-            ("Şirket İş Kolu", p => p.Resistance.Company?.CompanyWorkLine?.Name ?? ""),
+            // R37: the işkolu, or for a public body the civil servants' hizmet kolu (both were one list before).
+            ("Şirket İş Kolu", p => p.Resistance.Company?.CompanyWorkLine?.Name ?? p.Resistance.Company?.ServiceBranch?.Name ?? ""),
             ("Ana Şirket Adı", p => p.Resistance.MainCompany?.Name ?? ""),
-            ("Ana Şirket İş Kolu", p => p.Resistance.MainCompany?.CompanyWorkLine?.Name ?? ""),
+            ("Ana Şirket İş Kolu", p => p.Resistance.MainCompany?.CompanyWorkLine?.Name ?? p.Resistance.MainCompany?.ServiceBranch?.Name ?? ""),
             ("Üretim Karşıtı", p => p.ProtestoProtestoTypes.Any(s => s.ProtestoType.AgainstProduction) ? "EVET" : "HAYIR"),
             ("Kalkınma Hakkı", p => p.Resistance.DevelopRight ? "EVET" : "HAYIR"),
             ("Çalışan Sayısı", p => p.Resistance.EmployeeCount?.Name ?? ""),
@@ -100,6 +101,8 @@ namespace RS.MVC.Features.Cases
                 .Include(p => p.Resistance).ThenInclude(r => r.EmployeeCount)
                 .Include(p => p.Resistance).ThenInclude(r => r.Category)
                 .Include(p => p.Resistance).ThenInclude(r => r.Company).ThenInclude(c => c.CompanyWorkLine)
+                .Include(p => p.Resistance).ThenInclude(r => r.Company).ThenInclude(c => c.ServiceBranch)
+                .Include(p => p.Resistance).ThenInclude(r => r.MainCompany).ThenInclude(c => c.ServiceBranch)
                 .Include(p => p.Resistance).ThenInclude(r => r.MainCompany).ThenInclude(c => c.CompanyWorkLine)
                 .Include(p => p.Resistance).ThenInclude(r => r.ResistanceEmploymentTypes).ThenInclude(x => x.EmploymentType)
                 .Include(p => p.Resistance).ThenInclude(r => r.TradeUnion)

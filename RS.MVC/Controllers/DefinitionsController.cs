@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RS.COMMON.Entities;
 using Microsoft.EntityFrameworkCore;
 using RS.EF;
 using RS.MVC.Features.Definitions;
@@ -28,16 +30,18 @@ namespace RS.MVC.Controllers
         MergeGroupHandler mergeGroup,
         DismissDuplicatesHandler dismissDuplicates,
         GetCompanyHandler getCompany,
-        AddCompanyLinkHandler addLink,
-        RemoveCompanyLinkHandler removeLink,
+        SaveCompanyRelationHandler saveRelation,
+        RemoveCompanyRelationHandler removeRelation,
         CreateCorporationHandler createCorporation) : ControllerBase
     {
+        /// <summary>CompanyWorklines: the workers' işkolları; ServiceBranches: the civil servants' hizmet kolları (R37).</summary>
         public record DefinitionOptions(IReadOnlyList<Option> CorporationTypes, IReadOnlyList<Option> CompanyTypes, IReadOnlyList<Option> CompanyScales,
-            IReadOnlyList<Option> CompanyWorklines, IReadOnlyList<Option> Confederations);
+            IReadOnlyList<Option> CompanyWorklines, IReadOnlyList<Option> Confederations, IReadOnlyList<Option> ServiceBranches = null);
 
         public record CreateCorporationRequest(string Name, int? TypeId, int? ConfederationId);
 
-        public record UpdateRequest(string Name, int? TypeId, bool AgainstProduction, bool Simple, int? ScaleId, int? WorklineId, int? ConfederationId = null);
+        public record UpdateRequest(string Name, int? TypeId, bool AgainstProduction, bool Simple, int? ScaleId, int? WorklineId, int? ConfederationId = null,
+            InstitutionKind? InstitutionKind = null, int? ServiceBranchId = null);
 
         public record MergeRequest(int IntoId);
 
@@ -45,7 +49,9 @@ namespace RS.MVC.Controllers
 
         public record DismissRequest(IReadOnlyList<int> Ids);
 
-        public record CompanyLinkRequest(int CompanyId);
+        /// <summary>A fact with another company (R37, part B); ThisIsFirst: “this company → the other”.</summary>
+        public record RelationRequest(CompanyRelationKind Kind, int OtherCompanyId, bool ThisIsFirst, decimal? SharePercent, DateTime? StartDate,
+            DateTime? EndDate, string SourceUrl, string Note);
 
         /// <summary>GET /api/definitions/options — the choices for the lists' own fields.</summary>
         [HttpGet("options")]
@@ -53,8 +59,9 @@ namespace RS.MVC.Controllers
             await db.CorporationType.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             await db.CompanyType.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
             await db.CompanyScale.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
-            await db.CompanyWorkLine.OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
-            await db.Set<COMMON.Entities.LookupEntity.Confederation>().OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync());
+            await db.CompanyWorkLine.Where(e => !e.IsCivilService).OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
+            await db.Set<COMMON.Entities.LookupEntity.Confederation>().OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync(),
+            await db.CompanyWorkLine.Where(e => e.IsCivilService).OrderBy(e => e.Name).Select(e => new Option(e.Id, e.Name)).ToListAsync());
 
         /// <summary>POST /api/definitions/corporations — a new organization added in Tanımlar (approved); an existing one of the same name is returned instead.</summary>
         [HttpPost("corporations")]
@@ -80,7 +87,8 @@ namespace RS.MVC.Controllers
             if (!DefinitionKinds.TryParse(kind, out var parsed))
                 return UnknownKind();
             var result = await update.Handle(new UpdateDefinitionCommand(
-                parsed, id, request?.Name, request?.TypeId, request?.AgainstProduction ?? false, request?.Simple ?? false, request?.ScaleId, request?.WorklineId, request?.ConfederationId));
+                parsed, id, request?.Name, request?.TypeId, request?.AgainstProduction ?? false, request?.Simple ?? false, request?.ScaleId, request?.WorklineId, request?.ConfederationId,
+                request?.InstitutionKind, request?.ServiceBranchId));
             return Answer(result);
         }
 
@@ -160,33 +168,31 @@ namespace RS.MVC.Controllers
             return NoContent();
         }
 
-        /// <summary>GET /api/definitions/companies/{id} — the company with its cases and subcontractor relations.</summary>
+        /// <summary>GET /api/definitions/companies/{id} — the company with its cases, its facts with other companies and its links from cases.</summary>
         [HttpGet("companies/{id:int}")]
         public async Task<ActionResult<CompanyDetail>> Company(int id) =>
             await getCompany.Handle(id) is { } company ? company : NotFound(new { error = "Şirket bulunamadı." });
 
-        /// <summary>POST /api/definitions/companies/{id}/subcontractors { companyId } — that company works for {id}.</summary>
-        [HttpPost("companies/{id:int}/subcontractors")]
-        public async Task<IActionResult> AddSubcontractor(int id, CompanyLinkRequest request) =>
-            LinkAnswer(await addLink.Handle(new CompanyLinkCommand(id, request?.CompanyId ?? 0)));
+        /// <summary>POST /api/definitions/companies/{id}/relations — a fact with another company (R37, part B).</summary>
+        [HttpPost("companies/{id:int}/relations")]
+        public async Task<IActionResult> AddRelation(int id, RelationRequest request) =>
+            RelationAnswer(await saveRelation.Handle(new SaveCompanyRelationCommand(id, null, request.Kind, request.OtherCompanyId, request.ThisIsFirst,
+                request.SharePercent, request.StartDate, request.EndDate, request.SourceUrl, request.Note, User.Identity?.Name)));
 
-        [HttpDelete("companies/{id:int}/subcontractors/{subcontractorId:int}")]
-        public async Task<IActionResult> RemoveSubcontractor(int id, int subcontractorId) =>
-            LinkAnswer(await removeLink.Handle(new CompanyLinkCommand(id, subcontractorId)));
+        /// <summary>PUT /api/definitions/companies/{id}/relations/{relationId} — its share, dates, source and note.</summary>
+        [HttpPut("companies/{id:int}/relations/{relationId:int}")]
+        public async Task<IActionResult> ChangeRelation(int id, int relationId, RelationRequest request) =>
+            RelationAnswer(await saveRelation.Handle(new SaveCompanyRelationCommand(id, relationId, request.Kind, request.OtherCompanyId, request.ThisIsFirst,
+                request.SharePercent, request.StartDate, request.EndDate, request.SourceUrl, request.Note, User.Identity?.Name)));
 
-        /// <summary>POST /api/definitions/companies/{id}/main-companies { companyId } — {id} works for that company.</summary>
-        [HttpPost("companies/{id:int}/main-companies")]
-        public async Task<IActionResult> AddMainCompany(int id, CompanyLinkRequest request) =>
-            LinkAnswer(await addLink.Handle(new CompanyLinkCommand(request?.CompanyId ?? 0, id)));
+        [HttpDelete("companies/{id:int}/relations/{relationId:int}")]
+        public async Task<IActionResult> RemoveRelation(int id, int relationId) =>
+            RelationAnswer(await removeRelation.Handle(new RemoveCompanyRelationCommand(id, relationId)));
 
-        [HttpDelete("companies/{id:int}/main-companies/{mainCompanyId:int}")]
-        public async Task<IActionResult> RemoveMainCompany(int id, int mainCompanyId) =>
-            LinkAnswer(await removeLink.Handle(new CompanyLinkCommand(mainCompanyId, id)));
-
-        private IActionResult LinkAnswer(LinkStatus status) => status switch
+        private IActionResult RelationAnswer(RelationResult result) => result.Status switch
         {
-            LinkStatus.Ok => NoContent(),
-            LinkStatus.SameCompany => BadRequest(new { error = "Bir şirket kendisinin taşeronu olamaz." }),
+            RelationStatus.Ok => result.Id is { } created ? Ok(new { id = created }) : NoContent(),
+            RelationStatus.Invalid => BadRequest(new { error = result.Error }),
             _ => NotFound(new { error = "Şirket ya da ilişki bulunamadı." }),
         };
 
