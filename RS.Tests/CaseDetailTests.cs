@@ -66,6 +66,7 @@ public class CaseDetailTests
         Assert.NotNull(detail);
         Assert.Equal(("Tekstil direnişi", 10, "Örnek Tekstil"), (detail.Case.Name, detail.Case.CompanyId, detail.CompanyName));
         Assert.Equal([3], detail.Case.ReasonIds);
+        Assert.Equal("eski not", detail.Case.Note); // into the form, so a save keeps it
         Assert.Equal([new DateTime(2026, 8, 1), new DateTime(2026, 9, 10)], detail.Protests.Select(p => p.Protest.StartDate!.Value));
         Assert.Equal(["Bursa"], detail.Protests[1].CityNames);
         Assert.Equal("İlk haber", Assert.Single(detail.Articles).Title);
@@ -73,7 +74,7 @@ public class CaseDetailTests
     }
 
     [Fact]
-    public async Task EditingReplacesTheListsKeepsTheNoteAndRecordsTheSubcontractor()
+    public async Task EditingReplacesTheListsAndTheNoteAndRecordsTheSubcontractor()
     {
         var input = ValidCase(c =>
         {
@@ -85,13 +86,15 @@ public class CaseDetailTests
             c.NewReasonNames = ["Mobbing"];
             c.CorporationIds = [7, 8];
             c.EmploymentTypeIds = [9];
+            c.Note = " yeni not ";
         });
 
         var result = await new UpdateCaseHandler(_db, new CaseWriter(_db), new ListValueResolver(_db)).Handle(new UpdateCaseCommand(_case.Id, input, "ayse"));
 
         Assert.Equal(CaseCommandStatus.Ok, result.Status);
         var r = _db.Resistance.Single(x => x.Id == _case.Id);
-        Assert.Equal(("Yeni ad", 11, "ayse", "eski not"), (r.Name, r.MainCompanyId, r.Updater, r.Note));
+        // The case form shows and edits the case's note (“Kişisel Notlar”) since 2026-11-01.
+        Assert.Equal(("Yeni ad", 11, "ayse", "yeni not"), (r.Name, r.MainCompanyId, r.Updater, r.Note));
         Assert.Equal(["Mobbing"], _db.ResistanceResistanceReason.Where(x => x.ResistanceId == r.Id).Select(x => x.ResistanceReason.Name));
         Assert.Equal([7, 8], _db.ResistanceCorporation.Where(x => x.ResistanceId == r.Id).Select(x => x.CorporationId).OrderBy(x => x));
         Assert.Equal([9], _db.ResistanceEmploymentType.Where(x => x.ResistanceId == r.Id).Select(x => x.EmploymentTypeId));

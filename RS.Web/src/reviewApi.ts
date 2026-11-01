@@ -144,6 +144,8 @@ export const resultOptions = [
 export interface CaseInput {
   name: string | null
   description: string | null
+  /** “Kişisel Notlar”: the case's own note; each protest has its own note too. */
+  note: string | null
   categoryId: number | null
   /** The workplace of those who acted: İşletme required, Dayanışma optional, Genel none. */
   companyId: number | null

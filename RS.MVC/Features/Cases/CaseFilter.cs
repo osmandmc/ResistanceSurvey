@@ -41,8 +41,10 @@ namespace RS.MVC.Features.Cases
                 cases = cases.Where(r => r.Protestos.Any(p => !p.Deleted && p.StartDate.Month == month));
             if (CityId is { } cityId)
                 cases = cases.Where(r => r.Protestos.Any(p => !p.Deleted && p.Locations.Any(l => l.CityId == cityId)));
+            // A note on the case itself (“Kişisel Notlar”) or on any of its protests (“Kontrol Kişisine Notlar”).
             if (HasNote is { } hasNote)
-                cases = cases.Where(r => (r.Note != null && r.Note != "") == hasNote);
+                cases = cases.Where(r => ((r.Note != null && r.Note.Trim() != "")
+                    || r.Protestos.Any(p => !p.Deleted && p.Note != null && p.Note.Trim() != "")) == hasNote);
             if (OngoingOnly)
                 cases = cases.Where(r => r.Protestos.Where(p => !p.Deleted).OrderByDescending(p => p.StartDate).Select(p => p.EndDate == null).FirstOrDefault());
             return cases;

@@ -149,7 +149,7 @@ function status(field: string) {
         <n-input-number v-model:value="value.custodyCount" :min="0" clearable class="full" />
       </n-form-item>
 
-      <n-form-item label="Kontrol Kişisine Notlar" label-placement="top" class="wide" :show-feedback="false">
+      <n-form-item label="Kontrol Kişisine Notlar (eylem)" label-placement="top" class="wide" :show-feedback="false">
         <n-input v-model:value="value.note" type="textarea" :autosize="{ minRows: 2, maxRows: 6 }" />
       </n-form-item>
     </div>

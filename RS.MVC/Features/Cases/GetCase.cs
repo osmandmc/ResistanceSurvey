@@ -88,6 +88,7 @@ namespace RS.MVC.Features.Cases
             {
                 Name = r.Name,
                 Description = r.Description,
+                Note = r.Note,
                 CategoryId = r.CategoryId,
                 CompanyId = r.CompanyId,
                 IsOutsource = r.MainCompanyId != null,
