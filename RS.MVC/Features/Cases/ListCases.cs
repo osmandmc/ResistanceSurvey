@@ -11,7 +11,9 @@ namespace RS.MVC.Features.Cases
     public record ListCasesQuery(CaseFilter Filter, int Page = 1, int PageSize = ListCasesHandler.DefaultPageSize);
 
     /// <summary>
-    /// Target: the company, or the institution for cases against one. WorkplaceName: the case's place (R37). Ongoing: the latest protest has no end date
+    /// Target: the company, or the institution for cases against one. WorkplaceName: the case's place (R37).
+    /// MainCompanyLabel: what the organization above the employer is, by the employer's role (Asıl işveren, İş sahibi,
+    /// Varlığın sahibi; “Ana şirket” for a role not set). Ongoing: the latest protest has no end date
     /// (same rule as the review screen's case search).
     /// </summary>
     public record CaseListItem(
@@ -20,6 +22,7 @@ namespace RS.MVC.Features.Cases
         string Target,
         string WorkplaceName,
         string MainCompanyName,
+        string MainCompanyLabel,
         string CategoryName,
         int ProtestCount,
         DateTime? LastProtestDate,
@@ -43,7 +46,9 @@ namespace RS.MVC.Features.Cases
             var total = await cases.CountAsync();
             var rows = await Build(cases).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             var items = rows.Select(r => new CaseListItem(
-                r.Id, r.Name, r.Target ?? (r.Organizers is { Count: > 0 } o ? string.Join(", ", o.Take(3)) + (o.Count > 3 ? " …" : "") : null), r.WorkplaceName, r.MainCompanyName, r.CategoryName, r.ProtestCount, r.LastProtestDate, r.Ongoing, r.Cities, r.ArticleCount)).ToList();
+                r.Id, r.Name, r.Target ?? (r.EmployerUnknown ? "İşveren bilinmiyor" : null)
+                    ?? (r.Organizers is { Count: > 0 } o ? string.Join(", ", o.Take(3)) + (o.Count > 3 ? " …" : "") : null),
+                r.WorkplaceName, r.MainCompanyName, r.MainCompanyName == null ? null : EmployerRoles.AboveLabel(r.EmployerRole) ?? "Ana şirket", r.CategoryName, r.ProtestCount, r.LastProtestDate, r.Ongoing, r.Cities, r.ArticleCount)).ToList();
             return new CaseListPage(items, total, page, pageSize);
         }
 
@@ -56,6 +61,8 @@ namespace RS.MVC.Features.Cases
                     Name = r.Name,
                     Target = r.Company != null ? r.Company.Name : null,
                     Organizers = r.ResistanceCorporations.Where(x => x.Role == COMMON.Entities.OrganizationRole.Organizing).Select(x => x.Corporation.Name).ToList(),
+                    EmployerRole = r.EmployerRole,
+                    EmployerUnknown = r.EmployerUnknown,
                     WorkplaceName = r.Workplace != null && !r.Workplace.Deleted ? r.Workplace.Name : null,
                     MainCompanyName = r.MainCompany != null ? r.MainCompany.Name : null,
                     CategoryName = r.Category != null ? r.Category.Name : null,
@@ -77,6 +84,8 @@ namespace RS.MVC.Features.Cases
             public List<string> Organizers { get; set; }
             /// <summary>R37: the place, when the case names one (empty for a direct employer = the employer itself).</summary>
             public string WorkplaceName { get; set; }
+            public COMMON.Entities.EmployerRole EmployerRole { get; set; }
+            public bool EmployerUnknown { get; set; }
             public string MainCompanyName { get; set; }
             public string CategoryName { get; set; }
             public int ProtestCount { get; set; }

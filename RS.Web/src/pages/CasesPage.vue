@@ -259,7 +259,7 @@ function open(item: CaseListItem) {
               <td>
                 {{ item.target || '—' }}
                 <span v-if="item.workplaceName" class="sub">İşyeri: {{ item.workplaceName }}</span>
-                <span v-if="item.mainCompanyName" class="sub">Ana şirket: {{ item.mainCompanyName }}</span>
+                <span v-if="item.mainCompanyName" class="sub">{{ item.mainCompanyLabel }}: {{ item.mainCompanyName }}</span>
               </td>
               <td>{{ item.categoryName || '—' }}</td>
               <td>{{ item.cities.join(', ') || '—' }}</td>
