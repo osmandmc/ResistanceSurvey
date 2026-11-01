@@ -162,6 +162,18 @@ public class AnalysisTests
     }
 
     [Fact]
+    public async Task ProvincesCountEachProtestInEachOfItsProvincesAndEachCaseOnce()
+    {
+        var bursa = new City { Id = 16, Name = "Bursa" };
+        Add(KnownListIds.WorkplaceCategory, D(2026, 1, 1), D(2026, 1, 2)); // two protests in Kocaeli
+        Add(KnownListIds.GeneralCategory, [D(2026, 5, 1)], r => r.Protestos[0].Locations.Add(new ProtestoLocation { City = bursa, CityId = 16 }));
+
+        var provinces = (await Analyse()).Provinces;
+
+        Assert.Equal([new AnalysisProvince(41, "Kocaeli", 3, 2), new AnalysisProvince(16, "Bursa", 1, 1)], provinces);
+    }
+
+    [Fact]
     public void TheQueriesTranslateToSqlServer()
     {
         using var sqlServer = new RSDBContext(new DbContextOptionsBuilder<RSDBContext>().UseSqlServer("Server=none;Database=none").Options);

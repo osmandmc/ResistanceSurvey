@@ -31,6 +31,14 @@ export interface AnalysisCompleteness {
   noLocation: number
 }
 
+/** R36: per province (cityId is the plate code); a protest in several provinces counts in each, a case once. */
+export interface AnalysisProvince {
+  cityId: number
+  name: string
+  protests: number
+  cases: number
+}
+
 export interface CaseAnalysis {
   totals: { cases: number; protests: number; provinces: number; knownResults: number }
   /** "2026-10" */
@@ -46,6 +54,7 @@ export interface CaseAnalysis {
   resultsByUnion: AnalysisResults[]
   durations: AnalysisCount[]
   completeness: AnalysisCompleteness[]
+  provinces: AnalysisProvince[]
 }
 
 export function getAnalysis(filter: CaseFilter) {

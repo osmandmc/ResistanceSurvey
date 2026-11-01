@@ -1,13 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { use } from 'echarts/core'
-import { CanvasRenderer } from 'echarts/renderers'
-import { BarChart, LineChart } from 'echarts/charts'
-import { GraphicComponent, GridComponent, LegendComponent, TitleComponent, ToolboxComponent, TooltipComponent } from 'echarts/components'
+import '@/charts'
 import VChart from 'vue-echarts'
 import type { EChartsOption } from 'echarts'
-
-use([CanvasRenderer, BarChart, LineChart, GridComponent, LegendComponent, TooltipComponent, ToolboxComponent, TitleComponent, GraphicComponent])
 
 // One chart of the Analiz page (R38). The title and the source line are drawn inside the chart, so "Görsel indir"
 // saves a picture that says what it shows and where it comes from.
@@ -18,6 +13,8 @@ const props = defineProps<{
   option: EChartsOption
   height?: number
 }>()
+/** A click on a bar, a point or a map region (ECharts' event: name, value, data …). */
+const emit = defineEmits<{ select: [params: { name: string; data?: unknown }] }>()
 
 const full = computed<EChartsOption>(() => ({
   textStyle: { fontFamily: "'IBM Plex Sans', system-ui, sans-serif" },
@@ -44,7 +41,7 @@ const full = computed<EChartsOption>(() => ({
 
 <template>
   <section class="chart" :aria-label="title">
-    <v-chart :option="full" autoresize :style="{ height: `${height ?? 340}px` }" />
+    <v-chart :option="full" autoresize :style="{ height: `${height ?? 340}px` }" @click="(p: { name: string; data?: unknown }) => emit('select', p)" />
   </section>
 </template>
 

@@ -32,6 +32,12 @@ namespace RS.MVC.Features.Analysis
 
     public record AnalysisTotals(int Cases, int Protests, int Provinces, int KnownResults);
 
+    /// <summary>
+    /// The map (R36): per province, its protests (a protest in several provinces counts in each) and its cases (each
+    /// once). CityId is the plate code, as in the map's shapes.
+    /// </summary>
+    public record AnalysisProvince(int CityId, string Name, int Protests, int Cases);
+
     public record CaseAnalysis(
         AnalysisTotals Totals,
         IReadOnlyList<string> Months,
@@ -45,7 +51,8 @@ namespace RS.MVC.Features.Analysis
         IReadOnlyList<AnalysisResults> ResultsByEmployment,
         IReadOnlyList<AnalysisResults> ResultsByUnion,
         IReadOnlyList<AnalysisCount> Durations,
-        IReadOnlyList<AnalysisCompleteness> Completeness);
+        IReadOnlyList<AnalysisCompleteness> Completeness,
+        IReadOnlyList<AnalysisProvince> Provinces);
 
     public class CaseAnalysisHandler(RSDBContext db)
     {
@@ -131,7 +138,8 @@ namespace RS.MVC.Features.Analysis
             var employmentTypes = await db.EmploymentType.ToDictionaryAsync(c => c.Id, c => c.Name);
             var confederations = await db.Set<Confederation>().ToDictionaryAsync(c => c.Id, c => c.Name);
             var unions = (await Unions(db).ToListAsync()).ToDictionary(u => u.Key, u => u.Value);
-            return Build(cases, protests, categories, reasons, protestTypes, employmentTypes, confederations, unions);
+            var cities = await db.City.ToDictionaryAsync(c => c.Id, c => c.Name);
+            return Build(cases, protests, categories, reasons, protestTypes, employmentTypes, confederations, unions, cities);
         }
 
         /// <summary>The counting, without the database.</summary>
@@ -139,7 +147,7 @@ namespace RS.MVC.Features.Analysis
             IReadOnlyList<CaseRow> cases, IReadOnlyList<ProtestRow> protests, IReadOnlyDictionary<int, string> categories,
             IReadOnlyDictionary<int, string> reasons, IReadOnlyDictionary<int, string> protestTypes,
             IReadOnlyDictionary<int, string> employmentTypes, IReadOnlyDictionary<int, string> confederations,
-            IReadOnlyDictionary<int, int?> unions)
+            IReadOnlyDictionary<int, int?> unions, IReadOnlyDictionary<int, string> cities)
         {
             IEnumerable<int?> UnionsOf(CaseRow c) =>
                 c.Organizations.Append(c.LegacyUnionId ?? 0).Distinct().Where(unions.ContainsKey).Select(id => unions[id]);
@@ -205,8 +213,15 @@ namespace RS.MVC.Features.Analysis
                 axisCases.Count, inAxis.Count, inAxis.SelectMany(p => p.Cities).Distinct().Count(),
                 axisCases.Count(c => c.Result != ResistanceResult.Unknown));
 
+            var provinces = inAxis
+                .SelectMany(p => p.Cities.Distinct().Select(city => (City: city, p.CaseId)))
+                .GroupBy(x => x.City)
+                .Select(g => new AnalysisProvince(g.Key, cities.GetValueOrDefault(g.Key) ?? g.Key.ToString(), g.Count(), g.Select(x => x.CaseId).Distinct().Count()))
+                .OrderByDescending(p => p.Protests)
+                .ToList();
+
             return new CaseAnalysis(totals, months, protestsByCategory, activeCases, years, reasonsByYear, typesByYear,
-                employmentByYear, confederationCounts, resultsByEmployment, resultsByUnion, durations, completeness);
+                employmentByYear, confederationCounts, resultsByEmployment, resultsByUnion, durations, completeness, provinces);
         }
 
         private static readonly System.Globalization.CultureInfo TurkishCulture = new("tr-TR");

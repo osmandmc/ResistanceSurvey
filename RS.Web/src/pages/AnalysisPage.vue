@@ -7,6 +7,7 @@ import { errorMessage } from '@/api'
 import { getAnalysis, type AnalysisResults, type AnalysisSeries, type CaseAnalysis } from '@/analysisApi'
 import type { CaseFilter } from '@/casesApi'
 import AnalysisChart from '@/components/AnalysisChart.vue'
+import ProvinceMap from '@/components/ProvinceMap.vue'
 import { getFormOptions, type Option } from '@/reviewApi'
 import { turkishFilter } from '@/search'
 
@@ -255,6 +256,15 @@ const empty = computed(() => data.value !== null && data.value.totals.protests =
       </div>
     </div>
 
+    <province-map
+      class="map-block"
+      :class="{ dim: loading }"
+      :rows="data.provinces"
+      :scope="scope"
+      :selected-city-id="cityId"
+      @select="(id) => (cityId = id)"
+    />
+
     <div class="grid" :class="{ dim: loading }">
       <analysis-chart class="span" title="Aylara göre eylemler" :scope="scope" :option="monthly" :height="380" />
       <analysis-chart title="Vaka nedenleri" :scope="`${scope} · vaka sayısı, yıla göre`" :option="byYear(data.reasonsByYear, 'line')" />
@@ -353,6 +363,9 @@ const empty = computed(() => data.value !== null && data.value.totals.protests =
   .totals {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+.map-block {
+  margin-bottom: 16px;
 }
 .grid {
   display: grid;
