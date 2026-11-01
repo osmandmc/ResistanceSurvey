@@ -54,11 +54,16 @@ export function getDefinitionOptions() {
   return api<DefinitionOptions>('/api/definitions/options')
 }
 
-export function listDefinitions(kind: DefinitionKind, filter: { text?: string; pending?: boolean; typeId?: number | null; page?: number }) {
+/** unused: companies no live case uses (Şirketler only). */
+export function listDefinitions(
+  kind: DefinitionKind,
+  filter: { text?: string; pending?: boolean; typeId?: number | null; unused?: boolean; page?: number },
+) {
   const params = new URLSearchParams()
   if (filter.text) params.set('q', filter.text)
   if (filter.pending) params.set('pending', 'true')
   if (filter.typeId) params.set('typeId', String(filter.typeId))
+  if (filter.unused) params.set('unused', 'true')
   if (filter.page && filter.page > 1) params.set('page', String(filter.page))
   return api<DefinitionPage>(`/api/definitions/${kind}?${params}`)
 }

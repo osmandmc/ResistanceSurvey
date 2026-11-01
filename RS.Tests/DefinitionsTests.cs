@@ -27,6 +27,38 @@ public class DefinitionsTests
         new MergeDefinitionsHandler(_db).Handle(new MergeDefinitionsCommand(kind, from, into));
 
     [Fact]
+    public async Task CompaniesWithoutLiveCasesCanBeListedAlone()
+    {
+        var workplace = new Company { Name = "A İşyeri" };
+        var main = new Company { Name = "B Ana Şirket" };
+        var onlyDeleted = new Company { Name = "C Silinmiş Vakanın" };
+        var unused = new Company { Name = "D Kullanılmayan" };
+        _db.Company.AddRange(workplace, main, onlyDeleted, unused, new Company { Name = "E Silinmiş", Deleted = true });
+        Case(company: workplace);
+        Case(mainCompany: main);
+        Case(deleted: true, company: onlyDeleted);
+        await _db.SaveChangesAsync();
+
+        var page = await new ListDefinitionsHandler(_db).Handle(new ListDefinitionsQuery(DefinitionKind.Companies, UnusedOnly: true));
+
+        // Same rule as the usage count: a company of deleted cases only is unused.
+        Assert.Equal(["C Silinmiş Vakanın", "D Kullanılmayan"], page.Items.Select(i => i.Name));
+        Assert.All(page.Items, i => Assert.Equal(0, i.Usage));
+        Assert.Equal(4, (await List(DefinitionKind.Companies)).Total);
+    }
+
+    [Fact]
+    public void TheUnusedCompanyFilterTranslatesToSqlServer()
+    {
+        using var sqlServer = new RSDBContext(new DbContextOptionsBuilder<RSDBContext>().UseSqlServer("Server=none;Database=none").Options);
+
+        var sql = ListDefinitionsHandler.Companies(sqlServer, "metal", unusedOnly: true).ToQueryString();
+
+        Assert.Contains("NOT EXISTS", sql);
+        Assert.Contains("[MainCompanyId]", sql);
+    }
+
+    [Fact]
     public void TheListFiltersTranslateToSqlServer()
     {
         // No database needed: EF builds the SQL and fails here if the interface property cannot be translated.

@@ -8,8 +8,12 @@ using RS.EF;
 
 namespace RS.MVC.Features.Definitions
 {
-    /// <summary>Text: part of the name. PendingOnly: values waiting for approval. TypeId: corporation type (Kurumlar only).</summary>
-    public record ListDefinitionsQuery(DefinitionKind Kind, string Text = null, bool PendingOnly = false, int? TypeId = null, int Page = 1);
+    /// <summary>
+    /// Text: part of the name. PendingOnly: values waiting for approval. TypeId: corporation type (Kurumlar only).
+    /// UnusedOnly: companies no live case uses, as workplace or main company (Şirketler only).
+    /// </summary>
+    public record ListDefinitionsQuery(DefinitionKind Kind, string Text = null, bool PendingOnly = false, int? TypeId = null, int Page = 1,
+        bool UnusedOnly = false);
 
     /// <summary>A page of one list, by name, with how many live cases (or protests) use each value.</summary>
     public class ListDefinitionsHandler(RSDBContext db)
@@ -23,7 +27,7 @@ namespace RS.MVC.Features.Definitions
 
             var (items, total, pending) = query.Kind switch
             {
-                DefinitionKind.Companies => await CompaniesAsync(text, page),
+                DefinitionKind.Companies => await CompaniesAsync(text, query.UnusedOnly, page),
                 DefinitionKind.Corporations => await ApprovableAsync(
                     db.Corporation.Where(c => query.TypeId == null || c.CorporationTypeId == query.TypeId), text, query.PendingOnly, page,
                     c => new DefinitionItem(c.Id, c.Name, c.Approved, 0, c.CorporationTypeId, null, null, null, null,
@@ -62,17 +66,29 @@ namespace RS.MVC.Features.Definitions
             return pendingOnly ? values.Where(v => !v.Approved) : values;
         }
 
-        private async Task<(List<DefinitionItem>, int, int)> CompaniesAsync(string text, int page)
+        private async Task<(List<DefinitionItem>, int, int)> CompaniesAsync(string text, bool unusedOnly, int page)
         {
-            var companies = db.Company.Where(c => !c.Deleted);
-            if (text != null)
-                companies = companies.Where(c => c.Name.Contains(text));
+            var companies = Companies(db, text, unusedOnly);
             var total = await companies.CountAsync();
             var items = await companies.OrderBy(c => c.Name).ThenBy(c => c.Id)
                 .Skip((page - 1) * PageSize).Take(PageSize)
                 .Select(c => new DefinitionItem(c.Id, c.Name, null, 0, c.CompanyTypeId, null, null, c.CompanyScaleId, c.CompanyWorkLineId, null))
                 .ToListAsync();
             return (items, total, 0);
+        }
+
+        /// <summary>
+        /// The company list's filters (public so a test can check they translate to SQL Server). Unused: no live case
+        /// uses the company, the same rule as the usage count, so companies of deleted cases count as unused.
+        /// </summary>
+        public static IQueryable<COMMON.Entities.Company> Companies(RSDBContext db, string text, bool unusedOnly)
+        {
+            var companies = db.Company.Where(c => !c.Deleted);
+            if (text != null)
+                companies = companies.Where(c => c.Name.Contains(text));
+            if (unusedOnly)
+                companies = companies.Where(c => !db.Resistance.Any(r => !r.Deleted && (r.CompanyId == c.Id || r.MainCompanyId == c.Id)));
+            return companies;
         }
     }
 }

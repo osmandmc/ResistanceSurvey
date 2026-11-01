@@ -64,13 +64,13 @@ namespace RS.MVC.Controllers
             return result.Error == null ? result : BadRequest(new { error = result.Error });
         }
 
-        /// <summary>GET /api/definitions/{kind}?q=…&amp;pending=true&amp;typeId=1&amp;page=1</summary>
+        /// <summary>GET /api/definitions/{kind}?q=…&amp;pending=true&amp;typeId=1&amp;unused=true&amp;page=1 (unused: Şirketler only)</summary>
         [HttpGet("{kind}")]
-        public async Task<ActionResult<DefinitionPage>> List(string kind, string q, bool pending, int? typeId, int page = 1)
+        public async Task<ActionResult<DefinitionPage>> List(string kind, string q, bool pending, int? typeId, bool unused = false, int page = 1)
         {
             if (!DefinitionKinds.TryParse(kind, out var parsed))
                 return UnknownKind();
-            return await list.Handle(new ListDefinitionsQuery(parsed, q, pending, typeId, page));
+            return await list.Handle(new ListDefinitionsQuery(parsed, q, pending, typeId, page, unused));
         }
 
         /// <summary>PUT /api/definitions/{kind}/{id} — name and the kind's own fields. 409 names a value that already has the name.</summary>
