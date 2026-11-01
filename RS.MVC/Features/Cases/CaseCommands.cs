@@ -80,8 +80,15 @@ namespace RS.MVC.Features.Cases
             r.Description = c.Description;
             r.Note = string.IsNullOrWhiteSpace(c.Note) ? null : c.Note.Trim();
             r.CategoryId = c.CategoryId!.Value;
-            r.CompanyId = workplace || solidarity ? c.CompanyId : null;
-            r.MainCompanyId = workplace && c.IsOutsource ? c.MainCompanyId : null;
+            // R37: the employer, how it works in this case, the organization above it and the place (İşletme only).
+            var employerRole = workplace ? EmployerRoles.Effective(c) : EmployerRole.Unknown;
+            r.EmployerUnknown = workplace && c.EmployerUnknown;
+            r.CompanyId = (workplace && !c.EmployerUnknown) || solidarity ? c.CompanyId : null;
+            r.EmployerRole = employerRole;
+            r.MainCompanyId = workplace && EmployerRoles.HasAbove(employerRole) ? c.MainCompanyId : null;
+            r.WorkplaceId = workplace && c.WorkplaceId is { } workplaceId && await db.Workplace.AnyAsync(w => w.Id == workplaceId && !w.Deleted)
+                ? workplaceId
+                : null;
             r.SupportedResistanceId = solidarity ? c.SupportedCaseId : null;
             r.DevelopRight = c.DevelopRight!.Value;
             r.EmployeeCountNumber = workplace ? c.EmployeeCount : null;

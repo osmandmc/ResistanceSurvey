@@ -57,6 +57,7 @@ const actionLabels: Record<string, string> = {
   'definition.not-duplicate': '“Aynı değil” dedi',
   'definition.company-create': 'Şirket ekledi',
   'definition.corporation-create': 'Kurum ekledi',
+  'definition.workplace-create': 'İşyeri ekledi',
   'definition.company-link-add': 'Taşeron ilişkisi ekledi',
   'definition.company-link-remove': 'Taşeron ilişkisini kaldırdı',
   'user.create': 'Kullanıcı davet etti',

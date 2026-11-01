@@ -1000,6 +1000,12 @@ namespace RS.EF.Data.Migrations
                     b.Property<int?>("EmployeeCountNumber")
                         .HasColumnType("int");
 
+                    b.Property<int>("EmployerRole")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("EmployerUnknown")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -1047,6 +1053,9 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("nvarchar(50)")
                         .UseCollation("Turkish_CI_AS");
 
+                    b.Property<int?>("WorkplaceId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -1062,6 +1071,8 @@ namespace RS.EF.Data.Migrations
                     b.HasIndex("TradeUnionAuthorityId");
 
                     b.HasIndex("TradeUnionId");
+
+                    b.HasIndex("WorkplaceId");
 
                     b.ToTable("Resistance");
                 });
@@ -1159,6 +1170,48 @@ namespace RS.EF.Data.Migrations
                     b.HasIndex("ResistanceReasonId");
 
                     b.ToTable("ResistanceResistanceReason");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.Workplace", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Approved")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("DistrictId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<int?>("OwnerCompanyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("DistrictId");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("OwnerCompanyId");
+
+                    b.ToTable("Workplace");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.Confederation", b =>
@@ -1446,6 +1499,11 @@ namespace RS.EF.Data.Migrations
                         .HasForeignKey("TradeUnionId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("RS.COMMON.Entities.Workplace", "Workplace")
+                        .WithMany()
+                        .HasForeignKey("WorkplaceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Category");
 
                     b.Navigation("Company");
@@ -1459,6 +1517,8 @@ namespace RS.EF.Data.Migrations
                     b.Navigation("TradeUnion");
 
                     b.Navigation("TradeUnionAuthority");
+
+                    b.Navigation("Workplace");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.ResistanceCorporation", b =>
@@ -1535,6 +1595,30 @@ namespace RS.EF.Data.Migrations
                     b.Navigation("Resistance");
 
                     b.Navigation("ResistanceReason");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.Workplace", b =>
+                {
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("RS.COMMON.Entities.LookupEntity.District", "District")
+                        .WithMany()
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("RS.COMMON.Entities.Company", "OwnerCompany")
+                        .WithMany()
+                        .HasForeignKey("OwnerCompanyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("City");
+
+                    b.Navigation("District");
+
+                    b.Navigation("OwnerCompany");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.TradeUnion", b =>

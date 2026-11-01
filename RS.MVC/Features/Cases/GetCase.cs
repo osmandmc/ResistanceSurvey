@@ -24,7 +24,8 @@ namespace RS.MVC.Features.Cases
         DateTime? CreateDate,
         string Updater,
         DateTime? UpdateDate,
-        CaseLink SupportedCase = null);
+        CaseLink SupportedCase = null,
+        string WorkplaceName = null);
 
     /// <summary>Another case, by id and the name shown for it (its name, else its company).</summary>
     public record CaseLink(int Id, string Name);
@@ -45,6 +46,8 @@ namespace RS.MVC.Features.Cases
                 .Select(x => new
                 {
                     x.Id, x.Name, x.Description, x.CategoryId, x.CompanyId, x.MainCompanyId,
+                    x.EmployerRole, x.EmployerUnknown, x.WorkplaceId,
+                    WorkplaceName = x.Workplace != null ? x.Workplace.Name : null,
                     x.DevelopRight, x.EmployeeCountNumber, x.EmployeeCountId, x.TradeUnionAuthorityId,
                     x.TradeUnionId, x.FiredEmployeeCountByProtesto, x.ResistanceResult, x.Note,
                     x.Creator, x.CreateDate, x.Updater, x.UpdateDate, x.SupportedResistanceId,
@@ -92,7 +95,10 @@ namespace RS.MVC.Features.Cases
                 CategoryId = r.CategoryId,
                 CompanyId = r.CompanyId,
                 IsOutsource = r.MainCompanyId != null,
+                EmployerRole = r.EmployerRole,
+                EmployerUnknown = r.EmployerUnknown,
                 MainCompanyId = r.MainCompanyId,
+                WorkplaceId = r.WorkplaceId,
                 SupportedCaseId = r.SupportedResistanceId,
                 ReasonIds = r.ReasonIds,
                 DevelopRight = r.DevelopRight,
@@ -131,7 +137,8 @@ namespace RS.MVC.Features.Cases
             return new CaseDetail(
                 r.Id, caseInput, r.CompanyName, r.MainCompanyName, r.Note, protestDetails, articles,
                 r.Creator, r.CreateDate, r.Updater, r.UpdateDate,
-                r.SupportedResistanceId is { } supported ? new CaseLink(supported, r.SupportedName) : null);
+                r.SupportedResistanceId is { } supported ? new CaseLink(supported, r.SupportedName) : null,
+                r.WorkplaceName);
         }
     }
 }
