@@ -137,6 +137,9 @@ const aiCompanyName = ref<string | null>(null)
 const aiChosenCompanyName = ref<string | null>(null)
 const aiChosenMainCompanyName = ref<string | null>(null)
 const aiMainCompanyName = ref<string | null>(null)
+/** R37: the registered workplace the AI chose (shown by name) and a workplace it named that is not registered. */
+const aiChosenWorkplaceName = ref<string | null>(null)
+const aiWorkplaceName = ref<string | null>(null)
 /** The AI's reason when it found the article not relevant; the banner offers dismissing it. */
 const aiNotRelevant = ref<string | null>(null)
 /** The last answer checked for this article; sent with the save or the dismissal (R19c). */
@@ -208,6 +211,8 @@ function onAiApply(result: AiCheckResult, auto = false) {
   aiChosenCompanyName.value = result.case?.companyName ?? null
   aiChosenMainCompanyName.value = result.case?.mainCompanyName ?? null
   aiMainCompanyName.value = result.case?.newMainCompanyName ?? null
+  aiChosenWorkplaceName.value = result.case?.workplaceName ?? null
+  aiWorkplaceName.value = result.case?.newWorkplaceName ?? null
   aiNotRelevant.value = null
   aiDialogFor.value = null
   if (action.value === 'linkOnly') action.value = 'newCase'
@@ -264,6 +269,8 @@ function clearAi() {
   aiChosenCompanyName.value = null
   aiChosenMainCompanyName.value = null
   aiMainCompanyName.value = null
+  aiChosenWorkplaceName.value = null
+  aiWorkplaceName.value = null
   aiNotRelevant.value = null
 }
 
@@ -575,6 +582,8 @@ async function onDismissed() {
           :main-company-name="aiChosenMainCompanyName"
           :suggested-company-name="aiCompanyName"
           :suggested-main-company-name="aiMainCompanyName"
+          :workplace-name="aiChosenWorkplaceName"
+          :suggested-workplace-name="aiWorkplaceName"
           @use-existing="onUseExisting"
         />
       </template>

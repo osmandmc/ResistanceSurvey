@@ -28,7 +28,7 @@ namespace RS.MVC.Features.Review
 
     public class GetAiPromptHandler(IPipelineClient pipeline, RSDBContext db)
     {
-        public const string Version = "v2.2";
+        public const string Version = "v2.3";
 
         private static readonly Lazy<string> Template = new(() =>
         {
@@ -136,7 +136,11 @@ namespace RS.MVC.Features.Review
         int? FiredEmployeeCount,
         string Description,
         string CompanyName = null,
-        string MainCompanyName = null);
+        string MainCompanyName = null,
+        RS.COMMON.Entities.EmployerRole? EmployerRole = null,
+        int? WorkplaceId = null,
+        string WorkplaceName = null,
+        string NewWorkplaceName = null);
 
     public record AiLocation(int CityId, int? DistrictId, string Place);
 
@@ -207,7 +211,26 @@ namespace RS.MVC.Features.Review
             var company = Record(companies, Text(c, "company"), "şirket");
             Add("case.company", "İşyeri", Items(company));
             var mainCompany = Record(companies, Text(c, "main_company"), "şirket");
-            Add("case.main_company", "Asıl işveren", Items(mainCompany));
+
+            // R37 (prompt v2.3): how the employer works and the place. An older answer without a role: a company above
+            // the employer is taken as subcontracting, an employer alone as direct.
+            var roleAnswer = Text(c, "employer_role");
+            var employerRole = RoleOf(roleAnswer)
+                ?? (category?.Id != KnownListIds.WorkplaceCategory ? null
+                    : mainCompany != null ? RS.COMMON.Entities.EmployerRole.Subcontractor
+                    : company != null ? RS.COMMON.Entities.EmployerRole.Direct : null);
+            if (roleAnswer != null)
+                Add("case.employer_role", "İşveren durumu", RoleOf(roleAnswer) is { } known
+                    ? new AiItem(roleAnswer, Cases.EmployerRoles.Name(known), AiItemStatus.Matched)
+                    : new AiItem(roleAnswer, null, AiItemStatus.NotInList, "bilinmeyen durum, alınmadı"));
+            if (employerRole is { } r && !Cases.EmployerRoles.HasAbove(r))
+                mainCompany = null; // a direct employer has nothing above it
+            Add("case.main_company", employerRole is { } withAbove && Cases.EmployerRoles.HasAbove(withAbove)
+                ? Cases.EmployerRoles.AboveLabel(withAbove) : "Asıl işveren", Items(mainCompany));
+
+            var workplaces = await ListAsync(db.Workplace.Where(e => !e.Deleted).Select(e => new { e.Id, e.Name }).ToListAsync(), e => e.Id, e => e.Name, DefinitionKind.Workplaces);
+            var workplace = Record(workplaces, Text(c, "workplace"), "işyeri");
+            Add("case.workplace", "İşyeri", Items(workplace));
 
             var corporations = await ListAsync(db.Corporation.Select(e => new { e.Id, e.Name }).ToListAsync(), e => e.Id, e => e.Name, DefinitionKind.Corporations);
             var organizations = Texts(c, "organizations").Select(o => Record(corporations, o, "örgüt")).ToList();
@@ -264,7 +287,7 @@ namespace RS.MVC.Features.Review
                 CategoryId: category?.Id,
                 CompanyId: company?.Id,
                 NewCompanyName: company is { Id: null } ? company.Item.Value : null,
-                IsOutsource: mainCompany != null,
+                IsOutsource: employerRole is { } outsourced ? Cases.EmployerRoles.HasAbove(outsourced) : mainCompany != null,
                 MainCompanyId: mainCompany?.Id,
                 NewMainCompanyName: mainCompany is { Id: null } ? mainCompany.Item.Value : null,
                 ReasonIds: Ids(reasons),
@@ -275,7 +298,11 @@ namespace RS.MVC.Features.Review
                 FiredEmployeeCount: firedCount,
                 Description: description,
                 CompanyName: company?.Id != null ? company.Item.Value : null,
-                MainCompanyName: mainCompany?.Id != null ? mainCompany.Item.Value : null);
+                MainCompanyName: mainCompany?.Id != null ? mainCompany.Item.Value : null,
+                EmployerRole: employerRole,
+                WorkplaceId: workplace?.Id,
+                WorkplaceName: workplace?.Id != null ? workplace.Item.Value : null,
+                NewWorkplaceName: workplace is { Id: null } ? workplace.Item.Value : null);
             var protestValues = new AiProtestValues(
                 ProtestTypeIds: Ids(types),
                 StartDate: startDate,
@@ -339,7 +366,9 @@ namespace RS.MVC.Features.Review
                     if (item.Status == AiItemStatus.NotInList)
                         Flag(field.Field, $"“{item.Answer}” listede yok, forma alınmadı.");
                     else if (item.Status == AiItemStatus.New)
-                        Flag(field.Field, $"“{item.Value}” kayıtlı değil; kaydederken yeni kayıt olarak eklenir.");
+                        Flag(field.Field, field.Field is "case.company" or "case.main_company" or "case.workplace"
+                            ? $"“{item.Value}” kayıtlı değil; formdaki düğmeyle ekleyin ya da kayıtlı olanı seçin."
+                            : $"“{item.Value}” kayıtlı değil; kaydederken yeni kayıt olarak eklenir.");
                 }
             return flags;
         }
@@ -453,6 +482,20 @@ namespace RS.MVC.Features.Review
         }
 
         /// <summary>A company or organization: a registered one when the names match, otherwise a new one by that name.</summary>
+        /// <summary>“Doğrudan”, “Taşeron”, “Yüklenici”, “İşletmeci” (case and Turkish letters ignored); else null.</summary>
+        private static RS.COMMON.Entities.EmployerRole? RoleOf(string answer) =>
+            new string(NameMatching.Key(answer ?? "").Select(ch => ch switch
+            {
+                'ğ' => 'g', 'ş' => 's', 'ı' => 'i', 'ü' => 'u', 'ö' => 'o', 'ç' => 'c', 'â' => 'a', 'î' => 'i', 'û' => 'u', _ => ch,
+            }).ToArray()) switch
+            {
+                "dogrudan" => RS.COMMON.Entities.EmployerRole.Direct,
+                "taseron" or "alt isveren" => RS.COMMON.Entities.EmployerRole.Subcontractor,
+                "yuklenici" => RS.COMMON.Entities.EmployerRole.Contractor,
+                "isletmeci" => RS.COMMON.Entities.EmployerRole.Operator,
+                _ => null,
+            };
+
         private static Match Record(ValueList list, string answer, string what)
         {
             if (answer == null)

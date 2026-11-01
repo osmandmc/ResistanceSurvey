@@ -44,8 +44,10 @@ const props = defineProps<{
   suggestedMainCompanyName?: string | null
   /** Name of the supported case (editing a Dayanışma case). */
   supportedCaseName?: string | null
-  /** Name of the case's workplace (editing, R37). */
+  /** Name of the case's workplace (editing, or the AI's choice, R37). */
   workplaceName?: string | null
+  /** A workplace the AI named that is not registered: offered as "add". */
+  suggestedWorkplaceName?: string | null
 }>()
 
 const value = defineModel<CaseFormValue>({ required: true })
@@ -214,6 +216,11 @@ function status(field: string) {
       </n-form-item>
 
       <template v-if="workplace">
+        <n-form-item :class="ai('employerRole')" label="İşveren Durumu" label-placement="top" class="wide" :feedback="role.help">
+          <n-radio-group v-model:value="value.employerRole" name="employer-role">
+            <n-radio-button v-for="o in employerRoleOptions" :key="o.value" :value="o.value" :label="o.label" />
+          </n-radio-group>
+        </n-form-item>
         <n-form-item :class="ai('companyId')" label="İşveren" label-placement="top" class="wide" :required="!value.employerUnknown" :validation-status="status('companyId')" :feedback="error('companyId') || 'İşçileri çalıştıran şirket ya da kurum.'">
           <div class="employer">
             <company-picker
@@ -252,6 +259,7 @@ function status(field: string) {
             v-model="value.workplaceId"
             input-id="workplace"
             :selected-name="props.workplaceName"
+            :suggested-name="props.suggestedWorkplaceName"
             :suggest-for="suggestPlacesFor"
             :placeholder="workplacePlaceholder"
             :cities="options.cities"
@@ -262,11 +270,6 @@ function status(field: string) {
           />
         </n-form-item>
 
-        <n-form-item :class="ai('employerRole')" label="İşveren bu işte nasıl çalışıyor?" label-placement="top" class="wide" :feedback="role.help">
-          <n-radio-group v-model:value="value.employerRole" name="employer-role">
-            <n-radio-button v-for="o in employerRoleOptions" :key="o.value" :value="o.value" :label="o.label" />
-          </n-radio-group>
-        </n-form-item>
         <n-form-item v-if="above" :class="ai('mainCompanyId')" :label="role.above ?? ''" label-placement="top" class="wide" required :validation-status="status('mainCompanyId')" :feedback="error('mainCompanyId') || (aboveSuggested ? 'Önerildi: seçilen işyerinin sahibi.' : '')">
           <company-picker
             v-model="value.mainCompanyId"

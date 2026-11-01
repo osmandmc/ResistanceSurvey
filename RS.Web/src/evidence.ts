@@ -86,6 +86,8 @@ export const evidenceFormField: Record<string, { part: 'case' | 'protest'; key: 
   'case.category': { part: 'case', key: 'categoryId' },
   'case.company': { part: 'case', key: 'companyId' },
   'case.main_company': { part: 'case', key: 'mainCompanyId' },
+  'case.employer_role': { part: 'case', key: 'employerRole' },
+  'case.workplace': { part: 'case', key: 'workplaceId' },
   'case.organizations': { part: 'case', key: 'corporations' },
   'case.reasons': { part: 'case', key: 'reasons' },
   'case.employment_types': { part: 'case', key: 'employmentTypeIds' },

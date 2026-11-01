@@ -1,6 +1,6 @@
 import { api } from './api'
 import type { AiEvidence } from './evidence'
-import type { CaseOption } from './reviewApi'
+import type { CaseOption, EmployerRole } from './reviewApi'
 import type { CaseFormValue } from './caseForm'
 import { fromDay, noInterventionTypeId, strikeProtestTypeIds, type ProtestFormValue } from './protestForm'
 
@@ -67,6 +67,12 @@ export interface AiCaseValues {
   /** The registered companies' names, so the form shows them (it only knows ids). */
   companyName: string | null
   mainCompanyName: string | null
+  /** R37 (prompt v2.3): how the employer works; for an older answer, guessed from whether a company is above it. */
+  employerRole: EmployerRole | null
+  /** A registered workplace the answer named, or a name to offer for adding. */
+  workplaceId: number | null
+  workplaceName: string | null
+  newWorkplaceName: string | null
 }
 
 export interface AiProtestValues {
@@ -146,12 +152,10 @@ export function aiCaseValues(v: AiCaseValues): Partial<CaseFormValue> {
   const out: Partial<CaseFormValue> = {}
   if (v.categoryId !== null) out.categoryId = v.categoryId
   if (v.companyId !== null) out.companyId = v.companyId
-  // A named main company opens the field above the employer, also when it still has to be added. The prompt does not
-  // yet say how the employer works (R37), so a company above it is taken as subcontracting.
-  if (v.isOutsource) {
-    out.isOutsource = true
-    out.employerRole = 2
-  }
+  // How the employer works (R37); a named company above it opens that field, also when it still has to be added.
+  if (v.employerRole !== null) out.employerRole = v.employerRole
+  if (v.isOutsource) out.isOutsource = true
+  if (v.workplaceId !== null) out.workplaceId = v.workplaceId
   if (v.mainCompanyId !== null) out.mainCompanyId = v.mainCompanyId
   if (v.reasonIds.length) out.reasons = [...v.reasonIds]
   if (v.corporationIds.length || v.newCorporationNames.length) out.corporations = [...v.corporationIds, ...v.newCorporationNames]
