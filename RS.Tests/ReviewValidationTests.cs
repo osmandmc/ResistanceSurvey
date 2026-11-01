@@ -33,6 +33,7 @@ public class ReviewValidationTests
         ProtestTypeIds = [1, 2],
         SimpleDescription = "Vardiya sonunda 15 dakika iş bırakma",
         StartDate = new DateTime(2026, 10, 12),
+        EndDate = new DateTime(2026, 10, 12),
         PlaceIds = [6],
         GenderId = 1,
         InterventionTypeIds = [ReviewValidation.NoInterventionTypeId],
@@ -53,9 +54,22 @@ public class ReviewValidationTests
         Assert.Equal(
             [
                 "case.categoryId", "case.description", "case.developRight", "case.reasonIds",
-                "protest.genderId", "protest.interventionTypeIds", "protest.placeIds", "protest.protestTypeIds", "protest.startDate",
+                "protest.endDate", "protest.genderId", "protest.interventionTypeIds", "protest.placeIds", "protest.protestTypeIds", "protest.startDate",
             ],
             errors.Keys.Order());
+    }
+
+    [Fact]
+    public void AnEmptyEndDateNeedsEylemSuruyor()
+    {
+        var withoutEnd = CompleteProtest();
+        withoutEnd.EndDate = null;
+        var ongoing = CompleteProtest();
+        ongoing.EndDate = null;
+        ongoing.Ongoing = true;
+
+        Assert.Equal(["protest.endDate"], ReviewValidation.ForProtest(withoutEnd).Keys);
+        Assert.Empty(ReviewValidation.ForProtest(ongoing));
     }
 
     [Fact]

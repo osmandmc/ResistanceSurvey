@@ -97,7 +97,9 @@ namespace RS.MVC.Features.Review
             }
             if (p.ProtestTypeIds is not { Count: > 0 }) errors["protest.protestTypeIds"] = "Lütfen en az bir eylem türü seçiniz.";
             if (p.StartDate == null) errors["protest.startDate"] = "Lütfen başlangıç tarihini seçiniz.";
-            else if (p.EndDate != null && p.StartDate > p.EndDate) errors["protest.startDate"] = "Başlangıç tarihi bitiş tarihinden sonra olamaz.";
+            else if (!p.Ongoing && p.EndDate != null && p.StartDate > p.EndDate) errors["protest.startDate"] = "Başlangıç tarihi bitiş tarihinden sonra olamaz.";
+            // An empty end date only on purpose: "Eylem sürüyor" (2026-11-01); before, it could mean ongoing or forgotten.
+            if (!p.Ongoing && p.EndDate == null) errors["protest.endDate"] = "Bitiş tarihini girin ya da “Eylem sürüyor”u işaretleyin.";
             if (p.PlaceIds is not { Count: > 0 }) errors["protest.placeIds"] = "Lütfen en az bir eylem yeri seçiniz.";
             if (p.GenderId is not > 0) errors["protest.genderId"] = "Lütfen cinsiyeti seçiniz.";
             if (p.InterventionTypeIds is not { Count: > 0 }) errors["protest.interventionTypeIds"] = "Lütfen en az bir müdahale tipi seçiniz.";

@@ -25,6 +25,8 @@ export interface ProtestFormValue {
   /** Date pickers work with timestamps (local midnight). */
   startDate: number | null
   endDate: number | null
+  /** “Eylem sürüyor”: saved without an end date; otherwise the end date is required. */
+  ongoing: boolean
   placeIds: number[]
   genderId: number | null
   locations: LocationValue[]
@@ -44,6 +46,7 @@ export function emptyProtest(): ProtestFormValue {
     simpleDescription: null,
     startDate: null,
     endDate: null,
+    ongoing: false,
     placeIds: [],
     genderId: null,
     locations: [],
@@ -72,7 +75,8 @@ export function toProtestInput(value: ProtestFormValue) {
       : null,
     simpleDescription: value.simpleDescription,
     startDate: toDay(value.startDate),
-    endDate: toDay(value.endDate),
+    endDate: value.ongoing ? null : toDay(value.endDate),
+    ongoing: value.ongoing,
     placeIds: value.placeIds,
     genderId: value.genderId,
     locations: value.locations,
@@ -97,6 +101,7 @@ export function fromProtestInput(input: {
   simpleDescription: string | null
   startDate: string | null
   endDate: string | null
+  ongoing?: boolean
   placeIds: number[]
   genderId: number | null
   locations: LocationValue[]
@@ -115,6 +120,8 @@ export function fromProtestInput(input: {
     simpleDescription: input.simpleDescription,
     startDate: fromDay(input.startDate),
     endDate: fromDay(input.endDate),
+    // A saved protest without an end date is ongoing (as the app has always read it).
+    ongoing: input.ongoing ?? input.endDate === null,
     placeIds: [...input.placeIds],
     genderId: input.genderId,
     locations: input.locations.map((l) => ({ ...l })),

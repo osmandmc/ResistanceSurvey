@@ -43,7 +43,7 @@ namespace RS.MVC.Features.Cases
         public async Task<int> CreateCaseAsync(
             CaseInput c, ProtestInput p, string userName, IReadOnlyList<int> reasonIds, IReadOnlyList<int> corporationIds, int? newsId = null)
         {
-            var resistance = new Resistance { Creator = userName, CreateDate = DateTime.Now, StartDate = p.StartDate!.Value, EndDate = p.EndDate };
+            var resistance = new Resistance { Creator = userName, CreateDate = DateTime.Now, StartDate = p.StartDate!.Value, EndDate = p.Ongoing ? null : p.EndDate };
             await ApplyCaseAsync(resistance, c, reasonIds, corporationIds);
             var protest = new Protesto { Creator = userName, CreateDate = DateTime.Now };
             await ApplyProtestAsync(protest, p);
@@ -129,7 +129,7 @@ namespace RS.MVC.Features.Cases
         public async Task ApplyProtestAsync(Protesto protest, ProtestInput input)
         {
             protest.StartDate = input.StartDate!.Value;
-            protest.EndDate = input.EndDate;
+            protest.EndDate = input.Ongoing ? null : input.EndDate;
             protest.GenderId = input.GenderId!.Value;
             protest.CustodyCount = input.CustodyCount;
             protest.EmployeeCountNumber = input.EmployeeCount;

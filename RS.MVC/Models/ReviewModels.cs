@@ -98,6 +98,8 @@ namespace RS.MVC.Models
         public string SimpleDescription { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        /// <summary>“Eylem sürüyor”: the protest goes on, saved without an end date. Otherwise an end date is required.</summary>
+        public bool Ongoing { get; set; }
         public List<int> PlaceIds { get; set; } = [];
         public int? GenderId { get; set; }
         public List<LocationInput> Locations { get; set; } = [];

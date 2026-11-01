@@ -177,6 +177,20 @@ public class CaseDetailTests
     }
 
     [Fact]
+    public async Task AnOngoingProtestIsSavedWithoutAnEndAndLoadsAsOngoing()
+    {
+        var protest = ReviewValidationTests.CompleteProtest();
+        protest.Ongoing = true; // its end date (from the form) is not kept
+
+        var result = await new SaveProtestHandler(_db, new CaseWriter(_db)).Handle(new SaveProtestCommand(_case.Id, null, protest, "ayse"));
+
+        Assert.Equal(CaseCommandStatus.Ok, result.Status);
+        Assert.Null(_db.Protesto.Single(p => p.Id == result.Id).EndDate);
+        var detail = await new GetCaseHandler(_db).Handle(new GetCaseQuery(_case.Id));
+        Assert.True(detail!.Protests.Single(p => p.Id == result.Id).Protest.Ongoing);
+    }
+
+    [Fact]
     public async Task AddingAnEarlierProtestMovesTheCaseStart()
     {
         var protest = ReviewValidationTests.CompleteProtest();
