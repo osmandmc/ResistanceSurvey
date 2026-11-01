@@ -102,6 +102,8 @@ export interface CaseDetail {
   updateDate: string | null
   /** Dayanışma (R31): the supported case, for the form's picker. */
   supportedCase: { id: number; name: string | null } | null
+  /** R37: the case's workplace, when it is not the employer itself. */
+  workplaceName: string | null
 }
 
 export interface NewsOption {

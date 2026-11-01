@@ -146,8 +146,12 @@ export function aiCaseValues(v: AiCaseValues): Partial<CaseFormValue> {
   const out: Partial<CaseFormValue> = {}
   if (v.categoryId !== null) out.categoryId = v.categoryId
   if (v.companyId !== null) out.companyId = v.companyId
-  // A named main company opens the main company field, also when it still has to be added.
-  if (v.isOutsource) out.isOutsource = true
+  // A named main company opens the field above the employer, also when it still has to be added. The prompt does not
+  // yet say how the employer works (R37), so a company above it is taken as subcontracting.
+  if (v.isOutsource) {
+    out.isOutsource = true
+    out.employerRole = 2
+  }
   if (v.mainCompanyId !== null) out.mainCompanyId = v.mainCompanyId
   if (v.reasonIds.length) out.reasons = [...v.reasonIds]
   if (v.corporationIds.length || v.newCorporationNames.length) out.corporations = [...v.corporationIds, ...v.newCorporationNames]

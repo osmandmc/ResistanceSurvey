@@ -276,6 +276,7 @@ function confirmDetach(newsId: number, title: string | null) {
         :company-name="detail.companyName"
         :main-company-name="detail.mainCompanyName"
         :supported-case-name="detail.supportedCase?.name"
+        :workplace-name="detail.workplaceName"
         :warn-about-existing-cases="false"
       />
       <div class="actions">

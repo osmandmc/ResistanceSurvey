@@ -1,7 +1,7 @@
 import { api } from './api'
 
 /** The lists in Tanımlar; the slug is also the address (/definitions/corporations). */
-export type DefinitionKind = 'companies' | 'corporations' | 'reasons' | 'protest-types' | 'protest-places'
+export type DefinitionKind = 'companies' | 'corporations' | 'reasons' | 'protest-types' | 'protest-places' | 'workplaces'
 
 export const definitionKinds: { kind: DefinitionKind; label: string; usageUnit: 'vaka' | 'eylem'; hasApproval: boolean }[] = [
   { kind: 'companies', label: 'Şirketler', usageUnit: 'vaka', hasApproval: false },
@@ -9,6 +9,7 @@ export const definitionKinds: { kind: DefinitionKind; label: string; usageUnit: 
   { kind: 'reasons', label: 'Vaka nedenleri', usageUnit: 'vaka', hasApproval: true },
   { kind: 'protest-types', label: 'Eylem türleri', usageUnit: 'eylem', hasApproval: true },
   { kind: 'protest-places', label: 'Eylem mekanları', usageUnit: 'eylem', hasApproval: true },
+  { kind: 'workplaces', label: 'İşyerleri', usageUnit: 'vaka', hasApproval: true },
 ]
 
 export interface DefinitionItem {

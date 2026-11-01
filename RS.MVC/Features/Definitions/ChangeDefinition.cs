@@ -170,6 +170,7 @@ namespace RS.MVC.Features.Definitions
             DefinitionKind.Reasons => await db.ResistanceReason.FindAsync(id),
             DefinitionKind.ProtestTypes => await db.ProtestoType.FindAsync(id),
             DefinitionKind.ProtestPlaces => await db.ProtestoPlace.FindAsync(id),
+            DefinitionKind.Workplaces => await db.Workplace.FirstOrDefaultAsync(w => w.Id == id && !w.Deleted),
             _ => null,
         };
 
@@ -181,6 +182,7 @@ namespace RS.MVC.Features.Definitions
                 DefinitionKind.Corporations => db.Corporation,
                 DefinitionKind.Reasons => db.ResistanceReason,
                 DefinitionKind.ProtestTypes => db.ProtestoType,
+                DefinitionKind.Workplaces => db.Workplace.Where(w => !w.Deleted),
                 _ => db.ProtestoPlace,
             };
             return await values.Where(v => v.Id != id && v.Name == name).FirstOrDefaultAsync();
@@ -195,6 +197,7 @@ namespace RS.MVC.Features.Definitions
             DefinitionKind.Reasons => await db.ResistanceResistanceReason.AnyAsync(x => x.ResistanceReasonId == id),
             DefinitionKind.ProtestTypes => await db.ProtestoProtestoType.AnyAsync(x => x.ProtestoTypeId == id),
             DefinitionKind.ProtestPlaces => await db.ProtestoProtestoPlace.AnyAsync(x => x.ProtestoPlaceId == id),
+            DefinitionKind.Workplaces => await db.Resistance.AnyAsync(r => r.WorkplaceId == id),
             _ => false,
         };
     }

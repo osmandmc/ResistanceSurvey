@@ -14,6 +14,8 @@ namespace RS.MVC.Features.Definitions
         Reasons,
         ProtestTypes,
         ProtestPlaces,
+        /// <summary>R37: places (factories, hospitals, sites), typed in the case form and approved here.</summary>
+        Workplaces,
     }
 
     public static class DefinitionKinds
@@ -25,6 +27,7 @@ namespace RS.MVC.Features.Definitions
             ["reasons"] = DefinitionKind.Reasons,
             ["protest-types"] = DefinitionKind.ProtestTypes,
             ["protest-places"] = DefinitionKind.ProtestPlaces,
+            ["workplaces"] = DefinitionKind.Workplaces,
         };
 
         public static bool TryParse(string slug, out DefinitionKind kind) => Slugs.TryGetValue(slug ?? "", out kind);
@@ -38,6 +41,7 @@ namespace RS.MVC.Features.Definitions
             DefinitionKind.Corporations => "Kurum",
             DefinitionKind.Reasons => "Vaka nedeni",
             DefinitionKind.ProtestTypes => "Eylem türü",
+            DefinitionKind.Workplaces => "İşyeri",
             _ => "Eylem mekânı",
         };
 
@@ -107,6 +111,9 @@ namespace RS.MVC.Features.Definitions
                 case DefinitionKind.ProtestTypes:
                     return (await db.ProtestoProtestoType.Where(x => list.Contains(x.ProtestoTypeId) && !x.Protesto.Deleted && !x.Protesto.Resistance.Deleted)
                         .Select(x => new { Id = x.ProtestoTypeId, x.ProtestoId }).ToListAsync()).Select(x => (x.Id, x.ProtestoId)).ToList();
+                case DefinitionKind.Workplaces:
+                    return (await db.Resistance.Where(r => !r.Deleted && r.WorkplaceId != null && list.Contains(r.WorkplaceId.Value))
+                        .Select(r => new { Id = r.WorkplaceId.Value, CaseId = r.Id }).ToListAsync()).Select(x => (x.Id, x.CaseId)).ToList();
                 default:
                     return (await db.ProtestoProtestoPlace.Where(x => list.Contains(x.ProtestoPlaceId) && !x.Protesto.Deleted && !x.Protesto.Resistance.Deleted)
                         .Select(x => new { Id = x.ProtestoPlaceId, x.ProtestoId }).ToListAsync()).Select(x => (x.Id, x.ProtestoId)).ToList();

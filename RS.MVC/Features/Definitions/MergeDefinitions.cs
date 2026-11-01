@@ -77,6 +77,11 @@ namespace RS.MVC.Features.Definitions
                         command.FromId, command.IntoId, (x, id) => x.ProtestoTypeId = id);
                     db.Remove(await db.ProtestoType.FindAsync(command.FromId));
                     break;
+                case DefinitionKind.Workplaces:
+                    foreach (var r in await db.Resistance.Where(r => r.WorkplaceId == command.FromId).ToListAsync())
+                        r.WorkplaceId = command.IntoId;
+                    db.Remove(await db.Workplace.FindAsync(command.FromId));
+                    break;
                 default:
                     await MoveLinksAsync(db.ProtestoProtestoPlace, x => x.ProtestoPlaceId, x => x.ProtestoId,
                         command.FromId, command.IntoId, (x, id) => x.ProtestoPlaceId = id);
@@ -96,6 +101,7 @@ namespace RS.MVC.Features.Definitions
                 DefinitionKind.Corporations => await db.Corporation.CountAsync(c => ids.Contains(c.Id)),
                 DefinitionKind.Reasons => await db.ResistanceReason.CountAsync(c => ids.Contains(c.Id)),
                 DefinitionKind.ProtestTypes => await db.ProtestoType.CountAsync(c => ids.Contains(c.Id)),
+                DefinitionKind.Workplaces => await db.Workplace.CountAsync(c => ids.Contains(c.Id) && !c.Deleted),
                 _ => await db.ProtestoPlace.CountAsync(c => ids.Contains(c.Id)),
             };
             return found == 2;

@@ -5,6 +5,7 @@ using RS.COMMON.Entities;
 using RS.COMMON.Entities.LookupEntity;
 using RS.EF;
 using RS.MVC.Features.Cases;
+using RS.MVC.Features.Definitions;
 using RS.MVC.Features.Review;
 using RS.MVC.Models;
 using static RS.COMMON.Constants.Enums;
@@ -182,6 +183,31 @@ public class EmployerWorkplaceTests
         // By name (the database ignores case with its Turkish collation; the in-memory one does not).
         Assert.Equal(["Gölcük fabrikası"], (await search.Handle(new SearchWorkplacesQuery("Gölcük"))).Select(w => w.Name));
         Assert.Empty(await search.Handle(new SearchWorkplacesQuery(null)));
+    }
+
+    [Fact]
+    public async Task TanimlarListsApprovesAndMergesWorkplaces()
+    {
+        _db.Workplace.AddRange(
+            new Workplace { Id = 4, Name = "Çapa Hastanesi", CityId = 34 },
+            new Workplace { Id = 5, Name = "Eski yer", Deleted = true });
+        await _db.SaveChangesAsync();
+        await Save(Case(c => { c.EmployerRole = EmployerRole.Subcontractor; c.IsOutsource = true; c.MainCompanyId = 11; c.WorkplaceId = 4; }));
+
+        var list = await new ListDefinitionsHandler(_db).Handle(new ListDefinitionsQuery(DefinitionKind.Workplaces));
+        Assert.Equal([("Çapa Hastanesi", false, 1), ("İstanbul Tıp Fakültesi Hastanesi (Çapa)", true, 0)],
+            list.Items.Select(i => (i.Name, i.Approved!.Value, i.Usage)));
+        Assert.Equal(1, list.PendingCount);
+
+        // The typed duplicate goes into the approved place; its case follows.
+        var merged = await new MergeDefinitionsHandler(_db).Handle(new MergeDefinitionsCommand(DefinitionKind.Workplaces, 4, 1));
+        Assert.Equal(MergeStatus.Ok, merged.Status);
+        Assert.Equal(1, _db.Resistance.Single(r => r.Id == _case.Id).WorkplaceId);
+        Assert.False(_db.Workplace.Any(w => w.Id == 4));
+
+        // A place a case uses is not deleted.
+        Assert.Equal(ChangeStatus.InUse, (await new DeleteDefinitionHandler(_db).Handle(new DeleteDefinitionCommand(DefinitionKind.Workplaces, 1))).Status);
+        Assert.True(DefinitionKinds.TryParse("workplaces", out var kind) && kind == DefinitionKind.Workplaces);
     }
 
     [Fact]
