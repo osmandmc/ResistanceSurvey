@@ -57,6 +57,8 @@ namespace RS.MVC.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        /// <summary>“Kişisel Notlar”: the case's own note (Resistance.Note); each protest has its own note too.</summary>
+        public string Note { get; set; }
         /// <summary>İşletme/Kurum, Dayanışma or Genel (KnownListIds): decides which fields apply (R31).</summary>
         public int? CategoryId { get; set; }
 

@@ -145,6 +145,9 @@ function status(field: string) {
       <n-form-item :class="ai('description')" label="Kısa Açıklama" label-placement="top" class="wide" required :validation-status="status('description')" :feedback="error('description')">
         <n-input v-model:value="value.description" type="textarea" :autosize="{ minRows: 3, maxRows: 8 }" />
       </n-form-item>
+      <n-form-item label="Kişisel Notlar (vaka)" label-placement="top" class="wide" :show-feedback="false">
+        <n-input v-model:value="value.note" type="textarea" :autosize="{ minRows: 2, maxRows: 6 }" placeholder="Vakaya dair notunuz; her eylemin kendi notu da var." />
+      </n-form-item>
 
       <template v-if="workplace">
         <n-form-item :class="ai('isOutsource')" label="İşyeri Taşeron mu?" label-placement="top" :show-feedback="false">

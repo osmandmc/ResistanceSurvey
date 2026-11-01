@@ -69,6 +69,21 @@ public class CaseListTests
     }
 
     [Fact]
+    public async Task TheNoteFilterSeesTheCasesNoteAndItsProtestsNotes()
+    {
+        Add("Vaka notu", new DateTime(2026, 1, 1), note: "Takip edilecek");
+        Add("Eylem notu", new DateTime(2026, 1, 2)).Protestos[0].Note = "Kontrol: tarih haberden";
+        var deletedProtest = Add("Silinmiş eylemin notu", new DateTime(2026, 1, 3));
+        deletedProtest.Protestos[0].Note = "eski";
+        deletedProtest.Protestos[0].Deleted = true;
+        Add("Boş not", new DateTime(2026, 1, 4), note: "   ");
+        _db.SaveChanges();
+
+        Assert.Equal(["Eylem notu", "Vaka notu"], (await List(new CaseFilter(HasNote: true))).Items.Select(i => i.Name));
+        Assert.Equal(["Boş not", "Silinmiş eylemin notu"], (await List(new CaseFilter(HasNote: false))).Items.Select(i => i.Name));
+    }
+
+    [Fact]
     public async Task PagesAndTotal()
     {
         for (var i = 1; i <= 7; i++) Add($"Vaka {i}", new DateTime(2026, 1, i));

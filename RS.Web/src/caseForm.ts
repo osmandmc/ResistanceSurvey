@@ -13,6 +13,7 @@ export function emptyCase(): CaseFormValue {
   return {
     name: null,
     description: null,
+    note: null,
     categoryId: null,
     companyId: null,
     isOutsource: false,

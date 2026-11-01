@@ -78,6 +78,7 @@ namespace RS.MVC.Features.Cases
             var solidarity = c.CategoryId == KnownListIds.SolidarityCategory;
             r.Name = c.Name;
             r.Description = c.Description;
+            r.Note = string.IsNullOrWhiteSpace(c.Note) ? null : c.Note.Trim();
             r.CategoryId = c.CategoryId!.Value;
             r.CompanyId = workplace || solidarity ? c.CompanyId : null;
             r.MainCompanyId = workplace && c.IsOutsource ? c.MainCompanyId : null;

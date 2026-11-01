@@ -201,7 +201,7 @@ function open(item: CaseListItem) {
     <n-form-item label="İl" label-placement="top" :show-feedback="false">
       <n-select v-model:value="cityId" :options="toOptions(cities)" filterable :filter="turkishFilter" clearable placeholder="Tümü" />
     </n-form-item>
-    <n-form-item label="Kişisel Notlar" label-placement="top" :show-feedback="false">
+    <n-form-item label="Notlar (vaka ya da eylem)" label-placement="top" :show-feedback="false">
       <n-select v-model:value="hasNote" :options="noteOptions" />
     </n-form-item>
     <div class="filter-end">
