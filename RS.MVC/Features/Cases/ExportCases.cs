@@ -70,6 +70,12 @@ namespace RS.MVC.Features.Cases
             // case a Dayanışma case supported.
             ("Örgütleyen Kurumlar", p => string.Join("; ", p.Resistance.ResistanceCorporations?.Where(x => x.Role == OrganizationRole.Organizing).Select(x => x.Corporation.Name) ?? NoNames)),
             ("Desteklenen Vaka", p => p.Resistance.SupportedResistance is { } s ? $"{s.Id}: {s.Name ?? s.Company?.Name}" : ""),
+            // R37, also at the end: how the employer works in the case (“Şirket Adı” is the employer, “Ana Şirket Adı” the
+            // organization above it: its Asıl işveren, İş sahibi or Varlığın sahibi) and the place, when not the employer itself.
+            ("Çalışma Biçimi", p => p.Resistance.CategoryId == KnownListIds.WorkplaceCategory
+                ? (p.Resistance.EmployerUnknown ? "İşveren bilinmiyor · " : "") + EmployerRoles.Name(p.Resistance.EmployerRole)
+                : ""),
+            ("İşyeri (Yer)", p => p.Resistance.Workplace?.Name ?? ""),
 
         ];
 
@@ -102,6 +108,7 @@ namespace RS.MVC.Features.Cases
                 .Include(p => p.Resistance).ThenInclude(r => r.ResistanceCorporations).ThenInclude(x => x.Corporation)
                 .Include(p => p.Resistance).ThenInclude(r => r.ResistanceNews).ThenInclude(x => x.News)
                 .Include(p => p.Resistance).ThenInclude(r => r.SupportedResistance).ThenInclude(s => s.Company)
+                .Include(p => p.Resistance).ThenInclude(r => r.Workplace)
                 .Include(p => p.Gender)
                 .Include(p => p.ProtestoEmployeeCount)
                 .Include(p => p.ProtestoProtestoTypes).ThenInclude(x => x.ProtestoType)

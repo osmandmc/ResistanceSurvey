@@ -62,10 +62,28 @@ namespace RS.MVC.Models
         /// <summary>İşletme/Kurum, Dayanışma or Genel (KnownListIds): decides which fields apply (R31).</summary>
         public int? CategoryId { get; set; }
 
-        /// <summary>The workplace of the people who acted: İşletme, required; Dayanışma, optional; Genel, none.</summary>
+        /// <summary>
+        /// İşletme: the employer (“İşveren”), required unless EmployerUnknown. Dayanışma: the workplace whose workers acted,
+        /// optional. Genel: none.
+        /// </summary>
         public int? CompanyId { get; set; }
+
+        /// <summary>The old form's “Taşeron mu?”; read only when EmployerRole is not sent (R37).</summary>
         public bool IsOutsource { get; set; }
+
+        /// <summary>
+        /// İşletme (R37): how the employer works in this case. With Taşeron, Yüklenici or İşletmeci, MainCompanyId is the
+        /// organization above it (Asıl işveren, İş sahibi, Varlığın sahibi). Null: an older form (see IsOutsource).
+        /// </summary>
+        public RS.COMMON.Entities.EmployerRole? EmployerRole { get; set; }
+
+        /// <summary>“İşveren bilinmiyor”: the news names no employer.</summary>
+        public bool EmployerUnknown { get; set; }
+
         public int? MainCompanyId { get; set; }
+
+        /// <summary>İşletme (R37): the place, when it is not the employer itself; optional.</summary>
+        public int? WorkplaceId { get; set; }
 
         /// <summary>Dayanışma: the case whose struggle the action supported; may be left empty and linked later.</summary>
         public int? SupportedCaseId { get; set; }

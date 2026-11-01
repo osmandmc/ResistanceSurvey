@@ -146,6 +146,7 @@ public class CaseListTests
             "Başlangıç Tarihi", "Bitiş Tarihi", "Grev Süresi", "Konumlar", "Protestoda Çalışan Sayısı", "Protestoda Çalışan Sayısı (Sayısal)",
             "Müdahale Türleri", "Gözaltı Sayısı", "Not", "Protesto Notu", "Direniş Sonucu", "Direniş Haberleri", "Direniş Haberleri Linki",
             "Örgütleyen Kurumlar", "Desteklenen Vaka", // R31, at the end
+            "Çalışma Biçimi", "İşyeri (Yer)", // R37, after them
         ];
 
         Assert.Equal(expected, ExportCasesHandler.Columns.Select(c => c.Header));

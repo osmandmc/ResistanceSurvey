@@ -77,8 +77,12 @@ namespace RS.MVC.Features.Review
             // R31: the workplace's fields only for İşletme; Genel and Dayanışma name their organizers (optional: kurumsuz).
             if (c.CategoryId != KnownListIds.WorkplaceCategory)
                 return;
-            if (c.CompanyId is not > 0) errors["case.companyId"] = "Lütfen işyerini seçiniz.";
-            if (c.IsOutsource && c.MainCompanyId is not > 0) errors["case.mainCompanyId"] = "Lütfen ana şirketi seçiniz.";
+            if (!c.EmployerUnknown && c.CompanyId is not > 0)
+                errors["case.companyId"] = "Lütfen işvereni seçiniz ya da “İşveren bilinmiyor”u işaretleyiniz.";
+            // R37: Taşeron, Yüklenici and İşletmeci name the organization above the employer.
+            var role = Cases.EmployerRoles.Effective(c);
+            if (Cases.EmployerRoles.HasAbove(role) && c.MainCompanyId is not > 0)
+                errors["case.mainCompanyId"] = Cases.EmployerRoles.AboveMissing(role);
             if (!HasAny(c.CorporationIds, c.NewCorporationNames)) errors["case.corporationIds"] = "Lütfen en az bir kurumsallık seçiniz.";
             if (c.EmploymentTypeIds is not { Count: > 0 }) errors["case.employmentTypeIds"] = "Lütfen en az bir istihdam türü seçiniz.";
             if (c.Result == null) errors["case.result"] = "Lütfen sonucu seçiniz.";

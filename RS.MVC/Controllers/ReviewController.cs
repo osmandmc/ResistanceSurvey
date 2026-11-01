@@ -28,6 +28,8 @@ namespace RS.MVC.Controllers
         CheckAiAnswerHandler checkAiAnswer,
         GetAiDraftHandler getAiDraft,
         MatchCasesFromAiHandler matchCases,
+        SearchWorkplacesHandler searchWorkplaces,
+        CreateWorkplaceHandler createWorkplace,
         IPipelineClient pipeline) : ControllerBase
     {
         /// <summary>
@@ -80,6 +82,24 @@ namespace RS.MVC.Controllers
         /// <summary>GET /api/review/form-options — every list the case form needs.</summary>
         [HttpGet("form-options")]
         public async Task<CaseFormOptions> FormOptions() => await getFormOptions.Handle(new GetCaseFormOptionsQuery());
+
+        /// <summary>
+        /// GET /api/review/workplaces?query=…&amp;companyId=… (R37) — places by name, or without a query the places known
+        /// for that company (its cases, or belonging to it), most used first.
+        /// </summary>
+        [HttpGet("workplaces")]
+        public async Task<IReadOnlyList<WorkplaceOption>> SearchWorkplaces(string query, int? companyId) =>
+            await searchWorkplaces.Handle(new SearchWorkplacesQuery(query, companyId));
+
+        public record CreateWorkplaceRequest(string Name, int? CityId, int? DistrictId, int? OwnerCompanyId);
+
+        /// <summary>POST /api/review/workplaces — “Yeni işyeri”; the same name in the same province is returned instead.</summary>
+        [HttpPost("workplaces")]
+        public async Task<ActionResult<CreateWorkplaceResult>> CreateWorkplace(CreateWorkplaceRequest request)
+        {
+            var result = await createWorkplace.Handle(new CreateWorkplaceCommand(request.Name, request.CityId, request.DistrictId, request.OwnerCompanyId));
+            return result.Error == null ? result : BadRequest(new { error = result.Error });
+        }
 
         /// <summary>GET /api/review/companies?query=… — companies by name (at most 20).</summary>
         [HttpGet("companies")]

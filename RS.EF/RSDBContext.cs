@@ -38,6 +38,7 @@ namespace RS.EF
         public DbSet<ResistanceNews> ResistanceNews { get; set; }
 
         public DbSet<ProtestoLocation> ProtestoLocation { get; set; }
+        public DbSet<Workplace> Workplace { get; set; }
         public DbSet<ProtestoEmployeeCount> ProtestoEmployeeCount { get; set; }
         public DbSet<ProtestoProtestoPlace> ProtestoProtestoPlace { get; set; }
         public DbSet<ResistanceResistanceReason> ResistanceResistanceReason  { get; set; }
@@ -142,6 +143,13 @@ namespace RS.EF
                  modelBuilder.Entity<TradeUnion>()
                     .HasOne(u => u.Confederation).WithMany(c => c.Unions)
                     .HasForeignKey(u => u.ConfederationId);
+
+                 // R37: a workplace (a place, not a company); its name as long as a company's.
+                 modelBuilder.Entity<Workplace>(e =>
+                 {
+                     e.Property(x => x.Name).HasMaxLength(200).IsRequired();
+                     e.HasIndex(x => x.Name);
+                 });
 
                  // A hash in hex: compared exactly, kept in the database default collation (see ConfigureConventions).
                  modelBuilder.Entity<News>().Property(n => n.ArticleId).UseCollation(null);

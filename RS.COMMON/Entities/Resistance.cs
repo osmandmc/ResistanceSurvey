@@ -47,6 +47,19 @@ namespace RS.COMMON.Entities
         public int? SupportedResistanceId { get; set; }
         public Resistance SupportedResistance { get; set; }
 
+        /// <summary>
+        /// İşletme (R37): how the employer (CompanyId) works in this case; with Subcontractor, Contractor or Operator,
+        /// MainCompanyId is the organization above it (Asıl işveren, İş sahibi, Varlığın sahibi).
+        /// </summary>
+        public EmployerRole EmployerRole { get; set; }
+
+        /// <summary>“İşveren bilinmiyor”: the news names no employer, so CompanyId stays empty on purpose.</summary>
+        public bool EmployerUnknown { get; set; }
+
+        /// <summary>The place, when it is not the employer itself (empty for a direct employer's own place).</summary>
+        public int? WorkplaceId { get; set; }
+        public Workplace Workplace { get; set; }
+
         public Resistance(){}
 
         
