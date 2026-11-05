@@ -4,7 +4,8 @@ import { NSpin } from 'naive-ui'
 import { actionLabel, caseActivity, type ActivityRow } from '@/activityApi'
 import { formatDateTime } from '@/format'
 
-// The case page's Geçmiş (F4b): who did what to the case, its protests and articles. Reloads when the case changes.
+// The case page's Geçmiş (F4b): who did what to the case, its protests and articles, and which fields changed from
+// what to what (R39). Reloads when the case changes.
 const props = defineProps<{ caseId: number; version: unknown }>()
 
 const rows = ref<ActivityRow[] | null>(null)
@@ -36,6 +37,18 @@ watch(() => [props.caseId, props.version], load, { immediate: true })
         <li v-for="r in rows" :key="r.id">
           <span class="when">{{ formatDateTime(r.at) }}</span>
           <span><strong>{{ r.username ?? '—' }}</strong> · {{ actionLabel(r.action) }}<template v-if="r.summary">: {{ r.summary }}</template></span>
+          <ul v-if="r.changes?.length" class="changes">
+            <li v-for="(c, i) in r.changes" :key="i">
+              <span class="label">{{ c.label }}:</span>
+              <template v-if="c.isList">
+                <span v-if="c.newValue" class="added">+ {{ c.newValue }}</span>
+                <span v-else class="removed">− {{ c.oldValue }}</span>
+              </template>
+              <template v-else>
+                <span class="old">{{ c.oldValue ?? 'boş' }}</span> → <span>{{ c.newValue ?? 'boş' }}</span>
+              </template>
+            </li>
+          </ul>
         </li>
       </ul>
     </details>
@@ -78,6 +91,33 @@ summary {
   gap: 4px 16px;
   padding: 8px 0;
   border-bottom: 1px solid #eef0f2;
+}
+.changes {
+  flex-basis: 100%;
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0 0 0 166px;
+  font-size: 13px;
+}
+.changes li {
+  display: block;
+  padding: 2px 0;
+  border: 0;
+  overflow-wrap: anywhere;
+}
+.changes .label {
+  color: var(--rs-muted);
+  margin-right: 4px;
+}
+.changes .old,
+.changes .removed {
+  color: var(--rs-muted);
+  text-decoration: line-through;
+}
+@media (max-width: 640px) {
+  .changes {
+    padding-left: 0;
+  }
 }
 .when {
   min-width: 150px;

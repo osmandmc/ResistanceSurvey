@@ -53,6 +53,13 @@ namespace RS.EF
         public DbSet<AppUser> AppUser { get; set; }
         public DbSet<ActivityEntry> ActivityEntry { get; set; }
         public DbSet<CaseMigrationRecord> CaseMigrationRecord { get; set; }
+        public DbSet<FieldChange> FieldChange { get; set; }
+
+        /// <summary>
+        /// How this context's saves are recorded in the change history (R39): null means a person when someone is
+        /// signed in, otherwise the system. An import or a data migration sets it before saving.
+        /// </summary>
+        public string ChangeSource { get; set; }
 
        
         public const string TurkishCollation = "Turkish_CI_AS";
@@ -120,6 +127,18 @@ namespace RS.EF
                      e.HasIndex(x => x.At);
                      e.HasIndex(x => x.CaseId);
                      e.HasIndex(x => new { x.Username, x.At });
+                 });
+
+                 // R39: the change history, read by case, by record, and with its activity line.
+                 modelBuilder.Entity<FieldChange>(e =>
+                 {
+                     e.Property(x => x.Username).HasMaxLength(50);
+                     e.Property(x => x.Source).HasMaxLength(20).IsUnicode(false).UseCollation(null).IsRequired();
+                     e.Property(x => x.Entity).HasMaxLength(40).IsUnicode(false).UseCollation(null).IsRequired();
+                     e.Property(x => x.Field).HasMaxLength(60).IsUnicode(false).UseCollation(null).IsRequired();
+                     e.HasOne(x => x.ActivityEntry).WithMany().HasForeignKey(x => x.ActivityEntryId);
+                     e.HasIndex(x => x.CaseId);
+                     e.HasIndex(x => new { x.Entity, x.RecordId });
                  });
 
                  // R31: the record of what the case-category migration changed; one or more rows per case.
