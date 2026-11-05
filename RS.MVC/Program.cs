@@ -54,15 +54,21 @@ builder.Services.AddHttpContextAccessor();
 // R39: every save also records the changed fields with their old and new values (the change history).
 builder.Services.AddSingleton<RS.MVC.Features.Activity.ActivityInterceptor>();
 builder.Services.AddSingleton<RS.MVC.Features.History.ChangeHistoryInterceptor>();
+// R45: a save that changes a list the pipeline uses sends the lists (ListsSync below).
+builder.Services.AddSingleton<RS.MVC.Features.Review.ListsChangeInterceptor>();
 builder.Services.AddDbContext<RSDBContext>((sp, options) =>
     options.UseSqlServer(configuration.GetConnectionString("RSConnectionString"))
         .AddInterceptors(
             sp.GetRequiredService<RS.MVC.Features.Activity.ActivityInterceptor>(),
-            sp.GetRequiredService<RS.MVC.Features.History.ChangeHistoryInterceptor>()));
+            sp.GetRequiredService<RS.MVC.Features.History.ChangeHistoryInterceptor>(),
+            sp.GetRequiredService<RS.MVC.Features.Review.ListsChangeInterceptor>()));
 
-// R30: the pipeline's drafts offer the app's current lists (sent at startup and when they change).
+// R30: the pipeline's drafts offer the app's current lists (sent at startup and after a save that changed them, R45).
 if (!string.IsNullOrWhiteSpace(configuration["Pipeline:BaseUrl"]))
-    builder.Services.AddHostedService<RS.MVC.Features.Review.ListsSync>();
+{
+    builder.Services.AddSingleton<RS.MVC.Features.Review.ListsSync>();
+    builder.Services.AddHostedService(sp => sp.GetRequiredService<RS.MVC.Features.Review.ListsSync>());
+}
 
 // API controllers, and the one view left: the error page.
 builder.Services.AddControllersWithViews(options => options.Filters.Add<RS.MVC.Features.Activity.ActivityGuard>());
