@@ -51,10 +51,14 @@ builder.Services.AddSingleton(TimeProvider.System);
 // Database Context
 // F4b: every save fills in the person on new activity lines and notes whether the request changed data (ActivityGuard).
 builder.Services.AddHttpContextAccessor();
+// R39: every save also records the changed fields with their old and new values (the change history).
 builder.Services.AddSingleton<RS.MVC.Features.Activity.ActivityInterceptor>();
+builder.Services.AddSingleton<RS.MVC.Features.History.ChangeHistoryInterceptor>();
 builder.Services.AddDbContext<RSDBContext>((sp, options) =>
     options.UseSqlServer(configuration.GetConnectionString("RSConnectionString"))
-        .AddInterceptors(sp.GetRequiredService<RS.MVC.Features.Activity.ActivityInterceptor>()));
+        .AddInterceptors(
+            sp.GetRequiredService<RS.MVC.Features.Activity.ActivityInterceptor>(),
+            sp.GetRequiredService<RS.MVC.Features.History.ChangeHistoryInterceptor>()));
 
 // R30: the pipeline's drafts offer the app's current lists (sent at startup and when they change).
 if (!string.IsNullOrWhiteSpace(configuration["Pipeline:BaseUrl"]))

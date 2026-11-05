@@ -2,6 +2,16 @@ import { api } from './api'
 
 // The activity log (F4b): who did what, when.
 
+/** One changed field (R39), in Turkish. A list's value has only oldValue (removed) or newValue (added). */
+export interface FieldChangeRow {
+  entity: string
+  field: string
+  label: string
+  oldValue: string | null
+  newValue: string | null
+  isList: boolean
+}
+
 export interface ActivityRow {
   id: number
   at: string
@@ -12,6 +22,8 @@ export interface ActivityRow {
   subject: string | null
   subjectId: number | null
   summary: string | null
+  /** The fields it changed; only on the case page's Geçmiş. */
+  changes?: FieldChangeRow[] | null
 }
 
 export interface ActivityPage {
@@ -75,6 +87,7 @@ const actionLabels: Record<string, string> = {
   'prompt.create': 'İstem sürümü kaydetti',
   'prompt.try': 'İstemi denedi',
   'prompt.activate': 'İstemi etkinleştirdi',
+  'history.change': 'Değişiklik',
 }
 
 export const actionLabel = (action: string) => actionLabels[action] ?? action

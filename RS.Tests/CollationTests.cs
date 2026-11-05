@@ -26,7 +26,7 @@ public class CollationTests
             .ToList();
 
         // Hashes and the security stamp are compared exactly: the article id, and an account's (F4a); the activity log's
-        // codes and article id too (F4b); the R31 migration record's step code and id list.
+        // codes and article id too (F4b); the R31 migration record's step code and id list; the change history's codes (R39).
         Assert.Equal(
             [
                 $"{nameof(ActivityEntry)}.{nameof(ActivityEntry.Action)}", $"{nameof(ActivityEntry)}.{nameof(ActivityEntry.ArticleId)}",
@@ -34,6 +34,8 @@ public class CollationTests
                 $"{nameof(AppUser)}.{nameof(AppUser.InviteTokenHash)}", $"{nameof(AppUser)}.{nameof(AppUser.PasswordHash)}",
                 $"{nameof(AppUser)}.{nameof(AppUser.SecurityStamp)}",
                 $"{nameof(CaseMigrationRecord)}.{nameof(CaseMigrationRecord.RemovedCorporationIds)}", $"{nameof(CaseMigrationRecord)}.{nameof(CaseMigrationRecord.Step)}",
+                $"{nameof(FieldChange)}.{nameof(FieldChange.Entity)}", $"{nameof(FieldChange)}.{nameof(FieldChange.Field)}",
+                $"{nameof(FieldChange)}.{nameof(FieldChange.Source)}",
                 $"{nameof(News)}.{nameof(News.ArticleId)}",
             ],
             latin.Order());

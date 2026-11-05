@@ -423,6 +423,68 @@ namespace RS.EF.Data.Migrations
                     b.ToTable("DefinitionNotDuplicate");
                 });
 
+            modelBuilder.Entity("RS.COMMON.Entities.FieldChange", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("ActivityEntryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CaseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Entity")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<string>("Field")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(60)");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<string>("OldValue")
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.Property<int>("RecordId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("Username")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .UseCollation("Turkish_CI_AS");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityEntryId");
+
+                    b.HasIndex("CaseId");
+
+                    b.HasIndex("Entity", "RecordId");
+
+                    b.ToTable("FieldChange");
+                });
+
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -1383,6 +1445,16 @@ namespace RS.EF.Data.Migrations
                     b.Navigation("Company");
 
                     b.Navigation("RelatedCompany");
+                });
+
+            modelBuilder.Entity("RS.COMMON.Entities.FieldChange", b =>
+                {
+                    b.HasOne("RS.COMMON.Entities.ActivityEntry", "ActivityEntry")
+                        .WithMany()
+                        .HasForeignKey("ActivityEntryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ActivityEntry");
                 });
 
             modelBuilder.Entity("RS.COMMON.Entities.LookupEntity.Corporation", b =>

@@ -5,12 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RS.COMMON.Entities;
 using RS.EF;
+using RS.MVC.Features.History;
 
 namespace RS.MVC.Features.Activity
 {
-    /// <summary>One log line for the screens. At is UTC.</summary>
-    public record ActivityRow(long Id, DateTime At, string Username, string Action, int? CaseId, string ArticleId, string Subject, int? SubjectId, string Summary)
+    /// <summary>One log line for the screens. At is UTC. Changes: the fields it changed (R39; on the case page only).</summary>
+    public record ActivityRow(long Id, DateTime At, string Username, string Action, int? CaseId, string ArticleId, string Subject, int? SubjectId, string Summary,
+        IReadOnlyList<FieldChangeRow> Changes = null)
     {
+        /// <summary>The action of a Geçmiş line made only of recorded changes (e.g. an import, or a save that wrote no line).</summary>
+        public const string ChangesOnly = "history.change";
+
         public static ActivityRow Of(ActivityEntry e) =>
             new(e.Id, DateTime.SpecifyKind(e.At, DateTimeKind.Utc), e.Username, e.Action, e.CaseId, e.ArticleId, e.Subject, e.SubjectId, e.Summary);
     }
@@ -59,14 +64,41 @@ namespace RS.MVC.Features.Activity
         }
     }
 
-    /// <summary>The case page's Geçmiş: what was done to the case and its protests and articles, newest first.</summary>
+    /// <summary>
+    /// The case page's Geçmiş: what was done to the case and its protests and articles, newest first, each line with
+    /// the fields it changed (R39). Changes that came without a line (an import, the system) are lines of their own.
+    /// </summary>
     public class CaseActivityHandler(RSDBContext db)
     {
         public const int Max = 200;
 
-        public async Task<IReadOnlyList<ActivityRow>> Handle(int caseId) =>
-            (await db.ActivityEntry.AsNoTracking().Where(e => e.CaseId == caseId)
+        public async Task<IReadOnlyList<ActivityRow>> Handle(int caseId)
+        {
+            var lines = (await db.ActivityEntry.AsNoTracking().Where(e => e.CaseId == caseId)
                 .OrderByDescending(e => e.At).ThenByDescending(e => e.Id).Take(Max).ToListAsync())
-            .Select(ActivityRow.Of).ToList();
+                .Select(ActivityRow.Of).ToList();
+            var lineIds = lines.Select(l => l.Id).ToList();
+            var changes = await db.FieldChange.AsNoTracking()
+                .Where(c => c.CaseId == caseId || c.ActivityEntryId != null && lineIds.Contains(c.ActivityEntryId.Value))
+                .OrderBy(c => c.Id).Take(Max * 20).ToListAsync();
+            var texts = (await new ChangeText(db).RowsAsync(changes)).Zip(changes).ToList();
+
+            var byLine = texts.Where(t => t.Second.ActivityEntryId != null).ToLookup(t => t.Second.ActivityEntryId.Value, t => t.First);
+            var withChanges = lines.Select(l => byLine.Contains(l.Id) ? l with { Changes = byLine[l.Id].ToList() } : l);
+            // Negative ids: these lines are not in the activity log.
+            var changesOnly = texts.Where(t => t.Second.ActivityEntryId == null)
+                .GroupBy(t => (t.Second.At, t.Second.Username, t.Second.Source))
+                .Select(g => new ActivityRow(-g.Min(t => t.Second.Id), DateTime.SpecifyKind(g.Key.At, DateTimeKind.Utc), g.Key.Username,
+                    ActivityRow.ChangesOnly, caseId, null, null, null, SourceLabel(g.Key.Source), g.Select(t => t.First).ToList()));
+            return withChanges.Concat(changesOnly).OrderByDescending(l => l.At).ThenByDescending(l => Math.Abs(l.Id)).Take(Max).ToList();
+        }
+
+        private static string SourceLabel(string source) => source switch
+        {
+            ChangeSources.Import => "içe aktarma",
+            ChangeSources.Migration => "veri taşıma",
+            ChangeSources.System => "sistem",
+            _ => null,
+        };
     }
 }
