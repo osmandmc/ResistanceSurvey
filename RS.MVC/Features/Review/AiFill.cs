@@ -28,7 +28,7 @@ namespace RS.MVC.Features.Review
 
     public class GetAiPromptHandler(IPipelineClient pipeline, RSDBContext db)
     {
-        public const string Version = "v2.5";
+        public const string Version = "v2.6";
 
         private static readonly Lazy<string> Template = new(() =>
         {
@@ -140,7 +140,8 @@ namespace RS.MVC.Features.Review
         RS.COMMON.Entities.EmployerRole? EmployerRole = null,
         int? WorkplaceId = null,
         string WorkplaceName = null,
-        string NewWorkplaceName = null);
+        string NewWorkplaceName = null,
+        string Name = null);
 
     public record AiLocation(int CityId, int? DistrictId, string Place);
 
@@ -245,6 +246,8 @@ namespace RS.MVC.Features.Review
             Add("case.employee_count", "Çalışan sayısı", Plain(employeeCount));
             var firedCount = Int(c, "fired_count");
             Add("case.fired_count", "Atılan işçi sayısı", Plain(firedCount));
+            var name = Text(c, "name");
+            Add("case.name", "Vaka ismi", Plain(name));
             var description = Text(c, "description");
             Add("case.description", "Açıklama", Plain(description));
             foreach (var (key, label) in new[] { ("union_authority", "Sendika yetkisi"), ("employee_count_range", "İşyeri büyüklüğü"), ("develops_right", "Hak geliştirme"), ("result", "Sonuç") })
@@ -302,7 +305,8 @@ namespace RS.MVC.Features.Review
                 EmployerRole: employerRole,
                 WorkplaceId: workplace?.Id,
                 WorkplaceName: workplace?.Id != null ? workplace.Item.Value : null,
-                NewWorkplaceName: workplace is { Id: null } ? workplace.Item.Value : null);
+                NewWorkplaceName: workplace is { Id: null } ? workplace.Item.Value : null,
+                Name: name);
             var protestValues = new AiProtestValues(
                 ProtestTypeIds: Ids(types),
                 StartDate: startDate,
