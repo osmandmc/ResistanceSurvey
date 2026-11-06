@@ -2,6 +2,9 @@
 
 ASP.NET Core 9 app for recording labour resistances and protests from news articles.
 
+How it is built and why: [decisions.md](decisions.md). Open tasks: issues in the private repo
+[direnistakip-tasks](https://github.com/osmandmc/direnistakip-tasks/issues).
+
 ## Secrets
 
 No secrets are stored in this repository. The app needs these settings (it refuses to start without the connection string):
