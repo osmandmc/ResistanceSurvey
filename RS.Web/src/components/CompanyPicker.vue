@@ -4,7 +4,6 @@ import { ref, watch } from 'vue'
 import { NButton, NFormItem, NInput, NModal, NSelect, useMessage } from 'naive-ui'
 import { ApiError } from '@/api'
 import { createCompany, searchCompanies, type Option } from '@/reviewApi'
-import { institutionKindOptions } from '@/definitionsApi'
 
 /** Picks a company by searching its name, or adds a new one ("Şirket Ekle"). */
 const props = defineProps<{
@@ -71,7 +70,6 @@ const saving = ref(false)
 const newCompany = ref({
   name: '',
   typeId: null as number | null,
-  institutionKind: null as number | null,
   scaleId: null as number | null,
   worklineId: null as number | null,
   serviceBranchId: null as number | null,
@@ -79,7 +77,7 @@ const newCompany = ref({
 const nameError = ref('')
 
 function openAdd(name = '') {
-  newCompany.value = { name, typeId: null, institutionKind: null, scaleId: null, worklineId: null, serviceBranchId: null }
+  newCompany.value = { name, typeId: null, scaleId: null, worklineId: null, serviceBranchId: null }
   nameError.value = ''
   adding.value = true
 }
@@ -139,9 +137,6 @@ const toOptions = (list: Option[] | null | undefined) => (list ?? []).map((o) =>
   >
     <n-form-item label="Şirket adı" label-placement="top" :validation-status="nameError ? 'error' : undefined" :feedback="nameError">
       <n-input v-model:value="newCompany.name" placeholder="Örn. Örnek Tekstil A.Ş." />
-    </n-form-item>
-    <n-form-item label="Kurum türü" label-placement="top">
-      <n-select v-model:value="newCompany.institutionKind" :options="institutionKindOptions" clearable />
     </n-form-item>
     <n-form-item label="Sahiplik" label-placement="top">
       <n-select v-model:value="newCompany.typeId" :options="toOptions(props.companyTypes)" clearable />

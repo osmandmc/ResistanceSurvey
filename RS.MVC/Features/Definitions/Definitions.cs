@@ -74,7 +74,6 @@ namespace RS.MVC.Features.Definitions
         int? ScaleId = null,
         int? WorklineId = null,
         int? ConfederationId = null,
-        RS.COMMON.Entities.InstitutionKind? InstitutionKind = null,
         int? ServiceBranchId = null,
         int? CityId = null,
         int? DistrictId = null,

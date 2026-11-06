@@ -248,13 +248,12 @@ export function searchCompanies(query: string) {
   return api<Option[]>(`/api/review/companies?${new URLSearchParams({ query })}`)
 }
 
-/** typeId: Sahiplik; institutionKind: Kurum türü; serviceBranchId: the civil servants' hizmet kolu (R37). */
+/** typeId: Sahiplik; serviceBranchId: the civil servants' hizmet kolu (R37). */
 export function createCompany(company: {
   name: string
   typeId: number | null
   scaleId: number | null
   worklineId: number | null
-  institutionKind?: number | null
   serviceBranchId?: number | null
 }) {
   return api<CreateCompanyResult>('/api/review/companies', { method: 'POST', body: JSON.stringify(company) })

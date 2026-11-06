@@ -13,8 +13,6 @@ import {
   deleteDefinition,
   getCompany,
   getDefinitionOptions,
-  institutionKindOptions,
-  InstitutionKind,
   relationChoices,
   removeCompanyRelation,
   updateDefinition,
@@ -44,7 +42,6 @@ const toSelect = (list: Option[] | null) => (list ?? []).map((o) => ({ label: o.
 const emptyForm = () => ({
   name: '',
   typeId: null as number | null,
-  institutionKind: null as InstitutionKind | null,
   scaleId: null as number | null,
   worklineId: null as number | null,
   serviceBranchId: null as number | null,
@@ -57,7 +54,7 @@ async function load() {
   try {
     const c = await getCompany(id.value)
     company.value = c
-    form.value = { name: c.name, typeId: c.typeId, institutionKind: c.institutionKind, scaleId: c.scaleId, worklineId: c.worklineId, serviceBranchId: c.serviceBranchId }
+    form.value = { name: c.name, typeId: c.typeId, scaleId: c.scaleId, worklineId: c.worklineId, serviceBranchId: c.serviceBranchId }
   } catch (error) {
     loadError.value = error instanceof ApiError && error.status === 404 ? 'Şirket bulunamadı (silinmiş ya da başka bir şirketle birleştirilmiş olabilir).' : errorMessage(error, 'Şirket yüklenemedi.')
   }
@@ -69,7 +66,7 @@ const asItem = computed<DefinitionItem | null>(() =>
     ? {
         id: company.value.id, name: company.value.name, approved: null, usage: company.value.cases.length, typeId: form.value.typeId,
         againstProduction: null, simple: null, scaleId: form.value.scaleId, worklineId: form.value.worklineId, confederationId: null,
-        institutionKind: form.value.institutionKind, serviceBranchId: form.value.serviceBranchId,
+        serviceBranchId: form.value.serviceBranchId,
       }
     : null,
 )
@@ -77,7 +74,7 @@ const changed = computed(() => {
   const c = company.value
   if (!c) return false
   const f = form.value
-  return f.name.trim() !== c.name || f.typeId !== c.typeId || f.institutionKind !== c.institutionKind || f.scaleId !== c.scaleId
+  return f.name.trim() !== c.name || f.typeId !== c.typeId || f.scaleId !== c.scaleId
     || f.worklineId !== c.worklineId || f.serviceBranchId !== c.serviceBranchId
 })
 
@@ -101,16 +98,8 @@ async function save() {
 
 // ---- Facts with other companies (R37, part B) ----
 
-// The page's company type puts the likely relation first: a holding has group companies, a public body dependent ones.
-const orderedChoices = computed(() => {
-  const k = company.value?.institutionKind
-  const first =
-    k === InstitutionKind.Holding ? [1] :
-    k === InstitutionKind.PublicBody || k === InstitutionKind.Municipality || k === InstitutionKind.StateEnterprise ? [3] :
-    [0, 2]
-  return [...first, ...relationChoices.map((_, i) => i).filter((i) => !first.includes(i))].map((i) => relationChoices[i])
-})
-const choiceOptions = computed(() => orderedChoices.value.map((c) => ({ label: c.label, value: relationChoices.indexOf(c) })))
+// The usual facts first: the company's group and the public body it belongs to.
+const choiceOptions = [0, 2, 1, 3, 4, 5].map((i) => ({ label: relationChoices[i].label, value: i }))
 const relationGroups = computed(() =>
   relationChoices
     .map((choice) => ({ choice, items: (company.value?.relations ?? []).filter((r) => r.kind === choice.kind && r.outgoing === choice.outgoing) }))
@@ -151,7 +140,7 @@ const fromDay = (s: string | null) => {
 
 function openAdd() {
   editingId.value = null
-  draft.value = { choice: relationChoices.indexOf(orderedChoices.value[0]), otherId: null, otherName: null, share: null, start: null, end: null, source: '', note: '' }
+  draft.value = { choice: choiceOptions[0].value, otherId: null, otherName: null, share: null, start: null, end: null, source: '', note: '' }
   draftError.value = ''
   editing.value = true
 }
@@ -331,9 +320,6 @@ function onMerged(affected: number, intoId: number) {
       <div class="fields">
         <n-form-item label="Ad" label-placement="top" :show-feedback="false" class="wide">
           <n-input v-model:value="form.name" :input-props="{ id: 'company-name' }" />
-        </n-form-item>
-        <n-form-item label="Kurum türü" label-placement="top" :show-feedback="false">
-          <n-select v-model:value="form.institutionKind" :options="institutionKindOptions" clearable placeholder="Seçiniz" />
         </n-form-item>
         <n-form-item label="Sahiplik" label-placement="top" :show-feedback="false">
           <n-select v-model:value="form.typeId" :options="toSelect(options.companyTypes)" clearable placeholder="Seçiniz" />

@@ -19,7 +19,6 @@ namespace RS.MVC.Features.Definitions
         int? ScaleId = null,
         int? WorklineId = null,
         int? ConfederationId = null,
-        RS.COMMON.Entities.InstitutionKind? InstitutionKind = null,
         int? ServiceBranchId = null,
         int? CityId = null,
         int? DistrictId = null,
@@ -68,7 +67,6 @@ namespace RS.MVC.Features.Definitions
                 company.CompanyTypeId = command.TypeId;
                 company.CompanyScaleId = command.ScaleId;
                 company.CompanyWorkLineId = command.WorklineId;
-                company.InstitutionKind = command.InstitutionKind;
                 company.ServiceBranchId = command.ServiceBranchId;
             }
             else if (command.Kind == DefinitionKind.Workplaces)

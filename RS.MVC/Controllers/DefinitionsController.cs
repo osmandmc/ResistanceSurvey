@@ -42,7 +42,7 @@ namespace RS.MVC.Controllers
         public record CreateCorporationRequest(string Name, int? TypeId, int? ConfederationId);
 
         public record UpdateRequest(string Name, int? TypeId, bool AgainstProduction, bool Simple, int? ScaleId, int? WorklineId, int? ConfederationId = null,
-            InstitutionKind? InstitutionKind = null, int? ServiceBranchId = null, int? CityId = null, int? DistrictId = null, int? OwnerCompanyId = null);
+            int? ServiceBranchId = null, int? CityId = null, int? DistrictId = null, int? OwnerCompanyId = null);
 
         public record CreateWorkplaceRequest(string Name, int? CityId, int? DistrictId, int? OwnerCompanyId);
 
@@ -99,7 +99,7 @@ namespace RS.MVC.Controllers
                 return UnknownKind();
             var result = await update.Handle(new UpdateDefinitionCommand(
                 parsed, id, request?.Name, request?.TypeId, request?.AgainstProduction ?? false, request?.Simple ?? false, request?.ScaleId, request?.WorklineId, request?.ConfederationId,
-                request?.InstitutionKind, request?.ServiceBranchId, request?.CityId, request?.DistrictId, request?.OwnerCompanyId));
+                request?.ServiceBranchId, request?.CityId, request?.DistrictId, request?.OwnerCompanyId));
             return Answer(result);
         }
 

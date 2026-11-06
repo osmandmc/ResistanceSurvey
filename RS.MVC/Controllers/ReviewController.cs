@@ -78,8 +78,7 @@ namespace RS.MVC.Controllers
             return Ok(await suggestCases.Handle(new SuggestCasesForArticleQuery(articleId)));
         }
 
-        public record CreateCompanyRequest(string Name, int? TypeId, int? ScaleId, int? WorklineId,
-            RS.COMMON.Entities.InstitutionKind? InstitutionKind = null, int? ServiceBranchId = null);
+        public record CreateCompanyRequest(string Name, int? TypeId, int? ScaleId, int? WorklineId, int? ServiceBranchId = null);
 
         /// <summary>GET /api/review/form-options — every list the case form needs.</summary>
         [HttpGet("form-options")]
@@ -117,7 +116,7 @@ namespace RS.MVC.Controllers
         [HttpPost("companies")]
         public async Task<ActionResult<CreateCompanyResult>> CreateCompany(CreateCompanyRequest request)
         {
-            var result = await createCompany.Handle(new CreateCompanyCommand(request.Name, request.TypeId, request.ScaleId, request.WorklineId, request.InstitutionKind, request.ServiceBranchId));
+            var result = await createCompany.Handle(new CreateCompanyCommand(request.Name, request.TypeId, request.ScaleId, request.WorklineId, request.ServiceBranchId));
             return result.Error == null
                 ? result
                 : BadRequest(new { error = result.Error, fields = new Dictionary<string, string> { ["name"] = result.Error } });

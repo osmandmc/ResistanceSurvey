@@ -45,7 +45,6 @@ namespace RS.MVC.Features.Definitions
         int? TypeId,
         int? ScaleId,
         int? WorklineId,
-        InstitutionKind? InstitutionKind,
         int? ServiceBranchId,
         IReadOnlyList<CompanyCase> Cases,
         IReadOnlyList<CompanyRelationItem> Relations,
@@ -58,7 +57,7 @@ namespace RS.MVC.Features.Definitions
         public async Task<CompanyDetail> Handle(int id)
         {
             var company = await db.Company.Where(c => c.Id == id && !c.Deleted)
-                .Select(c => new { c.Id, c.Name, c.CompanyTypeId, c.CompanyScaleId, c.CompanyWorkLineId, c.InstitutionKind, c.ServiceBranchId })
+                .Select(c => new { c.Id, c.Name, c.CompanyTypeId, c.CompanyScaleId, c.CompanyWorkLineId, c.ServiceBranchId })
                 .FirstOrDefaultAsync();
             if (company == null)
                 return null;
@@ -70,7 +69,7 @@ namespace RS.MVC.Features.Definitions
                 .ToListAsync();
 
             return new CompanyDetail(company.Id, company.Name, company.CompanyTypeId, company.CompanyScaleId, company.CompanyWorkLineId,
-                company.InstitutionKind, company.ServiceBranchId, cases, await CompanyFacts.OfAsync(db, id), await JobLinksAsync(id),
+                company.ServiceBranchId, cases, await CompanyFacts.OfAsync(db, id), await JobLinksAsync(id),
                 await WorkplacesAsync(id));
         }
 
