@@ -310,7 +310,14 @@ function confirmDetach(newsId: number, title: string | null) {
             </div>
           </template>
           <template v-else>
-            <div class="protest-summary">
+            <div
+              class="protest-summary"
+              :class="{ clickable: editingProtest === null }"
+              :role="editingProtest === null ? 'button' : undefined"
+              :tabindex="editingProtest === null ? 0 : undefined"
+              @click="editingProtest === null && editProtest(p)"
+              @keydown.enter="editingProtest === null && editProtest(p)"
+            >
               <strong>{{ protestDates(p) }}</strong>
               <span class="sub">{{ p.typeNames.join(', ') || 'Eylem türü yok' }}<template v-if="p.cityNames.length"> · {{ p.cityNames.join(', ') }}</template></span>
             </div>
@@ -465,6 +472,13 @@ function confirmDetach(newsId: number, title: string | null) {
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+.protest-summary.clickable {
+  flex: 1;
+  cursor: pointer;
+}
+.protest-summary.clickable:hover strong {
+  text-decoration: underline;
 }
 .sub {
   display: block;
