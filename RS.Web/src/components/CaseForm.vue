@@ -103,7 +103,7 @@ watch(solidarity, (yes) => {
   if (!yes) value.value.supportedCaseId = null
 })
 // R37: how the employer works decides whether an organization is above it; the old “Taşeron mu?” follows.
-const role = computed(() => employerRoleOptions.find((o) => o.value === value.value.employerRole) ?? employerRoleOptions[4])
+const role = computed(() => employerRoleOptions.find((o) => o.value === value.value.employerRole) ?? employerRoleOptions[employerRoleOptions.length - 1])
 const above = computed(() => hasAbove(value.value.employerRole))
 watch(
   () => value.value.employerRole,
