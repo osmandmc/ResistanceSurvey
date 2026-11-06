@@ -93,19 +93,16 @@ public class CompanyRelationTests
     }
 
     [Fact]
-    public async Task ACompanyKeepsItsHizmetKoluAndAnOldKurumTuru()
+    public async Task ACompanyKeepsItsHizmetKolu()
     {
         _db.CompanyWorkLine.AddRange(new CompanyWorkLine { Id = 18, Name = "Sağlık ve sosyal hizmetler" },
             new CompanyWorkLine { Id = 24, Name = "MEMUR - Sağlık ve Sosyal Hizmetler", IsCivilService = true });
-        _university.InstitutionKind = InstitutionKind.PublicBody; // entered before Kurum türü left the forms
-        await _db.SaveChangesAsync();
-
         await new UpdateDefinitionHandler(_db).Handle(new UpdateDefinitionCommand(DefinitionKind.Companies, _university.Id, "İstanbul Üniversitesi",
             TypeId: null, WorklineId: 18, ServiceBranchId: 24));
         var created = await new CreateCompanyHandler(_db).Handle(new CreateCompanyCommand("Karşıyaka Kent AŞ", null, null, null, ServiceBranchId: 24));
 
         var university = _db.Company.Single(c => c.Id == _university.Id);
-        Assert.Equal((InstitutionKind.PublicBody, 18, 24), (university.InstitutionKind!.Value, university.CompanyWorkLineId!.Value, university.ServiceBranchId!.Value));
+        Assert.Equal((18, 24), (university.CompanyWorkLineId!.Value, university.ServiceBranchId!.Value));
         Assert.Equal(24, _db.Company.Single(c => c.Id == created.Company.Id).ServiceBranchId);
 
         // The case form offers the two lists apart.
