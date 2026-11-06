@@ -9,7 +9,7 @@
 # Run again to refresh the local copy (it is replaced).
 set -euo pipefail
 
-: "${SOURCE_DB:?Set SOURCE_DB to the Azure test database's connection string (Azure portal: SQL database → Connection strings).}"
+: "${SOURCE_DB:?Set SOURCE_DB to the connection string of the Azure test database (Azure portal: SQL database → Connection strings).}"
 PASSWORD="${LOCAL_SQL_PASSWORD:-Local-dev-only-1}"
 LOCAL_DB="ResistanceSurvey"
 LOCAL="Server=localhost,1433;Database=${LOCAL_DB};User Id=sa;Password=${PASSWORD};TrustServerCertificate=True;Encrypt=False"

@@ -298,9 +298,6 @@ namespace RS.EF.Data.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("InstitutionKind")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)")
                         .UseCollation("Turkish_CI_AS");
