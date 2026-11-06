@@ -106,7 +106,7 @@ public class CaseDetailTests
         new UpdateCaseHandler(_db, new CaseWriter(_db), new ListValueResolver(_db)).Handle(new UpdateCaseCommand(_case.Id, input, "ayse"));
 
     [Fact]
-    public async Task AGenelCaseKeepsOnlyItsOrganizersAndReasons()
+    public async Task AGenelCaseKeepsOnlyItsOrganizersReasonsAndActingWorkplace()
     {
         var input = ValidCase(c =>
         {
@@ -119,7 +119,7 @@ public class CaseDetailTests
         Assert.Equal(CaseCommandStatus.Ok, (await Update(input)).Status);
 
         var r = _db.Resistance.Single(x => x.Id == _case.Id);
-        Assert.Equal(((int?)null, (int?)null, (int?)null, ResistanceResult.Unknown, (int?)null), (r.CompanyId, r.MainCompanyId, r.EmployeeCountNumber, r.ResistanceResult, r.TradeUnionId));
+        Assert.Equal(((int?)10, (int?)null, (int?)null, ResistanceResult.Unknown, (int?)null), (r.CompanyId, r.MainCompanyId, r.EmployeeCountNumber, r.ResistanceResult, r.TradeUnionId));
         Assert.Equal([(4, OrganizationRole.Organizing), (7, OrganizationRole.Organizing)],
             _db.ResistanceCorporation.Where(x => x.ResistanceId == r.Id).OrderBy(x => x.CorporationId).Select(x => ValueTuple.Create(x.CorporationId, x.Role)));
         Assert.Empty(_db.ResistanceEmploymentType.Where(x => x.ResistanceId == r.Id));

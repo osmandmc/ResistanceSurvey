@@ -70,7 +70,7 @@ const categoryOptions = computed(() =>
 )
 const categoryHelp: Record<number, string> = {
   [CaseCategory.Workplace]: 'Bir işverenin işçilerinin mücadelesi: işveren, işyeri, çalışma biçimi, kurumsallık, istihdam türü, sonuç.',
-  [CaseCategory.General]: 'İşyeri olmadan kurumların örgütlediği eylem: 1 Mayıs, asgari ücret, vergi … Gündem vaka nedeninde.',
+  [CaseCategory.General]: 'Kurumların örgütlediği eylem: 1 Mayıs, asgari ücret, vergi, 25 Kasım … Gündem vaka nedeninde.',
   [CaseCategory.Solidarity]: 'Başka bir mücadeleye destek eylemi: örgütleyen kurumlar ve (varsa) desteklenen vaka.',
 }
 const rightOptions = [
@@ -95,9 +95,6 @@ watch(workplace, (yes) => {
       firedEmployeeCount: null, tradeUnionId: null, tradeUnionAuthorityId: null, result: 0,
       employerRole: EmployerRole.Direct, employerUnknown: false, workplaceId: null,
     })
-})
-watch(general, (yes) => {
-  if (yes) value.value.companyId = null
 })
 watch(solidarity, (yes) => {
   if (!yes) value.value.supportedCaseId = null
@@ -345,19 +342,19 @@ function status(field: string) {
         <n-form-item label="Desteklenen Vaka" label-placement="top" class="wide" :validation-status="status('supportedCaseId')" :feedback="error('supportedCaseId') || 'Vaka henüz kayıtlı değilse boş bırakın; sonra vaka sayfasından bağlanabilir.'">
           <case-search-select v-model="value.supportedCaseId" :selected-name="props.supportedCaseName" />
         </n-form-item>
-        <n-form-item label="Eylemi Yapan İşyeri" label-placement="top" class="wide" :feedback="'Yalnızca bir işyerinin işçileri eylem yaptıysa (örn. dayanışma grevi).'">
-          <company-picker
-            v-model="value.companyId"
-            input-id="acting-company"
-            :selected-name="props.companyName"
-            add-label="İşyeri Ekle"
-            :company-types="options.companyTypes"
-            :company-scales="options.companyScales"
-            :company-worklines="options.companyWorklines"
-            :service-branches="options.serviceBranches"
-          />
-        </n-form-item>
       </template>
+      <n-form-item v-if="general || solidarity" label="Eylemi Yapan İşyeri" label-placement="top" class="wide" :feedback="'Yalnızca bir işyerinin işçileri eylem yaptıysa (örn. 25 Kasım’da bir fabrikanın kadın işçileri, dayanışma grevi). Sendika ya da platform değil.'">
+        <company-picker
+          v-model="value.companyId"
+          input-id="acting-company"
+          :selected-name="props.companyName"
+          add-label="İşyeri Ekle"
+          :company-types="options.companyTypes"
+          :company-scales="options.companyScales"
+          :company-worklines="options.companyWorklines"
+          :service-branches="options.serviceBranches"
+        />
+      </n-form-item>
 
       <n-form-item v-if="value.categoryId" label="Hak Geliştirme/Hak Savunma Özelliği" label-placement="top" required :validation-status="status('developRight')" :feedback="error('developRight')">
         <n-radio-group v-model:value="value.developRight" name="develop-right">

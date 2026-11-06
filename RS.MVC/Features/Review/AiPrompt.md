@@ -30,13 +30,14 @@ yalnızca aşağıdaki JSON biçiminde yanıt ver; JSON dışında hiçbir şey 
 - `case.category`: vakanın niteliği; diğer alanlar ona göre doldurulur.
   - "İşletme/Kurum": belirli bir işyerinde ya da kurumda (fabrika, belediye, hastane, il müdürlüğü) çalışanların
     mücadelesi, eylemi bir sendika şubesi yapsa bile.
-  - "Genel": bir işyeri olmadan kurumların çağırdığı ya da örgütlediği eylem: 1 Mayıs, asgari ücret, vergi, emeklilik,
-    anma, ülke çapında iş bırakma.
+  - "Genel": kurumların çağırdığı ya da örgütlediği eylem: 1 Mayıs, asgari ücret, vergi, emeklilik, anma, ülke
+    çapında iş bırakma, 25 Kasım; bir işyerinde yapılsa bile.
   - "Dayanışma": başka bir işyerindeki ya da başka bir mücadeledeki işçilerle dayanışma eylemi.
 - `case.company`: "İşletme/Kurum" için **işveren**: işçileri çalıştıran şirketin ya da kurumun haberde geçen kısa adı
   ("Kristal Yağ", "Seyhan Belediyesi", "Yedikule Göğüs Hastalıkları Hastanesi"); "fabrikası", "A.Ş." gibi ekleri yazma.
-  İşçiler bir taşeronda çalışıyorsa taşeronun adı. İşveren haberde geçmiyorsa `null`. "Dayanışma" için yalnızca eylemi bir işyerinin işçileri yaptıysa onların işyeri (desteklenen
-  işyeri değil); değilse `null`. "Genel" için `null`. Bu alana eylemin ya da kampanyanın adını yazma.
+  İşçiler bir taşeronda çalışıyorsa taşeronun adı. İşveren haberde geçmiyorsa `null`. "Genel" ve "Dayanışma" için yalnızca eylemi bir işyerinin
+  işçileri yaptıysa onların işyeri (25 Kasım'da bir fabrikanın kadın işçileri; Dayanışma'da desteklenen işyeri değil);
+  değilse `null`. Bu alana eylemin ya da kampanyanın adını, bir sendikayı ya da platformu yazma.
 - `case.employer_role`: yalnızca "İşletme/Kurum"da, işverenin bu işteki durumu:
   - "Doğrudan": işçiler doğrudan bu işverende çalışıyor (bir belediyenin memurları, bir fabrikanın işçileri).
   - "Taşeron": işveren bu işi başka bir kurum için yapıyor: taşeron (alt işveren) olarak (hastanede temizlik firması),
