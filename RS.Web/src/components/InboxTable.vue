@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NButton, NTag } from 'naive-ui'
-import type { RouteLocationRaw } from 'vue-router'
+import { useRouter, type RouteLocationRaw } from 'vue-router'
 import { formatDate } from '@/format'
 import type { InboxItem } from '@/inboxApi'
 import { verdictText, verdictType } from '@/relevance'
@@ -14,7 +14,14 @@ const props = defineProps<{
 
 const emit = defineEmits<{ dismiss: [item: InboxItem] }>()
 
+const router = useRouter()
+
 const review = (item: InboxItem): RouteLocationRaw => ({ path: `/review/${encodeURIComponent(item.articleId)}`, query: props.query })
+
+// A click anywhere on the row opens the review form, as on the Vakalar list. Links and buttons keep their own action.
+function open(item: InboxItem) {
+  void router.push(review(item))
+}
 </script>
 
 <template>
@@ -29,9 +36,9 @@ const review = (item: InboxItem): RouteLocationRaw => ({ path: `/review/${encode
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in items" :key="item.articleId">
+        <tr v-for="item in items" :key="item.articleId" tabindex="0" @click="open(item)" @keydown.enter.self="open(item)">
           <td class="title">
-            <a :href="item.url" target="_blank" rel="noopener">{{ item.title || item.url }}</a>
+            <a :href="item.url" target="_blank" rel="noopener" @click.stop>{{ item.title || item.url }}</a>
             <div v-if="item.draft" class="draft">Taslak: {{ item.draft }}</div>
             <div v-if="item.ai" class="ai" :title="[item.ai.reason, item.ai.version].filter(Boolean).join('\n') || undefined">
               <n-tag :type="verdictType[item.ai.verdict]" size="small" :bordered="false">AI: {{ verdictText[item.ai.verdict] }}</n-tag>
@@ -40,13 +47,13 @@ const review = (item: InboxItem): RouteLocationRaw => ({ path: `/review/${encode
             <div v-else class="ai"><span class="reason">AI değerlendirmedi</span></div>
             <div v-if="item.sibling" class="sibling" :title="item.sibling.title ?? undefined">
               Benzer bir haber
-              <router-link :to="`/cases/${item.sibling.caseId}`">{{ item.sibling.caseName || `Vaka #${item.sibling.caseId}` }}</router-link>
+              <router-link :to="`/cases/${item.sibling.caseId}`" @click.stop>{{ item.sibling.caseName || `Vaka #${item.sibling.caseId}` }}</router-link>
               vakasına bağlandı ({{ item.sibling.reason }}). Aynı olaysa “Sadece bağla” yeterli olabilir.
             </div>
           </td>
           <td>{{ item.sourceName }}</td>
           <td class="nowrap">{{ formatDate(item.publishedAt) }}</td>
-          <td class="actions">
+          <td class="actions" @click.stop>
             <router-link :to="review(item)" custom v-slot="{ navigate }">
               <n-button type="primary" size="small" @click="navigate">Aç</n-button>
             </router-link>
@@ -82,6 +89,14 @@ const review = (item: InboxItem): RouteLocationRaw => ({ path: `/review/${encode
   border-bottom: 1px solid #eef0f2;
   font-size: 15px;
   vertical-align: middle;
+}
+.inbox-table tbody tr {
+  cursor: pointer;
+}
+.inbox-table tbody tr:hover,
+.inbox-table tbody tr:focus {
+  background: #f7f8f9;
+  outline: none;
 }
 .title {
   font-weight: 500;
