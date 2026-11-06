@@ -39,12 +39,12 @@ yalnızca aşağıdaki JSON biçiminde yanıt ver; JSON dışında hiçbir şey 
   işyeri değil); değilse `null`. "Genel" için `null`. Bu alana eylemin ya da kampanyanın adını yazma.
 - `case.employer_role`: yalnızca "İşletme/Kurum"da, işverenin bu işteki durumu:
   - "Doğrudan": işçiler doğrudan bu işverende çalışıyor (bir belediyenin memurları, bir fabrikanın işçileri).
-  - "Taşeron": işveren bu işi başka bir kurum için taşeron (alt işveren) olarak yapıyor (hastanede temizlik firması).
-  - "Yüklenici": bütün bir iş (bir inşaat, bir ihale) işverene verilmiş (TOKİ konutlarını yapan inşaat firması).
-  - "İşletmeci": işveren başkasına ait bir yeri işletiyor (rödovansla işletilen maden, işletme hakkı devredilmiş liman).
+  - "Taşeron": işveren bu işi başka bir kurum için yapıyor: taşeron (alt işveren) olarak (hastanede temizlik firması),
+    ihaleyle aldığı bir işte (TOKİ konutlarını yapan inşaat firması) ya da başkasına ait bir yeri işleterek (rödovansla
+    işletilen maden).
   Haberden anlaşılmıyorsa `null`.
-- `case.main_company`: yalnızca `employer_role` "Taşeron", "Yüklenici" ya da "İşletmeci" ise işverenin üstündeki kurum:
-  taşeronun asıl işvereni, işi veren kurum (iş sahibi) ya da işletilen yerin sahibi; değilse `null`. İşverenin bağlı
+- `case.main_company`: yalnızca `employer_role` "Taşeron" ise işverenin üstündeki kurum, asıl işveren: işi veren kurum
+  (hastane, TOKİ) ya da işletilen yerin sahibi (TKİ); değilse `null`. İşverenin bağlı
   olduğu holdingi ya da şirketler grubunu buraya yazma.
 - `case.workplace`: yalnızca "İşletme/Kurum"da, işin yapıldığı **yer** haberde anılıyorsa ve işverenin kendisi değilse
   onun adı: "Gölcük fabrikası", "Çapa Tıp Fakültesi Hastanesi", "Alpagut linyit ocağı", "Adıyaman toplu konut

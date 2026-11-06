@@ -141,6 +141,19 @@ public class AiFillTests
     }
 
     [Fact]
+    public async Task TheOldRolesYukleniciAndIsletmeciAreReadAsTaseron()
+    {
+        await SeedAsync();
+        _db.Company.Add(new Company { Id = 12, Name = "TOKİ" });
+        await _db.SaveChangesAsync();
+        var answer = Answer.Replace("\"main_company\": null", "\"employer_role\": \"Yüklenici\", \"main_company\": \"TOKİ\"");
+
+        var c = (await Check(answer, null)).Case!;
+
+        Assert.Equal((RS.COMMON.Entities.EmployerRole.Subcontractor, true, 12), (c.EmployerRole!.Value, c.IsOutsource, c.MainCompanyId!.Value));
+    }
+
+    [Fact]
     public async Task ANewWorkplaceIsOfferedAndADirectEmployerHasNothingAbove()
     {
         await SeedAsync();

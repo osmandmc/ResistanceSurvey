@@ -34,6 +34,9 @@ namespace RS.COMMON.Entities
         /// <summary>Set when a researcher has dealt with the case (R31c linking screen, or the İşletme check).</summary>
         public DateTime? ResolvedAt { get; set; }
 
+        /// <summary>"employer-role-merge": the case's role before Yüklenici (3) and İşletmeci (4) became Taşeron.</summary>
+        public int? OldEmployerRole { get; set; }
+
         public DateTime At { get; set; }
     }
 }

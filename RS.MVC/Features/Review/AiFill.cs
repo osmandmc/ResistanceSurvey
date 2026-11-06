@@ -28,7 +28,7 @@ namespace RS.MVC.Features.Review
 
     public class GetAiPromptHandler(IPipelineClient pipeline, RSDBContext db)
     {
-        public const string Version = "v2.3";
+        public const string Version = "v2.4";
 
         private static readonly Lazy<string> Template = new(() =>
         {
@@ -482,7 +482,8 @@ namespace RS.MVC.Features.Review
         }
 
         /// <summary>A company or organization: a registered one when the names match, otherwise a new one by that name.</summary>
-        /// <summary>“Doğrudan”, “Taşeron”, “Yüklenici”, “İşletmeci” (case and Turkish letters ignored); else null.</summary>
+        /// <summary>“Doğrudan” or “Taşeron” (case and Turkish letters ignored); else null. “Yüklenici” and “İşletmeci”,
+        /// the roles before 2026-11-06, are read as Taşeron.</summary>
         private static RS.COMMON.Entities.EmployerRole? RoleOf(string answer) =>
             new string(NameMatching.Key(answer ?? "").Select(ch => ch switch
             {
@@ -490,9 +491,7 @@ namespace RS.MVC.Features.Review
             }).ToArray()) switch
             {
                 "dogrudan" => RS.COMMON.Entities.EmployerRole.Direct,
-                "taseron" or "alt isveren" => RS.COMMON.Entities.EmployerRole.Subcontractor,
-                "yuklenici" => RS.COMMON.Entities.EmployerRole.Contractor,
-                "isletmeci" => RS.COMMON.Entities.EmployerRole.Operator,
+                "taseron" or "alt isveren" or "yuklenici" or "isletmeci" => RS.COMMON.Entities.EmployerRole.Subcontractor,
                 _ => null,
             };
 

@@ -48,8 +48,8 @@ namespace RS.COMMON.Entities
         public Resistance SupportedResistance { get; set; }
 
         /// <summary>
-        /// İşletme (R37): how the employer (CompanyId) works in this case; with Subcontractor, Contractor or Operator,
-        /// MainCompanyId is the organization above it (Asıl işveren, İş sahibi, Varlığın sahibi).
+        /// İşletme (R37): how the employer (CompanyId) works in this case; with Subcontractor (Taşeron),
+        /// MainCompanyId is the organization above it (its Asıl işveren).
         /// </summary>
         public EmployerRole EmployerRole { get; set; }
 

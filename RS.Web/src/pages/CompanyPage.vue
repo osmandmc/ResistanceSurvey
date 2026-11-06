@@ -272,8 +272,6 @@ async function savePlace() {
 // ---- Links read from the cases (R37, decision b) ----
 const roleTitles: Record<number, [string, string]> = {
   [EmployerRole.Subcontractor]: ['Taşeron olarak çalıştığı', 'Taşeronları'],
-  [EmployerRole.Contractor]: ['Yüklenicisi olduğu işlerin sahibi', 'Yüklenicileri'],
-  [EmployerRole.Operator]: ['İşlettiği yerlerin sahibi', 'İşletmecileri'],
 }
 const jobGroups = computed(() => {
   const groups = new Map<string, NonNullable<typeof company.value>['jobLinks']>()

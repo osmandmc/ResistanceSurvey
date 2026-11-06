@@ -241,6 +241,9 @@ namespace RS.EF.Data.Migrations
                     b.Property<int?>("OldCorporationId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("OldEmployerRole")
+                        .HasColumnType("int");
+
                     b.Property<int?>("OldMainCompanyId")
                         .HasColumnType("int");
 
