@@ -28,8 +28,7 @@ export interface DefinitionItem {
   worklineId: number | null
   /** A union's confederation (R34). */
   confederationId: number | null
-  /** Companies (R37): “Kurum türü” and the civil servants' hizmet kolu. */
-  institutionKind?: InstitutionKind | null
+  /** Companies (R37): the civil servants' hizmet kolu. */
   serviceBranchId?: number | null
   /** Workplaces (R37): province, district, whom it belongs to, and the province and district in words. */
   cityId?: number | null
@@ -38,22 +37,6 @@ export interface DefinitionItem {
   ownerName?: string | null
   placeName?: string | null
 }
-
-/** “Kurum türü” (R37), matching the server's InstitutionKind. */
-export const InstitutionKind = {
-  Company: 1, Holding: 2, PublicBody: 3, StateEnterprise: 4, Municipality: 5, MunicipalCompany: 6, Cooperative: 7, Other: 8,
-} as const
-export type InstitutionKind = (typeof InstitutionKind)[keyof typeof InstitutionKind]
-export const institutionKindOptions: { value: InstitutionKind; label: string }[] = [
-  { value: 1, label: 'Şirket' },
-  { value: 2, label: 'Holding / şirketler grubu' },
-  { value: 3, label: 'Kamu kurumu' },
-  { value: 4, label: 'Kamu şirketi (KİT)' },
-  { value: 5, label: 'Belediye' },
-  { value: 6, label: 'Belediye şirketi' },
-  { value: 7, label: 'Kooperatif / vakıf / dernek' },
-  { value: 8, label: 'Diğer' },
-]
 
 export interface DefinitionPage {
   items: DefinitionItem[]
@@ -109,7 +92,6 @@ export function updateDefinition(kind: DefinitionKind, item: DefinitionItem) {
       scaleId: item.scaleId,
       worklineId: item.worklineId,
       confederationId: item.confederationId,
-      institutionKind: item.institutionKind ?? null,
       serviceBranchId: item.serviceBranchId ?? null,
       cityId: item.cityId ?? null,
       districtId: item.districtId ?? null,
@@ -208,7 +190,6 @@ export interface CompanyDetail {
   typeId: number | null
   scaleId: number | null
   worklineId: number | null
-  institutionKind: InstitutionKind | null
   serviceBranchId: number | null
   cases: CompanyCase[]
   relations: CompanyRelationItem[]
