@@ -232,7 +232,7 @@ function status(field: string) {
         </n-radio-group>
       </n-form-item>
 
-      <n-form-item label="Vaka İsmi" label-placement="top" class="wide" :show-feedback="false">
+      <n-form-item :class="ai('name')" label="Vaka İsmi" label-placement="top" class="wide" :show-feedback="false">
         <n-input v-model:value="value.name" placeholder="Örn. Örnek Tekstil işçilerinin ücret direnişi" />
       </n-form-item>
 

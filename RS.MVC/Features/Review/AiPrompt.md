@@ -63,6 +63,10 @@ yalnızca aşağıdaki JSON biçiminde yanıt ver; JSON dışında hiçbir şey 
 - `case.employment_types`: yalnızca "İşletme/Kurum"da, listeden; işçilerin istihdam biçimi.
 - `case.employee_count`: yalnızca "İşletme/Kurum"da, işyerinde çalışan toplam kişi sayısı haberde geçiyorsa.
 - `case.fired_count`: yalnızca "İşletme/Kurum"da, işten atılan işçi sayısı haberde geçiyorsa.
+- `case.name`: vakanın kısa adı (Türkçe, en çok 60 karakter); vaka listesinde görünür. "A.Ş." gibi ekler yazma.
+  - "İşletme/Kurum": kim ve ne için: "Ravanda Halı işçilerinin ücret eylemi". Tarih yazma: vaka aylarca sürebilir.
+  - "Genel": eylem ya da gündem, yer ve haberin yılı: "İzmir 1 Mayıs çağrısı (2026)".
+  - "Dayanışma": desteklenen mücadele, "ile dayanışma" ve yer: "Migros depo işçileriyle dayanışma (Tokat)".
 - `case.description`: "GG.AA.YY: " ile başlayan, direnişi bir iki cümleyle özetleyen açıklama. "Dayanışma"
   vakalarında desteklenen mücadeleyi (işyeri, işçiler) mutlaka an.
 - `protest.start_date`, `protest.end_date`: haberde anlatılan eylemin günü (tek günlükse ikisi aynı). Haber "bugün",
@@ -86,7 +90,7 @@ sayı aralığı, hak geliştirme.
   "case": {
     "category": "", "company": null, "employer_role": null, "main_company": null, "workplace": null,
     "organizations": [], "union_authority": null, "reasons": [], "employment_types": [],
-    "employee_count": null, "fired_count": null, "description": ""
+    "employee_count": null, "fired_count": null, "name": "", "description": ""
   },
   "protest": {
     "start_date": null, "end_date": null, "types": [], "places": [], "locations": [],

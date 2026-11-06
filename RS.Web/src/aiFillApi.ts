@@ -64,6 +64,8 @@ export interface AiCaseValues {
   employeeCount: number | null
   firedEmployeeCount: number | null
   description: string | null
+  /** Vaka İsmi (prompt v2.6); null from an older answer. */
+  name?: string | null
   /** The registered companies' names, so the form shows them (it only knows ids). */
   companyName: string | null
   mainCompanyName: string | null
@@ -162,6 +164,7 @@ export function aiCaseValues(v: AiCaseValues): Partial<CaseFormValue> {
   if (v.employmentTypeIds.length) out.employmentTypeIds = [...v.employmentTypeIds]
   if (v.employeeCount !== null) out.employeeCount = v.employeeCount
   if (v.firedEmployeeCount !== null) out.firedEmployeeCount = v.firedEmployeeCount
+  if (v.name) out.name = v.name
   if (v.description) out.description = v.description
   return out
 }

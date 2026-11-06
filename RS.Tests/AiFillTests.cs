@@ -141,6 +141,18 @@ public class AiFillTests
     }
 
     [Fact]
+    public async Task PromptV26NamesTheCase()
+    {
+        await SeedAsync();
+        var answer = Answer.Replace("\"description\":", "\"name\": \" Ravanda Halı işçilerinin ücret eylemi \", \"description\":");
+
+        var result = await Check(answer, null);
+
+        Assert.Equal("Ravanda Halı işçilerinin ücret eylemi", result.Case!.Name);
+        Assert.Null((await Check(Answer, null)).Case!.Name); // an older answer has none
+    }
+
+    [Fact]
     public async Task TheOldRolesYukleniciAndIsletmeciAreReadAsTaseron()
     {
         await SeedAsync();
