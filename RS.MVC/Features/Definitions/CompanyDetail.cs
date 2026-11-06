@@ -105,7 +105,7 @@ namespace RS.MVC.Features.Definitions
             var rows = await db.Resistance
                 .Where(r => !r.Deleted && r.CategoryId == KnownListIds.WorkplaceCategory && r.MainCompanyId != null
                     && (r.CompanyId == id || r.MainCompanyId == id)
-                    && (r.EmployerRole == EmployerRole.Subcontractor || r.EmployerRole == EmployerRole.Contractor || r.EmployerRole == EmployerRole.Operator))
+                    && r.EmployerRole == EmployerRole.Subcontractor)
                 .Select(r => new
                 {
                     r.EmployerRole,

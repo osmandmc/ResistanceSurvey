@@ -72,7 +72,7 @@ namespace RS.MVC.Features.Cases
             ("Örgütleyen Kurumlar", p => string.Join("; ", p.Resistance.ResistanceCorporations?.Where(x => x.Role == OrganizationRole.Organizing).Select(x => x.Corporation.Name) ?? NoNames)),
             ("Desteklenen Vaka", p => p.Resistance.SupportedResistance is { } s ? $"{s.Id}: {s.Name ?? s.Company?.Name}" : ""),
             // R37, also at the end: how the employer works in the case (“Şirket Adı” is the employer, “Ana Şirket Adı” the
-            // organization above it: its Asıl işveren, İş sahibi or Varlığın sahibi) and the place, when not the employer itself.
+            // organization above it: its Asıl işveren) and the place, when not the employer itself.
             ("Çalışma Biçimi", p => p.Resistance.CategoryId == KnownListIds.WorkplaceCategory
                 ? (p.Resistance.EmployerUnknown ? "İşveren bilinmiyor · " : "") + EmployerRoles.Name(p.Resistance.EmployerRole)
                 : ""),

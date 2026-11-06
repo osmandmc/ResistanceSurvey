@@ -72,8 +72,8 @@ namespace RS.MVC.Models
         public bool IsOutsource { get; set; }
 
         /// <summary>
-        /// İşletme (R37): how the employer works in this case. With Taşeron, Yüklenici or İşletmeci, MainCompanyId is the
-        /// organization above it (Asıl işveren, İş sahibi, Varlığın sahibi). Null: an older form (see IsOutsource).
+        /// İşletme (R37): how the employer works in this case. With Taşeron, MainCompanyId is its Asıl işveren. Null: an
+        /// older form (see IsOutsource).
         /// </summary>
         public RS.COMMON.Entities.EmployerRole? EmployerRole { get; set; }
 

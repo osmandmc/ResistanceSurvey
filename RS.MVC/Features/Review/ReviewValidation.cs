@@ -79,7 +79,7 @@ namespace RS.MVC.Features.Review
                 return;
             if (!c.EmployerUnknown && c.CompanyId is not > 0)
                 errors["case.companyId"] = "Lütfen işvereni seçiniz ya da “İşveren bilinmiyor”u işaretleyiniz.";
-            // R37: Taşeron, Yüklenici and İşletmeci name the organization above the employer.
+            // R37: Taşeron names its Asıl işveren.
             var role = Cases.EmployerRoles.Effective(c);
             if (Cases.EmployerRoles.HasAbove(role) && c.MainCompanyId is not > 0)
                 errors["case.mainCompanyId"] = Cases.EmployerRoles.AboveMissing(role);

@@ -62,8 +62,10 @@ public class EmployerWorkplaceTests
     }
 
     [Theory]
-    [InlineData(EmployerRole.Contractor, true, EmployerRole.Contractor)] // the loaded role agrees with “Evet”: kept
-    [InlineData(EmployerRole.Contractor, false, EmployerRole.Direct)] // “Hayır” on a migrated guess: the answer decides
+    [InlineData(EmployerRole.Subcontractor, true, EmployerRole.Subcontractor)] // the loaded role agrees with “Evet”: kept
+    [InlineData(EmployerRole.Subcontractor, false, EmployerRole.Direct)] // “Hayır” on a migrated guess: the answer decides
+    [InlineData((EmployerRole)3, true, EmployerRole.Subcontractor)] // the old Yüklenici: gone, the answer decides
+    [InlineData((EmployerRole)4, false, EmployerRole.Direct)] // the old İşletmeci
     [InlineData(EmployerRole.Direct, true, EmployerRole.Subcontractor)] // “Evet” on a direct one: Taşeron
     [InlineData(EmployerRole.Unknown, false, EmployerRole.Unknown)]
     public void TheOldFormsAnswerWinsWhenItDisagreesWithTheLoadedRole(EmployerRole loaded, bool isOutsource, EmployerRole expected) =>
@@ -122,15 +124,12 @@ public class EmployerWorkplaceTests
         Assert.Null((await Save(Case(c => c.WorkplaceId = 2))).WorkplaceId);
     }
 
-    [Theory]
-    [InlineData(EmployerRole.Subcontractor, "Lütfen asıl işvereni seçiniz.")]
-    [InlineData(EmployerRole.Contractor, "Lütfen iş sahibini seçiniz.")]
-    [InlineData(EmployerRole.Operator, "Lütfen varlığın sahibini seçiniz.")]
-    public void EachRoleAboveTheEmployerNeedsItsOrganization(EmployerRole role, string message)
+    [Fact]
+    public void ATaseronNeedsItsAsilIsveren()
     {
-        var errors = ReviewValidation.ForCase(Case(c => { c.EmployerRole = role; c.IsOutsource = true; c.MainCompanyId = null; }));
+        var errors = ReviewValidation.ForCase(Case(c => { c.EmployerRole = EmployerRole.Subcontractor; c.IsOutsource = true; c.MainCompanyId = null; }));
 
-        Assert.Equal(message, errors["case.mainCompanyId"]);
+        Assert.Equal("Lütfen asıl işvereni seçiniz.", errors["case.mainCompanyId"]);
         Assert.Empty(ReviewValidation.ForCase(Case(c => { c.EmployerRole = EmployerRole.Direct; c.MainCompanyId = null; })));
         Assert.Empty(ReviewValidation.ForCase(Case(c => { c.EmployerRole = EmployerRole.Unknown; c.MainCompanyId = null; })));
     }

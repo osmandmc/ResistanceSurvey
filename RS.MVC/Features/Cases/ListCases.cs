@@ -12,8 +12,8 @@ namespace RS.MVC.Features.Cases
 
     /// <summary>
     /// Target: the company, or the institution for cases against one. WorkplaceName: the case's place (R37).
-    /// MainCompanyLabel: what the organization above the employer is, by the employer's role (Asıl işveren, İş sahibi,
-    /// Varlığın sahibi; “Ana şirket” for a role not set). Ongoing: the latest protest has no end date
+    /// MainCompanyLabel: what the organization above the employer is, by the employer's role (Asıl işveren for a
+    /// Taşeron, “Ana şirket” for a role not set). Ongoing: the latest protest has no end date
     /// (same rule as the review screen's case search).
     /// </summary>
     public record CaseListItem(

@@ -132,20 +132,17 @@ export function createCorporation(corporation: { name: string; typeId: number | 
 }
 
 /** The three case categories (R31, the server's KnownListIds): each shows its own fields. */
-/** R37: how the employer works in an İşletme case (matches the server's EmployerRole). */
-export const EmployerRole = { Unknown: 0, Direct: 1, Subcontractor: 2, Contractor: 3, Operator: 4 } as const
+/** R37: how the employer works in an İşletme case (matches the server's EmployerRole; Yüklenici and İşletmeci merged into Taşeron). */
+export const EmployerRole = { Unknown: 0, Direct: 1, Subcontractor: 2 } as const
 export type EmployerRole = (typeof EmployerRole)[keyof typeof EmployerRole]
 
 /** The buttons, in order, and the name of the organization above for the roles that have one. */
 export const employerRoleOptions: { value: EmployerRole; label: string; help: string; above: string | null }[] = [
   { value: EmployerRole.Direct, label: 'Doğrudan', help: 'İşçiler doğrudan bu işverende çalışıyor.', above: null },
-  { value: EmployerRole.Subcontractor, label: 'Taşeron', help: 'İşveren bu işi başka bir kurum için taşeron olarak yapıyor (alt işveren).', above: 'Asıl İşveren' },
-  { value: EmployerRole.Contractor, label: 'Yüklenici', help: 'Bütün iş (ör. bir inşaat) işverene verildi; işi veren iş sahibidir.', above: 'İş Sahibi' },
-  { value: EmployerRole.Operator, label: 'İşletmeci', help: 'İşveren başkasına ait bir yeri işletiyor (rödovans, işletme hakkı).', above: 'Varlığın Sahibi' },
+  { value: EmployerRole.Subcontractor, label: 'Taşeron', help: 'İşveren bu işi başka bir kurum için yapıyor: alt işveren, ihaleyle alınan iş (TOKİ inşaatı) ya da başkasına ait bir yeri işletme (rödovanslı maden).', above: 'Asıl İşveren' },
   { value: EmployerRole.Unknown, label: 'Bilinmiyor', help: 'Haber söylemiyor.', above: null },
 ]
-export const hasAbove = (role: EmployerRole | null) =>
-  role === EmployerRole.Subcontractor || role === EmployerRole.Contractor || role === EmployerRole.Operator
+export const hasAbove = (role: EmployerRole | null) => role === EmployerRole.Subcontractor
 
 /** R37: a company's fact with another one (its group, the public body it belongs to, a name change), seen from it. */
 export interface CompanyFact {
@@ -217,7 +214,7 @@ export interface CaseInput {
   employerRole: EmployerRole | null
   /** “İşveren bilinmiyor”. */
   employerUnknown: boolean
-  /** The organization above the employer: Asıl işveren, İş sahibi or Varlığın sahibi, by role. */
+  /** The organization above the employer: its Asıl işveren (Taşeron). */
   mainCompanyId: number | null
   /** İşletme (R37): the place, when it is not the employer itself. */
   workplaceId: number | null
