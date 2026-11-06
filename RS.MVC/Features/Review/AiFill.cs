@@ -237,9 +237,9 @@ namespace RS.MVC.Features.Review
             var organizations = Texts(c, "organizations").Select(o => Record(corporations, o, "örgüt")).ToList();
             Add("case.organizations", "Kurumsallık / örgütleyen kurumlar", Items(organizations));
 
-            var reasons = await Many(db.ResistanceReason.Select(e => new { e.Id, e.Name }).ToListAsync(), e => e.Id, e => e.Name, Texts(c, "reasons"));
+            var reasons = await Many(db.ResistanceReason.Select(e => new { e.Id, e.Name }), e => e.Id, e => e.Name, Texts(c, "reasons"));
             Add("case.reasons", "Direniş nedenleri", Items(reasons));
-            var employmentTypes = await Many(db.EmploymentType.Select(e => new { e.Id, e.Name }).ToListAsync(), e => e.Id, e => e.Name, Texts(c, "employment_types"));
+            var employmentTypes = await Many(db.EmploymentType.Select(e => new { e.Id, e.Name }), e => e.Id, e => e.Name, Texts(c, "employment_types"));
             Add("case.employment_types", "İstihdam biçimi", Items(employmentTypes));
 
             var employeeCount = Int(c, "employee_count");
@@ -266,9 +266,9 @@ namespace RS.MVC.Features.Review
             if (endAssumed)
                 endDate = startDate;
             Add("protest.end_date", "Bitiş", endAssumed ? [new AiItem("", endDate, AiItemStatus.Matched, "haberde yok, başlangıç günü alındı")] : Plain(endDate));
-            var types = await Many(db.ProtestoType.Select(e => new { e.Id, e.Name }).ToListAsync(), e => e.Id, e => e.Name, Texts(p, "types"));
+            var types = await Many(db.ProtestoType.Select(e => new { e.Id, e.Name }), e => e.Id, e => e.Name, Texts(p, "types"));
             Add("protest.types", "Eylem türleri", Items(types));
-            var places = await Many(db.ProtestoPlace.Select(e => new { e.Id, e.Name }).ToListAsync(), e => e.Id, e => e.Name, Texts(p, "places"));
+            var places = await Many(db.ProtestoPlace.Select(e => new { e.Id, e.Name }), e => e.Id, e => e.Name, Texts(p, "places"));
             Add("protest.places", "Eylem yerleri", Items(places));
             var locations = await LocationsAsync(p);
             Add("protest.locations", "Konum", locations.Select(l => l.Item).ToArray());
@@ -279,7 +279,7 @@ namespace RS.MVC.Features.Review
                 Add("protest.participant_range", "Katılımcı aralığı", new AiItem(participants.Value.ToString(CultureInfo.InvariantCulture), participantRange.Value.Name, AiItemStatus.Matched, "sayıdan hesaplandı"));
             var custody = Int(p, "custody_count");
             Add("protest.custody_count", "Gözaltı", Plain(custody));
-            var interventions = await Many(db.InterventionType.Select(e => new { e.Id, e.Name }).ToListAsync(), e => e.Id, e => e.Name, Texts(p, "interventions"));
+            var interventions = await Many(db.InterventionType.Select(e => new { e.Id, e.Name }), e => e.Id, e => e.Name, Texts(p, "interventions"));
             Add("protest.interventions", "Müdahale", Items(interventions));
             var strikeHours = Int(p, "strike_hours");
             Add("protest.strike_hours", "Grev / iş bırakma (saat)", Plain(strikeHours));
@@ -509,11 +509,13 @@ namespace RS.MVC.Features.Review
                 : new Match(null, new AiItem(answer, answer, AiItemStatus.New, $"yeni {what}"));
         }
 
-        private async Task<List<Match>> Many<T>(Task<List<T>> rows, Func<T, int> id, Func<T, string> name, List<string> answers)
+        /// <param name="rows">Read only when there are answers: a query started and not awaited would still be running on
+        /// the context when the next one starts ("A second operation was started on this context").</param>
+        private async Task<List<Match>> Many<T>(IQueryable<T> rows, Func<T, int> id, Func<T, string> name, List<string> answers)
         {
             if (answers.Count == 0)
                 return [];
-            var list = await ListAsync(rows, id, name);
+            var list = await ListAsync(rows.ToListAsync(), id, name);
             return answers.Select(a => One(list, a)).ToList();
         }
 
