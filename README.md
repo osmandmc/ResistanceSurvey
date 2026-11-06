@@ -32,13 +32,17 @@ A local run must not touch a real database: in Development the app refuses to st
 machine (`LocalDev:AllowRemoteDatabase=true` overrides it). Use a local copy of the Azure **test** database:
 
 ```bash
-docker compose up -d                                      # SQL Edge (the SQL Server engine, native on Apple silicon)
+docker compose up -d                                      # SQL Server 2022 in Docker
 SOURCE_DB='<test database connection string>' tools/copy-test-db.sh
 ```
 
 The script exports the test database (read only) to `~/.direnistakip/test-copy.bacpac`, imports it into the local
 server and points the app's user-secrets at it; run it again to refresh the copy. The copy holds real data: it stays in
 your home folder, never in the repository. Needs `sqlpackage` (`dotnet tool install -g microsoft.sqlpackage`).
+
+On Apple silicon the SQL Server image runs through Rosetta: turn on "Use Rosetta for x86_64/amd64 emulation on Apple
+Silicon" in Docker Desktop → Settings → General. If `docker compose up` fails with `docker-credential-desktop: executable
+file not found`, add Docker's helpers to your PATH: `export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin"`.
 
 In Development the app talks to a pipeline running on this machine (`http://localhost:7071`, no key; see the pipeline's
 README, "Local development"). To use the Azure test pipeline instead, set `Pipeline:BaseUrl` and `Pipeline:FunctionKey`
