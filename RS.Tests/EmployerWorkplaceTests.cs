@@ -99,7 +99,7 @@ public class EmployerWorkplaceTests
     }
 
     [Fact]
-    public async Task GenelCasesHaveNoEmployerRoleOrWorkplace()
+    public async Task GenelCasesKeepTheActingWorkplaceButNoEmployerRoleOrPlace()
     {
         var saved = await Save(Case(c =>
         {
@@ -110,7 +110,8 @@ public class EmployerWorkplaceTests
             c.EmployerUnknown = true;
         }));
 
-        Assert.Equal((EmployerRole.Unknown, false, (int?)null, (int?)null, (int?)null),
+        // As in Dayanışma, the company is the workplace whose workers acted (researchers, 2026-11-06).
+        Assert.Equal((EmployerRole.Unknown, false, (int?)10, (int?)null, (int?)null),
             (saved.EmployerRole, saved.EmployerUnknown, saved.CompanyId, saved.MainCompanyId, saved.WorkplaceId));
     }
 

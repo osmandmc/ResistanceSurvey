@@ -28,7 +28,7 @@ namespace RS.MVC.Features.Review
 
     public class GetAiPromptHandler(IPipelineClient pipeline, RSDBContext db)
     {
-        public const string Version = "v2.4";
+        public const string Version = "v2.5";
 
         private static readonly Lazy<string> Template = new(() =>
         {

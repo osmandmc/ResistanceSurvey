@@ -69,13 +69,14 @@ namespace RS.MVC.Features.Cases
         /// <summary>
         /// Copies the form's case part onto the entity and replaces its reasons, organizations and employment types (R31:
         /// by category). İşletme: the workplace, its main company, union and counts, the result; organizations support.
-        /// Genel and Dayanışma: organizations organize; Dayanışma may name the workplace whose workers acted and the
-        /// supported case. "Kime karşı" and the target institution are no longer set.
+        /// Genel and Dayanışma: organizations organize; both may name the workplace whose workers acted (researchers,
+        /// 2026-11-06: the 25 Kasım actions take place at workplaces); Dayanışma also the supported case. "Kime karşı" and the target institution are no longer set.
         /// </summary>
         public async Task ApplyCaseAsync(Resistance r, CaseInput c, IReadOnlyList<int> reasonIds, IReadOnlyList<int> corporationIds)
         {
             var workplace = c.CategoryId == KnownListIds.WorkplaceCategory;
             var solidarity = c.CategoryId == KnownListIds.SolidarityCategory;
+            var general = c.CategoryId == KnownListIds.GeneralCategory;
             r.Name = c.Name;
             r.Description = c.Description;
             r.Note = string.IsNullOrWhiteSpace(c.Note) ? null : c.Note.Trim();
@@ -83,7 +84,7 @@ namespace RS.MVC.Features.Cases
             // R37: the employer, how it works in this case, the organization above it and the place (İşletme only).
             var employerRole = workplace ? EmployerRoles.Effective(c) : EmployerRole.Unknown;
             r.EmployerUnknown = workplace && c.EmployerUnknown;
-            r.CompanyId = (workplace && !c.EmployerUnknown) || solidarity ? c.CompanyId : null;
+            r.CompanyId = (workplace && !c.EmployerUnknown) || solidarity || general ? c.CompanyId : null;
             r.EmployerRole = employerRole;
             r.MainCompanyId = workplace && EmployerRoles.HasAbove(employerRole) ? c.MainCompanyId : null;
             r.WorkplaceId = workplace && c.WorkplaceId is { } workplaceId && await db.Workplace.AnyAsync(w => w.Id == workplaceId && !w.Deleted)
