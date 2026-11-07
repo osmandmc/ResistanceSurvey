@@ -23,6 +23,7 @@ namespace RS.MVC.Controllers
         SearchNewsHandler searchNews,
         AttachArticleHandler attachArticle,
         DetachArticleHandler detachArticle,
+        GetCaseArticleHandler getArticle,
         CreateCaseHandler createCase,
         CaseProtestLinesHandler protestLines) : ControllerBase
     {
@@ -80,6 +81,13 @@ namespace RS.MVC.Controllers
         [HttpPost("{id:int}/articles")]
         public async Task<IActionResult> AttachArticle(int id, AttachArticleRequest request) =>
             ToResult(await attachArticle.Handle(new AttachArticleCommand(id, request.NewsId)));
+
+        /// <summary>GET /api/cases/{id}/articles/{articleId} — a linked pipeline article with its full text (as on the review screen).</summary>
+        [HttpGet("{id:int}/articles/{articleId}")]
+        public async Task<ActionResult<ReviewArticle>> GetArticle(int id, string articleId) =>
+            await getArticle.Handle(new GetCaseArticleQuery(id, articleId)) is { } article
+                ? article
+                : NotFound(new { error = "Haber bulunamadı." });
 
         /// <summary>DELETE /api/cases/{id}/articles/{newsId}</summary>
         [HttpDelete("{id:int}/articles/{newsId:int}")]

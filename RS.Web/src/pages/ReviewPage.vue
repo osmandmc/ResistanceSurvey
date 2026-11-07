@@ -6,6 +6,7 @@ import { ApiError, errorMessage } from '@/api'
 import { aiCaseValues, aiProtestValues, getAiDraft, matchAiCases, unchangedFields, type AiCaseMatch, type AiCaseMatches, type AiCheckResult, type AiDraft, type AiFlag, type AiUse } from '@/aiFillApi'
 import { emptyCase, toCaseInput, type CaseFormValue } from '@/caseForm'
 import AiFillDialog from '@/components/AiFillDialog.vue'
+import ArticleView from '@/components/ArticleView.vue'
 import CaseFinder from '@/components/CaseFinder.vue'
 import CaseForm from '@/components/CaseForm.vue'
 import ProtestForm from '@/components/ProtestForm.vue'
@@ -35,7 +36,6 @@ const articleId = computed(() => String(route.params.articleId))
 
 // The article shown on the left.
 const article = ref<ReviewArticle | null>(null)
-const imageFailed = ref(false)
 const loading = ref(false)
 const loadError = ref<'handled' | 'notFound' | 'unavailable' | ''>('')
 const loadErrorText = ref('')
@@ -44,7 +44,6 @@ async function loadArticle() {
   loading.value = true
   loadError.value = ''
   article.value = null
-  imageFailed.value = false
   try {
     article.value = await getReviewArticle(articleId.value)
   } catch (error) {
@@ -400,56 +399,27 @@ async function onDismissed() {
 
   <div v-else-if="article" class="columns">
     <article class="article panel">
-      <div class="meta">
-        <span>{{ article.sourceName }}</span>
-        <span>{{ formatDate(article.publishedAt) }}</span>
-        <a :href="article.url" target="_blank" rel="noopener">Kaynağa git ↗</a>
-      </div>
-      <h1 class="article-title">
-        <template v-if="article.title">
-          <template v-for="(s, i) in titleSegments" :key="i">
-            <mark v-if="s.fields.length" class="evidence" :class="{ active: s.fields.includes(activeEvidence ?? '') }" :data-evidence="s.fields.join(' ')" :title="s.labels.join(', ')">{{ s.text }}</mark>
-            <template v-else>{{ s.text }}</template>
-          </template>
-        </template>
-        <template v-else>{{ article.url }}</template>
-      </h1>
-      <p v-if="article.ai" class="ai-verdict" :class="article.ai.verdict">
-        <strong>AI: {{ verdictText[article.ai.verdict] }}.</strong>
-        <span v-if="article.ai.reason"> {{ article.ai.reason }}</span>
-        <span v-if="article.ai.version" class="ai-origin">{{ article.ai.version }}</span>
-      </p>
-      <div v-if="evidenceList.length" class="evidence-list" aria-label="AI kanıtları">
-        <span class="evidence-head">AI kanıtları:</span>
-        <button
-          v-for="e in evidenceList"
-          :key="e.field"
-          type="button"
-          class="evidence-chip"
-          :class="{ missing: !e.found, active: activeEvidence === e.field }"
-          :title="e.found ? e.quote : `Metinde bulunamadı: “${e.quote}”`"
-          @click="e.found && showEvidence(e.field)"
-        >
-          {{ e.label }}<span v-if="!e.found"> · bulunamadı</span>
-        </button>
-      </div>
-      <!-- From the news site itself (not copied); hidden if the site no longer serves it. -->
-      <img
-        v-if="article.imageUrl && !imageFailed"
-        :src="article.imageUrl"
-        alt=""
-        class="article-image"
-        loading="lazy"
-        referrerpolicy="no-referrer"
-        @error="imageFailed = true"
-      />
-      <p v-if="article.body" class="body">
-        <template v-for="(s, i) in bodySegments" :key="i">
-          <mark v-if="s.fields.length" class="evidence" :class="{ active: s.fields.includes(activeEvidence ?? '') }" :data-evidence="s.fields.join(' ')" :title="s.labels.join(', ')">{{ s.text }}</mark>
-          <template v-else>{{ s.text }}</template>
-        </template>
-      </p>
-      <p v-else class="no-body">Haberin metni henüz okunmadı; kaynağa giderek okuyabilirsiniz.</p>
+      <article-view :article="article" :title-segments="titleSegments" :body-segments="bodySegments" :active-evidence="activeEvidence">
+        <p v-if="article.ai" class="ai-verdict" :class="article.ai.verdict">
+          <strong>AI: {{ verdictText[article.ai.verdict] }}.</strong>
+          <span v-if="article.ai.reason"> {{ article.ai.reason }}</span>
+          <span v-if="article.ai.version" class="ai-origin">{{ article.ai.version }}</span>
+        </p>
+        <div v-if="evidenceList.length" class="evidence-list" aria-label="AI kanıtları">
+          <span class="evidence-head">AI kanıtları:</span>
+          <button
+            v-for="e in evidenceList"
+            :key="e.field"
+            type="button"
+            class="evidence-chip"
+            :class="{ missing: !e.found, active: activeEvidence === e.field }"
+            :title="e.found ? e.quote : `Metinde bulunamadı: “${e.quote}”`"
+            @click="e.found && showEvidence(e.field)"
+          >
+            {{ e.label }}<span v-if="!e.found"> · bulunamadı</span>
+          </button>
+        </div>
+      </article-view>
     </article>
 
     <section class="decision panel" aria-labelledby="decision-heading">
@@ -650,35 +620,6 @@ async function onDismissed() {
     overflow: auto;
   }
 }
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  font-size: 13px;
-  color: var(--rs-muted);
-}
-.article-title {
-  margin: 12px 0 16px;
-  font-size: 24px;
-  line-height: 1.3;
-}
-.article-image {
-  display: block;
-  width: 100%;
-  max-height: 360px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin: 0 0 16px;
-}
-.body {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.7;
-  white-space: pre-line;
-}
-.no-body {
-  color: var(--rs-muted);
-}
 .decision {
   flex: 1.2 1 480px;
   min-width: 0;
@@ -795,18 +736,6 @@ async function onDismissed() {
 .suggestion-actions {
   display: flex;
   gap: 6px;
-}
-.evidence {
-  background: #efeafb;
-  color: inherit;
-  border-bottom: 2px solid #b8a6ec;
-  border-radius: 2px;
-  padding: 0 1px;
-  transition: background 0.3s;
-}
-.evidence.active {
-  background: #d9cdf7;
-  border-bottom-color: #6d4bc4;
 }
 .evidence-list {
   display: flex;

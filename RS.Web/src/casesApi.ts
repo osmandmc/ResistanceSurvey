@@ -1,5 +1,5 @@
 import { api } from './api'
-import type { CaseInput } from './reviewApi'
+import type { CaseInput, ReviewArticle } from './reviewApi'
 
 /** The case list's filters (all optional); also used for the Excel export. */
 export interface CaseFilter {
@@ -159,6 +159,11 @@ export function searchNews(query: string, year: number | null, month: number | n
 
 export function attachArticle(caseId: number, newsId: number) {
   return api<{ id: number }>(`/api/cases/${caseId}/articles`, { method: 'POST', body: JSON.stringify({ newsId }) })
+}
+
+/** A linked pipeline article with its full text, as the review screen shows it. */
+export function getCaseArticle(caseId: number, articleId: string) {
+  return api<ReviewArticle>(`/api/cases/${caseId}/articles/${encodeURIComponent(articleId)}`)
 }
 
 export function detachArticle(caseId: number, newsId: number) {

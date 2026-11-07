@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RS.COMMON.Entities;
 using RS.EF;
+using RS.MVC.Applications;
 using RS.MVC.Features.Activity;
+using RS.MVC.Features.Articles;
+using RS.MVC.Models;
 using static RS.COMMON.Constants.Enums;
 
 namespace RS.MVC.Features.Cases
@@ -54,6 +57,29 @@ namespace RS.MVC.Features.Cases
             db.LogActivity(Actions.CaseAttachArticle, news.Header, command.CaseId, news.ArticleId);
             await db.SaveChangesAsync();
             return CaseCommandResult.Ok(command.NewsId);
+        }
+    }
+
+    public record GetCaseArticleQuery(int CaseId, string ArticleId);
+
+    /// <summary>
+    /// A linked article's full text from the pipeline, shown in the case's Haberler list. Unlike the review screen it
+    /// also answers for handled articles, but only for one linked to this case. Null when not linked or not in the
+    /// pipeline; the pipeline not answering throws (the API answers 502).
+    /// </summary>
+    public class GetCaseArticleHandler(RSDBContext db, IPipelineClient pipeline)
+    {
+        public async Task<ReviewArticle> Handle(GetCaseArticleQuery query)
+        {
+            var linked = await db.ResistanceNews.AnyAsync(rn =>
+                rn.ResistanceId == query.CaseId && !rn.Resistance.Deleted && rn.News.ArticleId == query.ArticleId);
+            if (!linked)
+                return null;
+            var article = await pipeline.GetArticleAsync(query.ArticleId);
+            return article == null
+                ? null
+                : new ReviewArticle(article.ArticleId, article.Title, article.Url, SourceCatalog.Name(article.SourceId),
+                    article.PublishedAt, article.Body, ImageUrl: article.ImageUrl);
         }
     }
 

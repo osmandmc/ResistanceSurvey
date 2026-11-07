@@ -10,6 +10,7 @@ import {
   deleteProtest,
   detachArticle,
   getCase,
+  getCaseArticle,
   saveProtest,
   searchNews,
   updateCase,
@@ -17,13 +18,14 @@ import {
   type NewsOption,
   type ProtestDetail,
 } from '@/casesApi'
+import ArticleView from '@/components/ArticleView.vue'
 import CaseForm from '@/components/CaseForm.vue'
 import CaseHistory from '@/components/CaseHistory.vue'
 import CaseSolidarityPanel from '@/components/CaseSolidarityPanel.vue'
 import ProtestForm from '@/components/ProtestForm.vue'
 import { formatDate } from '@/format'
 import { emptyProtest, fromProtestInput, toProtestInput, type ProtestFormValue } from '@/protestForm'
-import { getFormOptions, type CaseFormOptions } from '@/reviewApi'
+import { getFormOptions, type CaseFormOptions, type ReviewArticle } from '@/reviewApi'
 
 const route = useRoute()
 const router = useRouter()
@@ -207,6 +209,39 @@ const yearOptions = Array.from({ length: new Date().getFullYear() - 2018 }, (_, 
   const y = new Date().getFullYear() - i
   return { label: String(y), value: y }
 })
+
+// A linked pipeline article's text, opened in the list; fetched on the first open and kept while the page is open.
+type ArticleText = { loading: boolean; article: ReviewArticle | null; error: string }
+const openArticles = ref(new Set<string>())
+const articleTexts = ref(new Map<string, ArticleText>())
+const articleText = (articleId: string): ArticleText =>
+  articleTexts.value.get(articleId) ?? { loading: true, article: null, error: '' }
+
+async function toggleArticle(articleId: string) {
+  const open = new Set(openArticles.value)
+  if (open.delete(articleId)) {
+    openArticles.value = open
+    return
+  }
+  open.add(articleId)
+  openArticles.value = open
+  if (!articleTexts.value.get(articleId)?.article) await loadArticleText(articleId)
+}
+
+async function loadArticleText(articleId: string) {
+  const texts = articleTexts.value
+  texts.set(articleId, { loading: true, article: null, error: '' })
+  try {
+    texts.set(articleId, { loading: false, article: await getCaseArticle(caseId.value, articleId), error: '' })
+  } catch (error) {
+    const notFound = error instanceof ApiError && error.status === 404
+    texts.set(articleId, {
+      loading: false,
+      article: null,
+      error: notFound ? 'Haber işleme hattında bu haber bulunamadı.' : 'Haber metni şu an alınamadı.',
+    })
+  }
+}
 const monthOptions = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'].map(
   (label, i) => ({ label, value: i + 1 }),
 )
@@ -357,7 +392,27 @@ function confirmDetach(newsId: number, title: string | null) {
             <a :href="a.link" target="_blank" rel="noopener">{{ a.title || a.link }}</a>
             <span class="sub">{{ formatDate(a.date) }}</span>
           </div>
-          <n-button size="small" quaternary @click="confirmDetach(a.newsId, a.title)">Çıkar</n-button>
+          <div class="row-actions">
+            <n-button
+              v-if="a.articleId"
+              size="small"
+              :aria-expanded="openArticles.has(a.articleId)"
+              :aria-controls="`article-text-${a.newsId}`"
+              @click="toggleArticle(a.articleId)"
+            >
+              {{ openArticles.has(a.articleId) ? 'Gizle' : 'Haberi göster' }}
+            </n-button>
+            <n-button size="small" quaternary @click="confirmDetach(a.newsId, a.title)">Çıkar</n-button>
+          </div>
+          <div v-if="a.articleId && openArticles.has(a.articleId)" :id="`article-text-${a.newsId}`" class="article-text">
+            <n-spin v-if="articleText(a.articleId).loading" size="small" />
+            <n-alert v-else-if="articleText(a.articleId).error" type="warning" :show-icon="false">
+              {{ articleText(a.articleId).error }}
+              <a :href="a.link" target="_blank" rel="noopener" class="source-link">Kaynağa git ↗</a>
+              <n-button size="small" class="retry" @click="loadArticleText(a.articleId)">Tekrar dene</n-button>
+            </n-alert>
+            <article-view v-else-if="articleText(a.articleId).article" :article="articleText(a.articleId).article!" heading-level="h3" />
+          </div>
         </li>
       </ul>
     </section>
@@ -503,6 +558,17 @@ function confirmDetach(newsId: number, title: string | null) {
 .row-actions {
   display: flex;
   gap: 6px;
+}
+/* The opened article: the whole width of its row, under the title. */
+.article-text {
+  flex: 1 1 100%;
+  min-width: 0;
+  margin-top: 4px;
+  padding: 16px 4px 4px;
+  border-top: 1px solid var(--rs-border);
+}
+.source-link {
+  margin-left: 8px;
 }
 .news-filters {
   display: grid;
