@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using RS.COMMON.Constants;
 using RS.COMMON.Entities;
@@ -292,5 +292,75 @@ public class CaseDetailTests
 
         Assert.Single(_db.ResistanceNews, rn => rn.ResistanceId == _case.Id);
         Assert.Single(_db.News, n => n.Id == news.Id); // the article itself stays
+    }
+
+    // Edit conflicts (IVersioned): researchers enter cases together, so two of them may have the same case open.
+    [Fact]
+    public async Task ACaseFormLoadedBeforeAColleaguesSaveIsRefused()
+    {
+        var loaded = (await new GetCaseHandler(_db).Handle(new GetCaseQuery(_case.Id)))!.Case.Version;
+
+        var ayse = await Update(ValidCase(c => { c.Version = loaded; c.Name = "Ayşe'nin adı"; }));
+        var mehmet = await new UpdateCaseHandler(_db, new CaseWriter(_db), new ListValueResolver(_db))
+            .Handle(new UpdateCaseCommand(_case.Id, ValidCase(c => { c.Version = loaded; c.Name = "Mehmet'in adı"; }), "mehmet"));
+
+        Assert.Equal((CaseCommandStatus.Ok, loaded + 1), (ayse.Status, ayse.Version));
+        Assert.Equal(CaseCommandStatus.Conflict, mehmet.Status);
+        Assert.StartsWith("Bu vaka siz düzenlerken başka biri tarafından değiştirildi (ayse, ", mehmet.Message);
+        Assert.Equal("Ayşe'nin adı", _db.Resistance.Single(r => r.Id == _case.Id).Name);
+    }
+
+    [Fact]
+    public async Task TheVersionASaveReturnsAllowsTheNextSave()
+    {
+        var first = await Update(ValidCase(c => c.Version = _case.Version));
+        var second = await Update(ValidCase(c => { c.Version = first.Version; c.Name = "İkinci kayıt"; }));
+
+        Assert.Equal((CaseCommandStatus.Ok, _case.Version), (second.Status, second.Version));
+        Assert.Equal(2, second.Version);
+    }
+
+    [Fact]
+    public async Task AddingAProtestDoesNotStopAColleagueSavingTheCase()
+    {
+        var loaded = _case.Version;
+        var protest = ReviewValidationTests.CompleteProtest();
+        protest.StartDate = new DateTime(2026, 6, 15); // moves the case's start date, a field the app keeps itself
+
+        await new SaveProtestHandler(_db, new CaseWriter(_db)).Handle(new SaveProtestCommand(_case.Id, null, protest, "mehmet"));
+        var result = await Update(ValidCase(c => c.Version = loaded));
+
+        Assert.Equal(CaseCommandStatus.Ok, result.Status);
+    }
+
+    [Fact]
+    public async Task AProtestFormLoadedBeforeAColleaguesSaveIsRefused()
+    {
+        var first = _case.Protestos.Single(p => p.StartDate == new DateTime(2026, 9, 10));
+        var loaded = first.Version;
+        ProtestInput Edit(string note)
+        {
+            var protest = ReviewValidationTests.CompleteProtest();
+            protest.Version = loaded;
+            protest.Note = note;
+            return protest;
+        }
+
+        var ayse = await new SaveProtestHandler(_db, new CaseWriter(_db)).Handle(new SaveProtestCommand(_case.Id, first.Id, Edit("Ayşe"), "ayse"));
+        var mehmet = await new SaveProtestHandler(_db, new CaseWriter(_db)).Handle(new SaveProtestCommand(_case.Id, first.Id, Edit("Mehmet"), "mehmet"));
+
+        Assert.Equal((CaseCommandStatus.Ok, CaseCommandStatus.Conflict), (ayse.Status, mehmet.Status));
+        Assert.StartsWith("Bu eylem siz düzenlerken", mehmet.Message);
+        Assert.Equal("Ayşe", _db.Protesto.Single(p => p.Id == first.Id).Note);
+    }
+
+    [Fact]
+    public async Task TheVersionIsNotInTheChangeHistory()
+    {
+        _user.Name = "ayse";
+        await Update(ValidCase(c => { c.Version = _case.Version; c.Name = "Yeni ad"; }));
+
+        Assert.Contains(_db.FieldChange, f => f.Field == nameof(Resistance.Name));
+        Assert.DoesNotContain(_db.FieldChange, f => f.Field == nameof(Resistance.Version));
     }
 }

@@ -212,6 +212,51 @@ namespace RS.EF
                      foreignKey.DeleteBehavior = ownsIt ? DeleteBehavior.Cascade : DeleteBehavior.Restrict;
                  }
 
+                 // Edit conflicts: every IVersioned record's Version is checked when it is saved (UPDATE … WHERE Version = …).
+                 foreach (var entity in modelBuilder.Model.GetEntityTypes().Where(e => typeof(IVersioned).IsAssignableFrom(e.ClrType)))
+                     modelBuilder.Entity(entity.ClrType).Property(nameof(IVersioned.Version)).IsConcurrencyToken();
+
+        }
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            RaiseVersions();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public override System.Threading.Tasks.Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
+            System.Threading.CancellationToken cancellationToken = default)
+        {
+            RaiseVersions();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        /// <summary>
+        /// One more for every IVersioned record a person's field changed in (not only [NotVersioned] fields). The UPDATE
+        /// still checks the version it started from, so a colleague's save in between makes this one fail.
+        /// </summary>
+        private void RaiseVersions()
+        {
+            ChangeTracker.DetectChanges();
+            foreach (var entry in ChangeTracker.Entries<IVersioned>().Where(e => e.State == EntityState.Modified))
+            {
+                var version = entry.Property(e => e.Version);
+                if (version.IsModified)
+                    continue; // already raised in this save
+                var edited = entry.Properties.Any(p => p.IsModified && p.Metadata.PropertyInfo?.IsDefined(typeof(NotVersionedAttribute), false) != true);
+                if (edited)
+                    version.CurrentValue = version.OriginalValue + 1;
+            }
+        }
+
+        /// <summary>
+        /// The version the person's form started from. A save of <paramref name="entity"/> then fails with
+        /// DbUpdateConcurrencyException if the database holds another version. Null (a caller that sends none): no check.
+        /// </summary>
+        public void ExpectVersion(IVersioned entity, int? version)
+        {
+            if (version is { } expected)
+                Entry(entity).Property(nameof(IVersioned.Version)).OriginalValue = expected;
         }
     }
 }

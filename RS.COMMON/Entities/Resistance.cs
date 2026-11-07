@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using RS.COMMON.DTO;
 using RS.COMMON.Entities.LookupEntity;
@@ -16,6 +16,8 @@ namespace RS.COMMON.Entities
         public int? EmployeeCountNumber { get; set; }
         public int? EmployeeCountId { get; set; }
         public DateTime? EndDate { get; set; }
+        /// <summary>Follows the earliest protest (CaseWriter.UpdateStartDateAsync), so it does not change the version.</summary>
+        [NotVersioned]
         public DateTime StartDate { get; set; }
         public bool HasTradeUnion { get; set; }
         public bool DevelopRight { get; set; }

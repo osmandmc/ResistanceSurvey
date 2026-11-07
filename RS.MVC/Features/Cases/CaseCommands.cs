@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,15 +18,29 @@ namespace RS.MVC.Features.Cases
         Ok,
         Invalid,
         NotFound,
+        /// <summary>Someone saved the record after this form was loaded (IVersioned).</summary>
+        Conflict,
     }
 
-    public record CaseCommandResult(CaseCommandStatus Status, int? Id = null, IReadOnlyDictionary<string, string> Errors = null)
+    /// <param name="Version">After a save: the record's new version, for the form's next save.</param>
+    /// <param name="Message">A conflict: who changed it and when.</param>
+    public record CaseCommandResult(CaseCommandStatus Status, int? Id = null, IReadOnlyDictionary<string, string> Errors = null,
+        int? Version = null, string Message = null)
     {
         public static readonly CaseCommandResult NotFound = new(CaseCommandStatus.NotFound);
 
         public static CaseCommandResult Invalid(IReadOnlyDictionary<string, string> errors) => new(CaseCommandStatus.Invalid, Errors: errors);
 
-        public static CaseCommandResult Ok(int id) => new(CaseCommandStatus.Ok, id);
+        public static CaseCommandResult Ok(int id, int? version = null) => new(CaseCommandStatus.Ok, id, Version: version);
+
+        /// <summary>“Bu vaka siz düzenlerken değişti (ayse, 07.11.2026 14:32)…”: the form keeps its values, nothing is saved.</summary>
+        public static CaseCommandResult Conflict(string what, AuditEntity current)
+        {
+            var by = current.Updater is { } who && current.UpdateDate is { } when ? $" ({who}, {when:dd.MM.yyyy HH:mm})" : "";
+            return new(CaseCommandStatus.Conflict,
+                Message: $"Bu {what} siz düzenlerken başka biri tarafından değiştirildi{by}. Kaydedilmedi: sayfayı yenileyip "
+                    + "değişikliklerinizi yeniden girin.");
+        }
     }
 
     /// <summary>
@@ -187,6 +201,9 @@ namespace RS.MVC.Features.Cases
             var r = await db.Resistance.FirstOrDefaultAsync(x => x.Id == command.Id && !x.Deleted);
             if (r == null)
                 return CaseCommandResult.NotFound;
+            if (command.Case.Version is { } loaded && loaded != r.Version)
+                return CaseCommandResult.Conflict("vaka", r);
+            db.ExpectVersion(r, command.Case.Version); // a save in the meantime still fails (ApiExceptionHandler: 409)
 
             await using var transaction = await db.Database.BeginTransactionAsync();
             var c = command.Case;
@@ -199,7 +216,7 @@ namespace RS.MVC.Features.Cases
 
             await db.SaveChangesAsync();
             await transaction.CommitAsync();
-            return CaseCommandResult.Ok(r.Id);
+            return CaseCommandResult.Ok(r.Id, r.Version);
         }
     }
 
@@ -224,6 +241,9 @@ namespace RS.MVC.Features.Cases
                 protest = await db.Protesto.FirstOrDefaultAsync(p => p.Id == protestId && p.ResistanceId == command.CaseId && !p.Deleted);
                 if (protest == null)
                     return CaseCommandResult.NotFound;
+                if (command.Protest.Version is { } loaded && loaded != protest.Version)
+                    return CaseCommandResult.Conflict("eylem", protest);
+                db.ExpectVersion(protest, command.Protest.Version);
                 protest.Updater = command.UserName;
                 protest.UpdateDate = DateTime.Now;
             }
@@ -241,7 +261,7 @@ namespace RS.MVC.Features.Cases
                 $"{ActivityLog.Day(protest.StartDate)} eylemi", command.CaseId, subject: "protest", subjectId: protest.Id);
             await db.SaveChangesAsync();
             await transaction.CommitAsync();
-            return CaseCommandResult.Ok(protest.Id);
+            return CaseCommandResult.Ok(protest.Id, protest.Version);
         }
     }
 

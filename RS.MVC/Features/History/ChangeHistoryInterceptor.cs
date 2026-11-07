@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -36,7 +36,8 @@ namespace RS.MVC.Features.History
         private const string WaitingKey = "history:waiting";
 
         private static readonly HashSet<string> NotRecorded =
-            ["Id", nameof(AuditEntity.CreateDate), nameof(AuditEntity.UpdateDate), nameof(AuditEntity.Creator), nameof(AuditEntity.Updater)];
+            ["Id", nameof(AuditEntity.CreateDate), nameof(AuditEntity.UpdateDate), nameof(AuditEntity.Creator), nameof(AuditEntity.Updater),
+                nameof(IVersioned.Version)];
 
         /// <summary>The records whose fields are recorded, by name; Corporation includes unions and confederations.</summary>
         private static readonly Dictionary<Type, string> Records = new()
