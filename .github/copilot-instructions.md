@@ -29,6 +29,7 @@ Conventions & patterns to follow
 
 - Dependency registration: handlers are picked up automatically; shared services are registered as scoped in `Program.cs`.
 - Request and response shapes are records next to their handler (or in `RS.MVC/Models` when shared); requests carry ids only, never entities.
+- Edit conflicts: records people edit together implement `IVersioned` (today `Resistance` and `Protesto`, through `AuditEntity`). `RSDBContext` raises `Version` on every save that changes a field (not `[NotVersioned]` ones the app keeps itself, like `Resistance.StartDate`) and checks it in the UPDATE. A form sends back the version it loaded (`CaseInput.Version`, `ProtestInput.Version`); the handler compares it and calls `db.ExpectVersion`, and returns `Conflict` (HTTP 409 with who and when). To protect another record: implement `IVersioned`, add a migration, send its version from the form.
 - Soft-delete: many entities use a `Deleted` boolean rather than removing rows. Preserve and respect this flag when querying (most queries filter with !Deleted).
 - Lists (corporations, reasons, protest types …): typed-in new values are resolved by `ListValueResolver` and kept clean in Tanımlar (`Features/Definitions`).
 - DB changes: `RS.EF` holds the DbContext and migrations (`RS.EF/Data/Migrations`, starting from `Baseline`). Every model change needs a migration (`dotnet ef migrations add … --project RS.EF --startup-project RS.EF`); `SchemaTests` fails otherwise. Text columns use `Turkish_CI_AS`; only an owner (case, protest) cascades on delete.

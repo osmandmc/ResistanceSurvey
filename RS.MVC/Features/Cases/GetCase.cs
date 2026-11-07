@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,7 +45,7 @@ namespace RS.MVC.Features.Cases
                 .Where(x => x.Id == query.Id && !x.Deleted)
                 .Select(x => new
                 {
-                    x.Id, x.Name, x.Description, x.CategoryId, x.CompanyId, x.MainCompanyId,
+                    x.Id, x.Version, x.Name, x.Description, x.CategoryId, x.CompanyId, x.MainCompanyId,
                     x.EmployerRole, x.EmployerUnknown, x.WorkplaceId,
                     WorkplaceName = x.Workplace != null ? x.Workplace.Name : null,
                     x.DevelopRight, x.EmployeeCountNumber, x.EmployeeCountId, x.TradeUnionAuthorityId,
@@ -70,7 +70,7 @@ namespace RS.MVC.Features.Cases
                 .OrderBy(p => p.StartDate)
                 .Select(p => new
                 {
-                    p.Id, p.StartDate, p.EndDate, p.GenderId, p.CustodyCount, p.EmployeeCountNumber, p.ProtestoEmployeeCountId,
+                    p.Id, p.Version, p.StartDate, p.EndDate, p.GenderId, p.CustodyCount, p.EmployeeCountNumber, p.ProtestoEmployeeCountId,
                     p.SimpleProtestoDescription, p.StrikeDuration, p.Note,
                     TypeIds = p.ProtestoProtestoTypes.Select(t => t.ProtestoTypeId).ToList(),
                     TypeNames = p.ProtestoProtestoTypes.Select(t => t.ProtestoType.Name).ToList(),
@@ -89,6 +89,7 @@ namespace RS.MVC.Features.Cases
 
             var caseInput = new CaseInput
             {
+                Version = r.Version,
                 Name = r.Name,
                 Description = r.Description,
                 Note = r.Note,
@@ -116,6 +117,7 @@ namespace RS.MVC.Features.Cases
                 p.Id,
                 new ProtestInput
                 {
+                    Version = p.Version,
                     ProtestTypeIds = p.TypeIds,
                     StrikeDurationSeconds = p.StrikeDuration == 0 ? null : p.StrikeDuration,
                     SimpleDescription = p.SimpleProtestoDescription,

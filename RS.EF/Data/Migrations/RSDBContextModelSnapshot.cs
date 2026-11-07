@@ -923,6 +923,10 @@ namespace RS.EF.Data.Migrations
                         .HasColumnType("nvarchar(50)")
                         .UseCollation("Turkish_CI_AS");
 
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GenderId");
@@ -1179,6 +1183,10 @@ namespace RS.EF.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .UseCollation("Turkish_CI_AS");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
 
                     b.Property<int?>("WorkplaceId")
                         .HasColumnType("int");

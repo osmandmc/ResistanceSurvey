@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
@@ -39,6 +39,14 @@ namespace RS.MVC.Infrastructure
                 logger.LogWarning(exception, "Pipeline unavailable for {Path}: {Cause}", path, cause);
                 status = StatusCodes.Status502BadGateway;
                 message = $"Haber işleme hattına ulaşılamadı ({cause}).";
+            }
+            else if (exception is Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
+            {
+                // IVersioned: a colleague saved the same record a moment earlier (the handlers check first; this is the race).
+                logger.LogInformation("Edit conflict for {Method} {Path}", context.Request.Method, path);
+                status = StatusCodes.Status409Conflict;
+                message = "Bu kayıt siz düzenlerken başka biri tarafından değiştirildi. Kaydedilmedi: sayfayı yenileyip "
+                    + "değişikliklerinizi yeniden girin.";
             }
             else
             {

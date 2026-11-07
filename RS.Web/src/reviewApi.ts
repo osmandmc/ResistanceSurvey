@@ -201,6 +201,8 @@ export const resultOptions = [
 
 /** The "Vaka (Direniş)" part as the server takes it (CaseInput). */
 export interface CaseInput {
+  /** The case's version when the form was loaded (edit conflicts); absent for a new case. */
+  version?: number | null
   name: string | null
   description: string | null
   /** “Kişisel Notlar”: the case's own note; each protest has its own note too. */

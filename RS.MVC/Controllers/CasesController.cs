@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -88,8 +88,9 @@ namespace RS.MVC.Controllers
 
         private IActionResult ToResult(CaseCommandResult result) => result.Status switch
         {
-            CaseCommandStatus.Ok => Ok(new { id = result.Id }),
+            CaseCommandStatus.Ok => Ok(new { id = result.Id, version = result.Version }),
             CaseCommandStatus.Invalid => BadRequest(new { error = "Lütfen eksik alanları doldurun.", fields = result.Errors }),
+            CaseCommandStatus.Conflict => Conflict(new { error = result.Message }),
             _ => NotFound(new { error = "Bulunamadı." }),
         };
 

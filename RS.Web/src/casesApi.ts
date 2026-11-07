@@ -61,6 +61,8 @@ export function exportUrl(filter: CaseFilter) {
 // One case (detail page).
 
 export interface ProtestInput {
+  /** The protest's version when the form was loaded (edit conflicts); absent for a new protest. */
+  version?: number | null
   protestTypeIds: number[]
   strikeDurationSeconds: number | null
   simpleDescription: string | null
@@ -122,8 +124,14 @@ export function getCase(id: number) {
   return api<CaseDetail>(`/api/cases/${id}`)
 }
 
+/** The answer of a save: the record's new version, for the form's next save. A 409 means a colleague saved first. */
+export interface SaveResult {
+  id: number
+  version: number | null
+}
+
 export function updateCase(id: number, input: CaseInput) {
-  return api<{ id: number }>(`/api/cases/${id}`, { method: 'PUT', body: JSON.stringify(input) })
+  return api<SaveResult>(`/api/cases/${id}`, { method: 'PUT', body: JSON.stringify(input) })
 }
 
 export function deleteCase(id: number) {
@@ -133,8 +141,8 @@ export function deleteCase(id: number) {
 /** protestId null adds a protest. */
 export function saveProtest(caseId: number, protestId: number | null, input: unknown) {
   return protestId === null
-    ? api<{ id: number }>(`/api/cases/${caseId}/protests`, { method: 'POST', body: JSON.stringify(input) })
-    : api<{ id: number }>(`/api/cases/${caseId}/protests/${protestId}`, { method: 'PUT', body: JSON.stringify(input) })
+    ? api<SaveResult>(`/api/cases/${caseId}/protests`, { method: 'POST', body: JSON.stringify(input) })
+    : api<SaveResult>(`/api/cases/${caseId}/protests/${protestId}`, { method: 'PUT', body: JSON.stringify(input) })
 }
 
 export function deleteProtest(caseId: number, protestId: number) {

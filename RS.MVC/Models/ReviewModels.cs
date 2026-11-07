@@ -55,6 +55,8 @@ namespace RS.MVC.Models
     /// <summary>The "Vaka (Direniş)" part of the form.</summary>
     public class CaseInput
     {
+        /// <summary>The case's version when the form was loaded (IVersioned); null when there is no case yet.</summary>
+        public int? Version { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         /// <summary>“Kişisel Notlar”: the case's own note (Resistance.Note); each protest has its own note too.</summary>
@@ -111,6 +113,8 @@ namespace RS.MVC.Models
     /// <summary>The "Eylem" part of the form.</summary>
     public class ProtestInput
     {
+        /// <summary>The protest's version when the form was loaded (IVersioned); null for a new protest.</summary>
+        public int? Version { get; set; }
         public List<int> ProtestTypeIds { get; set; } = [];
         public int? StrikeDurationSeconds { get; set; }
         public string SimpleDescription { get; set; }

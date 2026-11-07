@@ -81,13 +81,21 @@ function errorText(error: unknown, fallback: string) {
   return errorMessage(error, fallback)
 }
 
+/** A colleague saved first (409): the message names them and stays until closed, since nothing was saved. */
+function showSaveError(error: unknown, fallback: string) {
+  const conflict = error instanceof ApiError && error.status === 409
+  message.error(errorText(error, fallback), conflict ? { duration: 0, closable: true } : undefined)
+}
+
 // The case part.
 async function saveCase() {
   if (!caseValue.value) return
   savingCase.value = true
   caseErrors.value = {}
   try {
-    await updateCase(caseId.value, toCaseInput(caseValue.value))
+    const saved = await updateCase(caseId.value, toCaseInput(caseValue.value))
+    // The form's next save starts from this version (the form keeps the values just saved).
+    caseValue.value.version = saved.version
     message.success('Vaka kaydedildi.')
     await reload()
   } catch (error) {
@@ -95,7 +103,7 @@ async function saveCase() {
       caseErrors.value = error.fields
       await showFirstError()
     }
-    message.error(errorText(error, 'Vaka kaydedilemedi.'))
+    showSaveError(error, 'Vaka kaydedilemedi.')
   } finally {
     savingCase.value = false
   }
@@ -124,15 +132,19 @@ const editingProtest = ref<number | 'new' | null>(null)
 const protestValue = ref<ProtestFormValue>(emptyProtest())
 const protestErrors = ref<Record<string, string>>({})
 const savingProtest = ref(false)
+/** The edited protest's version when its form was opened (edit conflicts). */
+const protestVersion = ref<number | null>(null)
 
 function editProtest(protest: ProtestDetail) {
   protestValue.value = fromProtestInput(protest.protest)
+  protestVersion.value = protest.protest.version ?? null
   protestErrors.value = {}
   editingProtest.value = protest.id
 }
 
 function addProtest() {
   protestValue.value = emptyProtest()
+  protestVersion.value = null
   protestErrors.value = {}
   editingProtest.value = 'new'
 }
@@ -142,7 +154,10 @@ async function submitProtest() {
   savingProtest.value = true
   protestErrors.value = {}
   try {
-    await saveProtest(caseId.value, editingProtest.value === 'new' ? null : editingProtest.value, toProtestInput(protestValue.value))
+    await saveProtest(caseId.value, editingProtest.value === 'new' ? null : editingProtest.value, {
+      ...toProtestInput(protestValue.value),
+      version: protestVersion.value,
+    })
     message.success(editingProtest.value === 'new' ? 'Eylem eklendi.' : 'Eylem kaydedildi.')
     editingProtest.value = null
     await reload()
@@ -151,7 +166,7 @@ async function submitProtest() {
       protestErrors.value = error.fields
       await showFirstError()
     }
-    message.error(errorText(error, 'Eylem kaydedilemedi.'))
+    showSaveError(error, 'Eylem kaydedilemedi.')
   } finally {
     savingProtest.value = false
   }
