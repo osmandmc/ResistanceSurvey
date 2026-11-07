@@ -36,6 +36,7 @@ Conventions & patterns to follow
 Testing and safety
 
 - Tests: xUnit in `RS.Tests` (EF in-memory provider; SQL translation checked with `ToQueryString` against the SQL Server provider). Run `dotnet test RS.Tests`.
+- Database tests: `RS.DatabaseTests` runs against a real SQL Server 2022 in Docker (Testcontainers): migrations from an empty database and their Down after `SchemaFixes`, collations, Turkish-letter search, constraints and the main queries. Needs Docker running; CI runs it in `database-tests.yml` only when a pull request touches `RS.EF`, `RS.COMMON/Entities`, `RS.MVC/Features` or the tests. Only made-up data (`MadeUpData`), never a copy of real data. Run `dotnet test RS.DatabaseTests`.
 - Avoid exposing secrets: the repository is public; secrets come from user-secrets locally and app settings in Azure.
 
 Where to look for examples

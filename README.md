@@ -51,6 +51,13 @@ In Development the app talks to a pipeline running on this machine (`http://loca
 README, "Local development"). To use the Azure test pipeline instead, set `Pipeline:BaseUrl` and `Pipeline:FunctionKey`
 in user-secrets.
 
+## Tests
+
+```bash
+dotnet test RS.Tests            # fast, EF in-memory
+dotnet test RS.DatabaseTests    # a real SQL Server 2022 in Docker (needs Docker running; made-up data only)
+```
+
 ## New front end (RS.Web)
 
 Vue 3 + TypeScript + Vite + [Naive UI](https://www.naiveui.com). Served by RS.MVC at `/app` (the site root redirects there); the old Razor pages were removed in R12c and live on only in the `legacy` branch. Needs Node 22.12+ (the current LTS is fine).

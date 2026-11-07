@@ -98,8 +98,9 @@ WHERE u.[Kind] = 1;");
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             // Confederations go back to being unions (as they were typed before); the type stays if anything else uses it.
+            // Only where type 1 (Sendika) exists: a database built from the migrations has none (found by R41).
             migrationBuilder.Sql(@"
-UPDATE [Corporation] SET [CorporationTypeId] = 1 WHERE [Kind] = 2;
+UPDATE [Corporation] SET [CorporationTypeId] = 1 WHERE [Kind] = 2 AND EXISTS (SELECT 1 FROM [CorporationType] WHERE [Id] = 1);
 DELETE FROM [CorporationType] WHERE [Id] = 6 AND NOT EXISTS (SELECT 1 FROM [Corporation] WHERE [CorporationTypeId] = 6);");
 
             migrationBuilder.DropForeignKey(
